@@ -1,0 +1,213 @@
+html lang='en'
+  head
+    meta charset="utf-8"
+
+    // for mobile, responsive
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
+    // for unforgivable ie
+    meta http-equiv="X-UA-Compatible" content="IE=edge"
+
+    // Favicon
+    link rel="icon" href="img/favicon.ico" type="image/x-icon"
+    link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+
+    // For iOS  TODO
+    meta name="apple-mobile-web-app-capable" content="yes"
+    link rel="apple-touch-icon-precomposed" href="img/app-icon/icon-60.png"
+    link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/app-icon/icon-76.png"
+    link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
+    link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
+
+    /! Latest compiled and minified CSS
+    link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" rel="stylesheet" /
+    /! Optional theme
+    link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" rel="stylesheet" /
+
+    // custom
+    link rel="stylesheet" href="css/global.css"
+    title Guild Wars 2 Characters Manager
+    meta property="og:image" content="#{yield(:cover)}"
+
+
+  body
+    /p Cross-character management for your Guild Wars 2 account.
+    nav.navbar.navbar-default.navbar-static-top#tabs
+      .container
+        /! Brand and toggle get grouped for better mobile display
+        .navbar-header
+          .navbar-brand ETBlue.1963
+          button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" type="button" 
+            span.glyphicon.glyphicon-menu-hamburger
+            span.sr-only Toggle navigation
+        /! Collect the nav links, forms, and other content for toggling
+        #bs-example-navbar-collapse-1.collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li
+              a data-toggle='tab' href="#account" Account
+            li
+              a data-toggle='tab' href='#characters' Characters
+            li.active
+              a data-toggle='tab' href='#bank' Bank
+            li
+              a data-toggle='tab' href='#collectables' Collectables
+            li
+              a data-toggle='tab' href='#wallet' Wallet
+            li
+              a data-toggle='tab' href='#trading_post' Trading Post
+          ul.nav.navbar-nav.navbar-right
+            li
+              a href="#" About
+    section.tab-content
+      section.tab-pane#account
+        .container Account
+      section.tab-pane#characters
+        .container characters
+      section.tab-pane#bank.active
+        nav.navbar.collapse-top.medium
+          .container.border-bottom
+            .navbar-header
+              .navbar-brand Bank
+              button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-2" data-toggle="collapse" type="button"
+                span.glyphicon.glyphicon-chevron-down
+                span.sr-only Toggle navigation
+            ul.nav.navbar-nav#bs-example-navbar-collapse-2.collapse.navbar-collapse
+              li
+                a href='#' data-subset='all'
+                  | All  
+                  span.badge.light n
+                  span.sr-only (current)
+              li
+                a href='#' data-subset='equipment'
+                  | Equipment  
+                  span.badge.light n
+              li
+                a href='#' data-subset='utilities'
+                  | Utilities  
+                  span.badge.light n
+              li
+                a href='#' data-subset='toys'
+                  | Toys  
+                  span.badge.light n
+              li
+                a href='#' data-subset='misc'
+                  | Misc  
+                  span.badge.light n
+        section.subset#equipment
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Equipment
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-3" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#bs-example-navbar-collapse-3.collapse.navbar-collapse
+                li
+                  a href='#'
+                    | Armor  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Weapon  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Back  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Trinket  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Upgrade  
+                    span.badge.light n
+        section.subset#utilities
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Utilities
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-4" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#bs-example-navbar-collapse-4.collapse.navbar-collapse
+                li
+                  a href='#'
+                    | Bag  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Gathering  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Salvage  
+                    span.badge.light n
+        section.subset#toys
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Toys and Buffs
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#toys-menu-collapse" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#toys-menu-collapse.collapse.navbar-collapse
+                li
+                  a href='#'
+                    | Consumable  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Gizmo  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | MiniPet  
+                    span.badge.light n
+        section.subset#misc
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Misc
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#misc-menu-collapse" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#misc-menu-collapse.collapse.navbar-collapse
+                li
+                  a href='#'
+                    | Container  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Material  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Trophy  
+                    span.badge.light n
+                li
+                  a href='#'
+                    | Trait  
+                    span.badge.light n
+      section.tab-pane#collectables
+        .container collectables
+      section.tab-pane#wallet
+        .container wallet
+      section.tab-pane#trading_post
+        .container trading post
+    //- bank().each do |bank_item|
+    //  div
+    //    = bank_item.inspect
+    //    h2 
+    //      = "#{bank_item["name"]} X #{bank_item["count"]}"
+    //    img src="#{bank_item["icon"]}"
+
+    // vendors
+    script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars.min.js"
+    script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" 
+    script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"
+    script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"
+    // custom
+    script src="js/index.js"
+

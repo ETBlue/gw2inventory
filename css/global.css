@@ -1,0 +1,73 @@
+html, body {
+  font-size: 16px;
+  background-color: #efefef;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.collapse-top {
+  margin-top: -1rem;
+}
+
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.navbar {
+  margin-bottom: 1rem;
+  min-height: 2.5em;
+  line-height: 1em;
+}
+.navbar .navbar-nav {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.navbar .navbar-brand, .navbar li a {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.navbar.medium, .navbar.medium .navbar-brand, .navbar.medium .navbar-nav {
+  font-size: 1rem;
+}
+.navbar.medium .navbar-brand, .navbar.medium li a {
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+}
+.navbar.medium .navbar-brand {
+  line-height: 1em;
+  height: 2.6em;
+}
+.navbar.medium .navbar-toggle {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 2.6em;
+}
+.navbar.small, .navbar.small .navbar-brand, .navbar.small .navbar-nav {
+  font-size: 0.9rem;
+}
+.navbar.small .navbar-brand, .navbar.small li a {
+  padding-top: 0.6em;
+  padding-bottom: 0.6em;
+}
+.navbar.small .navbar-brand {
+  line-height: 1em;
+  height: 2.2em;
+}
+.navbar.small .navbar-toggle {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 2.2em;
+}
+
+.border-bottom {
+  border-bottom: 3px rgba(0, 0, 0, 0.1) solid;
+}
+
+.badge.light {
+  color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.05);
+}
