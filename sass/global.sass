@@ -17,44 +17,81 @@ html, body
   padding-right: 1rem
 .navbar
   margin-bottom: 1rem
-  min-height: 2.5em
-  line-height: 1em
+  min-height: 2em
   .navbar-nav
     margin-top: 0
     margin-bottom: 0
   .navbar-brand, li a
-    padding-top: 1em
-    padding-bottom: 1em
+    line-height: 1em
+  .navbar-toggle
+    margin-top: 0
+    margin-bottom: 0
+    border: none
+    border-radius: 0
+    font-size: 1rem
+    height: 3em
+  &.large
+    .navbar-brand, li a, .navbar-toggle
+      font-size: 1.2rem
+      height: 2.8em
+      padding-top: 0.9em
+      padding-bottom: 0.9em
   &.medium
-    &, .navbar-brand, .navbar-nav
+    .navbar-brand, li a, .navbar-toggle
       font-size: 1rem
-    .navbar-brand, li a
+      height: 2.6em
       padding-top: 0.8em
       padding-bottom: 0.8em
-    .navbar-brand
-      line-height: 1em
-      height: 2.6em
-    .navbar-toggle
-      margin-top: 0
-      margin-bottom: 0
-      height: 2.6em
   &.small
-    &, .navbar-brand, .navbar-nav
+    .navbar-brand, li a, .navbar-toggle
       font-size: 0.9rem
-    .navbar-brand, li a
+      height: 2.2em
       padding-top: 0.6em
       padding-bottom: 0.6em
-    .navbar-brand
-      line-height: 1em
-      height: 2.2em
-    .navbar-toggle
-      margin-top: 0
-      margin-bottom: 0
-      height: 2.2em
 
+.tooltip
+  font-size: 1rem
+  line-height: 1em
+
+.table>tbody>tr>td
+  padding: 1em
+  line-height: 1em
+  vertical-align: middle
+
+// custom
 .border-bottom
   border-bottom: 3px rgba(#000,0.1) solid
 
 .badge.light
   color: rgba(#000,0.3)
   background-color: rgba(#000,0.05)
+
+.subset
+  display: none
+  &.active
+    display: block
+
+img.icon
+  height: 3em
+  margin: -1em
+  border-right: 0.5em #fff solid
+  &.Trash
+    border-color: #aaa
+  &.Basic
+    border-color: #FFF
+  &.Fine
+    border-color: #62A4DA
+  &.Masterwork
+    border-color: #1a9306
+  &.Rare
+    border-color: #fcd00b
+  &.Exotic
+    border-color: #ffa405
+  &.Ascended
+    border-color: #fb3e8d
+  &.Legendary
+    border-color: #4C139D
+
+
+
+

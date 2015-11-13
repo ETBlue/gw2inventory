@@ -19,20 +19,27 @@ html lang='en'
     link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
     link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
 
+    // vendors
+
     /! Latest compiled and minified CSS
     link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" rel="stylesheet" /
     /! Optional theme
     link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" rel="stylesheet" /
 
+    link rel='stylesheet' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'
+
+    link rel='stylesheet' href='http://css-spinners.com/css/spinner/timer.css'
+
+
     // custom
     link rel="stylesheet" href="css/global.css"
-    title Guild Wars 2 Characters Manager
+    title Guild Wars 2 Account Explorer
     meta property="og:image" content="#{yield(:cover)}"
 
 
   body
     /p Cross-character management for your Guild Wars 2 account.
-    nav.navbar.navbar-default.navbar-static-top#tabs
+    nav.navbar.navbar-default.navbar-static-top#tabs.large
       .container
         /! Brand and toggle get grouped for better mobile display
         .navbar-header
@@ -77,7 +84,7 @@ html lang='en'
                   | All  
                   span.badge.light n
                   span.sr-only (current)
-              li
+              li.active
                 a href='#' data-subset='equipment'
                   | Equipment  
                   span.badge.light n
@@ -103,23 +110,23 @@ html lang='en'
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#bs-example-navbar-collapse-3.collapse.navbar-collapse
                 li
-                  a href='#'
+                  a href='#' data-option='Armor'
                     | Armor  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Weapon'
                     | Weapon  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Back'
                     | Back  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Trinket'
                     | Trinket  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='UpgradeComponent'
                     | Upgrade  
                     span.badge.light n
         section.subset#utilities
@@ -132,15 +139,15 @@ html lang='en'
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#bs-example-navbar-collapse-4.collapse.navbar-collapse
                 li
-                  a href='#'
+                  a href='#' data-option='Bag'
                     | Bag  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Gathering'
                     | Gathering  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Tool'
                     | Salvage  
                     span.badge.light n
         section.subset#toys
@@ -153,15 +160,15 @@ html lang='en'
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#toys-menu-collapse.collapse.navbar-collapse
                 li
-                  a href='#'
+                  a href='#' data-option='Consumable'
                     | Consumable  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Gizmo'
                     | Gizmo  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='MiniPet'
                     | MiniPet  
                     span.badge.light n
         section.subset#misc
@@ -174,27 +181,55 @@ html lang='en'
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#misc-menu-collapse.collapse.navbar-collapse
                 li
-                  a href='#'
+                  a href='#' data-option='Container'
                     | Container  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='CraftingMaterial'
                     | Material  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Trophy'
                     | Trophy  
                     span.badge.light n
                 li
-                  a href='#'
+                  a href='#' data-option='Trait'
                     | Trait  
                     span.badge.light n
+        .container.table-responsive
+          table#datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Type
+                th Level
+                th Rarity
+                th Description
+                th Position
+            tfoot
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Type
+                th Level
+                th Rarity
+                th Description
+                th Position
+            tbody
+              tr
+                td.text-center colspan='8'
+                  .timer-loader.loading
       section.tab-pane#collectables
         .container collectables
       section.tab-pane#wallet
         .container wallet
       section.tab-pane#trading_post
         .container trading post
+      section.tab-pane#about
+        .container about
     //- bank().each do |bank_item|
     //  div
     //    = bank_item.inspect
