@@ -1,5 +1,5 @@
 # Guild Wars 2 Account Explorer
 
-A Guild Wars 2 account explorer for players pursuing ultimate cross character management. 
+Guild Wars 2 Account Explorer is built for players pursuing ultimate cross character management. Designed by ETBlue.1963 .
 
-http://etblue.github.io/gw2-account-explorer/  
+http://etblue.github.io/gw2ae  

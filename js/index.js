@@ -36,15 +36,78 @@ $(document).ready(function(){
     return $.get('https://api.guildwars2.com/v2'+endpoint+key);
   }
 
+  var get_guild = function(guild_id){
+    return $.get('https://api.guildwars2.com/v1/guild_details.json?guild_id='+guild_id);
+  }
+
+
   // rendering functions
 
-  var render_account = function(accountdata){
-    $('.accountname').text(accountdata.name);
-    get_data('/worlds?ids='+accountdata.world).done(function(worlddata){
+  var render_account = function(account_data){
+    $('.accountname').text(account_data.name);
+    get_data('/worlds?ids='+account_data.world).done(function(worlddata){
       $('.worldname').text(worlddata[0].name);
     });
-    $('.accountid').text(accountdata.id);
-    $('.accountcreated').text(accountdata.created);
+    $('.accountid').text(account_data.id);
+    $('.accountcreated').text(account_data.created);
+    //render_guild(account_data.guilds);
+  }
+
+  var render_achievements = function(achievements_data){
+    $('.accountname').text(achievements_data.name);
+    get_data('/worlds?ids='+achievements_data.world).done(function(worlddata){
+      $('.worldname').text(worlddata[0].name);
+    });
+    $('.accountid').text(achievements_data.id);
+    $('.accountcreated').text(achievements_data.created);
+    //render_guild(achievements_data.guilds);
+  }
+
+  var render_guild = function(guilds_data){
+    var dataSet=[];
+    var deferred = $.Deferred();
+    var totalCount=0;
+    $.each(guilds_data, function(index, guild_data){
+      totalCount++;
+      get_guild(guild_data).done(function(guild){
+        var guild_emblem = guild.emblem || '';
+        var guild_foreground = guild_emblem.foreground_id || '';
+        var guild_background = guild_emblem.background_id || '';
+        var guild_name = guild.guild_name || '';
+        var guild_tag = guild.tag || '';
+        var row = [guild_foreground, guild_background, guild_name, guild_tag];
+        dataSet.push(row);
+        if(totalCount === dataSet.length){
+          deferred.resolve();
+        }
+      });
+    });
+    deferred.done(function(){
+      $('#guilds .datatable').DataTable( {
+        data: dataSet,
+        "destroy":true,
+        //"pageLength": -1,
+        //"pageing": false,
+        "orderFixed": [[ 2, 'asc' ]],
+        "dom":'',
+        "columnDefs": [
+          {
+            "targets": 0,
+            "visible": false
+            //"render": function ( data, type, row ) {
+            //  return "<img class='icon' src='" + data + "' />";
+            //}
+          },{
+            "targets": [ 1 ],
+            "visible": false
+          }
+        ],
+        "initComplete": function( settings, json ) {
+          $('#guilds .loading').hide();
+          console.log("guilds done");
+        }
+      });
+    });
   }
 
   var render_bank = function(bankdata){
@@ -141,7 +204,7 @@ $(document).ready(function(){
 
           count(item_type);
 
-          console.log(JSON.stringify(item_data));
+          //console.log(JSON.stringify(item_data));
 
           if(totalCount === dataSet.length){
             deferred.resolve();
@@ -184,7 +247,7 @@ $(document).ready(function(){
         "initComplete": function( settings, json ) {
           $('#bank [data-toggle="tooltip"]').tooltip();
           $('#bank .loading').hide();
-          console.log("done");
+          console.log("bank done");
         }
       });
 
@@ -220,23 +283,27 @@ $(document).ready(function(){
 
         var action = $(this).attr('data-click');
         if(action == 'refreshbank'){
-          get_bank();
+          get_render_bank();
         }
       });
-
-
     })
   }
 
   // custimozed behavior for different data sources
 
-  var get_account = function(){
+  var get_render_account = function(){
     get_data('/account', access_token).done(function(accountdata){
       render_account(accountdata);
     });
   }
 
-  var get_bank = function(){
+  var get_render_achievements = function(){
+    get_data('/account/achievements', access_token).done(function(bankdata){
+      render_bank(bankdata);
+    });
+  }
+
+  var get_render_bank = function(){
     get_data('/account/bank', access_token).done(function(bankdata){
       render_bank(bankdata);
     });
@@ -245,8 +312,8 @@ $(document).ready(function(){
   // actions on load
 
   var load_page = function(){
-    get_account();
-    get_bank();
+    get_render_account();
+    get_render_bank();
   }
 
 });

@@ -46,13 +46,12 @@ html lang='en'
 
 
   body
-    /p Cross-character management for your Guild Wars 2 account.
     header#about
       .panel.panel-default.no-bottom
         .container
-          .panel-body
+          .panel-body.text-center
             p
-              | Guild Wars 2 Account Explorer is built for players pursuing ultimate cross character management. Designed by ETBlue.1963. Source code available at 
+              | Guild Wars 2 Account Explorer is built for players pursuing ultimate cross character management. Designed by ETBlue.1963. Source code available on 
               a.inline-block target='_blank' href='https://github.com/ETBlue/gw2-account-explorer' GitHub
               | .
     nav.navbar.navbar-default.navbar-static-top#tabs.large
@@ -93,10 +92,11 @@ html lang='en'
             span.input-group-addon API KEY
             input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
           .alert.alert-info
-            | Don't have an API key? Get one for your account at Anet's official website! 
+            | Don't have an API key? Get one for your account on Anet's official website! 
             a.inline-block href='https://account.arena.net/applications' target='_blank'
               span.glyphicon.glyphicon-arrow-right
               | Arena.net API Key Management
+        .container
           header.text-center
             h1
               span.accountname.inline-block
@@ -111,7 +111,21 @@ html lang='en'
               span.label.label-default Created
               |  
               span.accountcreated
-          p guilds,achievements,
+          section#guilds
+            p.accountguilds
+        //#guilds.container.table-responsive
+        //  table.datatable.table.table-striped
+        //    thead
+        //      tr
+        //        th Emblem
+        //        th Background
+        //        th Name
+        //        th Tag
+        //    tbody
+        //      tr
+        //        td.text-center colspan='4'
+        //          .timer-loader.loading
+
       section.tab-pane#characters
         .container
           p characters: equipment, inventory, specializations
@@ -247,7 +261,7 @@ html lang='en'
                     | Trait 
                     span.badge.light 0
         .container.table-responsive
-          table.datatable.table.table-striped width='100%'
+          table.datatable.table.table-striped
             thead
               tr
                 th Icon
