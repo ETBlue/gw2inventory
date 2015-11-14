@@ -41,11 +41,20 @@ html lang='en'
     link rel="stylesheet" href="css/global.css"
 
     title Guild Wars 2 Account Explorer
+    meta 
     meta property="og:image" content="https://shizzyness.files.wordpress.com/2014/04/gw2.jpg"
 
 
   body
     /p Cross-character management for your Guild Wars 2 account.
+    header#about
+      .panel.panel-default.no-bottom
+        .container
+          .panel-body
+            p
+              | Guild Wars 2 Account Explorer is built for players pursuing ultimate cross character management. Designed by ETBlue.1963. Source code available at 
+              a.inline-block target='_blank' href='https://github.com/ETBlue/gw2-account-explorer' GitHub
+              | .
     nav.navbar.navbar-default.navbar-static-top#tabs.large
       .container
         /! Brand and toggle get grouped for better mobile display
@@ -73,7 +82,7 @@ html lang='en'
             /  a data-toggle='tab' href='#trading_post' Trading Post
           ul.nav.navbar-nav.navbar-right
             li
-              a href="#" About
+              a href="#about" data-click='toggleAbout' About
     section.tab-content
       section.tab-pane#wardrobe
         .container
@@ -269,8 +278,6 @@ html lang='en'
         .container wallet
       /section.tab-pane#trading_post
       /  .container trading post
-      section.tab-pane#about
-        .container about
     //- bank().each do |bank_item|
     //  div
     //    = bank_item.inspect

@@ -160,3 +160,7 @@ img.icon.Legendary {
   margin-right: 0.25em;
   margin-left: 0.25em;
 }
+
+#about {
+  display: none;
+}

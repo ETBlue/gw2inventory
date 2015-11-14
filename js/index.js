@@ -10,6 +10,12 @@ $(document).ready(function(){
     $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
   });
 
+  // about section
+
+  $('[data-click="toggleAbout"]').on('click tap', function(){
+    $('#about').slideToggle();
+  });
+
   // get account info
 
   var account_key = '';
