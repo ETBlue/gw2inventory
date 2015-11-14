@@ -45,31 +45,48 @@ $(document).ready(function(){
 
   var render_account = function(account_data){
     $('.accountname').text(account_data.name);
-    get_data('/worlds?ids='+account_data.world).done(function(worlddata){
-      $('.worldname').text(worlddata[0].name);
+    get_data('/worlds?ids='+account_data.world).done(function(world_data){
+      $('.worldname').text(world_data[0].name);
+      get_render_bank();
     });
     $('.accountid').text(account_data.id);
     $('.accountcreated').text(account_data.created);
-    //render_guild(account_data.guilds);
+    //render_guilds(account_data.guilds);
   }
 
   var render_achievements = function(achievements_data){
-    $('.accountname').text(achievements_data.name);
-    get_data('/worlds?ids='+achievements_data.world).done(function(worlddata){
-      $('.worldname').text(worlddata[0].name);
-    });
-    $('.accountid').text(achievements_data.id);
-    $('.accountcreated').text(achievements_data.created);
-    //render_guild(achievements_data.guilds);
-  }
-
-  var render_guild = function(guilds_data){
     var dataSet=[];
     var deferred = $.Deferred();
     var totalCount=0;
-    $.each(guilds_data, function(index, guild_data){
+    $.each(achievements_data, function(index, achievement_data){
       totalCount++;
-      get_guild(guild_data).done(function(guild){
+      get_data('/achievements?ids='+achievement_data.id).done(function(achievement){
+        var achievement_name = achievement.name || '';
+        var achievement_icon = achievement.icon || '';
+        var achievement_description = achievement.description || '';
+        var achievement_requirement = achievement.requirement || '';
+        var achievement_type = achievement.type || '';
+        var achievement_flags = achievement.flags || '';
+
+      //achievement_data.current
+      //achievement_data.max
+      //achievement_data.done
+      });
+
+
+    });
+    $('.accountid').text(achievements_data.id);
+    $('.accountcreated').text(achievements_data.created);
+    //render_guilds(achievements_data.guilds);
+  }
+
+  var render_guilds = function(guilds_data){
+    var dataSet=[];
+    var deferred = $.Deferred();
+    var totalCount=0;
+    $.each(guilds_data, function(index, guild_id){
+      totalCount++;
+      get_guild(guild_id).done(function(guild){
         var guild_emblem = guild.emblem || '';
         var guild_foreground = guild_emblem.foreground_id || '';
         var guild_background = guild_emblem.background_id || '';
@@ -110,7 +127,7 @@ $(document).ready(function(){
     });
   }
 
-  var render_bank = function(bankdata){
+  var render_bank = function(bank_data){
     var dataSet=[];
     var deferred = $.Deferred();
     var totalCount=equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
@@ -163,8 +180,8 @@ $(document).ready(function(){
       }
     };
 
-    //$.each(bankdata.slice(0,50), function(index, value){
-    $.each(bankdata, function(index, value){
+    //$.each(bank_data.slice(0,50), function(index, value){
+    $.each(bank_data, function(index, value){
 
       if(value){
         totalCount++;
@@ -292,20 +309,20 @@ $(document).ready(function(){
   // custimozed behavior for different data sources
 
   var get_render_account = function(){
-    get_data('/account', access_token).done(function(accountdata){
-      render_account(accountdata);
+    get_data('/account', access_token).done(function(account_data){
+      render_account(account_data);
     });
   }
 
   var get_render_achievements = function(){
-    get_data('/account/achievements', access_token).done(function(bankdata){
-      render_bank(bankdata);
+    get_data('/account/achievements', access_token).done(function(achievements_data){
+      render_achievements(achievements_data);
     });
   }
 
   var get_render_bank = function(){
-    get_data('/account/bank', access_token).done(function(bankdata){
-      render_bank(bankdata);
+    get_data('/account/bank', access_token).done(function(bank_data){
+      render_bank(bank_data);
     });
   }
 
@@ -313,7 +330,7 @@ $(document).ready(function(){
 
   var load_page = function(){
     get_render_account();
-    get_render_bank();
+    //get_render_bank();
   }
 
 });
