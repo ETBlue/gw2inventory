@@ -9,15 +9,15 @@ html lang='en'
     meta name="viewport" content="width=device-width, initial-scale=1"
 
     // Favicon
-    link rel="icon" href="img/favicon.ico" type="image/x-icon"
-    link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+    link rel="icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
+    link rel="shortcut icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
 
     // For iOS  TODO
-    meta name="apple-mobile-web-app-capable" content="yes"
-    link rel="apple-touch-icon-precomposed" href="img/app-icon/icon-60.png"
-    link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/app-icon/icon-76.png"
-    link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
-    link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
+    //meta name="apple-mobile-web-app-capable" content="yes"
+    //link rel="apple-touch-icon-precomposed" href="img/app-icon/icon-60.png"
+    //link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/app-icon/icon-76.png"
+    //link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
+    //link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
 
     // vendors
 
@@ -41,7 +41,7 @@ html lang='en'
     link rel="stylesheet" href="css/global.css"
 
     title Guild Wars 2 Account Explorer
-    meta property="og:image" content=""
+    meta property="og:image" content="https://shizzyness.files.wordpress.com/2014/04/gw2.jpg"
 
 
   body
@@ -85,7 +85,7 @@ html lang='en'
             input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
           .alert.alert-info
             | Don't have an API key? Get one for your account at Anet's official website! 
-            a href='https://account.arena.net/applications' target='_blank'
+            a.inline-block href='https://account.arena.net/applications' target='_blank'
               span.glyphicon.glyphicon-arrow-right
               | Arena.net API Key Management
           header.text-center
@@ -216,7 +216,7 @@ html lang='en'
           nav.navbar.collapse-top.small
             .container
               .navbar-header
-                .navbar-brand Misc
+                .navbar-brand Others
                 button.navbar-toggle.collapsed aria-expanded="false" data-target="#misc-menu-collapse" data-toggle="collapse" type="button" 
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
