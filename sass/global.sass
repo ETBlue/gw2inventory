@@ -4,6 +4,8 @@
 html, body
   font-size: 16px
   background-color: #efefef
+  font-family: 'Rosario', "Noto Sans", sans-serif
+  line-height: 1em
 
 .container
   width: 100%
@@ -12,51 +14,82 @@ html, body
 .collapse-top
   margin-top: -1rem
 
+.no-bottom
+  margin-bottom: 0
+
 .container
   padding-left: 1rem
   padding-right: 1rem
 .navbar
   margin-bottom: 1rem
-  min-height: 2em
+  min-height: 1em
   .navbar-nav
     margin-top: 0
     margin-bottom: 0
-  .navbar-brand, li a
+  .navbar-brand, li a, .navbar-toggle
     line-height: 1em
+    height: auto
   .navbar-toggle
     margin-top: 0
     margin-bottom: 0
     border: none
     border-radius: 0
-    font-size: 1rem
-    height: 3em
+  .btn
+    background: none
   &.large
     .navbar-brand, li a, .navbar-toggle
       font-size: 1.2rem
-      height: 2.8em
       padding-top: 0.9em
       padding-bottom: 0.9em
+    .btn
   &.medium
     .navbar-brand, li a, .navbar-toggle
       font-size: 1rem
-      height: 2.6em
       padding-top: 0.8em
       padding-bottom: 0.8em
+    .btn
+      margin-top: 0.3em
+      padding-top: 0.5em
+      padding-bottom: 0.5em
   &.small
     .navbar-brand, li a, .navbar-toggle
       font-size: 0.9rem
-      height: 2.2em
       padding-top: 0.6em
       padding-bottom: 0.6em
+    .btn
 
 .tooltip
   font-size: 1rem
   line-height: 1em
 
+.bold
+  font-weight: bold
+
 .table>tbody>tr>td
   padding: 1em
   line-height: 1em
   vertical-align: middle
+  font-family: "Noto Sans", "Verdana", "Arial", sans-serif
+  .bold
+    &.Trash
+      color: #aaa
+    &.Basic
+      color: #666
+    &.Fine
+      color: #62A4DA
+    &.Masterwork
+      color: #1a9306
+    &.Rare
+      color: shade(#fcd00b,15%)
+    &.Exotic
+      color: shade(#ffa405,5%)
+    &.Ascended
+      color: shade(#fb3e8d,5%)
+    &.Legendary
+      color: #4C139D
+
+.table-responsive
+  border: none
 
 // custom
 .border-bottom
@@ -92,6 +125,9 @@ img.icon
   &.Legendary
     border-color: #4C139D
 
-
+.inline-block
+  display: inline-block
+  margin-right: 0.25em
+  margin-left: 0.25em
 
 

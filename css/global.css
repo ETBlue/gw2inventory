@@ -1,6 +1,8 @@
 html, body {
   font-size: 16px;
   background-color: #efefef;
+  font-family: "Rosario", "Noto Sans", sans-serif;
+  line-height: 1em;
 }
 
 .container {
@@ -12,6 +14,10 @@ html, body {
   margin-top: -1rem;
 }
 
+.no-bottom {
+  margin-bottom: 0;
+}
+
 .container {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -19,38 +25,42 @@ html, body {
 
 .navbar {
   margin-bottom: 1rem;
-  min-height: 2em;
+  min-height: 1em;
 }
 .navbar .navbar-nav {
   margin-top: 0;
   margin-bottom: 0;
 }
-.navbar .navbar-brand, .navbar li a {
+.navbar .navbar-brand, .navbar li a, .navbar .navbar-toggle {
   line-height: 1em;
+  height: auto;
 }
 .navbar .navbar-toggle {
   margin-top: 0;
   margin-bottom: 0;
   border: none;
   border-radius: 0;
-  font-size: 1rem;
-  height: 3em;
+}
+.navbar .btn {
+  background: none;
 }
 .navbar.large .navbar-brand, .navbar.large li a, .navbar.large .navbar-toggle {
   font-size: 1.2rem;
-  height: 2.8em;
   padding-top: 0.9em;
   padding-bottom: 0.9em;
 }
 .navbar.medium .navbar-brand, .navbar.medium li a, .navbar.medium .navbar-toggle {
   font-size: 1rem;
-  height: 2.6em;
   padding-top: 0.8em;
   padding-bottom: 0.8em;
 }
+.navbar.medium .btn {
+  margin-top: 0.3em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
 .navbar.small .navbar-brand, .navbar.small li a, .navbar.small .navbar-toggle {
   font-size: 0.9rem;
-  height: 2.2em;
   padding-top: 0.6em;
   padding-bottom: 0.6em;
 }
@@ -60,10 +70,43 @@ html, body {
   line-height: 1em;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .table > tbody > tr > td {
   padding: 1em;
   line-height: 1em;
   vertical-align: middle;
+  font-family: "Noto Sans", "Verdana", "Arial", sans-serif;
+}
+.table > tbody > tr > td .bold.Trash {
+  color: #aaa;
+}
+.table > tbody > tr > td .bold.Basic {
+  color: #666;
+}
+.table > tbody > tr > td .bold.Fine {
+  color: #62A4DA;
+}
+.table > tbody > tr > td .bold.Masterwork {
+  color: #1a9306;
+}
+.table > tbody > tr > td .bold.Rare {
+  color: #d6b009;
+}
+.table > tbody > tr > td .bold.Exotic {
+  color: #f29b04;
+}
+.table > tbody > tr > td .bold.Ascended {
+  color: #ee3a85;
+}
+.table > tbody > tr > td .bold.Legendary {
+  color: #4C139D;
+}
+
+.table-responsive {
+  border: none;
 }
 
 .border-bottom {
@@ -110,4 +153,10 @@ img.icon.Ascended {
 }
 img.icon.Legendary {
   border-color: #4C139D;
+}
+
+.inline-block {
+  display: inline-block;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
 }

@@ -1,61 +1,50 @@
 $(document).ready(function(){
 
-  // verdors
+  // verdors: bootstrap tabs ui
 
   $('#tabs').tab();
 
-  // custom ui
+  // secondary navbar
+
   $('.tab-pane [data-subset]').on('click tap', function(){
     $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
   });
 
-  // get data
+  // get account info
 
   var account_key = '';
+  var access_token = '';
 
-  var get_data = function(endpoint){
-    return $.get('https://api.guildwars2.com/v2'+endpoint+'?access_token='+account_key);
+  $('#api_key').keypress(function(e){
+    if(e.keyCode == 13){
+      account_key = $(this).val();
+      access_token = '?access_token=' + account_key
+      load_page();
+    }
+  });
+
+  // general funcitons
+
+  var get_data = function(endpoint, key){
+    key = key || '';
+    return $.get('https://api.guildwars2.com/v2'+endpoint+key);
   }
 
-  var compile_data = function(data){
-    $.each(data, function(index, value){
-      if(value){
-        get_data('/items/' + value.id).done(function(item_data){
-          console.log('index: ' + index);
-          console.log('value: ' + value.id);
-          console.log('content: ' + JSON.stringify(item_data));
-        });
-      }
+  // rendering functions
+
+  var render_account = function(accountdata){
+    $('.accountname').text(accountdata.name);
+    get_data('/worlds?ids='+accountdata.world).done(function(worlddata){
+      $('.worldname').text(worlddata[0].name);
     });
-    return JSON.stringify(data);
+    $('.accountid').text(accountdata.id);
+    $('.accountcreated').text(accountdata.created);
   }
 
-  var render_data = function(data){
+  var render_bank = function(bankdata){
     var dataSet=[];
     var deferred = $.Deferred();
-
-    var totalCount=0;
-    var equipmentCount=0;
-    var utilityCount=0;
-    var toysCount=0;
-    var miscCount=0;
-
-    var armorCount=0;
-    var weaponCount=0;
-    var backCount=0;
-    var trinketCount=0;
-    var upgradeCount=0;
-    var bagCount=0;
-    var gatheringCount=0;
-    var toolCount=0;
-    var consumableCount=0;
-    var gizmoCount=0;
-    var minipetCount=0;
-    var containerCount=0;
-    var materialCount=0;
-    var trophyCount=0;
-    var traitCount=0;
-
+    var totalCount=equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
     var count = function(type){
       if(type == "Armor"){
         armorCount+=1;
@@ -105,16 +94,12 @@ $(document).ready(function(){
       }
     };
 
-     //var item_template_source ='<tr><td><img class="icon" src="{{icon}}"/></td><td>{{name}}</td><td>{{count}}</td><td>{{type}}</td><td>{{description}}</td></tr>';
-    //var item_template = Handlebars.compile(item_template_source);
-    //$.each(data.slice(200,250), function(index, value){
-    $.each(data, function(index, value){
+    //$.each(bankdata.slice(0,50), function(index, value){
+    $.each(bankdata, function(index, value){
+
       if(value){
-
         totalCount++;
-
         get_data('/items/' + value.id).done(function(item_data){
-
           var item_position = index + 1;
           var item_icon = item_data.icon || "";
           var item_name = item_data.name || "";
@@ -144,7 +129,7 @@ $(document).ready(function(){
               item_details += data_to_text(detail_key, detail_value);
             });
           }
-          var item_description = item_data.description || item_details;
+          var item_description = item_data.description + item_details;
           var row = [item_icon, item_name, value.count, item_type, item_level, item_rarity, item_description, item_position];
           dataSet.push(row);
 
@@ -161,19 +146,15 @@ $(document).ready(function(){
               $("[data-option='"+ key +"'] .badge").text(value);
             });
           }
-          //var context = {id: item_data.id, count: value.count, type:item_data.type, name: item_data.name, description: item_data.description, icon: item_data.icon};
-          //var $item_element = $(item_template(context));
-          //$('tbody').append($item_element);
-
-          //console.log('index: ' + index);
-          //console.log('value: ' + value.id);
-          //console.log('content: ' + JSON.stringify(item_data));
         });
       }
     });
     deferred.done(function(){
-      $('#datatable').DataTable( {
+      $('#bank [data-click]').button('reset');
+
+      $('#bank .datatable').DataTable( {
         data: dataSet,
+        "destroy":true,
         "pageLength": 50,
         "order": [[ 7, 'asc' ]],
         "columnDefs": [
@@ -187,25 +168,79 @@ $(document).ready(function(){
           },{
             "targets": [ 6 ],
             "visible": false
+          },{
+            "targets": [ 1 ],
+            "render": function ( data, type, row ) {
+              return "<span class='bold "+row[5]+"'>" + data + "</span>";
+            }
           }
         ],
         "initComplete": function( settings, json ) {
-          $('[data-toggle="tooltip"]').tooltip();
-
-          //$('#datatable').columns().every(function(){
-          //  $('[data-option]').on('click tap', function(){
-          //    var searchValue = $(this).attr("[data-option]");
-          //    this.search(searchValue).draw();
-          //  });
-          //});
-          $('.loading').remove();
+          $('#bank [data-toggle="tooltip"]').tooltip();
+          $('#bank .loading').hide();
+          console.log("done");
         }
       });
+
+      // search by nav bar click
+
+      var bankTable = $('#bank .datatable').DataTable();
+
+      $('#bank [data-option]').on('click tap', function(){
+        var searchValue = $(this).attr("data-option");
+        bankTable.column([3]).search(searchValue).draw();
+      });
+      $('#bank [data-subset]').on('click tap', function(){
+        var searchCollection = $(this).attr("data-subset");
+        var searchValue = "";
+        if(searchCollection == "equipment"){
+          searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+        }else if(searchCollection == "utilities"){
+          searchValue = "Bag|Gathering|Tool";
+        }else if(searchCollection == "toys"){
+          searchValue = "Consumable|Gizmo|Minipet";
+        }else if(searchCollection == "misc"){
+          searchValue = "Container|CraftingMaterial|Trophy|Trait";
+        }
+        bankTable.column([3]).search(searchValue, true).draw();
+      });
+
+      // refresh by navbar click
+
+      $('#bank [data-click]').on('click tap', function(){
+        $(this).button('loading');
+        $(this).parents('.tab-pane').children('.subset').removeClass('active');
+        $(this).parents('.tab-pane').children('.loading').show();
+
+        var action = $(this).attr('data-click');
+        if(action == 'refreshbank'){
+          get_bank();
+        }
+      });
+
+
     })
   }
 
-  get_data('/account/bank').done(function(data){
-    render_data(data);
-  });
+  // custimozed behavior for different data sources
+
+  var get_account = function(){
+    get_data('/account', access_token).done(function(accountdata){
+      render_account(accountdata);
+    });
+  }
+
+  var get_bank = function(){
+    get_data('/account/bank', access_token).done(function(bankdata){
+      render_bank(bankdata);
+    });
+  }
+
+  // actions on load
+
+  var load_page = function(){
+    get_account();
+    get_bank();
+  }
 
 });

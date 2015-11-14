@@ -2,11 +2,11 @@ html lang='en'
   head
     meta charset="utf-8"
 
-    // for mobile, responsive
-    meta name="viewport" content="width=device-width, initial-scale=1"
-
     // for unforgivable ie
     meta http-equiv="X-UA-Compatible" content="IE=edge"
+
+    // for mobile, responsive
+    meta name="viewport" content="width=device-width, initial-scale=1"
 
     // Favicon
     link rel="icon" href="img/favicon.ico" type="image/x-icon"
@@ -21,20 +21,27 @@ html lang='en'
 
     // vendors
 
+    // bootstrap
     /! Latest compiled and minified CSS
     link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" rel="stylesheet" /
     /! Optional theme
-    link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" rel="stylesheet" /
+    /link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" rel="stylesheet" /
 
+    // datatable
     link rel='stylesheet' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'
 
+    // css spinner
     link rel='stylesheet' href='http://css-spinners.com/css/spinner/timer.css'
 
+    // web fonts
+    link href='https://fonts.googleapis.com/css?family=Rosario:400,700' rel='stylesheet' type='text/css'
+    link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'
 
     // custom
     link rel="stylesheet" href="css/global.css"
+
     title Guild Wars 2 Account Explorer
-    meta property="og:image" content="#{yield(:cover)}"
+    meta property="og:image" content=""
 
 
   body
@@ -43,63 +50,97 @@ html lang='en'
       .container
         /! Brand and toggle get grouped for better mobile display
         .navbar-header
-          .navbar-brand ETBlue.1963
+          .accountname.bold.navbar-brand
           button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" type="button" 
             span.glyphicon.glyphicon-menu-hamburger
             span.sr-only Toggle navigation
         /! Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
           ul.nav.navbar-nav
-            li
+            li.active
               a data-toggle='tab' href="#account" Account
             li
               a data-toggle='tab' href='#characters' Characters
-            li.active
-              a data-toggle='tab' href='#bank' Bank
-            li
-              a data-toggle='tab' href='#collectables' Collectables
             li
               a data-toggle='tab' href='#wallet' Wallet
             li
-              a data-toggle='tab' href='#trading_post' Trading Post
+              a data-toggle='tab' href='#bank' Bank
+            li
+              a data-toggle='tab' href='#crafting' Crafting
+            li
+              a data-toggle='tab' href='#wardrobe' Wardrobe
+            /li
+            /  a data-toggle='tab' href='#trading_post' Trading Post
           ul.nav.navbar-nav.navbar-right
             li
               a href="#" About
     section.tab-content
-      section.tab-pane#account
-        .container Account
+      section.tab-pane#wardrobe
+        .container
+          p Wardrobe: skins, dyes, minis
+      section.tab-pane#account.active
+        .container
+          .input-group
+            span.input-group-addon API KEY
+            input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
+          .alert.alert-info
+            | Don't have an API key? Get one for your account at Anet's official website! 
+            a href='https://account.arena.net/applications' target='_blank'
+              span.glyphicon.glyphicon-arrow-right
+              | Arena.net API Key Management
+          header.text-center
+            h1
+              span.accountname.inline-block
+              |  at 
+              span.worldname.inline-block
+            p.inline-block
+              span.label.label-default Accound ID
+              |  
+              span.accountid
+              |  
+            p.inline-block
+              span.label.label-default Created
+              |  
+              span.accountcreated
+          p guilds,achievements,
       section.tab-pane#characters
-        .container characters
-      section.tab-pane#bank.active
+        .container
+          p characters: equipment, inventory, specializations
+      section.tab-pane#bank
         nav.navbar.collapse-top.medium
           .container.border-bottom
             .navbar-header
-              .navbar-brand Bank
+              .navbar-brand
+                | Bank
               button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-2" data-toggle="collapse" type="button"
                 span.glyphicon.glyphicon-chevron-down
                 span.sr-only Toggle navigation
-            ul.nav.navbar-nav#bs-example-navbar-collapse-2.collapse.navbar-collapse
-              li
-                a href='#' data-subset='all'
-                  | All  
-                  span.badge.light n
-                  span.sr-only (current)
-              li.active
-                a href='#' data-subset='equipment'
-                  | Equipment  
-                  span.badge.light n
-              li
-                a href='#' data-subset='utilities'
-                  | Utilities  
-                  span.badge.light n
-              li
-                a href='#' data-subset='toys'
-                  | Toys  
-                  span.badge.light n
-              li
-                a href='#' data-subset='misc'
-                  | Misc  
-                  span.badge.light n
+            #bs-example-navbar-collapse-2.collapse.navbar-collapse
+              ul.nav.navbar-nav
+                li
+                  a href='#' data-subset='all'
+                    | All 
+                    span.badge.light 0
+                    span.sr-only (current)
+                li.active
+                  a href='#' data-subset='equipment'
+                    | Equipment 
+                    span.badge.light 0
+                li
+                  a href='#' data-subset='utilities'
+                    | Utilities 
+                    span.badge.light 0
+                li
+                  a href='#' data-subset='toys'
+                    | Toys and Consumables 
+                    span.badge.light 0
+                li
+                  a href='#' data-subset='misc'
+                    | Others 
+                    span.badge.light 0
+              ul.nav.navbar-nav.navbar-right
+                li
+                  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshbank' Refresh
         section.subset#equipment
           nav.navbar.collapse-top.small
             .container
@@ -111,24 +152,24 @@ html lang='en'
               ul.nav.navbar-nav#bs-example-navbar-collapse-3.collapse.navbar-collapse
                 li
                   a href='#' data-option='Armor'
-                    | Armor  
-                    span.badge.light n
+                    | Armor 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Weapon'
-                    | Weapon  
-                    span.badge.light n
+                    | Weapons 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Back'
-                    | Back  
-                    span.badge.light n
+                    | Back Items 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Trinket'
-                    | Trinket  
-                    span.badge.light n
+                    | Trinkets 
+                    span.badge.light 0
                 li
                   a href='#' data-option='UpgradeComponent'
-                    | Upgrade  
-                    span.badge.light n
+                    | Upgrade Components 
+                    span.badge.light 0
         section.subset#utilities
           nav.navbar.collapse-top.small
             .container
@@ -140,37 +181,37 @@ html lang='en'
               ul.nav.navbar-nav#bs-example-navbar-collapse-4.collapse.navbar-collapse
                 li
                   a href='#' data-option='Bag'
-                    | Bag  
-                    span.badge.light n
+                    | Bags 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Gathering'
-                    | Gathering  
-                    span.badge.light n
+                    | Gathering Tools 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Tool'
-                    | Salvage  
-                    span.badge.light n
+                    | Salvage Tools 
+                    span.badge.light 0
         section.subset#toys
           nav.navbar.collapse-top.small
             .container
               .navbar-header
-                .navbar-brand Toys and Buffs
+                .navbar-brand Toys and Consumables
                 button.navbar-toggle.collapsed aria-expanded="false" data-target="#toys-menu-collapse" data-toggle="collapse" type="button" 
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#toys-menu-collapse.collapse.navbar-collapse
                 li
                   a href='#' data-option='Consumable'
-                    | Consumable  
-                    span.badge.light n
+                    | Consumables 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Gizmo'
-                    | Gizmo  
-                    span.badge.light n
+                    | Gizmo 
+                    span.badge.light 0
                 li
                   a href='#' data-option='MiniPet'
-                    | MiniPet  
-                    span.badge.light n
+                    | Miniatures 
+                    span.badge.light 0
         section.subset#misc
           nav.navbar.collapse-top.small
             .container
@@ -182,22 +223,22 @@ html lang='en'
               ul.nav.navbar-nav#misc-menu-collapse.collapse.navbar-collapse
                 li
                   a href='#' data-option='Container'
-                    | Container  
-                    span.badge.light n
+                    | Containers 
+                    span.badge.light 0
                 li
                   a href='#' data-option='CraftingMaterial'
-                    | Material  
-                    span.badge.light n
+                    | Crafting Materials 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Trophy'
-                    | Trophy  
-                    span.badge.light n
+                    | Trophies 
+                    span.badge.light 0
                 li
                   a href='#' data-option='Trait'
-                    | Trait  
-                    span.badge.light n
+                    | Trait 
+                    span.badge.light 0
         .container.table-responsive
-          table#datatable.table.table-striped width='100%'
+          table.datatable.table.table-striped width='100%'
             thead
               tr
                 th Icon
@@ -222,12 +263,12 @@ html lang='en'
               tr
                 td.text-center colspan='8'
                   .timer-loader.loading
-      section.tab-pane#collectables
-        .container collectables
+      section.tab-pane#crafting
+        .container crafting: recipes - character, materials,
       section.tab-pane#wallet
         .container wallet
-      section.tab-pane#trading_post
-        .container trading post
+      /section.tab-pane#trading_post
+      /  .container trading post
       section.tab-pane#about
         .container about
     //- bank().each do |bank_item|
