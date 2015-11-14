@@ -68,6 +68,8 @@ html lang='en'
             li.active
               a data-toggle='tab' href="#account" Account
             li
+              a data-toggle='tab' href='#achievements' Achievements
+            li
               a data-toggle='tab' href='#characters' Characters
             li
               a data-toggle='tab' href='#wallet' Wallet
@@ -111,10 +113,11 @@ html lang='en'
               span.label.label-default Created
               |  
               span.accountcreated
-          section#guilds
-            p.accountguilds
+
+
+
         //#guilds.container.table-responsive
-        //  table.datatable.table.table-striped width="100%"
+        //  table.datatable.table.table-striped
         //    thead
         //      tr
         //        th Emblem
@@ -125,6 +128,36 @@ html lang='en'
         //      tr
         //        td.text-center colspan='4'
         //          .timer-loader.loading
+
+      section.tab-pane#achievements
+        .container.table-responsive
+          table#achievements-table.datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Icon
+                th Name
+                th Current
+                th Max
+                th Done
+                th Description
+                th Requirement
+                th Type
+                th Flags
+            tfoot
+              tr
+                th Icon
+                th Name
+                th Current
+                th Max
+                th Done
+                th Description
+                th Requirement
+                th Type
+                th Flags
+            tbody
+              tr
+                td.text-center colspan='9'
+                  .timer-loader.loading
 
       section.tab-pane#characters
         .container
@@ -261,7 +294,7 @@ html lang='en'
                     | Trait 
                     span.badge.light 0
         .container.table-responsive
-          table.datatable.table.table-striped width="100%"
+          table#bank-table.datatable.table.table-striped width='100%'
             thead
               tr
                 th Icon

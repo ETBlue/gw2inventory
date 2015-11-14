@@ -132,30 +132,32 @@ p {
 img.icon {
   height: 3em;
   margin: -1em;
+}
+img.icon.item {
   border-right: 0.5em #fff solid;
 }
-img.icon.Trash {
+img.icon.item.Trash {
   border-color: #aaa;
 }
-img.icon.Basic {
+img.icon.item.Basic {
   border-color: #FFF;
 }
-img.icon.Fine {
+img.icon.item.Fine {
   border-color: #62A4DA;
 }
-img.icon.Masterwork {
+img.icon.item.Masterwork {
   border-color: #1a9306;
 }
-img.icon.Rare {
+img.icon.item.Rare {
   border-color: #fcd00b;
 }
-img.icon.Exotic {
+img.icon.item.Exotic {
   border-color: #ffa405;
 }
-img.icon.Ascended {
+img.icon.item.Ascended {
   border-color: #fb3e8d;
 }
-img.icon.Legendary {
+img.icon.item.Legendary {
   border-color: #4C139D;
 }
 

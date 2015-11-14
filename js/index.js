@@ -45,39 +45,85 @@ $(document).ready(function(){
 
   var render_account = function(account_data){
     $('.accountname').text(account_data.name);
+    // render worlds first, then achievements and bank
     get_data('/worlds?ids='+account_data.world).done(function(world_data){
       $('.worldname').text(world_data[0].name);
+      get_render_achievements();
       get_render_bank();
     });
     $('.accountid').text(account_data.id);
     $('.accountcreated').text(account_data.created);
-    //render_guilds(account_data.guilds);
   }
 
   var render_achievements = function(achievements_data){
+    var idList=[];
     var dataSet=[];
     var deferred = $.Deferred();
-    var totalCount=0;
-    $.each(achievements_data, function(index, achievement_data){
-      totalCount++;
-      get_data('/achievements?ids='+achievement_data.id).done(function(achievement){
-        var achievement_name = achievement.name || '';
-        var achievement_icon = achievement.icon || '';
-        var achievement_description = achievement.description || '';
-        var achievement_requirement = achievement.requirement || '';
-        var achievement_type = achievement.type || '';
-        var achievement_flags = achievement.flags || '';
-
-      //achievement_data.current
-      //achievement_data.max
-      //achievement_data.done
-      });
-
-
+    //var totalCount=0;
+    $.each(achievements_data, function(achievement_data_index, achievement_data){
+      idList.push(achievement_data.id);
     });
-    $('.accountid').text(achievements_data.id);
-    $('.accountcreated').text(achievements_data.created);
-    //render_guilds(achievements_data.guilds);
+    var batch_count = Math.ceil(idList.length / 200);
+    for(var i = 0; i < batch_count; i++){
+      var idListString = idList.slice(i*200,(i+1)*200).join(',');
+      get_data('/achievements?ids='+idListString).done(function(achievements){
+        $.each(achievements, function(achievement_index, achievement){
+          var achievement_icon = achievement.icon || '';
+          var achievement_name = achievement.name || '';
+          var achievement_current = achievements_data[achievement_index].current || '';
+          var achievement_max = achievements_data[achievement_index].max || '';
+          var achievement_done = achievements_data[achievement_index].done || '';
+          var achievement_description = achievement.description || '';
+          var achievement_requirement = achievement.requirement || '';
+          var achievement_type = achievement.type || '';
+          var achievement_flags = achievement.flags || '';
+          var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
+          //console.log(row);
+          dataSet.push(row);
+          if(achievements_data.length === dataSet.length){
+            deferred.resolve();
+          }        
+        });
+      });
+    }
+    deferred.done(function(){
+      $('#achievements-table').DataTable( {
+        data: dataSet,
+        //"destroy":true,
+        "pageLength": 50,
+        //"pageing": false,
+        "order": [[ 2, 'dsc' ]],
+        //"dom":'',
+        "columnDefs": [
+          {
+            "targets": 0,
+            "render": function ( data, type, row ) {
+              if(data){
+                return "<img class='icon' src='" + data + "' />";
+              }else{
+                return data;
+              }
+            }
+          },{
+            "targets": 2,
+            "render": function ( data, type, row ) {
+              if(row[3]){
+                return data + "/" + row[3];
+              }else{
+                return data;
+              }
+            }
+          },{
+            "targets": [ 3, 8 ],
+            "visible": false
+          }
+        ],
+        "initComplete": function( settings, json ) {
+          $('#achievements .loading').hide();
+          console.log("achievements done");
+        }
+      });
+    });
   }
 
   var render_guilds = function(guilds_data){
@@ -100,7 +146,7 @@ $(document).ready(function(){
       });
     });
     deferred.done(function(){
-      $('#guilds .datatable').DataTable( {
+      $('#guilds-table').DataTable( {
         data: dataSet,
         "destroy":true,
         //"pageLength": -1,
@@ -238,7 +284,7 @@ $(document).ready(function(){
     deferred.done(function(){
       $('#bank [data-click]').button('reset');
 
-      $('#bank .datatable').DataTable( {
+      $('#bank-table').DataTable( {
         data: dataSet,
         "destroy":true,
         "pageLength": 50,
@@ -249,7 +295,7 @@ $(document).ready(function(){
             "render": function ( data, type, row ) {
               //console.log(row[6]);
               var tooltip = row[6].replace(/"/g, '').replace(/'/g, '');
-              return "<img class='icon "+row[5]+"' data-toggle='tooltip' data-placement='right' title='" + tooltip + "' src='" + data + "' />";
+              return "<img class='item icon "+row[5]+"' data-toggle='tooltip' data-placement='right' title='" + tooltip + "' src='" + data + "' />";
             }
           },{
             "targets": [ 6 ],
@@ -270,7 +316,7 @@ $(document).ready(function(){
 
       // search by nav bar click
 
-      var bankTable = $('#bank .datatable').DataTable();
+      var bankTable = $('#bank-table').DataTable();
 
       $('#bank [data-option]').on('click tap', function(){
         var searchValue = $(this).attr("data-option");
