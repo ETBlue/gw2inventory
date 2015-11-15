@@ -47,6 +47,8 @@ $(document).ready(function(){
     // render worlds first, then achievements and bank
     get_data('/worlds?ids='+account_data.world).done(function(world_data){
       $('.worldname').text(world_data[0].name);
+      $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+      $('#account .status').show();
       get_render_achievements();
       get_render_bank();
     });
@@ -112,13 +114,36 @@ $(document).ready(function(){
               }
             }
           },{
-            "targets": [ 3, 8 ],
+            "targets": 4,
+            "render": function ( data, type, row ) {
+              if(data){
+                return '<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>';
+              }else{
+                return data;
+              }
+            }
+          },{
+            "targets": 8,
+            "render": function ( data, type, row ) {
+              if(data){
+                var str = '';
+                $.each(data, function(index, value){
+                  str += '<span class="label label-default">' + value + '</span> '
+                });
+                return str;
+              }else{
+                return data;
+              }
+            }
+          },{
+            "targets": [3],
             "visible": false
           }
         ],
         "initComplete": function( settings, json ) {
           $('#achievements .loading').hide();
-          console.log("achievements done");
+          $('#achievements-status').html('Achievements loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+          //console.log("achievements done");
         }
       });
     });
@@ -335,7 +360,8 @@ $(document).ready(function(){
         "initComplete": function( settings, json ) {
           $('#bank [data-toggle="tooltip"]').tooltip();
           $('#bank .loading').hide();
-          console.log("bank done");
+          $('#bank-status').html('Bank loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+          //console.log("bank done");
         }
       });
 
@@ -380,6 +406,7 @@ $(document).ready(function(){
   // custimozed behavior for different data sources
 
   var get_render_account = function(){
+    $('#account-status').show();
     get_data('/account', access_token).done(function(account_data){
       render_account(account_data);
     });

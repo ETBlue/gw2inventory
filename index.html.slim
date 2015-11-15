@@ -93,7 +93,7 @@ html lang='en'
           .input-group
             span.input-group-addon API KEY
             input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
-          .alert.alert-info
+          .alert.alert-info.text-center
             | Don't have an API key? Get one for your account on Anet's official website! 
             a.inline-block href='https://account.arena.net/applications' target='_blank'
               span.glyphicon.glyphicon-arrow-right
@@ -113,7 +113,11 @@ html lang='en'
               span.label.label-default Created
               |  
               span.accountcreated
-
+          hr
+          section.text-center
+            p#account-status.status Loading account...
+            p#achievements-status.status Loading achievements...
+            p#bank-status.status Loading bank...
 
 
         //#guilds.container.table-responsive
@@ -136,7 +140,7 @@ html lang='en'
               tr
                 th Icon
                 th Name
-                th Current
+                th Progress
                 th Max
                 th Done
                 th Description
@@ -147,7 +151,7 @@ html lang='en'
               tr
                 th Icon
                 th Name
-                th Current
+                th Progress
                 th Max
                 th Done
                 th Description

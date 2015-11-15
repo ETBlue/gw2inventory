@@ -122,6 +122,10 @@ p {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.table .label {
+  line-height: 2.3;
+}
+
 .subset {
   display: none;
 }
@@ -167,6 +171,6 @@ img.icon.item.Legendary {
   margin-left: 0.25em;
 }
 
-#about {
+#about, .status {
   display: none;
 }
