@@ -1,16 +1,16 @@
 $(document).ready(function(){
 
-  // verdors: bootstrap tabs ui
+  // enable bootstrap tabs ui
 
   $('#tabs').tab();
 
-  // secondary navbar
+  // toggle level 2 navbar
 
   $('.tab-pane [data-subset]').on('click tap', function(){
     $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
   });
 
-  // about section
+  // toggle about section
 
   $('[data-click="toggleAbout"]').on('click tap', function(){
     $('#about').slideToggle();
@@ -29,7 +29,7 @@ $(document).ready(function(){
     }
   });
 
-  // general funcitons
+  // define data fetching funcitons
 
   var get_data = function(endpoint, key){
     key = key || '';
@@ -37,11 +37,10 @@ $(document).ready(function(){
   }
 
   var get_guild = function(guild_id){
-    return $.get('https://api.guildwars2.com/v1/guild_details.json?guild_id='+guild_id);
+    return $.get('https://api.guildwars2.com/v1/guild_details.json?guild_id='+guild_id); // guild api is not available in v2 atm
   }
 
-
-  // rendering functions
+  // define data rendering functions
 
   var render_account = function(account_data){
     $('.accountname').text(account_data.name);
@@ -59,7 +58,6 @@ $(document).ready(function(){
     var idList=[];
     var dataSet=[];
     var deferred = $.Deferred();
-    //var totalCount=0;
     $.each(achievements_data, function(achievement_data_index, achievement_data){
       idList.push(achievement_data.id);
     });
@@ -126,7 +124,9 @@ $(document).ready(function(){
     });
   }
 
+  // discard
   var render_guilds = function(guilds_data){
+    var idList=[];
     var dataSet=[];
     var deferred = $.Deferred();
     var totalCount=0;
@@ -174,9 +174,40 @@ $(document).ready(function(){
   }
 
   var render_bank = function(bank_data){
+
+    // create a local copy from items api
+    var idList=[];
+    var dataRef={};
+    var deferred_pre = $.Deferred();
+    $.each(bank_data, function(bank_item_index, bank_item_data){
+      if(bank_item_data){
+        idList.push(bank_item_data.id);
+      }
+    });
+    var totalCount = idList.length;
+    idList = idList.filter( function( item, index, inputArray ) {
+      return inputArray.indexOf(item) == index;
+    });
+    idList.sort(function(a, b) {
+      return a - b;
+    });
+    var batch_count = Math.ceil(idList.length / 200);
+    for(var i = 0; i < batch_count; i++){
+      var idListString = idList.slice(i*200,(i+1)*200).join(',');
+      get_data('/items?ids=' + idListString).done(function(items_data){
+        $.each(items_data, function(item_index, item_data){
+          dataRef[item_data.id] = item_data;
+          if(Object.keys(dataRef).length == idList.length){
+            deferred_pre.resolve();
+          }
+        });
+      });
+    }
+
+    // render bank data
     var dataSet=[];
     var deferred = $.Deferred();
-    var totalCount=equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
+    var equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
     var count = function(type){
       if(type == "Armor"){
         armorCount+=1;
@@ -224,21 +255,17 @@ $(document).ready(function(){
         traitCount+=1;
         miscCount+=1;
       }
-    };
-
-    //$.each(bank_data.slice(0,50), function(index, value){
-    $.each(bank_data, function(index, value){
-
-      if(value){
-        totalCount++;
-        get_data('/items/' + value.id).done(function(item_data){
-          var item_position = index + 1;
-          var item_icon = item_data.icon || "";
-          var item_name = item_data.name || "";
+    }
+    deferred_pre.done(function(){
+      $.each(bank_data, function(item_index, item_data){
+        if(item_data){
+          var item_position = item_index + 1;
+          var item_icon = dataRef[item_data.id].icon || "";
+          var item_name = dataRef[item_data.id].name || "";
           var item_count = item_data.count || "";
-          var item_type = item_data.type || "";
-          var item_level = item_data.level || "";
-          var item_rarity = item_data.rarity || "";
+          var item_type = dataRef[item_data.id].type || "";
+          var item_level = dataRef[item_data.id].level || "";
+          var item_rarity = dataRef[item_data.id].rarity || "";
           var item_details = "";
           var data_to_text = function(key, value){
             var text = "";
@@ -256,18 +283,16 @@ $(document).ready(function(){
             }
             return text;
           };
-          if(item_data.details){
-            $.each(item_data.details, function(detail_key, detail_value){
+          if(dataRef[item_data.id].details){
+            $.each(dataRef[item_data.id].details, function(detail_key, detail_value){
               item_details += data_to_text(detail_key, detail_value);
             });
           }
-          var item_description = item_data.description + item_details;
-          var row = [item_icon, item_name, value.count, item_type, item_level, item_rarity, item_description, item_position];
+          var item_description = dataRef[item_data.id].description + item_details;
+          var row = [item_icon, item_name, item_count, item_type, item_level, item_rarity, item_description, item_position];
           dataSet.push(row);
 
           count(item_type);
-
-          //console.log(JSON.stringify(item_data));
 
           if(totalCount === dataSet.length){
             deferred.resolve();
@@ -278,8 +303,8 @@ $(document).ready(function(){
               $("[data-option='"+ key +"'] .badge").text(value);
             });
           }
-        });
-      }
+        }
+      });
     });
     deferred.done(function(){
       $('#bank [data-click]').button('reset');
@@ -376,7 +401,6 @@ $(document).ready(function(){
 
   var load_page = function(){
     get_render_account();
-    //get_render_bank();
   }
 
 });
