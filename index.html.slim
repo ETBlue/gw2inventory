@@ -117,6 +117,7 @@ html lang='en'
           section.text-center
             p#account-status.status Loading account...
             p#achievements-status.status Loading achievements...
+            p#wallet-status.status Loading wallet...
             p#bank-status.status Loading bank...
 
 
@@ -326,7 +327,26 @@ html lang='en'
       section.tab-pane#crafting
         .container crafting: recipes - character, materials,
       section.tab-pane#wallet
-        .container wallet
+        .container.table-responsive
+          table#wallet-table.datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Description
+                th Order
+            tfoot
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Description
+                th Order
+            tbody
+              tr
+                td.text-center colspan='5'
+                  .timer-loader.loading
       /section.tab-pane#trading_post
       /  .container trading post
     //- bank().each do |bank_item|

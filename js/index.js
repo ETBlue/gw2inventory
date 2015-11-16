@@ -25,6 +25,7 @@ $(document).ready(function(){
     if(e.keyCode == 13){
       account_key = $(this).val();
       access_token = '?access_token=' + account_key
+      $('#account-status').show();
       load_page();
     }
   });
@@ -40,59 +41,98 @@ $(document).ready(function(){
     return $.get('https://api.guildwars2.com/v1/guild_details.json?guild_id='+guild_id); // guild api is not available in v2 atm
   }
 
+  var get_id_list = function(data){
+    var id_list = [];
+    $.each(data, function(index, value){
+      if(value){
+        id_list.push(value.id);
+      }
+    });
+    id_list.sort(function(a, b) {
+      return a - b;
+    });
+    return id_list;
+  }
+
+  var create_data_ref = function(id_list, endpoint, defer){
+    var data_ref={};
+    var batch_count = Math.ceil(id_list.length / 200);
+    for(var i = 0; i < batch_count; i++){
+      var id_list_string = id_list.slice(i*200,(i+1)*200).join(',');
+      get_data(endpoint + id_list_string).done(function(items_data){
+        $.each(items_data, function(item_index, item_data){
+          data_ref[item_data.id] = item_data;
+          if(Object.keys(data_ref).length == id_list.length){
+            defer.resolve(data_ref);
+          }
+        });
+      });
+    }
+  }
   // define data rendering functions
 
   var render_account = function(account_data){
     $('.accountname').text(account_data.name);
-    // render worlds first, then achievements and bank
-    get_data('/worlds?ids='+account_data.world).done(function(world_data){
-      $('.worldname').text(world_data[0].name);
-      $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-      $('#account .status').show();
-      get_render_achievements();
-      get_render_bank();
-    });
     $('.accountid').text(account_data.id);
     $('.accountcreated').text(account_data.created);
+    // render world in advance
+    get_data('/worlds?ids='+account_data.world).done(function(world_data){
+      $('.worldname').text(world_data[0].name);
+      get_render_achievements();
+      get_render_wallet();
+      get_render_bank();
+    });
   }
 
   var render_achievements = function(achievements_data){
-    var idList=[];
+    // create a local copy from achievements api
+    var idList = get_id_list(achievements_data);
+    var deferred_pre = $.Deferred();
+    create_data_ref(idList, '/achievements?ids=', deferred_pre);
+    //var dataRef = create_data_ref(idList, '/achievements?ids=', deferred_pre);
+    //console.log(idList);
+
+    //var batch_count = Math.ceil(idList.length / 200);
+    //for(var i = 0; i < batch_count; i++){
+    //  var idListString = idList.slice(i*200,(i+1)*200).join(',');
+    //  get_data('/achievements?ids=' + idListString).done(function(items_data){
+    //    $.each(items_data, function(item_index, item_data){
+    //      dataRef[item_data.id] = item_data;
+    //      if(Object.keys(dataRef).length == idList.length){
+    //        deferred_pre.resolve();
+    //      }
+    //    });
+    //  });
+    //}
+
+    // render achievements data
     var dataSet=[];
     var deferred = $.Deferred();
-    $.each(achievements_data, function(achievement_data_index, achievement_data){
-      idList.push(achievement_data.id);
-    });
-    var batch_count = Math.ceil(idList.length / 200);
-    for(var i = 0; i < batch_count; i++){
-      var idListString = idList.slice(i*200,(i+1)*200).join(',');
-      get_data('/achievements?ids='+idListString).done(function(achievements){
-        $.each(achievements, function(achievement_index, achievement){
-          var achievement_icon = achievement.icon || '';
-          var achievement_name = achievement.name || '';
-          var achievement_current = achievements_data[achievement_index].current || '';
-          var achievement_max = achievements_data[achievement_index].max || '';
-          var achievement_done = achievements_data[achievement_index].done || '';
-          var achievement_description = achievement.description || '';
-          var achievement_requirement = achievement.requirement || '';
-          var achievement_type = achievement.type || '';
-          var achievement_flags = achievement.flags || '';
-          var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
-          //console.log(row);
-          dataSet.push(row);
-          if(achievements_data.length === dataSet.length){
-            deferred.resolve();
-          }        
-        });
+    deferred_pre.done(function(dataRef){
+      $.each(achievements_data, function(achievement_index, achievement){
+        var achievement_icon = dataRef[achievement.id].icon || '';
+        var achievement_name = dataRef[achievement.id].name || '';
+        var achievement_current = achievement.current || '';
+        var achievement_max = achievement.max || '';
+        var achievement_done = achievement.done || '';
+        var achievement_description = dataRef[achievement.id].description || '';
+        var achievement_requirement = dataRef[achievement.id].requirement || '';
+        var achievement_type = dataRef[achievement.id].type || '';
+        var achievement_flags = dataRef[achievement.id].flags || '';
+        var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
+        dataSet.push(row);
+        if(achievements_data.length === dataSet.length){
+          deferred.resolve();
+        }        
       });
-    }
+    });
     deferred.done(function(){
       $('#achievements-table').DataTable( {
         data: dataSet,
         //"destroy":true,
         "pageLength": 50,
         //"pageing": false,
-        "order": [[ 2, 'dsc' ]],
+        "order": [[ 4, 'dsc' ]],
         //"dom":'',
         "columnDefs": [
           {
@@ -105,10 +145,25 @@ $(document).ready(function(){
               }
             }
           },{
+            "targets": 1,
+            "render": function ( data, type, row ) {
+              if(data){
+                return '<span class="bold">'+ data + '</span>';
+              }else{
+                return data;
+              }
+            }
+          },{
             "targets": 2,
             "render": function ( data, type, row ) {
               if(row[3]){
-                return data + "/" + row[3];
+                var max;
+                if(row[3] == -1){
+                  max = '∞';
+                }else{
+                  max = row[3];
+                }
+                return data + "/" + max;
               }else{
                 return data;
               }
@@ -136,18 +191,78 @@ $(document).ready(function(){
               }
             }
           },{
-            "targets": [3],
+            "targets": [3,7,8],
             "visible": false
           }
         ],
         "initComplete": function( settings, json ) {
           $('#achievements .loading').hide();
           $('#achievements-status').html('Achievements loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-          //console.log("achievements done");
         }
       });
     });
   }
+
+  var render_wallet = function(wallet_data){
+    // create a local copy from currencies api
+    var idList = get_id_list(wallet_data);
+    var deferred_pre = $.Deferred();
+    create_data_ref(idList, '/currencies?ids=', deferred_pre);
+
+    // render wallet data
+    var dataSet=[];
+    var deferred = $.Deferred();
+    deferred_pre.done(function(dataRef){
+      $.each(wallet_data, function(wallet_item_index, concurrency){
+        var concurrency_icon = dataRef[concurrency.id].icon || '';
+        var concurrency_value = concurrency.value || '';
+        var concurrency_name = dataRef[concurrency.id].name || '';
+        var concurrency_description = dataRef[concurrency.id].description || '';
+        var concurrency_order = dataRef[concurrency.id].order || '';
+        var row = [concurrency_icon,concurrency_name,concurrency_value,concurrency_description,concurrency_order];
+        dataSet.push(row);
+        if(wallet_data.length === dataSet.length){
+          deferred.resolve();
+        }        
+      });
+    });
+    deferred.done(function(){
+      $('#wallet-table').DataTable( {
+        data: dataSet,
+        //"destroy":true,
+        "pageLength": 25,
+        //"pageing": false,
+        "order": [[ 2, 'dsc' ]],
+        "dom":'',
+        "columnDefs": [
+          {
+            "targets": 0,
+            "render": function ( data, type, row ) {
+              if(data){
+                return "<img class='icon' src='" + data + "' />";
+              }else{
+                return data;
+              }
+            }
+          },{
+            "targets": 1,
+            "render": function ( data, type, row ) {
+              if(data){
+                return '<span class="bold">'+ data + '</span>';
+              }else{
+                return data;
+              }
+            }
+          }
+        ],
+        "initComplete": function( settings, json ) {
+          $('#wallet .loading').hide();
+          $('#wallet-status').html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+        }
+      });
+    });
+  }
+
 
   // discard
   var render_guilds = function(guilds_data){
@@ -199,23 +314,14 @@ $(document).ready(function(){
   }
 
   var render_bank = function(bank_data){
-
-    // create a local copy from items api
-    var idList=[];
-    var dataRef={};
-    var deferred_pre = $.Deferred();
-    $.each(bank_data, function(bank_item_index, bank_item_data){
-      if(bank_item_data){
-        idList.push(bank_item_data.id);
-      }
-    });
+    // step 1: create a local copy from items api
+    var idList = get_id_list(bank_data);
     var totalCount = idList.length;
     idList = idList.filter( function( item, index, inputArray ) {
       return inputArray.indexOf(item) == index;
     });
-    idList.sort(function(a, b) {
-      return a - b;
-    });
+    var dataRef={};
+    var deferred_pre = $.Deferred();
     var batch_count = Math.ceil(idList.length / 200);
     for(var i = 0; i < batch_count; i++){
       var idListString = idList.slice(i*200,(i+1)*200).join(',');
@@ -228,8 +334,7 @@ $(document).ready(function(){
         });
       });
     }
-
-    // render bank data
+    // step 2: create bank data
     var dataSet=[];
     var deferred = $.Deferred();
     var equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
@@ -331,9 +436,11 @@ $(document).ready(function(){
         }
       });
     });
+    // step 3: datatable
     deferred.done(function(){
+      // step 3-1: reset refresh button
       $('#bank [data-click]').button('reset');
-
+      // step 3-2: initialize datatable
       $('#bank-table').DataTable( {
         data: dataSet,
         "destroy":true,
@@ -361,14 +468,10 @@ $(document).ready(function(){
           $('#bank [data-toggle="tooltip"]').tooltip();
           $('#bank .loading').hide();
           $('#bank-status').html('Bank loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-          //console.log("bank done");
         }
       });
-
-      // search by nav bar click
-
+      // step 3-3: enable table search by nav bar click
       var bankTable = $('#bank-table').DataTable();
-
       $('#bank [data-option]').on('click tap', function(){
         var searchValue = $(this).attr("data-option");
         bankTable.column([3]).search(searchValue).draw();
@@ -387,14 +490,11 @@ $(document).ready(function(){
         }
         bankTable.column([3]).search(searchValue, true).draw();
       });
-
-      // refresh by navbar click
-
+      // step 3-4: enable table refresh by navbar click
       $('#bank [data-click]').on('click tap', function(){
         $(this).button('loading');
         $(this).parents('.tab-pane').children('.subset').removeClass('active');
         $(this).parents('.tab-pane').children('.loading').show();
-
         var action = $(this).attr('data-click');
         if(action == 'refreshbank'){
           get_render_bank();
@@ -406,8 +506,9 @@ $(document).ready(function(){
   // custimozed behavior for different data sources
 
   var get_render_account = function(){
-    $('#account-status').show();
     get_data('/account', access_token).done(function(account_data){
+      $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+      $('#account .status').show();
       render_account(account_data);
     });
   }
@@ -415,6 +516,12 @@ $(document).ready(function(){
   var get_render_achievements = function(){
     get_data('/account/achievements', access_token).done(function(achievements_data){
       render_achievements(achievements_data);
+    });
+  }
+
+  var get_render_wallet = function(){
+    get_data('/account/wallet', access_token).done(function(wallet_data){
+      render_wallet(wallet_data);
     });
   }
 
