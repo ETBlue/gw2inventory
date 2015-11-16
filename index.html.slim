@@ -117,6 +117,7 @@ html lang='en'
           section.text-center
             p#account-status.status Loading account...
             p#achievements-status.status Loading achievements...
+            p#characters-status.status Loading characters...
             p#wallet-status.status Loading wallet...
             p#bank-status.status Loading bank...
 
@@ -165,8 +166,35 @@ html lang='en'
                   .timer-loader.loading
 
       section.tab-pane#characters
-        .container
-          p characters: equipment, inventory, specializations
+        .container.table-responsive
+          table#characters-table.datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Name
+                th Level
+                th Profession
+                th Race
+                th Gender
+                th Crafting
+                th Age
+                th Deaths
+                th Created
+            tfoot
+              tr
+                th Name
+                th Level
+                th Profession
+                th Race
+                th Gender
+                th Crafting
+                th Age
+                th Deaths
+                th Created
+            tbody
+              tr
+                td.text-center colspan='9'
+                  .timer-loader.loading
+
       section.tab-pane#bank
         nav.navbar.collapse-top.medium
           .container.border-bottom

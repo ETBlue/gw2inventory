@@ -71,6 +71,7 @@ $(document).ready(function(){
   }
   // define data rendering functions
 
+
   var render_account = function(account_data){
     $('.accountname').text(account_data.name);
     $('.accountid').text(account_data.id);
@@ -78,9 +79,73 @@ $(document).ready(function(){
     // render world in advance
     get_data('/worlds?ids='+account_data.world).done(function(world_data){
       $('.worldname').text(world_data[0].name);
+      $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
       get_render_achievements();
       get_render_wallet();
       get_render_bank();
+      get_render_characters();
+    });
+  }
+
+  var render_characters = function(characters_data){
+
+    var dataSet=[];
+    var deferred = $.Deferred();
+
+      $.each(characters_data, function(character_index, character){
+        var character_name = character.name || '';
+        var character_race = character.race || '';
+        var character_gender = character.gender || '';
+        var character_profession = character.profession || '';
+        var character_level = character.level || '';
+        var character_created = character.created || '';
+        var character_age = character.age || '';
+        var character_deaths = character.deaths || '';
+        var character_crafting_list = [];
+        $.each(character.crafting, function(index, value){
+          character_crafting_list.push(value.discipline + ' ' + value.rating);
+        });
+        var character_crafting = character_crafting_list.join(' <br/>') || '';
+
+        //var character_guild = dataRef_guild[character.id].guild || '';
+        //var character_specializations = dataRef_specializations[character.id].specializations || '';
+        //var character_equipment = dataRef_equipment[character.id].equipment || '';
+        //var character_bags = dataRef_bags[character.id].bags || '';
+
+        var row = [character_name, character_level, character_profession, character_race, character_gender, character_crafting, character_age, character_deaths, character_created];
+        dataSet.push(row);
+        if(characters_data.length === dataSet.length){
+          deferred.resolve();
+        }        
+      });
+    deferred.done(function(){
+      $('#characters-table').DataTable( {
+        data: dataSet,
+        //"destroy":true,
+        "pageLength": 50,
+        //"pageing": false,
+        "order": [[ 1, 'dsc' ]],
+        "dom":'',
+        "columnDefs": [
+          {
+            "targets": 0,
+            "render": function ( data, type, row ) {
+              if(data){
+                return '<span class="bold">'+ data + '</span>';
+              }else{
+                return data;
+              }
+            }
+          //},{
+          //  "targets": [3,7,8],
+          //  "visible": false
+          }
+        ],
+        "initComplete": function( settings, json ) {
+          $('#characters .loading').hide();
+          $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+        }
+      });
     });
   }
 
@@ -89,21 +154,6 @@ $(document).ready(function(){
     var idList = get_id_list(achievements_data);
     var deferred_pre = $.Deferred();
     create_data_ref(idList, '/achievements?ids=', deferred_pre);
-    //var dataRef = create_data_ref(idList, '/achievements?ids=', deferred_pre);
-    //console.log(idList);
-
-    //var batch_count = Math.ceil(idList.length / 200);
-    //for(var i = 0; i < batch_count; i++){
-    //  var idListString = idList.slice(i*200,(i+1)*200).join(',');
-    //  get_data('/achievements?ids=' + idListString).done(function(items_data){
-    //    $.each(items_data, function(item_index, item_data){
-    //      dataRef[item_data.id] = item_data;
-    //      if(Object.keys(dataRef).length == idList.length){
-    //        deferred_pre.resolve();
-    //      }
-    //    });
-    //  });
-    //}
 
     // render achievements data
     var dataSet=[];
@@ -316,24 +366,15 @@ $(document).ready(function(){
   var render_bank = function(bank_data){
     // step 1: create a local copy from items api
     var idList = get_id_list(bank_data);
+    var deferred_pre = $.Deferred();
+
     var totalCount = idList.length;
     idList = idList.filter( function( item, index, inputArray ) {
       return inputArray.indexOf(item) == index;
     });
-    var dataRef={};
-    var deferred_pre = $.Deferred();
-    var batch_count = Math.ceil(idList.length / 200);
-    for(var i = 0; i < batch_count; i++){
-      var idListString = idList.slice(i*200,(i+1)*200).join(',');
-      get_data('/items?ids=' + idListString).done(function(items_data){
-        $.each(items_data, function(item_index, item_data){
-          dataRef[item_data.id] = item_data;
-          if(Object.keys(dataRef).length == idList.length){
-            deferred_pre.resolve();
-          }
-        });
-      });
-    }
+
+    create_data_ref(idList, '/items?ids=', deferred_pre);
+
     // step 2: create bank data
     var dataSet=[];
     var deferred = $.Deferred();
@@ -386,7 +427,7 @@ $(document).ready(function(){
         miscCount+=1;
       }
     }
-    deferred_pre.done(function(){
+    deferred_pre.done(function(dataRef){
       $.each(bank_data, function(item_index, item_data){
         if(item_data){
           var item_position = item_index + 1;
@@ -507,7 +548,6 @@ $(document).ready(function(){
 
   var get_render_account = function(){
     get_data('/account', access_token).done(function(account_data){
-      $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
       $('#account .status').show();
       render_account(account_data);
     });
@@ -516,6 +556,12 @@ $(document).ready(function(){
   var get_render_achievements = function(){
     get_data('/account/achievements', access_token).done(function(achievements_data){
       render_achievements(achievements_data);
+    });
+  }
+
+  var get_render_characters = function(){
+    get_data('/characters?page=0&access_token=', account_key).done(function(characters_data){
+      render_characters(characters_data);
     });
   }
 
