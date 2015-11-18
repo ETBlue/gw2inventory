@@ -83,6 +83,15 @@ p {
   vertical-align: middle;
   font-family: "Noto Sans", sans-serif;
 }
+.table > tbody > tr > td .equipment {
+  clear: both;
+}
+@media screen and (max-width: 767px) {
+  .table > tbody > tr > td .equipment {
+    white-space: normal;
+    min-width: 14em;
+  }
+}
 .table > tbody > tr > td .bold.Trash {
   color: #aaa;
 }

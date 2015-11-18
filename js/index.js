@@ -174,7 +174,7 @@ $(document).ready(function(){
                 var specialization = dataRef_specializations[spec_data.id];
                 var specialization_name = specialization.name;
                 var specialization_icon = specialization.icon;
-                output_string += '<img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span><br class="clear" />';
+                output_string += '<div class="equipment"><img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span></div>';
                 if(spec_data.traits){
                   $.each(spec_data.traits, function(trait_index, trait_id){
                     if(trait_id){
@@ -182,7 +182,7 @@ $(document).ready(function(){
                       var trait_name = trait.name;
                       var trait_icon = trait.icon;
                       var trait_description = trait.description;
-                      output_string += '<span class=""><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></span><br class="clear" />';
+                      output_string += '<div class="equipment"><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></div>';
                     }
                   });
                 }
@@ -232,7 +232,7 @@ $(document).ready(function(){
               item_level = ' (' + dataRef[item_data.id].level +')';
             }
             var item_tooltip = JSON.stringify(dataRef[item_data.id].details).replace(/"/g, ' ') || '';
-            item_string += '<img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span><br class="clear" />';
+            item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span></div>';
             if(item_data.upgrades){
               $.each(item_data.upgrades, function(index, upgrade_id){
                 var upgrade_name = dataRef[upgrade_id].name || '';
@@ -243,7 +243,7 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br class="clear" />';
+                item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
               });
             }
             if(item_data.infusions){
@@ -256,13 +256,13 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br class="clear" />';
+                item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
               });
             }
             if(item_data.skin){
               var skin_name = dataRef_skins[item_data.skin].name || '';
               var skin_icon = dataRef_skins[item_data.skin].icon || '';
-              item_string += '<img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span><br class="clear" />';
+              item_string += '<div class="equipment"><img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span></div>';
             }
             return item_string;
           }
@@ -344,7 +344,7 @@ $(document).ready(function(){
               var bag_rarity = dataRef[bag_data.id].rarity || '';
               var bag_size = bag_data.size || '';
               var bag_tooltip = dataRef[bag_data.id].description || '';
-              character_bags += '<img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span><br class="clear" />';
+              character_bags += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span></div>';
             }
           });
         }
