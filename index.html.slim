@@ -40,10 +40,9 @@ html lang='en'
     // custom
     link rel="stylesheet" href="css/global.css"
 
-    title Guild Wars 2 Account Explorer
+    title Guild Wars 2 Inventory
     meta 
     meta property="og:image" content="https://shizzyness.files.wordpress.com/2014/04/gw2.jpg"
-
 
   body
     header#about
@@ -51,8 +50,8 @@ html lang='en'
         .container
           .panel-body.text-center
             p
-              | Guild Wars 2 Account Explorer is built for players pursuing ultimate cross character management. Designed by ETBlue.1963. Source code available on 
-              a.inline-block target='_blank' href='https://github.com/ETBlue/gw2-account-explorer' GitHub
+              | Guild Wars 2 Inventory is built for players pursuing ultimate cross character assets management. Designed by ETBlue.1963. Source code available on 
+              a.inline-block target='_blank' href='https://github.com/ETBlue/gw2inventory' GitHub
               | .
     nav.navbar.navbar-default.navbar-static-top#tabs.large
       .container
@@ -70,11 +69,11 @@ html lang='en'
             li
               a data-toggle='tab' href='#characters' Characters
             li
-              a data-toggle='tab' href='#wallet' Wallet
+              a data-toggle='tab' href='#bank' Assets
             li
               a data-toggle='tab' href='#wardrobe' Wardrobe
             li
-              a data-toggle='tab' href='#bank' Assets
+              a data-toggle='tab' href='#wallet' Wallet
             //li
             //  a data-toggle='tab' href='#crafting' Crafting
             //li
@@ -99,7 +98,7 @@ html lang='en'
           header.text-center
             h1
               span.accountname.inline-block
-              |  at 
+              |  in 
               span.worldname.inline-block
             p.inline-block
               span.label.label-default Accound ID
@@ -114,9 +113,9 @@ html lang='en'
           section.text-center
             p#account-status.status Loading account...
             p#characters-status.status Loading characters...
-            p#wallet-status.status Loading wallet...
-            //p#bank-status.status Loading wardrobe...
             p#bank-status.status Loading assets...
+            //p#bank-status.status Loading wardrobe...
+            p#wallet-status.status Loading wallet...
             //p#achievements-status.status Loading achievements...
 
 
