@@ -79,7 +79,6 @@ p {
 }
 
 .table > tbody > tr > td {
-  padding: 1em;
   line-height: 1em;
   vertical-align: middle;
   font-family: "Noto Sans", sans-serif;
@@ -133,8 +132,16 @@ p {
   display: block;
 }
 
+img.icon {
+  margin-right: 0.25em;
+  float: left;
+}
+img.icon.spec {
+  margin-left: -0.25em;
+  float: none;
+}
 img.icon.solo {
-  margin: -1em;
+  margin: -8px;
 }
 img.icon.large {
   height: 3em;
@@ -176,9 +183,14 @@ img.icon.item.Legendary {
 .inline-block {
   display: inline-block;
 }
-.inline-block.text {
+
+.text {
   margin-right: 0.25em;
   margin-left: 0.25em;
+}
+
+.clear {
+  clear: both;
 }
 
 #about, .status {

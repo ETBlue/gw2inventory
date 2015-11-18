@@ -158,7 +158,7 @@ $(document).ready(function(){
         $.each(character.crafting, function(index, value){
           character_crafting_list.push(value.rating +'|'+ value.discipline);
         });
-        var character_crafting = character_crafting_list.join(' <br/>') || '';
+        var character_crafting = character_crafting_list.join(' <br />') || '';
         var character_guild = '';
         if(character.guild){
           var guild_data = dataRef_guilds[character.guild];
@@ -174,7 +174,7 @@ $(document).ready(function(){
                 var specialization = dataRef_specializations[spec_data.id];
                 var specialization_name = specialization.name;
                 var specialization_icon = specialization.icon;
-                output_string += '<img class="medium icon" src="'+specialization_icon+'"><span class="inline-block">' + specialization_name + '</span><br />';
+                output_string += '<img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span><br class="clear" />';
                 if(spec_data.traits){
                   $.each(spec_data.traits, function(trait_index, trait_id){
                     if(trait_id){
@@ -182,7 +182,7 @@ $(document).ready(function(){
                       var trait_name = trait.name;
                       var trait_icon = trait.icon;
                       var trait_description = trait.description;
-                      output_string += '<span class="inline-block text"><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="inline-block text">' + trait_name + '</span></span><br />';
+                      output_string += '<span class=""><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></span><br class="clear" />';
                     }
                   });
                 }
@@ -232,7 +232,7 @@ $(document).ready(function(){
               item_level = ' (' + dataRef[item_data.id].level +')';
             }
             var item_tooltip = JSON.stringify(dataRef[item_data.id].details).replace(/"/g, ' ') || '';
-            item_string += '<img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="inline-block text bold '+item_rarity+'">'+item_name +item_level+ '</span><br />';
+            item_string += '<img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span><br class="clear" />';
             if(item_data.upgrades){
               $.each(item_data.upgrades, function(index, upgrade_id){
                 var upgrade_name = dataRef[upgrade_id].name || '';
@@ -243,7 +243,7 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="inline-block text bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br />';
+                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br class="clear" />';
               });
             }
             if(item_data.infusions){
@@ -256,13 +256,13 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="inline-block text bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br />';
+                item_string += '<img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span><br class="clear" />';
               });
             }
             if(item_data.skin){
               var skin_name = dataRef_skins[item_data.skin].name || '';
               var skin_icon = dataRef_skins[item_data.skin].icon || '';
-              item_string += '<img class="icon small item" src="'+skin_icon+'" /><span class="inline-block text">Skin: '+skin_name +'</span><br />';
+              item_string += '<img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span><br class="clear" />';
             }
             return item_string;
           }
@@ -344,7 +344,7 @@ $(document).ready(function(){
               var bag_rarity = dataRef[bag_data.id].rarity || '';
               var bag_size = bag_data.size || '';
               var bag_tooltip = dataRef[bag_data.id].description || '';
-              character_bags += '<img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="inline-block text bold '+bag_rarity+'">'+bag_name+ '</span><br />';
+              character_bags += '<img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span><br class="clear" />';
             }
           });
         }
@@ -701,11 +701,11 @@ $(document).ready(function(){
         if(item_data){
           var item_position;
           if(item_index + 1 < 10){
-            item_position = 'bank|00'+(item_index + 1);
+            item_position = 'Bank|00'+(item_index + 1);
           }else if(item_index + 1 < 100){
-            item_position = 'bank|0'+(item_index + 1);
+            item_position = 'Bank|0'+(item_index + 1);
           }else{
-            item_position = 'bank|'+(item_index + 1);
+            item_position = 'Bank|'+(item_index + 1);
           }
           var item_icon = dataRef[item_data.id].icon || "";
           var item_name = dataRef[item_data.id].name || "";
@@ -910,8 +910,6 @@ $(document).ready(function(){
   var traits_id_list = [214,221,222,223,224,226,227,229,232,238,253,257,263,264,265,266,268,275,277,278,279,280,281,282,287,289,294,296,318,319,320,325,328,334,335,340,348,349,350,351,358,360,361,362,363,364,394,396,413,429,432,433,445,468,469,470,472,473,482,487,505,507,508,509,510,512,514,515,516,517,518,519,520,521,523,525,526,531,532,536,549,551,553,554,557,558,559,562,563,564,565,566,567,568,571,572,574,577,578,579,580,581,582,583,584,585,586,587,588,589,594,603,604,610,612,617,620,621,622,624,625,628,633,634,635,637,646,648,649,653,654,666,667,668,669,670,671,673,674,675,677,680,681,682,685,686,687,691,692,693,694,700,701,704,705,706,707,708,710,712,713,721,722,723,729,731,733,734,738,740,744,751,752,753,756,757,778,780,782,783,788,789,792,799,801,802,803,810,812,813,815,816,820,829,839,842,853,855,856,857,858,860,861,874,875,887,888,889,891,892,893,894,898,899,903,905,909,913,914,915,916,917,919,964,965,968,970,974,975,978,986,996,1000,1001,1009,1010,1011,1014,1015,1016,1021,1038,1047,1054,1055,1056,1059,1060,1062,1064,1065,1066,1067,1068,1069,1070,1072,1075,1080,1083,1086,1089,1090,1094,1096,1098,1099,1100,1101,1112,1130,1134,1135,1136,1137,1157,1158,1159,1160,1162,1163,1164,1167,1169,1170,1187,1190,1192,1209,1210,1215,1232,1234,1237,1238,1240,1241,1242,1245,1252,1257,1267,1268,1269,1272,1276,1277,1279,1280,1281,1282,1284,1286,1289,1290,1291,1292,1293,1294,1295,1297,1299,1300,1315,1316,1317,1329,1333,1334,1336,1337,1338,1342,1343,1344,1346,1348,1350,1367,1368,1369,1372,1375,1376,1379,1380,1381,1413,1415,1416,1417,1437,1440,1444,1446,1447,1448,1449,1451,1453,1454,1455,1469,1470,1471,1474,1479,1480,1481,1482,1484,1485,1486,1487,1488,1489,1502,1503,1507,1508,1510,1511,1541,1556,1606,1649,1657,1667,1672,1673,1674,1675,1676,1678,1679,1680,1682,1683,1684,1685,1686,1687,1688,1690,1692,1693,1694,1696,1697,1698,1699,1700,1701,1702,1703,1704,1705,1706,1707,1708,1709,1711,1713,1714,1715,1716,1719,1720,1721,1724,1726,1727,1728,1730,1732,1737,1738,1740,1741,1743,1744,1746,1749,1754,1755,1757,1758,1760,1761,1765,1766,1767,1769,1770,1772,1774,1776,1777,1778,1779,1781,1782,1783,1784,1786,1788,1789,1790,1791,1792,1793,1795,1799,1800,1801,1802,1803,1806,1808,1810,1811,1813,1814,1815,1816,1817,1818,1819,1820,1821,1822,1823,1824,1825,1826,1829,1831,1832,1833,1834,1835,1837,1838,1839,1844,1846,1848,1849,1852,1854,1856,1859,1860,1861,1862,1863,1865,1866,1867,1868,1869,1871,1872,1874,1876,1877,1878,1879,1882,1883,1884,1886,1887,1888,1889,1890,1891,1892,1893,1896,1898,1899,1900,1901,1902,1904,1905,1908,1910,1911,1912,1913,1914,1915,1916,1917,1919,1922,1923,1925,1926,1927,1928,1929,1930,1931,1932,1933,1935,1936,1938,1940,1941,1942,1943,1944,1945,1946,1947,1948,1949,1950,1951,1952,1954,1955,1957,1959,1960,1962,1963,1964,1965,1969,1971,1974,1975,1977,1978,1979,1980,1981,1983,1984,1985,1986,1987,1988,1992,1993,1994,1995,1997,1999,2000,2001,2002,2004,2005,2006,2008,2009,2011,2013,2014,2015,2016,2017,2018,2020,2021,2022,2023,2025,2026,2028,2030,2031,2032,2033,2035,2036,2037,2038,2039,2042,2043,2046,2047,2049,2050,2052,2053,2055,2056,2057,2058];
   var deferred_traits = $.Deferred();
   create_data_ref(traits_id_list, '/traits?ids=', deferred_traits);
-
-  // global data ref
 
   // get account info
   var account_key = '';
