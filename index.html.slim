@@ -51,7 +51,7 @@ html lang='en'
           .panel-body.text-center
             p
               | Guild Wars 2 Inventory is built for players pursuing ultimate cross character assets management. Designed by ETBlue.1963. Source code available on 
-              a.inline-block target='_blank' href='https://github.com/ETBlue/gw2inventory' GitHub
+              a.inline-block.text target='_blank' href='https://github.com/ETBlue/gw2inventory' GitHub
               | .
     nav.navbar.navbar-default.navbar-static-top#tabs.large
       .container
@@ -91,21 +91,21 @@ html lang='en'
             input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
           .alert.alert-info.text-center
             | Don't have an API key? Get one for your account on Anet's official website! 
-            a.inline-block href='https://account.arena.net/applications' target='_blank'
+            a.inline-block.text href='https://account.arena.net/applications' target='_blank'
               span.glyphicon.glyphicon-arrow-right
               | Arena.net API Key Management
         .container
           header.text-center
             h1
-              span.accountname.inline-block
+              span.accountname.inline-block.text
               |  in 
-              span.worldname.inline-block
-            p.inline-block
+              span.worldname.inline-block.text
+            p.inline-block.text
               span.label.label-default Accound ID
               |  
               span.accountid
               |  
-            p.inline-block
+            p.inline-block.text
               span.label.label-default Created
               |  
               span.accountcreated
@@ -145,11 +145,11 @@ html lang='en'
               ul.nav.navbar-nav
                 li.active
                   a href='#' data-subset='info'
-                    | Basic Info
+                    | Info
                     span.sr-only (current)
                 li
                   a href='#' data-subset='specializations'
-                    | Specializations 
+                    | Specs 
                     / crafting, pve, pvp, wvw, masteries
                 li
                   a href='#' data-subset='armor'
@@ -166,6 +166,44 @@ html lang='en'
               ul.nav.navbar-nav.navbar-right
                 li
                   a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshcharacters' Refresh
+        nav.navbar.collapse-top.small
+          .container
+            .navbar-header
+              .navbar-brand Profession
+              button.navbar-toggle.collapsed aria-expanded="false" data-target="#profession-menu-collapse" data-toggle="collapse" type="button" 
+                span.glyphicon.glyphicon-option-horizontal
+                span.sr-only Toggle navigation
+            ul.nav.navbar-nav#profession-menu-collapse.collapse.navbar-collapse
+              li
+                a href='#' data-option=''
+                  | All 
+              li
+                a href='#' data-option='Elementalist'
+                  | Ele 
+              li
+                a href='#' data-option='Mesmer'
+                  | Mes 
+              li
+                a href='#' data-option='Necromancer'
+                  | Necro 
+              li
+                a href='#' data-option='Warrior'
+                  | Warrior 
+              li
+                a href='#' data-option='Guardian'
+                  | Guard 
+              li
+                a href='#' data-option='Revenant'
+                  | Rev 
+              li
+                a href='#' data-option='Ranger'
+                  | Ranger 
+              li
+                a href='#' data-option='Thief'
+                  | Thief 
+              li
+                a href='#' data-option='Engineer'
+                  | Engi 
         .container.table-responsive
           table#characters-table.datatable.table.table-striped width='100%'
             thead
@@ -175,13 +213,13 @@ html lang='en'
                 th data-toggle='info' Level
                 th data-toggle='info' Profession
                 th data-toggle='info' Race
-                th data-toggle='info' Gender
+                th Gender
                 th data-toggle='info' Age
                 th data-toggle='info' Deaths
                 th data-toggle='info' Created
                 th data-toggle='info' Guild
+                th data-toggle='info' Crafting
                 // Specialization
-                th data-toggle='specializations' Crafting
                 th data-toggle='specializations' PvE
                 th data-toggle='specializations' PvP
                 th data-toggle='specializations' WvW

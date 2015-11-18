@@ -111,8 +111,14 @@ p
     display: block
 
 img.icon
-  height: 3em
-  margin: -1em
+  &.solo
+    margin: -1em
+  &.large
+    height: 3em
+  &.medium
+    height: 2em
+  &.small
+    height: 1.5em
   &.item
     border-right: 0.5em #fff solid
     &.Trash
@@ -134,8 +140,9 @@ img.icon
 
 .inline-block
   display: inline-block
-  margin-right: 0.25em
-  margin-left: 0.25em
+  &.text
+    margin-right: 0.25em
+    margin-left: 0.25em
 
 #about, .status
   display: none

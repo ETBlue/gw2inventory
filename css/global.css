@@ -133,9 +133,17 @@ p {
   display: block;
 }
 
-img.icon {
-  height: 3em;
+img.icon.solo {
   margin: -1em;
+}
+img.icon.large {
+  height: 3em;
+}
+img.icon.medium {
+  height: 2em;
+}
+img.icon.small {
+  height: 1.5em;
 }
 img.icon.item {
   border-right: 0.5em #fff solid;
@@ -167,6 +175,8 @@ img.icon.item.Legendary {
 
 .inline-block {
   display: inline-block;
+}
+.inline-block.text {
   margin-right: 0.25em;
   margin-left: 0.25em;
 }
