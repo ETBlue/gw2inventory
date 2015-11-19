@@ -1,16 +1,10 @@
 html lang='en'
   head
     meta charset="utf-8"
-
     // for unforgivable ie
     meta http-equiv="X-UA-Compatible" content="IE=edge"
-
     // for mobile, responsive
     meta name="viewport" content="width=device-width, initial-scale=1"
-
-    // Favicon
-    link rel="icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
-    link rel="shortcut icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
 
     // For iOS  TODO
     //meta name="apple-mobile-web-app-capable" content="yes"
@@ -19,29 +13,37 @@ html lang='en'
     //link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
     //link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
 
+    // css
     // vendors
-
     // bootstrap
     /! Latest compiled and minified CSS
     link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" rel="stylesheet" /
     /! Optional theme
     /link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" rel="stylesheet" /
-
     // datatable
     link rel='stylesheet' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'
-
     // css spinner
     link rel='stylesheet' href='http://css-spinners.com/css/spinner/timer.css'
-
     // web fonts
     link href='https://fonts.googleapis.com/css?family=Rosario:400,700' rel='stylesheet' type='text/css'
     link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'
-
     // custom
     link rel="stylesheet" href="css/global.css"
 
+    // js
+    // vendors
+    script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+    script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" 
+    script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"
+    script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"
+    //script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars.min.js"
+    // custom
+    script src="js/index.js"
+
+    // meta data
     title Guild Wars 2 Inventory
-    meta 
+    link rel="icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
+    link rel="shortcut icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
     meta property="og:image" content="http://etblue.github.io/gw2inventory/img/screenshot-inventory.png"
 
   body
@@ -498,13 +500,4 @@ html lang='en'
     //    h2 
     //      = "#{bank_item["name"]} X #{bank_item["count"]}"
     //    img src="#{bank_item["icon"]}"
-
-    // vendors
-    script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
-    script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars.min.js"
-    script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" 
-    script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"
-    script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"
-    // custom
-    script src="js/index.js"
 
