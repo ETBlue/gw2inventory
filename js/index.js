@@ -22,6 +22,10 @@ $(document).ready(function(){
     return $.get('https://api.guildwars2.com/v2'+endpoint+key+'&lang=en');
   }
 
+  var get_data_id = function(endpoint){
+    return $.get('https://api.guildwars2.com/v2'+endpoint);
+  }
+
   var get_id_list = function(data){
     var id_list = [];
     $.each(data, function(index, value){
@@ -414,120 +418,12 @@ $(document).ready(function(){
     });
   }
 
-  var render_achievements = function(achievements_data){
-    // create a local copy from achievements api
-    var idList = get_id_list(achievements_data);
-    var deferred_pre = $.Deferred();
-    create_data_ref(idList, '/achievements?ids=', deferred_pre);
-
-    // render achievements data
-    var dataSet=[];
-    var deferred = $.Deferred();
-    deferred_pre.done(function(dataRef){
-      $.each(achievements_data, function(achievement_index, achievement){
-        var achievement_icon = dataRef[achievement.id].icon || '';
-        var achievement_name = dataRef[achievement.id].name || '';
-        var achievement_current = achievement.current || '';
-        var achievement_max = achievement.max || '';
-        var achievement_done = achievement.done || '';
-        var achievement_description = dataRef[achievement.id].description || '';
-        var achievement_requirement = dataRef[achievement.id].requirement || '';
-        var achievement_type = dataRef[achievement.id].type || '';
-        var achievement_flags = dataRef[achievement.id].flags || '';
-        var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
-        dataSet.push(row);
-        if(achievements_data.length === dataSet.length){
-          deferred.resolve();
-        }        
-      });
-    });
-    deferred.done(function(){
-      $('#achievements-table').DataTable( {
-        data: dataSet,
-        //"destroy":true,
-        "pageLength": 50,
-        //"pageing": false,
-        "order": [[ 4, 'dsc' ]],
-        //"dom":'',
-        "columnDefs": [
-          {
-            "targets": 0,
-            "render": function ( data, type, row ) {
-              if(data){
-                return "<img class='large solo icon' src='" + data + "' />";
-              }else{
-                return data;
-              }
-            }
-          },{
-            "targets": 1,
-            "render": function ( data, type, row ) {
-              if(data){
-                return '<span class="bold">'+ data + '</span>';
-              }else{
-                return data;
-              }
-            }
-          },{
-            "targets": 2,
-            "render": function ( data, type, row ) {
-              if(row[3]){
-                var max;
-                if(row[3] == -1){
-                  max = '∞';
-                }else{
-                  max = row[3];
-                }
-                return data + "/" + max;
-              }else{
-                return data;
-              }
-            }
-          },{
-            "targets": 4,
-            "render": function ( data, type, row ) {
-              if(data){
-                return '<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>';
-              }else{
-                return data;
-              }
-            }
-          },{
-            "targets": 8,
-            "render": function ( data, type, row ) {
-              if(data){
-                var str = '';
-                $.each(data, function(index, value){
-                  str += '<span class="label label-default">' + value + '</span> '
-                });
-                return str;
-              }else{
-                return data;
-              }
-            }
-          },{
-            "targets": [3,7,8],
-            "visible": false
-          }
-        ],
-        "initComplete": function( settings, json ) {
-          $('#achievements .loading').hide();
-          $('#achievements-status').html('Achievements loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-        }
-      });
-    });
-  }
-
   var render_wallet = function(wallet_data){
-    // create a local copy from currencies api
-    var idList = get_id_list(wallet_data);
-    var deferred_pre = $.Deferred();
-    create_data_ref(idList, '/currencies?ids=', deferred_pre);
 
     // render wallet data
     var dataSet=[];
     var deferred = $.Deferred();
-    deferred_pre.done(function(dataRef){
+    deferred_currencies.done(function(dataRef){
       $.each(wallet_data, function(wallet_item_index, concurrency){
         var concurrency_icon = dataRef[concurrency.id].icon || '';
         var concurrency_name = dataRef[concurrency.id].name || '';
@@ -586,54 +482,158 @@ $(document).ready(function(){
     });
   }
 
+  //var render_achievements = function(achievements_data){
+  //  // create a local copy from achievements api
+  //  var idList = get_id_list(achievements_data);
+  //  var deferred_pre = $.Deferred();
+  //  create_data_ref(idList, '/achievements?ids=', deferred_pre);
+
+ // //  // render achievements data
+  //  var dataSet=[];
+  //  var deferred = $.Deferred();
+  //  deferred_pre.done(function(dataRef){
+  //    $.each(achievements_data, function(achievement_index, achievement){
+  //      var achievement_icon = dataRef[achievement.id].icon || '';
+  //      var achievement_name = dataRef[achievement.id].name || '';
+  //      var achievement_current = achievement.current || '';
+  //      var achievement_max = achievement.max || '';
+  //      var achievement_done = achievement.done || '';
+  //      var achievement_description = dataRef[achievement.id].description || '';
+  //      var achievement_requirement = dataRef[achievement.id].requirement || '';
+  //      var achievement_type = dataRef[achievement.id].type || '';
+  //      var achievement_flags = dataRef[achievement.id].flags || '';
+  //      var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
+  //      dataSet.push(row);
+  //      if(achievements_data.length === dataSet.length){
+  //        deferred.resolve();
+  //      }        
+  //    });
+  //  });
+  //  deferred.done(function(){
+  //    $('#achievements-table').DataTable( {
+  //      data: dataSet,
+  //      //"destroy":true,
+  //      "pageLength": 50,
+  //      //"pageing": false,
+  //      "order": [[ 4, 'dsc' ]],
+  //      //"dom":'',
+  //      "columnDefs": [
+  //        {
+  //          "targets": 0,
+  //          "render": function ( data, type, row ) {
+  //            if(data){
+  //              return "<img class='large solo icon' src='" + data + "' />";
+  //            }else{
+  //              return data;
+  //            }
+  //          }
+  //        },{
+  //          "targets": 1,
+  //          "render": function ( data, type, row ) {
+  //            if(data){
+  //              return '<span class="bold">'+ data + '</span>';
+  //            }else{
+  //              return data;
+  //            }
+  //          }
+  //        },{
+  //          "targets": 2,
+  //          "render": function ( data, type, row ) {
+  //            if(row[3]){
+  //              var max;
+  //              if(row[3] == -1){
+  //                max = '∞';
+  //              }else{
+  //                max = row[3];
+  //              }
+  //              return data + "/" + max;
+  //            }else{
+  //              return data;
+  //            }
+  //          }
+  //        },{
+  //          "targets": 4,
+  //          "render": function ( data, type, row ) {
+  //            if(data){
+  //              return '<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>';
+  //            }else{
+  //              return data;
+  //            }
+  //          }
+  //        },{
+  //          "targets": 8,
+  //          "render": function ( data, type, row ) {
+  //            if(data){
+  //              var str = '';
+  //              $.each(data, function(index, value){
+  //                str += '<span class="label label-default">' + value + '</span> '
+  //              });
+  //              return str;
+  //            }else{
+  //              return data;
+  //            }
+  //          }
+  //        },{
+  //          "targets": [3,7,8],
+  //          "visible": false
+  //        }
+  //      ],
+  //      "initComplete": function( settings, json ) {
+  //        $('#achievements .loading').hide();
+  //        $('#achievements-status').html('Achievements loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+  //      }
+  //    });
+  //  });
+  //}
+
   // discard
-  var render_guilds = function(guilds_data){
-    var idList=[];
-    var dataSet=[];
-    var deferred = $.Deferred();
-    var totalCount=0;
-    $.each(guilds_data, function(index, guild_id){
-      totalCount++;
-      get_guild(guild_id).done(function(guild){
-        var guild_emblem = guild.emblem || '';
-        var guild_foreground = guild_emblem.foreground_id || '';
-        var guild_background = guild_emblem.background_id || '';
-        var guild_name = guild.guild_name || '';
-        var guild_tag = guild.tag || '';
-        var row = [guild_foreground, guild_background, guild_name, guild_tag];
-        dataSet.push(row);
-        if(totalCount === dataSet.length){
-          deferred.resolve();
-        }
-      });
-    });
-    deferred.done(function(){
-      $('#guilds-table').DataTable( {
-        data: dataSet,
-        "destroy":true,
-        //"pageLength": -1,
-        //"pageing": false,
-        "orderFixed": [[ 2, 'asc' ]],
-        "dom":'',
-        "columnDefs": [
-          {
-            "targets": 0,
-            "visible": false
-            //"render": function ( data, type, row ) {
-            //  return "<img class='icon' src='" + data + "' />";
-            //}
-          },{
-            "targets": [ 1 ],
-            "visible": false
-          }
-        ],
-        "initComplete": function( settings, json ) {
-          $('#guilds .loading').hide();
-          //console.log("guilds done");
-        }
-      });
-    });
-  }
+  //var render_guilds = function(guilds_data){
+  //  var idList=[];
+  //  var dataSet=[];
+  //  var deferred = $.Deferred();
+  //  var totalCount=0;
+  //  $.each(guilds_data, function(index, guild_id){
+  //    totalCount++;
+  //    get_guild(guild_id).done(function(guild){
+  //      var guild_emblem = guild.emblem || '';
+  //      var guild_foreground = guild_emblem.foreground_id || '';
+  //      var guild_background = guild_emblem.background_id || '';
+  //      var guild_name = guild.guild_name || '';
+  //      var guild_tag = guild.tag || '';
+  //      var row = [guild_foreground, guild_background, guild_name, guild_tag];
+  //      dataSet.push(row);
+  //      if(totalCount === dataSet.length){
+  //        deferred.resolve();
+  //      }
+  //    });
+  //  });
+  //  deferred.done(function(){
+  //    $('#guilds-table').DataTable( {
+  //      data: dataSet,
+  //      "destroy":true,
+  //      //"pageLength": -1,
+  //      //"pageing": false,
+  //      "orderFixed": [[ 2, 'asc' ]],
+  //      "dom":'',
+  //      "columnDefs": [
+  //        {
+  //          "targets": 0,
+  //          "visible": false
+  //          //"render": function ( data, type, row ) {
+  //          //  return "<img class='icon' src='" + data + "' />";
+  //          //}
+  //        },{
+  //          "targets": [ 1 ],
+  //          "visible": false
+  //        }
+  //      ],
+  //      "initComplete": function( settings, json ) {
+  //        $('#guilds .loading').hide();
+  //        //console.log("guilds done");
+  //      }
+  //    });
+  //  });
+  //}
 
   var render_bank = function(bank_data){
 
@@ -843,9 +843,7 @@ $(document).ready(function(){
   // custimozed behavior for different data sources
 
   var get_render_account = function(){
-    var deferred_guilds = $.Deferred(); // for characters tab
-    var deferred_skins = $.Deferred(); // for characters and wardrobe tab
-    var deferred_minis = $.Deferred(); // for wardrobe tab
+    //var deferred_minis = $.Deferred(); // for wardrobe tab
     get_data('/account', access_token).done(function(account_data){
       $('#account .status').show();
       render_account(account_data);
@@ -856,35 +854,27 @@ $(document).ready(function(){
       create_data_ref(skins_id_list, '/skins?ids=', deferred_skins);
     });
 
-    get_data('/account/minis', access_token).done(function(minis_id_list){
-      create_data_ref(minis_id_list, '/minis?ids=', deferred_minis);
-    });
+    //get_data('/account/minis', access_token).done(function(minis_id_list){
+    //  create_data_ref(minis_id_list, '/minis?ids=', deferred_minis);
+    //});
 
-    deferred_guilds.done(function(dataRef_guilds){
-      deferred_skins.done(function(dataRef_skins){
-        deferred_specializations.done(function(dataRef_specializations){
-          deferred_traits.done(function(dataRef_traits){
-            get_render_characters(dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
+    //deferred_minis.done(function(dataRef_minis){
+    //  //get_render_characters(dataRef_minis);
+    //});
+
+  }
+
+  var get_render_characters = function(){
+    get_data('/characters?page=0&access_token=', account_key).done(function(characters_data){
+      deferred_guilds.done(function(dataRef_guilds){
+        deferred_skins.done(function(dataRef_skins){
+          deferred_specializations.done(function(dataRef_specializations){
+            deferred_traits.done(function(dataRef_traits){
+              render_characters(characters_data, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
+            });
           });
         });
       });
-    });
-
-    deferred_minis.done(function(dataRef_minis){
-      //get_render_characters(dataRef_minis);
-    });
-
-  }
-
-  var get_render_achievements = function(){
-    get_data('/account/achievements', access_token).done(function(achievements_data){
-      render_achievements(achievements_data);
-    });
-  }
-
-  var get_render_characters = function(dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits){
-    get_data('/characters?page=0&access_token=', account_key).done(function(characters_data){
-      render_characters(characters_data, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
     });
   }
 
@@ -900,22 +890,40 @@ $(document).ready(function(){
     });
   }
 
+  //var get_render_achievements = function(){
+  //  get_data('/account/achievements', access_token).done(function(achievements_data){
+  //    render_achievements(achievements_data);
+  //  });
+  //}
+
   // and take account info dependent actions
 
   var load_page = function(){
     get_render_account();
+    get_render_characters();
     get_render_bank();
     get_render_wallet();
   }
 
   // get static data as soon as page load
 
-  // TODO: need to update manually if the specializations system is changed
   var deferred_specializations = $.Deferred();
-  create_data_ref('', '/specializations?ids=all', deferred_specializations);
-  // TODO: need to update manually if the traits system is changed
+  get_data_id('/specializations').done(function(specializations_id_list){
+    create_data_ref(specializations_id_list, '/specializations?ids=', deferred_specializations);
+  });
+
   var deferred_traits = $.Deferred();
-  create_data_ref('', '/traits?ids=all', deferred_traits);
+  get_data_id('/traits').done(function(traits_id_list){
+    create_data_ref(traits_id_list, '/traits?ids=', deferred_traits);
+  });
+
+  var deferred_currencies = $.Deferred();
+  get_data_id('/currencies').done(function(currencies_id_list){
+    create_data_ref(currencies_id_list, '/currencies?ids=', deferred_currencies);
+  });
+
+  var deferred_guilds = $.Deferred(); // for characters tab
+  var deferred_skins = $.Deferred(); // for characters and wardrobe tab
 
   // get account info
   var account_key = '';
