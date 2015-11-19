@@ -7,6 +7,9 @@ html, body
   font-family: 'Rosario', "Noto Sans", sans-serif
   line-height: 1em
 
+p
+  line-height: 1.5em
+
 .container
   width: 100%
   max-width: 1200px
@@ -66,10 +69,14 @@ html, body
   font-weight: bold
 
 .table>tbody>tr>td
-  padding: 1em
   line-height: 1em
   vertical-align: middle
-  font-family: "Noto Sans", "Verdana", "Arial", sans-serif
+  font-family: "Noto Sans", sans-serif
+  .table-item
+    clear: both
+    @media screen and (max-width: 767px)
+      white-space: normal
+      min-width: 14em
   .bold
     &.Trash
       color: #aaa
@@ -99,35 +106,55 @@ html, body
   color: rgba(#000,0.3)
   background-color: rgba(#000,0.05)
 
+.table .label
+  line-height: 2.3
+
 .subset
   display: none
   &.active
     display: block
 
 img.icon
-  height: 3em
-  margin: -1em
-  border-right: 0.5em #fff solid
-  &.Trash
-    border-color: #aaa
-  &.Basic
-    border-color: #FFF
-  &.Fine
-    border-color: #62A4DA
-  &.Masterwork
-    border-color: #1a9306
-  &.Rare
-    border-color: #fcd00b
-  &.Exotic
-    border-color: #ffa405
-  &.Ascended
-    border-color: #fb3e8d
-  &.Legendary
-    border-color: #4C139D
+  margin-right: 0.25em
+  float: left
+  &.spec
+    margin-left: -0.25em
+    float: none
+  &.solo
+    margin: -8px
+  &.large
+    height: 3em
+  &.medium
+    height: 2em
+  &.small
+    height: 1.5em
+  &.item
+    border-right: 0.5em #fff solid
+    &.Trash
+      border-color: #aaa
+    &.Basic
+      border-color: #FFF
+    &.Fine
+      border-color: #62A4DA
+    &.Masterwork
+      border-color: #1a9306
+    &.Rare
+      border-color: #fcd00b
+    &.Exotic
+      border-color: #ffa405
+    &.Ascended
+      border-color: #fb3e8d
+    &.Legendary
+      border-color: #4C139D
 
 .inline-block
   display: inline-block
+.text
   margin-right: 0.25em
   margin-left: 0.25em
 
+.clear
+  clear: both
 
+#about, .status
+  display: none

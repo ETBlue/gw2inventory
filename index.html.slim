@@ -9,15 +9,15 @@ html lang='en'
     meta name="viewport" content="width=device-width, initial-scale=1"
 
     // Favicon
-    link rel="icon" href="img/favicon.ico" type="image/x-icon"
-    link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+    link rel="icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
+    link rel="shortcut icon" href="https://wiki.guildwars2.com/favicon.ico" type="image/x-icon"
 
     // For iOS  TODO
-    meta name="apple-mobile-web-app-capable" content="yes"
-    link rel="apple-touch-icon-precomposed" href="img/app-icon/icon-60.png"
-    link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/app-icon/icon-76.png"
-    link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
-    link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
+    //meta name="apple-mobile-web-app-capable" content="yes"
+    //link rel="apple-touch-icon-precomposed" href="img/app-icon/icon-60.png"
+    //link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/app-icon/icon-76.png"
+    //link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/app-icon/icon-60@2x.png"
+    //link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/app-icon/icon-76@2x.png"
 
     // vendors
 
@@ -40,89 +40,242 @@ html lang='en'
     // custom
     link rel="stylesheet" href="css/global.css"
 
-    title Guild Wars 2 Account Explorer
-    meta property="og:image" content=""
-
+    title Guild Wars 2 Inventory
+    meta 
+    meta property="og:image" content="http://etblue.github.io/gw2inventory/img/screenshot-inventory.png"
 
   body
-    /p Cross-character management for your Guild Wars 2 account.
+    header#about
+      .panel.panel-default.no-bottom
+        .container
+          .panel-body.text-center
+            p
+              | Guild Wars 2 Inventory is built for players pursuing ultimate cross character assets management. Designed by ETBlue.1963. Source code available on 
+              a.inline-block.text target='_blank' href='https://github.com/ETBlue/gw2inventory' GitHub
+              | .
     nav.navbar.navbar-default.navbar-static-top#tabs.large
       .container
         /! Brand and toggle get grouped for better mobile display
         .navbar-header
           .accountname.bold.navbar-brand
-          button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" type="button" 
+          button.navbar-toggle.collapsed aria-expanded="false" data-target="#navbar-collapse-level1" data-toggle="collapse" type="button" 
             span.glyphicon.glyphicon-menu-hamburger
             span.sr-only Toggle navigation
         /! Collect the nav links, forms, and other content for toggling
-        #bs-example-navbar-collapse-1.collapse.navbar-collapse
+        #navbar-collapse-level1.collapse.navbar-collapse
           ul.nav.navbar-nav
             li.active
               a data-toggle='tab' href="#account" Account
             li
               a data-toggle='tab' href='#characters' Characters
             li
+              a data-toggle='tab' href='#bank' Inventory
+            //li
+            //  a data-toggle='tab' href='#wardrobe' Wardrobe
+            li
               a data-toggle='tab' href='#wallet' Wallet
-            li
-              a data-toggle='tab' href='#bank' Bank
-            li
-              a data-toggle='tab' href='#crafting' Crafting
-            li
-              a data-toggle='tab' href='#wardrobe' Wardrobe
+            //li
+            //  a data-toggle='tab' href='#crafting' Crafting
+            //li
+            //  a data-toggle='tab' href='#achievements' Achievements
             /li
             /  a data-toggle='tab' href='#trading_post' Trading Post
           ul.nav.navbar-nav.navbar-right
             li
-              a href="#" About
+              a href="#about" data-click='toggleAbout' About
     section.tab-content
-      section.tab-pane#wardrobe
-        .container
-          p Wardrobe: skins, dyes, minis
       section.tab-pane#account.active
         .container
           .input-group
             span.input-group-addon API KEY
             input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
-          .alert.alert-info
-            | Don't have an API key? Get one for your account at Anet's official website! 
-            a href='https://account.arena.net/applications' target='_blank'
+          .alert.alert-info.text-center
+            | Don't have an API key? Get one for your account on Anet's official website! 
+            a.inline-block.text href='https://account.arena.net/applications' target='_blank'
               span.glyphicon.glyphicon-arrow-right
               | Arena.net API Key Management
+        .container
           header.text-center
             h1
-              span.accountname.inline-block
-              |  at 
-              span.worldname.inline-block
-            p.inline-block
+              span.accountname.inline-block.text
+              |  in 
+              span.worldname.inline-block.text
+            p.inline-block.text
               span.label.label-default Accound ID
               |  
               span.accountid
               |  
-            p.inline-block
+            p.inline-block.text
               span.label.label-default Created
               |  
               span.accountcreated
-          p guilds,achievements,
+          hr
+          section.text-center
+            p#account-status.status Loading account...
+            p#characters-status.status Loading characters...
+            p#bank-status.status Loading inventory...
+            //p#bank-status.status Loading wardrobe...
+            p#wallet-status.status Loading wallet...
+            //p#achievements-status.status Loading achievements...
+
+
+        //#guilds.container.table-responsive
+        //  table.datatable.table.table-striped
+        //    thead
+        //      tr
+        //        th Emblem
+        //        th Background
+        //        th Name
+        //        th Tag
+        //    tbody
+        //      tr
+        //        td.text-center colspan='4'
+        //          .timer-loader.loading
+
       section.tab-pane#characters
-        .container
-          p characters: equipment, inventory, specializations
+        nav.navbar.collapse-top.medium
+          .container.border-bottom
+            .navbar-header
+              .navbar-brand
+                | Characters
+              button.navbar-toggle.collapsed aria-expanded="false" data-target="#navbar-collapse-characters" data-toggle="collapse" type="button"
+                span.glyphicon.glyphicon-chevron-down
+                span.sr-only Toggle navigation
+            #navbar-collapse-characters.collapse.navbar-collapse
+              ul.nav.navbar-nav
+                li.active
+                  a href='#' data-subset='info'
+                    | Info
+                    span.sr-only (current)
+                li
+                  a href='#' data-subset='specializations'
+                    | Specs 
+                    / crafting, pve, pvp, wvw, masteries
+                li
+                  a href='#' data-subset='armor'
+                    | Armor 
+                li
+                  a href='#' data-subset='trinkets'
+                    | Trinkets
+                li
+                  a href='#' data-subset='weapons'
+                    | Weapons
+                li
+                  a href='#' data-subset='utilities'
+                    | Utilities
+              ul.nav.navbar-nav.navbar-right
+                li
+                  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshcharacters' Refresh
+        nav.navbar.collapse-top.small
+          .container
+            .navbar-header
+              .navbar-brand Profession
+              button.navbar-toggle.collapsed aria-expanded="false" data-target="#profession-menu-collapse" data-toggle="collapse" type="button" 
+                span.glyphicon.glyphicon-option-horizontal
+                span.sr-only Toggle navigation
+            ul.nav.navbar-nav#profession-menu-collapse.collapse.navbar-collapse
+              li
+                a href='#' data-option=''
+                  | All 
+              li
+                a href='#' data-option='Elementalist'
+                  | Ele 
+              li
+                a href='#' data-option='Mesmer'
+                  | Mes 
+              li
+                a href='#' data-option='Necromancer'
+                  | Necro 
+              li
+                a href='#' data-option='Warrior'
+                  | Warrior 
+              li
+                a href='#' data-option='Guardian'
+                  | Guard 
+              li
+                a href='#' data-option='Revenant'
+                  | Rev 
+              li
+                a href='#' data-option='Ranger'
+                  | Ranger 
+              li
+                a href='#' data-option='Thief'
+                  | Thief 
+              li
+                a href='#' data-option='Engineer'
+                  | Engi 
+        .container.table-responsive
+          table#characters-table.datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Name
+                // Basic Info
+                th data-toggle='info' Level
+                th data-toggle='info' Profession
+                th data-toggle='info' Race
+                th Gender
+                th data-toggle='info' Age
+                th data-toggle='info' Deaths
+                th data-toggle='info' Created
+                th data-toggle='info' Guild
+                th data-toggle='info' Crafting
+                // Specialization
+                th data-toggle='specializations' PvE
+                th data-toggle='specializations' PvP
+                th data-toggle='specializations' WvW
+                // Armor: id, upgrades, infusions, skin
+                th data-toggle='armor' Helm
+                th data-toggle='armor' Shoulders
+                th data-toggle='armor' Gloves
+                th data-toggle='armor' Coat
+                th data-toggle='armor' Leggings
+                th data-toggle='armor' Boots
+                th data-toggle='armor' Backpack
+                th data-toggle='armor' Aquatic Helm
+                // Trinkets
+                th data-toggle='trinkets' Amulet
+                th data-toggle='trinkets' Accessory 1
+                th data-toggle='trinkets' Accessory 2
+                th data-toggle='trinkets' Ring 1
+                th data-toggle='trinkets' Ring 2
+                // Weapon: upgrades, infusions, skin
+                th data-toggle='weapons' A1
+                th data-toggle='weapons' A2
+                th data-toggle='weapons' B1
+                th data-toggle='weapons' B2
+                th data-toggle='weapons' Aquatic A
+                th data-toggle='weapons' Aquatic B
+                // Utilities
+                th data-toggle='utilities' Bags
+                th data-toggle='utilities' Sickle
+                th data-toggle='utilities' Axe
+                th data-toggle='utilities' Pick
+                // Inventory
+                //th Inventory
+            tfoot
+              tr
+            tbody
+              tr
+                td.text-center colspan='36'
+                  .timer-loader.loading
+
       section.tab-pane#bank
         nav.navbar.collapse-top.medium
           .container.border-bottom
             .navbar-header
               .navbar-brand
-                | Bank
-              button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-2" data-toggle="collapse" type="button"
+                | Inventory
+              button.navbar-toggle.collapsed aria-expanded="false" data-target="#navbar-collapse-assets" data-toggle="collapse" type="button"
                 span.glyphicon.glyphicon-chevron-down
                 span.sr-only Toggle navigation
-            #bs-example-navbar-collapse-2.collapse.navbar-collapse
+            #navbar-collapse-assets.collapse.navbar-collapse
               ul.nav.navbar-nav
-                li
+                li.active
                   a href='#' data-subset='all'
                     | All 
                     span.badge.light 0
                     span.sr-only (current)
-                li.active
+                li
                   a href='#' data-subset='equipment'
                     | Equipment 
                     span.badge.light 0
@@ -131,9 +284,13 @@ html lang='en'
                     | Utilities 
                     span.badge.light 0
                 li
-                  a href='#' data-subset='toys'
-                    | Toys and Consumables 
+                  a href='#' data-subset='materials'
+                    | Materials 
                     span.badge.light 0
+                //li
+                //  a href='#' data-subset='toys'
+                //    | Consumables 
+                //    span.badge.light 0
                 li
                   a href='#' data-subset='misc'
                     | Others 
@@ -146,10 +303,10 @@ html lang='en'
             .container
               .navbar-header
                 .navbar-brand Equipment
-                button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-3" data-toggle="collapse" type="button" 
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#equipment-menu-collapse" data-toggle="collapse" type="button" 
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
-              ul.nav.navbar-nav#bs-example-navbar-collapse-3.collapse.navbar-collapse
+              ul.nav.navbar-nav#equipment-menu-collapse.collapse.navbar-collapse
                 li
                   a href='#' data-option='Armor'
                     | Armor 
@@ -160,7 +317,7 @@ html lang='en'
                     span.badge.light 0
                 li
                   a href='#' data-option='Back'
-                    | Back Items 
+                    | Backpack 
                     span.badge.light 0
                 li
                   a href='#' data-option='Trinket'
@@ -174,11 +331,11 @@ html lang='en'
           nav.navbar.collapse-top.small
             .container
               .navbar-header
-                .navbar-brand Utilities
-                button.navbar-toggle.collapsed aria-expanded="false" data-target="#bs-example-navbar-collapse-4" data-toggle="collapse" type="button" 
+                .navbar-brand Bags and Tools
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#utilities-menu-collapse" data-toggle="collapse" type="button" 
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
-              ul.nav.navbar-nav#bs-example-navbar-collapse-4.collapse.navbar-collapse
+              ul.nav.navbar-nav#utilities-menu-collapse.collapse.navbar-collapse
                 li
                   a href='#' data-option='Bag'
                     | Bags 
@@ -191,15 +348,41 @@ html lang='en'
                   a href='#' data-option='Tool'
                     | Salvage Tools 
                     span.badge.light 0
-        section.subset#toys
+        //section.subset#toys
+        //  nav.navbar.collapse-top.small
+        //    .container
+        //      .navbar-header
+        //        .navbar-brand Toys and Consumables
+        //        button.navbar-toggle.collapsed aria-expanded="false" data-target="#toys-menu-collapse" data-toggle="collapse" type="button" 
+        //          span.glyphicon.glyphicon-option-horizontal
+        //          span.sr-only Toggle navigation
+        //      ul.nav.navbar-nav#toys-menu-collapse.collapse.navbar-collapse
+        //        li
+        //          a href='#' data-option='MiniPet'
+        //            | Miniatures 
+        //            span.badge.light 0
+        section.subset#materials
           nav.navbar.collapse-top.small
             .container
               .navbar-header
-                .navbar-brand Toys and Consumables
-                button.navbar-toggle.collapsed aria-expanded="false" data-target="#toys-menu-collapse" data-toggle="collapse" type="button" 
+                .navbar-brand Crafting Materials
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#materials-menu-collapse" data-toggle="collapse" type="button" 
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
-              ul.nav.navbar-nav#toys-menu-collapse.collapse.navbar-collapse
+              ul.nav.navbar-nav#materials-menu-collapse.collapse.navbar-collapse
+                li
+                  a href='#' data-option='CraftingMaterial'
+                    | Crafting Materials 
+                    span.badge.light 0
+        section.subset#misc
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Others
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#misc-menu-collapse" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#misc-menu-collapse.collapse.navbar-collapse
                 li
                   a href='#' data-option='Consumable'
                     | Consumables 
@@ -209,25 +392,8 @@ html lang='en'
                     | Gizmo 
                     span.badge.light 0
                 li
-                  a href='#' data-option='MiniPet'
-                    | Miniatures 
-                    span.badge.light 0
-        section.subset#misc
-          nav.navbar.collapse-top.small
-            .container
-              .navbar-header
-                .navbar-brand Misc
-                button.navbar-toggle.collapsed aria-expanded="false" data-target="#misc-menu-collapse" data-toggle="collapse" type="button" 
-                  span.glyphicon.glyphicon-option-horizontal
-                  span.sr-only Toggle navigation
-              ul.nav.navbar-nav#misc-menu-collapse.collapse.navbar-collapse
-                li
                   a href='#' data-option='Container'
                     | Containers 
-                    span.badge.light 0
-                li
-                  a href='#' data-option='CraftingMaterial'
-                    | Crafting Materials 
                     span.badge.light 0
                 li
                   a href='#' data-option='Trophy'
@@ -238,7 +404,7 @@ html lang='en'
                     | Trait 
                     span.badge.light 0
         .container.table-responsive
-          table.datatable.table.table-striped width='100%'
+          table#bank-table.datatable.table.table-striped width='100%'
             thead
               tr
                 th Icon
@@ -249,6 +415,7 @@ html lang='en'
                 th Rarity
                 th Description
                 th Position
+                th Binding
             tfoot
               tr
                 th Icon
@@ -259,18 +426,72 @@ html lang='en'
                 th Rarity
                 th Description
                 th Position
+                th Binding
             tbody
               tr
-                td.text-center colspan='8'
+                td.text-center colspan='9'
                   .timer-loader.loading
-      section.tab-pane#crafting
-        .container crafting: recipes - character, materials,
+      //section.tab-pane#crafting
+      //  .container crafting: recipes - character, materials,
       section.tab-pane#wallet
-        .container wallet
+        .container.table-responsive
+          table#wallet-table.datatable.table.table-striped width='100%'
+            thead
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Description
+                th Order
+            tfoot
+              tr
+                th Icon
+                th Name
+                th Amount
+                th Description
+                th Order
+            tbody
+              tr
+                td.text-center colspan='5'
+                  .timer-loader.loading
+
+      //section.tab-pane#wardrobe
+      //  .container
+      //    p Wardrobe: skins, dyes, minis
+
+      //section.tab-pane#achievements
+      //  .container.table-responsive
+      //    table#achievements-table.datatable.table.table-striped width='100%'
+      //      thead
+      //        tr
+      //          th Icon
+      //          th Name
+      //          th Progress
+      //          th Max
+      //          th Done
+      //          th Description
+      //          th Requirement
+      //          th Type
+      //          th Flags
+      //      tfoot
+      //        tr
+      //          th Icon
+      //          th Name
+      //          th Progress
+      //          th Max
+      //          th Done
+      //          th Description
+      //          th Requirement
+      //          th Type
+      //          th Flags
+      //      tbody
+      //        tr
+      //          td.text-center colspan='9'
+      //            .timer-loader.loading
+
+
       /section.tab-pane#trading_post
       /  .container trading post
-      section.tab-pane#about
-        .container about
     //- bank().each do |bank_item|
     //  div
     //    = bank_item.inspect

@@ -1,2 +1,5 @@
-# GW2-secretary
-A personal assistant for your Guild Wars 2 account.
+# Guild Wars 2 Inventory
+
+Guild Wars 2 Inventory is built for players pursuing ultimate cross character assets management. Designed by ETBlue.1963.
+
+http://etblue.github.io/gw2inventory  
