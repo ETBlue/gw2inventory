@@ -922,10 +922,15 @@ $(document).ready(function(){
   // get account info
   var account_key = '';
   var access_token = '';
+  var gw2apikey = localStorage.getItem('gw2apikey');
+  if(gw2apikey){
+    $('#api_key').val(gw2apikey);
+  }
   $('#api_key').keypress(function(e){
     if(e.keyCode == 13){
       account_key = $(this).val();
-      access_token = '?access_token=' + account_key
+      localStorage.setItem('gw2apikey', account_key);
+      access_token = '?access_token=' + account_key;
       $('#account-status').show();
       load_page();
     }
