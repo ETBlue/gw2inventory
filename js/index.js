@@ -110,7 +110,6 @@ $(document).ready(function(){
             $.each(bag_inventory, function(item_index, item_data){
               if(item_data){
                 character_inventory_id_list.push(item_data.id);
-                character_inventory_items.push(item_data);
                 if(item_data.infix_upgrade_id){
                   character_inventory_id_list.push(item_data.infix_upgrade_id);
                 }
@@ -120,6 +119,9 @@ $(document).ready(function(){
                 if(item_data.infusions){
                   character_inventory_id_list = $.merge(character_inventory_id_list, item_data.infusions); // []
                 }
+                item_data.position = character.name;
+                //console.log(item_data);
+                character_inventory_items.push(item_data);
               }
             });
           }
@@ -174,7 +176,7 @@ $(document).ready(function(){
                 var specialization = dataRef_specializations[spec_data.id];
                 var specialization_name = specialization.name;
                 var specialization_icon = specialization.icon;
-                output_string += '<div class="equipment"><img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span></div>';
+                output_string += '<div class="table-item"><img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span></div>';
                 if(spec_data.traits){
                   $.each(spec_data.traits, function(trait_index, trait_id){
                     if(trait_id){
@@ -182,7 +184,7 @@ $(document).ready(function(){
                       var trait_name = trait.name;
                       var trait_icon = trait.icon;
                       var trait_description = trait.description;
-                      output_string += '<div class="equipment"><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></div>';
+                      output_string += '<div class="table-item"><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></div>';
                     }
                   });
                 }
@@ -232,7 +234,7 @@ $(document).ready(function(){
               item_level = ' (' + dataRef[item_data.id].level +')';
             }
             var item_tooltip = JSON.stringify(dataRef[item_data.id].details).replace(/"/g, ' ') || '';
-            item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span></div>';
+            item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span></div>';
             if(item_data.upgrades){
               $.each(item_data.upgrades, function(index, upgrade_id){
                 var upgrade_name = dataRef[upgrade_id].name || '';
@@ -243,7 +245,7 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
+                item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
               });
             }
             if(item_data.infusions){
@@ -256,13 +258,13 @@ $(document).ready(function(){
                   upgrade_level = ' (' + dataRef[upgrade_id].level +')';
                 }
                 var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-                item_string += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
+                item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
               });
             }
             if(item_data.skin){
               var skin_name = dataRef_skins[item_data.skin].name || '';
               var skin_icon = dataRef_skins[item_data.skin].icon || '';
-              item_string += '<div class="equipment"><img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span></div>';
+              item_string += '<div class="table-item"><img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span></div>';
             }
             return item_string;
           }
@@ -344,7 +346,7 @@ $(document).ready(function(){
               var bag_rarity = dataRef[bag_data.id].rarity || '';
               var bag_size = bag_data.size || '';
               var bag_tooltip = dataRef[bag_data.id].description || '';
-              character_bags += '<div class="equipment"><img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span></div>';
+              character_bags += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span></div>';
             }
           });
         }
@@ -634,16 +636,22 @@ $(document).ready(function(){
   }
 
   var render_bank = function(bank_data){
-    // step 1: create a local copy from items api
-    var idList = get_id_list(bank_data);
+
     var deferred_pre = $.Deferred();
+    var bank_and_characters_data = [];
+    var totalCount;
 
-    var totalCount = idList.length;
-    idList = idList.filter( function( item, index, inputArray ) {
-      return inputArray.indexOf(item) == index;
+    // step 1: create a local copy from items api
+    deferred_prebank.done(function(character_inventory_id_list, character_inventory_items){
+      var idList = $.merge(get_id_list(bank_data), get_id_list(character_inventory_items));
+      totalCount = idList.length;
+
+      idList = idList.filter( function( item, index, inputArray ) {
+        return inputArray.indexOf(item) == index;
+      });
+      bank_and_characters_data = $.merge(bank_data, character_inventory_items);
+      create_data_ref(idList, '/items?ids=', deferred_pre);
     });
-
-    create_data_ref(idList, '/items?ids=', deferred_pre);
 
     // step 2: create bank data
     var dataSet=[];
@@ -697,10 +705,12 @@ $(document).ready(function(){
       }
     }
     deferred_pre.done(function(dataRef){
-      $.each(bank_data, function(item_index, item_data){
+      $.each(bank_and_characters_data, function(item_index, item_data){
         if(item_data){
           var item_position;
-          if(item_index + 1 < 10){
+          if(item_data.position){
+            item_position = item_data.position;
+          }else if(item_index + 1 < 10){
             item_position = 'Bank|00'+(item_index + 1);
           }else if(item_index + 1 < 100){
             item_position = 'Bank|0'+(item_index + 1);
@@ -760,8 +770,6 @@ $(document).ready(function(){
           }
         }
       });
-
-
     });
     // step 3: datatable
     deferred.done(function(){
@@ -794,7 +802,7 @@ $(document).ready(function(){
         "initComplete": function( settings, json ) {
           //$('#bank [data-toggle="tooltip"]').tooltip();
           $('#bank .loading').hide();
-          $('#bank-status').html('Assets loaded <span class="glyphicon glyphicon-ok text-success"></span>')
+          $('#bank-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>')
           // step 3-3: enable table search by nav bar click
           var bankTable = $('#bank-table').DataTable();
           $('#bank [data-option]').on('click tap', function(){

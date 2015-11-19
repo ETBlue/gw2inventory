@@ -69,9 +69,9 @@ html lang='en'
             li
               a data-toggle='tab' href='#characters' Characters
             li
-              a data-toggle='tab' href='#bank' Assets
-            li
-              a data-toggle='tab' href='#wardrobe' Wardrobe
+              a data-toggle='tab' href='#bank' Inventory
+            //li
+            //  a data-toggle='tab' href='#wardrobe' Wardrobe
             li
               a data-toggle='tab' href='#wallet' Wallet
             //li
@@ -113,7 +113,7 @@ html lang='en'
           section.text-center
             p#account-status.status Loading account...
             p#characters-status.status Loading characters...
-            p#bank-status.status Loading assets...
+            p#bank-status.status Loading inventory...
             //p#bank-status.status Loading wardrobe...
             p#wallet-status.status Loading wallet...
             //p#achievements-status.status Loading achievements...
@@ -264,7 +264,7 @@ html lang='en'
           .container.border-bottom
             .navbar-header
               .navbar-brand
-                | Assets
+                | Inventory
               button.navbar-toggle.collapsed aria-expanded="false" data-target="#navbar-collapse-assets" data-toggle="collapse" type="button"
                 span.glyphicon.glyphicon-chevron-down
                 span.sr-only Toggle navigation
@@ -455,9 +455,9 @@ html lang='en'
                 td.text-center colspan='5'
                   .timer-loader.loading
 
-      section.tab-pane#wardrobe
-        .container
-          p Wardrobe: skins, dyes, minis
+      //section.tab-pane#wardrobe
+      //  .container
+      //    p Wardrobe: skins, dyes, minis
 
       //section.tab-pane#achievements
       //  .container.table-responsive
