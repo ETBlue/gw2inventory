@@ -85,8 +85,6 @@ $(document).ready(function(){
     });
   }
 
-  var deferred_prebank = $.Deferred();
-
   var render_characters = function(characters_data, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits){
     // setup dataRef_character_items
     var character_equipment_id_list = [];
@@ -924,6 +922,9 @@ $(document).ready(function(){
 
   var deferred_guilds = $.Deferred(); // for characters tab
   var deferred_skins = $.Deferred(); // for characters and wardrobe tab
+
+  var deferred_prebank = $.Deferred();
+
 
   // get account info
   var account_key = '';
