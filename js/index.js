@@ -683,7 +683,6 @@ var render_bank = function(bank_data){
 // custimozed behavior for different data sources
 
 var get_render_account = function(){
-  //var deferred_minis = $.Deferred(); // for wardrobe tab
   get_data('/account', access_token).done(function(account_data){
     $('#account .status').show();
     render_account(account_data);
@@ -693,15 +692,6 @@ var get_render_account = function(){
   get_data('/account/skins', access_token).done(function(skins_id_list){
     create_data_ref(skins_id_list, '/skins?ids=', deferred_skins);
   });
-
-  //get_data('/account/minis', access_token).done(function(minis_id_list){
-  //  create_data_ref(minis_id_list, '/minis?ids=', deferred_minis);
-  //});
-
-  //deferred_minis.done(function(dataRef_minis){
-  //  //get_render_characters(dataRef_minis);
-  //});
-
 }
 
 var get_render_characters = function(){
@@ -721,6 +711,15 @@ var get_render_bank = function(){
     render_bank(bank_data);
   });
 }
+
+//var deferred_minis = $.Deferred(); // for wardrobe tab
+//get_data('/account/minis', access_token).done(function(minis_id_list){
+//  create_data_ref(minis_id_list, '/minis?ids=', deferred_minis);
+//});
+
+//deferred_minis.done(function(dataRef_minis){
+//  //get_render_characters(dataRef_minis);
+//});
 
 //var get_render_achievements = function(){
 //  get_data('/account/achievements', access_token).done(function(achievements_data){
