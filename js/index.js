@@ -400,7 +400,7 @@ var render_characters = function(characters_data){
           $(this).parents('.tab-pane').children('.loading').show();
           var action = $(this).attr('data-click');
           if(action == 'refreshcharacters'){
-            get_render_characters(dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
+            get_render_characters();
           }
         });
         $('#characters [data-option]').on('click tap', function(){
