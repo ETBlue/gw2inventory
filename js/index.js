@@ -346,10 +346,16 @@ var render_characters = function(characters_data){
     });
   }
   deferred_pre.done(function(dataRef){
+    console.log('dataref');
     deferred_guilds.done(function(dataRef_guilds){
+      console.log('dataref guilds');
       deferred_skins.done(function(dataRef_skins){
+        console.log('dataref skins');
+        console.log(dataRef_skins);
         deferred_specializations.done(function(dataRef_specializations){
+          console.log('dataref specializations');
           deferred_traits.done(function(dataRef_traits){
+            console.log('dataref traits');
             render_characters_with_dataRef(characters_data, dataRef, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
           });
         });
@@ -393,7 +399,6 @@ var render_characters = function(characters_data){
         $('#characters [data-subset]').on('click tap', function(){
           table.columns('[data-toggle]').visible(false);
           table.columns('[data-toggle="' + $(this).attr('data-subset') + '"]').visible(true);
-          //console.log($(this).attr('data-subset'));
         });
         $('#characters [data-click]').on('click tap', function(){
           $(this).button('loading');
@@ -684,30 +689,35 @@ var render_bank = function(bank_data){
 
 var get_render_account = function(){
   get_data('/account', access_token).done(function(account_data){
+    console.log('get account');
     $('#account .status').show();
     render_account(account_data);
     create_guild_ref(account_data.guilds, deferred_guilds);
   });
 
   get_data('/account/skins', access_token).done(function(skins_id_list){
+    console.log('get skins');
     create_data_ref(skins_id_list, '/skins?ids=', deferred_skins);
   });
 }
 
 var get_render_characters = function(){
   get_data('/characters?page=0&access_token=', account_key).done(function(characters_data){
+    console.log('get characters');
     render_characters(characters_data);
   });
 }
 
 var get_render_wallet = function(){
   get_data('/account/wallet', access_token).done(function(wallet_data){
+    console.log('get wallet');
     render_wallet(wallet_data);
   });
 }
 
 var get_render_bank = function(){
   get_data('/account/bank', access_token).done(function(bank_data){
+    console.log('get bank');
     render_bank(bank_data);
   });
 }
