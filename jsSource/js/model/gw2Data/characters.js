@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'model/apiKey', 'model/gw2Data/guilds'], function (exports, _apiKey, _guilds) {
+define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits'], function (exports, _apiKey, _guilds, _specializations, _traits) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -45,12 +45,31 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds'], function (exports, _
       };
       $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (responseData) {
         var waiting = [];
+        //載入specializations
+        waiting.push(_specializations.specializations.load());
+
+        var needTraitsId = [];
         responseData.forEach(function (characterData) {
           //載入guild
           if (characterData.guild) {
             waiting.push(_guilds.guilds.load(characterData.guild));
           }
+          if (characterData.specializations) {
+            $.each(characterData.specializations, function (key, subSpecialization) {
+              if (subSpecialization) {
+                subSpecialization.forEach(function (specialization) {
+                  if (specialization && specialization.traits) {
+                    specialization.traits.forEach(function (trait) {
+                      needTraitsId.push(trait);
+                    });
+                  }
+                });
+              }
+            });
+          }
         });
+        //載入traits
+        waiting.push(_traits.traits.load(needTraitsId));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
@@ -147,8 +166,45 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds'], function (exports, _
           }, '');
         }
       }
+    }, {
+      key: 'specializations',
+      get: function get() {
+        var specializations = this._data.specializations;
+        return {
+          pve: getSpecializationHtml(specializations.pve),
+          pvp: getSpecializationHtml(specializations.pvp),
+          wvw: getSpecializationHtml(specializations.wvw)
+        };
+      }
     }]);
 
     return Character;
   })();
+
+  function getSpecializationHtml(dataList) {
+    var output_string = '';
+    return dataList.reduce(function (html, specializationData) {
+      if (specializationData) {
+        var specialization = _specializations.specializations.get(specializationData.id);
+
+        var traitHtml = '';
+
+        if (specializationData.traits) {
+          traitHtml = specializationData.traits.reduce(function (traitHtml, traitId) {
+            var trait = _traits.traits.get(traitId);
+
+            if (trait) {
+              return traitHtml + ('\n              <div class="table-item">\n                <img class="small icon" data-toggle="tooltip" data-placement="left" title="' + trait.description + '" src="' + trait.icon + '">\n                <span>' + trait.name + '</span>\n              </div>\n            ');
+            } else {
+              return traitHtml;
+            }
+          }, '');
+        }
+
+        return html + ('\n        <div class="table-item">\n          <img class="medium icon spec" src="' + specialization.icon + '" />\n          <span>' + specialization.name + '</span>\n        </div>\n        ' + traitHtml + '\n      ');
+      } else {
+        return html;
+      }
+    }, '');
+  }
 });

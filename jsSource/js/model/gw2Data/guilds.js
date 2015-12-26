@@ -1,10 +1,9 @@
 'use strict';
 
-define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
+define(['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.guilds = undefined;
   var dataRef = {};
   var loadingRef = {};
   var guilds = exports.guilds = {

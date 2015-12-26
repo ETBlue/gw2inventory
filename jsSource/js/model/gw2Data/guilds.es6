@@ -1,5 +1,3 @@
-import {loadData} from 'model/gw2Data/gw2Data';
-
 let dataRef = {};
 let loadingRef = {};
 

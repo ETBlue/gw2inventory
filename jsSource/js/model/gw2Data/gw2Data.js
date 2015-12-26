@@ -6,9 +6,6 @@ define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/characters', '
   });
   exports.gw2Data = undefined;
   var gw2Data = exports.gw2Data = {
-    loadAll: function loadAll() {
-      return $.when(this.loadCharacters());
-    },
     loadCharacters: function loadCharacters() {
       var _this = this;
 

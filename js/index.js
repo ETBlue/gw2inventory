@@ -344,11 +344,10 @@ define('model/apiKey',['exports'], function (exports) {
 });
 
 
-define('model/gw2Data/guilds',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
+define('model/gw2Data/guilds',['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.guilds = undefined;
   var dataRef = {};
   var loadingRef = {};
   var guilds = exports.guilds = {
@@ -370,7 +369,74 @@ define('model/gw2Data/guilds',['exports', 'model/gw2Data/gw2Data'], function (ex
 });
 
 
-define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/guilds'], function (exports, _apiKey, _guilds) {
+define('model/gw2Data/specializations',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var specializations = exports.specializations = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load() {
+      if (!loadingRef) {
+        var params = {
+          ids: '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54',
+          lang: 'en'
+        };
+        loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done(function (specializationDatas) {
+          specializationDatas.forEach(function (specialization) {
+            dataRef[specialization.id] = specialization;
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/traits',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var traits = exports.traits = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load(ids) {
+      if (!loadingRef) {
+        var params = {
+          lang: 'en'
+        };
+        var waiting = [1];
+        while (ids.length > 0) {
+          params.ids = ids.splice(0, 200).join(',');
+          waiting.push($.get('https://api.guildwars2.com/v2/traits?' + $.param(params)));
+        }
+        loadingRef = $.when.apply($.when, waiting).done(function (one) {
+          for (var _len = arguments.length, deferrerResponse = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            deferrerResponse[_key - 1] = arguments[_key];
+          }
+
+          deferrerResponse.forEach(function (response) {
+            var traitList = response[0];
+            traitList.forEach(function (trait) {
+              dataRef[trait.id] = trait;
+            });
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits'], function (exports, _apiKey, _guilds, _specializations, _traits) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -415,12 +481,31 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       };
       $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (responseData) {
         var waiting = [];
+        //載入specializations
+        waiting.push(_specializations.specializations.load());
+
+        var needTraitsId = [];
         responseData.forEach(function (characterData) {
           //載入guild
           if (characterData.guild) {
             waiting.push(_guilds.guilds.load(characterData.guild));
           }
+          if (characterData.specializations) {
+            $.each(characterData.specializations, function (key, subSpecialization) {
+              if (subSpecialization) {
+                subSpecialization.forEach(function (specialization) {
+                  if (specialization && specialization.traits) {
+                    specialization.traits.forEach(function (trait) {
+                      needTraitsId.push(trait);
+                    });
+                  }
+                });
+              }
+            });
+          }
         });
+        //載入traits
+        waiting.push(_traits.traits.load(needTraitsId));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
@@ -517,10 +602,47 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           }, '');
         }
       }
+    }, {
+      key: 'specializations',
+      get: function get() {
+        var specializations = this._data.specializations;
+        return {
+          pve: getSpecializationHtml(specializations.pve),
+          pvp: getSpecializationHtml(specializations.pvp),
+          wvw: getSpecializationHtml(specializations.wvw)
+        };
+      }
     }]);
 
     return Character;
   })();
+
+  function getSpecializationHtml(dataList) {
+    var output_string = '';
+    return dataList.reduce(function (html, specializationData) {
+      if (specializationData) {
+        var specialization = _specializations.specializations.get(specializationData.id);
+
+        var traitHtml = '';
+
+        if (specializationData.traits) {
+          traitHtml = specializationData.traits.reduce(function (traitHtml, traitId) {
+            var trait = _traits.traits.get(traitId);
+
+            if (trait) {
+              return traitHtml + ('\n              <div class="table-item">\n                <img class="small icon" data-toggle="tooltip" data-placement="left" title="' + trait.description + '" src="' + trait.icon + '">\n                <span>' + trait.name + '</span>\n              </div>\n            ');
+            } else {
+              return traitHtml;
+            }
+          }, '');
+        }
+
+        return html + ('\n        <div class="table-item">\n          <img class="medium icon spec" src="' + specialization.icon + '" />\n          <span>' + specialization.name + '</span>\n        </div>\n        ' + traitHtml + '\n      ');
+      } else {
+        return html;
+      }
+    }, '');
+  }
 });
 
 
@@ -530,9 +652,6 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
   });
   exports.gw2Data = undefined;
   var gw2Data = exports.gw2Data = {
-    loadAll: function loadAll() {
-      return $.when(this.loadCharacters());
-    },
     loadCharacters: function loadCharacters() {
       var _this = this;
 
@@ -607,7 +726,7 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
     bindEvents: function bindEvents() {
       _gw2Data.gw2Data.on('loaded:characters', function (characterList) {
         var dataSet = characterList.map(function (character) {
-          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations_pve, character.specializations_pvp, character.specializations_wvw, character.helm, character.shoulders, character.gloves, character.coat, character.leggings, character.boots, character.back, character.aquahelm, character.amulet, character.accessory1, character.accessory2, character.ring1, character.ring2, character.weaponsA1, character.weaponsA2, character.weaponsB1, character.weaponsB2, character.weapons_aquaA, character.weapons_aquaB, character.bags, character.sickle, character.axe, character.pick];
+          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations.pve, character.specializations.pvp, character.specializations.wvw, character.helm, character.shoulders, character.gloves, character.coat, character.leggings, character.boots, character.back, character.aquahelm, character.amulet, character.accessory1, character.accessory2, character.ring1, character.ring2, character.weaponsA1, character.weaponsA2, character.weaponsB1, character.weaponsB2, character.weapons_aquaA, character.weapons_aquaB, character.bags, character.sickle, character.axe, character.pick];
         });
         $('#characters-table').DataTable({
           data: dataSet,

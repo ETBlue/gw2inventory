@@ -4,9 +4,6 @@ import {characters} from 'model/gw2Data/characters';
 import {guilds} from 'model/gw2Data/guilds';
 
 export const gw2Data = {
-  loadAll() {
-    return $.when(this.loadCharacters());
-  },
   loadCharacters() {
     this.trigger('load:characters');
     return characters.load().done((characterList) => {

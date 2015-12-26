@@ -1,5 +1,7 @@
 import {apiKey} from 'model/apiKey';
 import {guilds} from 'model/gw2Data/guilds';
+import {specializations} from 'model/gw2Data/specializations';
+import {traits} from 'model/gw2Data/traits';
 
 let characterList;
 
@@ -18,12 +20,31 @@ export const characters = {
     $.get('https://api.guildwars2.com/v2/characters?' + $.param(params))
       .done((responseData) => {
         const waiting = [];
+        //載入specializations
+        waiting.push(specializations.load());
+
+        const needTraitsId = [];
         responseData.forEach((characterData) => {
           //載入guild
           if (characterData.guild) {
             waiting.push(guilds.load(characterData.guild));
           }
+          if (characterData.specializations) {
+            $.each(characterData.specializations, (key, subSpecialization) => {
+              if (subSpecialization) {
+                subSpecialization.forEach((specialization) => {
+                  if (specialization && specialization.traits) {
+                    specialization.traits.forEach((trait) => {
+                      needTraitsId.push(trait);
+                    });
+                  }
+                });
+              }
+            });
+          }
         });
+        //載入traits
+        waiting.push(traits.load(needTraitsId));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(() => {
@@ -91,4 +112,49 @@ class Character {
       }, '');
     }
   }
+  get specializations() {
+    const specializations = this._data.specializations;
+    return {
+      pve: getSpecializationHtml(specializations.pve),
+      pvp: getSpecializationHtml(specializations.pvp),
+      wvw: getSpecializationHtml(specializations.wvw)
+    };
+  }
+}
+
+
+function getSpecializationHtml(dataList) {
+  var output_string = '';
+  return dataList.reduce((html, specializationData) => {
+    if (specializationData) {
+      const specialization = specializations.get(specializationData.id);
+      let traitHtml = '';
+      if (specializationData.traits) {
+        traitHtml = specializationData.traits.reduce((traitHtml, traitId) => {
+          const trait = traits.get(traitId);
+          if (trait) {
+            return traitHtml + `
+              <div class="table-item">
+                <img class="small icon" data-toggle="tooltip" data-placement="left" title="${trait.description}" src="${trait.icon}">
+                <span>${trait.name}</span>
+              </div>
+            `;
+          }
+          else {
+            return traitHtml;
+          }
+        }, '')
+      }
+      return html + `
+        <div class="table-item">
+          <img class="medium icon spec" src="${specialization.icon}" />
+          <span>${specialization.name}</span>
+        </div>
+        ${traitHtml}
+      `;
+    }
+    else {
+      return html;
+    }
+  }, '');
 }

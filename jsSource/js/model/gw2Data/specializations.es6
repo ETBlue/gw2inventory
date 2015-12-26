@@ -1,19 +1,22 @@
-import {loadData} from 'model/gw2Data/gw2Data';
-
 let dataRef = {};
-let loadingRef = {};
+let loadingRef;
 
-export const guilds = {
+export const specializations = {
   get(id) {
     return dataRef[id];
   },
-  load(id) {
-    let guild_id = guildId;
-    if (!loadingRef[guildId]) {
-      loadingRef[guildId] = loadData('guild_details.json', {guild_id}).done((guildData) => {
-        guildDataRef[ guildData.guild_id ] = guildData;
+  load() {
+    if (!loadingRef) {
+      const params = {
+        ids: '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54',
+        lang: 'en'
+      };
+      loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done((specializationDatas) => {
+        specializationDatas.forEach((specialization) => {
+          dataRef[ specialization.id ] = specialization;
+        });
       });
     }
-    return loadingRef[guildId];
+    return loadingRef;
   }
 };
