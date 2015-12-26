@@ -2,6 +2,7 @@ import {apiKey} from 'model/apiKey';
 import {guilds} from 'model/gw2Data/guilds';
 import {specializations} from 'model/gw2Data/specializations';
 import {traits} from 'model/gw2Data/traits';
+import {items} from 'model/gw2Data/items';
 
 let dataRef;
 
@@ -26,6 +27,8 @@ export const characters = {
         waiting.push(guilds.loadByCharacterList(characterList));
         //載入traits
         waiting.push(traits.loadByCharacterList(characterList));
+        //載入items
+        waiting.push(items.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(() => {

@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits'], function (exports, _apiKey, _guilds, _specializations, _traits) {
+define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits', 'model/gw2Data/items'], function (exports, _apiKey, _guilds, _specializations, _traits, _items) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -51,6 +51,8 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         waiting.push(_guilds.guilds.loadByCharacterList(characterList));
         //載入traits
         waiting.push(_traits.traits.loadByCharacterList(characterList));
+        //載入items
+        waiting.push(_items.items.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {

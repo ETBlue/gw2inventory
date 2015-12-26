@@ -479,7 +479,82 @@ define('model/gw2Data/traits',['exports'], function (exports) {
 });
 
 
-define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits'], function (exports, _apiKey, _guilds, _specializations, _traits) {
+define('model/gw2Data/items',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var dataRef = {};
+  var items = exports.items = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load(ids) {
+      var result = new $.Deferred();
+      ids = [].concat(_toConsumableArray(new Set(ids)));
+      var params = {
+        lang: 'en'
+      };
+      var waiting = [1];
+      while (ids.length > 0) {
+        params.ids = ids.splice(0, 200).join(',');
+        waiting.push($.get('https://api.guildwars2.com/v2/items?' + $.param(params)));
+      }
+      $.when.apply($.when, waiting).done(function (one) {
+        for (var _len = arguments.length, deferrerResponse = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          deferrerResponse[_key - 1] = arguments[_key];
+        }
+
+        deferrerResponse.forEach(function (response) {
+          var traitList = response[0];
+          traitList.forEach(function (item) {
+            dataRef[item.id] = item;
+          });
+        });
+        result.resolve(dataRef);
+      });
+      return result;
+    },
+    loadByCharacterList: function loadByCharacterList(characterList) {
+      var needItemIdList = [];
+      characterList.forEach(function (characterData) {
+        if (characterData.equipment) {
+          characterData.equipment.forEach(function (equipment) {
+            if (equipment) {
+              needItemIdList.push(equipment.id);
+              if (equipment.upgrades) {
+                equipment.upgrades.forEach(function (upgradeId) {
+                  needItemIdList.push(upgradeId);
+                });
+              }
+              if (equipment.infusions) {
+                equipment.infusions.forEach(function (infusionId) {
+                  needItemIdList.push(infusionId);
+                });
+              }
+            }
+          });
+        }
+      });
+      return this.load(needItemIdList);
+    }
+  };
+});
+
+
+define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specializations', 'model/gw2Data/traits', 'model/gw2Data/items'], function (exports, _apiKey, _guilds, _specializations, _traits, _items) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -530,6 +605,8 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         waiting.push(_guilds.guilds.loadByCharacterList(characterList));
         //載入traits
         waiting.push(_traits.traits.loadByCharacterList(characterList));
+        //載入items
+        waiting.push(_items.items.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
