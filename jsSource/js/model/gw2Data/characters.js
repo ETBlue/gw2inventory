@@ -30,10 +30,10 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     };
   })();
 
-  var characterList = undefined;
+  var dataRef = undefined;
   var characters = exports.characters = {
     get: function get() {
-      return characterList;
+      return dataRef;
     },
     load: function load() {
       var page = 0;
@@ -43,41 +43,22 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         lang: 'en',
         page: 0
       };
-      $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (responseData) {
-        var waiting = [];
-        //載入specializations
-        waiting.push(_specializations.specializations.load());
-
-        var needTraitsId = [];
-        responseData.forEach(function (characterData) {
-          //載入guild
-          if (characterData.guild) {
-            waiting.push(_guilds.guilds.load(characterData.guild));
-          }
-          if (characterData.specializations) {
-            $.each(characterData.specializations, function (key, subSpecialization) {
-              if (subSpecialization) {
-                subSpecialization.forEach(function (specialization) {
-                  if (specialization && specialization.traits) {
-                    specialization.traits.forEach(function (trait) {
-                      needTraitsId.push(trait);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
+      var waiting = [];
+      //載入specializations
+      waiting.push(_specializations.specializations.load());
+      $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (characterList) {
+        //載入guild
+        waiting.push(_guilds.guilds.loadByCharacterList(characterList));
         //載入traits
-        waiting.push(_traits.traits.load(needTraitsId));
+        waiting.push(_traits.traits.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
-          characterList = responseData.map(function (characterData) {
+          dataRef = characterList.map(function (characterData) {
             var character = new Character(characterData);
             return character.toJSON();
           });
-          loadDeferred.resolve(characterList);
+          loadDeferred.resolve(dataRef);
         });
       });
       return loadDeferred;

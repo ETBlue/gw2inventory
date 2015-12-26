@@ -364,6 +364,17 @@ define('model/gw2Data/guilds',['exports'], function (exports) {
         });
       }
       return loadingRef[id];
+    },
+    loadByCharacterList: function loadByCharacterList(characterList) {
+      var _this = this;
+
+      var waiting = [];
+      characterList.forEach(function (characterData) {
+        if (characterData.guild) {
+          waiting.push(_this.load(characterData.guild));
+        }
+      });
+      return $.when.apply($.when, waiting);
     }
   };
 });
@@ -401,36 +412,68 @@ define('model/gw2Data/traits',['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
   var dataRef = {};
-  var loadingRef = undefined;
   var traits = exports.traits = {
     get: function get(id) {
       return dataRef[id];
     },
     load: function load(ids) {
-      if (!loadingRef) {
-        var params = {
-          lang: 'en'
-        };
-        var waiting = [1];
-        while (ids.length > 0) {
-          params.ids = ids.splice(0, 200).join(',');
-          waiting.push($.get('https://api.guildwars2.com/v2/traits?' + $.param(params)));
+      var result = new $.Deferred();
+      ids = [].concat(_toConsumableArray(new Set(ids)));
+      var params = {
+        lang: 'en'
+      };
+      var waiting = [1];
+      while (ids.length > 0) {
+        params.ids = ids.splice(0, 200).join(',');
+        waiting.push($.get('https://api.guildwars2.com/v2/traits?' + $.param(params)));
+      }
+      $.when.apply($.when, waiting).done(function (one) {
+        for (var _len = arguments.length, deferrerResponse = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          deferrerResponse[_key - 1] = arguments[_key];
         }
-        loadingRef = $.when.apply($.when, waiting).done(function (one) {
-          for (var _len = arguments.length, deferrerResponse = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            deferrerResponse[_key - 1] = arguments[_key];
-          }
 
-          deferrerResponse.forEach(function (response) {
-            var traitList = response[0];
-            traitList.forEach(function (trait) {
-              dataRef[trait.id] = trait;
-            });
+        deferrerResponse.forEach(function (response) {
+          var traitList = response[0];
+          traitList.forEach(function (trait) {
+            dataRef[trait.id] = trait;
           });
         });
-      }
-      return loadingRef;
+        result.resolve(dataRef);
+      });
+      return result;
+    },
+    loadByCharacterList: function loadByCharacterList(characterList) {
+      var needTraitsIdList = [];
+      characterList.forEach(function (characterData) {
+        if (characterData.specializations) {
+          $.each(characterData.specializations, function (key, subSpecialization) {
+            if (subSpecialization) {
+              subSpecialization.forEach(function (specialization) {
+                if (specialization && specialization.traits) {
+                  specialization.traits.forEach(function (trait) {
+                    needTraitsIdList.push(trait);
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+      return this.load(needTraitsIdList);
     }
   };
 });
@@ -466,10 +509,10 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     };
   })();
 
-  var characterList = undefined;
+  var dataRef = undefined;
   var characters = exports.characters = {
     get: function get() {
-      return characterList;
+      return dataRef;
     },
     load: function load() {
       var page = 0;
@@ -479,41 +522,22 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         lang: 'en',
         page: 0
       };
-      $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (responseData) {
-        var waiting = [];
-        //載入specializations
-        waiting.push(_specializations.specializations.load());
-
-        var needTraitsId = [];
-        responseData.forEach(function (characterData) {
-          //載入guild
-          if (characterData.guild) {
-            waiting.push(_guilds.guilds.load(characterData.guild));
-          }
-          if (characterData.specializations) {
-            $.each(characterData.specializations, function (key, subSpecialization) {
-              if (subSpecialization) {
-                subSpecialization.forEach(function (specialization) {
-                  if (specialization && specialization.traits) {
-                    specialization.traits.forEach(function (trait) {
-                      needTraitsId.push(trait);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
+      var waiting = [];
+      //載入specializations
+      waiting.push(_specializations.specializations.load());
+      $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (characterList) {
+        //載入guild
+        waiting.push(_guilds.guilds.loadByCharacterList(characterList));
         //載入traits
-        waiting.push(_traits.traits.load(needTraitsId));
+        waiting.push(_traits.traits.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
-          characterList = responseData.map(function (characterData) {
+          dataRef = characterList.map(function (characterData) {
             var character = new Character(characterData);
             return character.toJSON();
           });
-          loadDeferred.resolve(characterList);
+          loadDeferred.resolve(dataRef);
         });
       });
       return loadDeferred;

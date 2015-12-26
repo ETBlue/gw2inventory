@@ -16,5 +16,14 @@ export const guilds = {
         });
     }
     return loadingRef[id];
+  },
+  loadByCharacterList(characterList) {
+    const waiting = [];
+    characterList.forEach((characterData) => {
+      if (characterData.guild) {
+        waiting.push(this.load(characterData.guild));
+      }
+    });
+    return $.when.apply($.when, waiting);
   }
 };

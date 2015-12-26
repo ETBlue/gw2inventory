@@ -20,6 +20,17 @@ define(['exports'], function (exports) {
         });
       }
       return loadingRef[id];
+    },
+    loadByCharacterList: function loadByCharacterList(characterList) {
+      var _this = this;
+
+      var waiting = [];
+      characterList.forEach(function (characterData) {
+        if (characterData.guild) {
+          waiting.push(_this.load(characterData.guild));
+        }
+      });
+      return $.when.apply($.when, waiting);
     }
   };
 });

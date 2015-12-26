@@ -3,11 +3,11 @@ import {guilds} from 'model/gw2Data/guilds';
 import {specializations} from 'model/gw2Data/specializations';
 import {traits} from 'model/gw2Data/traits';
 
-let characterList;
+let dataRef;
 
 export const characters = {
   get() {
-    return characterList;
+    return dataRef;
   },
   load() {
     let page = 0;
@@ -17,42 +17,23 @@ export const characters = {
       lang: 'en',
       page: 0
     };
+    const waiting = [];
+    //載入specializations
+    waiting.push(specializations.load());
     $.get('https://api.guildwars2.com/v2/characters?' + $.param(params))
-      .done((responseData) => {
-        const waiting = [];
-        //載入specializations
-        waiting.push(specializations.load());
-
-        const needTraitsId = [];
-        responseData.forEach((characterData) => {
-          //載入guild
-          if (characterData.guild) {
-            waiting.push(guilds.load(characterData.guild));
-          }
-          if (characterData.specializations) {
-            $.each(characterData.specializations, (key, subSpecialization) => {
-              if (subSpecialization) {
-                subSpecialization.forEach((specialization) => {
-                  if (specialization && specialization.traits) {
-                    specialization.traits.forEach((trait) => {
-                      needTraitsId.push(trait);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
+      .done((characterList) => {
+        //載入guild
+        waiting.push(guilds.loadByCharacterList(characterList));
         //載入traits
-        waiting.push(traits.load(needTraitsId));
+        waiting.push(traits.loadByCharacterList(characterList));
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(() => {
-          characterList = responseData.map((characterData) => {
+          dataRef = characterList.map((characterData) => {
             const character = new Character(characterData);
             return character.toJSON();
           });
-          loadDeferred.resolve(characterList);
+          loadDeferred.resolve(dataRef);
         });
       });
     return loadDeferred;
