@@ -1,961 +1,681 @@
-// define data fetching funcitons
+/*
+ RequireJS 2.1.20 Copyright (c) 2010-2015, The Dojo Foundation All Rights Reserved.
+ Available via the MIT or new BSD license.
+ see: http://github.com/jrburke/requirejs for details
+*/
+var requirejs,require,define;
+(function(ba){function G(b){return"[object Function]"===K.call(b)}function H(b){return"[object Array]"===K.call(b)}function v(b,c){if(b){var d;for(d=0;d<b.length&&(!b[d]||!c(b[d],d,b));d+=1);}}function T(b,c){if(b){var d;for(d=b.length-1;-1<d&&(!b[d]||!c(b[d],d,b));d-=1);}}function t(b,c){return fa.call(b,c)}function n(b,c){return t(b,c)&&b[c]}function A(b,c){for(var d in b)if(t(b,d)&&c(b[d],d))break}function U(b,c,d,e){c&&A(c,function(c,i){if(d||!t(b,i))e&&"object"===typeof c&&c&&!H(c)&&!G(c)&&!(c instanceof
+RegExp)?(b[i]||(b[i]={}),U(b[i],c,d,e)):b[i]=c});return b}function u(b,c){return function(){return c.apply(b,arguments)}}function ca(b){throw b;}function da(b){if(!b)return b;var c=ba;v(b.split("."),function(b){c=c[b]});return c}function B(b,c,d,e){c=Error(c+"\nhttp://requirejs.org/docs/errors.html#"+b);c.requireType=b;c.requireModules=e;d&&(c.originalError=d);return c}function ga(b){function c(a,j,b){var f,l,c,d,h,e,g,i,j=j&&j.split("/"),p=k.map,m=p&&p["*"];if(a){a=a.split("/");l=a.length-1;k.nodeIdCompat&&
+Q.test(a[l])&&(a[l]=a[l].replace(Q,""));"."===a[0].charAt(0)&&j&&(l=j.slice(0,j.length-1),a=l.concat(a));l=a;for(c=0;c<l.length;c++)if(d=l[c],"."===d)l.splice(c,1),c-=1;else if(".."===d&&!(0===c||1===c&&".."===l[2]||".."===l[c-1])&&0<c)l.splice(c-1,2),c-=2;a=a.join("/")}if(b&&p&&(j||m)){l=a.split("/");c=l.length;a:for(;0<c;c-=1){h=l.slice(0,c).join("/");if(j)for(d=j.length;0<d;d-=1)if(b=n(p,j.slice(0,d).join("/")))if(b=n(b,h)){f=b;e=c;break a}!g&&(m&&n(m,h))&&(g=n(m,h),i=c)}!f&&g&&(f=g,e=i);f&&(l.splice(0,
+e,f),a=l.join("/"))}return(f=n(k.pkgs,a))?f:a}function d(a){z&&v(document.getElementsByTagName("script"),function(j){if(j.getAttribute("data-requiremodule")===a&&j.getAttribute("data-requirecontext")===h.contextName)return j.parentNode.removeChild(j),!0})}function p(a){var j=n(k.paths,a);if(j&&H(j)&&1<j.length)return j.shift(),h.require.undef(a),h.makeRequire(null,{skipMap:!0})([a]),!0}function g(a){var j,c=a?a.indexOf("!"):-1;-1<c&&(j=a.substring(0,c),a=a.substring(c+1,a.length));return[j,a]}function i(a,
+j,b,f){var l,d,e=null,i=j?j.name:null,k=a,p=!0,m="";a||(p=!1,a="_@r"+(K+=1));a=g(a);e=a[0];a=a[1];e&&(e=c(e,i,f),d=n(q,e));a&&(e?m=d&&d.normalize?d.normalize(a,function(a){return c(a,i,f)}):-1===a.indexOf("!")?c(a,i,f):a:(m=c(a,i,f),a=g(m),e=a[0],m=a[1],b=!0,l=h.nameToUrl(m)));b=e&&!d&&!b?"_unnormalized"+(O+=1):"";return{prefix:e,name:m,parentMap:j,unnormalized:!!b,url:l,originalName:k,isDefine:p,id:(e?e+"!"+m:m)+b}}function r(a){var j=a.id,b=n(m,j);b||(b=m[j]=new h.Module(a));return b}function s(a,
+j,b){var f=a.id,c=n(m,f);if(t(q,f)&&(!c||c.defineEmitComplete))"defined"===j&&b(q[f]);else if(c=r(a),c.error&&"error"===j)b(c.error);else c.on(j,b)}function w(a,b){var c=a.requireModules,f=!1;if(b)b(a);else if(v(c,function(b){if(b=n(m,b))b.error=a,b.events.error&&(f=!0,b.emit("error",a))}),!f)e.onError(a)}function x(){R.length&&(v(R,function(a){var b=a[0];"string"===typeof b&&(h.defQueueMap[b]=!0);C.push(a)}),R=[])}function y(a){delete m[a];delete V[a]}function F(a,b,c){var f=a.map.id;a.error?a.emit("error",
+a.error):(b[f]=!0,v(a.depMaps,function(f,d){var e=f.id,h=n(m,e);h&&(!a.depMatched[d]&&!c[e])&&(n(b,e)?(a.defineDep(d,q[e]),a.check()):F(h,b,c))}),c[f]=!0)}function D(){var a,b,c=(a=1E3*k.waitSeconds)&&h.startTime+a<(new Date).getTime(),f=[],l=[],e=!1,i=!0;if(!W){W=!0;A(V,function(a){var h=a.map,g=h.id;if(a.enabled&&(h.isDefine||l.push(a),!a.error))if(!a.inited&&c)p(g)?e=b=!0:(f.push(g),d(g));else if(!a.inited&&(a.fetched&&h.isDefine)&&(e=!0,!h.prefix))return i=!1});if(c&&f.length)return a=B("timeout",
+"Load timeout for modules: "+f,null,f),a.contextName=h.contextName,w(a);i&&v(l,function(a){F(a,{},{})});if((!c||b)&&e)if((z||ea)&&!X)X=setTimeout(function(){X=0;D()},50);W=!1}}function E(a){t(q,a[0])||r(i(a[0],null,!0)).init(a[1],a[2])}function I(a){var a=a.currentTarget||a.srcElement,b=h.onScriptLoad;a.detachEvent&&!Y?a.detachEvent("onreadystatechange",b):a.removeEventListener("load",b,!1);b=h.onScriptError;(!a.detachEvent||Y)&&a.removeEventListener("error",b,!1);return{node:a,id:a&&a.getAttribute("data-requiremodule")}}
+function J(){var a;for(x();C.length;){a=C.shift();if(null===a[0])return w(B("mismatch","Mismatched anonymous define() module: "+a[a.length-1]));E(a)}h.defQueueMap={}}var W,Z,h,L,X,k={waitSeconds:7,baseUrl:"./",paths:{},bundles:{},pkgs:{},shim:{},config:{}},m={},V={},$={},C=[],q={},S={},aa={},K=1,O=1;L={require:function(a){return a.require?a.require:a.require=h.makeRequire(a.map)},exports:function(a){a.usingExports=!0;if(a.map.isDefine)return a.exports?q[a.map.id]=a.exports:a.exports=q[a.map.id]={}},
+module:function(a){return a.module?a.module:a.module={id:a.map.id,uri:a.map.url,config:function(){return n(k.config,a.map.id)||{}},exports:a.exports||(a.exports={})}}};Z=function(a){this.events=n($,a.id)||{};this.map=a;this.shim=n(k.shim,a.id);this.depExports=[];this.depMaps=[];this.depMatched=[];this.pluginMaps={};this.depCount=0};Z.prototype={init:function(a,b,c,f){f=f||{};if(!this.inited){this.factory=b;if(c)this.on("error",c);else this.events.error&&(c=u(this,function(a){this.emit("error",a)}));
+this.depMaps=a&&a.slice(0);this.errback=c;this.inited=!0;this.ignore=f.ignore;f.enabled||this.enabled?this.enable():this.check()}},defineDep:function(a,b){this.depMatched[a]||(this.depMatched[a]=!0,this.depCount-=1,this.depExports[a]=b)},fetch:function(){if(!this.fetched){this.fetched=!0;h.startTime=(new Date).getTime();var a=this.map;if(this.shim)h.makeRequire(this.map,{enableBuildCallback:!0})(this.shim.deps||[],u(this,function(){return a.prefix?this.callPlugin():this.load()}));else return a.prefix?
+this.callPlugin():this.load()}},load:function(){var a=this.map.url;S[a]||(S[a]=!0,h.load(this.map.id,a))},check:function(){if(this.enabled&&!this.enabling){var a,b,c=this.map.id;b=this.depExports;var f=this.exports,l=this.factory;if(this.inited)if(this.error)this.emit("error",this.error);else{if(!this.defining){this.defining=!0;if(1>this.depCount&&!this.defined){if(G(l)){if(this.events.error&&this.map.isDefine||e.onError!==ca)try{f=h.execCb(c,l,b,f)}catch(d){a=d}else f=h.execCb(c,l,b,f);this.map.isDefine&&
+void 0===f&&((b=this.module)?f=b.exports:this.usingExports&&(f=this.exports));if(a)return a.requireMap=this.map,a.requireModules=this.map.isDefine?[this.map.id]:null,a.requireType=this.map.isDefine?"define":"require",w(this.error=a)}else f=l;this.exports=f;if(this.map.isDefine&&!this.ignore&&(q[c]=f,e.onResourceLoad))e.onResourceLoad(h,this.map,this.depMaps);y(c);this.defined=!0}this.defining=!1;this.defined&&!this.defineEmitted&&(this.defineEmitted=!0,this.emit("defined",this.exports),this.defineEmitComplete=
+!0)}}else t(h.defQueueMap,c)||this.fetch()}},callPlugin:function(){var a=this.map,b=a.id,d=i(a.prefix);this.depMaps.push(d);s(d,"defined",u(this,function(f){var l,d;d=n(aa,this.map.id);var g=this.map.name,P=this.map.parentMap?this.map.parentMap.name:null,p=h.makeRequire(a.parentMap,{enableBuildCallback:!0});if(this.map.unnormalized){if(f.normalize&&(g=f.normalize(g,function(a){return c(a,P,!0)})||""),f=i(a.prefix+"!"+g,this.map.parentMap),s(f,"defined",u(this,function(a){this.init([],function(){return a},
+null,{enabled:!0,ignore:!0})})),d=n(m,f.id)){this.depMaps.push(f);if(this.events.error)d.on("error",u(this,function(a){this.emit("error",a)}));d.enable()}}else d?(this.map.url=h.nameToUrl(d),this.load()):(l=u(this,function(a){this.init([],function(){return a},null,{enabled:!0})}),l.error=u(this,function(a){this.inited=!0;this.error=a;a.requireModules=[b];A(m,function(a){0===a.map.id.indexOf(b+"_unnormalized")&&y(a.map.id)});w(a)}),l.fromText=u(this,function(f,c){var d=a.name,g=i(d),P=M;c&&(f=c);P&&
+(M=!1);r(g);t(k.config,b)&&(k.config[d]=k.config[b]);try{e.exec(f)}catch(m){return w(B("fromtexteval","fromText eval for "+b+" failed: "+m,m,[b]))}P&&(M=!0);this.depMaps.push(g);h.completeLoad(d);p([d],l)}),f.load(a.name,p,l,k))}));h.enable(d,this);this.pluginMaps[d.id]=d},enable:function(){V[this.map.id]=this;this.enabling=this.enabled=!0;v(this.depMaps,u(this,function(a,b){var c,f;if("string"===typeof a){a=i(a,this.map.isDefine?this.map:this.map.parentMap,!1,!this.skipMap);this.depMaps[b]=a;if(c=
+n(L,a.id)){this.depExports[b]=c(this);return}this.depCount+=1;s(a,"defined",u(this,function(a){this.undefed||(this.defineDep(b,a),this.check())}));this.errback?s(a,"error",u(this,this.errback)):this.events.error&&s(a,"error",u(this,function(a){this.emit("error",a)}))}c=a.id;f=m[c];!t(L,c)&&(f&&!f.enabled)&&h.enable(a,this)}));A(this.pluginMaps,u(this,function(a){var b=n(m,a.id);b&&!b.enabled&&h.enable(a,this)}));this.enabling=!1;this.check()},on:function(a,b){var c=this.events[a];c||(c=this.events[a]=
+[]);c.push(b)},emit:function(a,b){v(this.events[a],function(a){a(b)});"error"===a&&delete this.events[a]}};h={config:k,contextName:b,registry:m,defined:q,urlFetched:S,defQueue:C,defQueueMap:{},Module:Z,makeModuleMap:i,nextTick:e.nextTick,onError:w,configure:function(a){a.baseUrl&&"/"!==a.baseUrl.charAt(a.baseUrl.length-1)&&(a.baseUrl+="/");var b=k.shim,c={paths:!0,bundles:!0,config:!0,map:!0};A(a,function(a,b){c[b]?(k[b]||(k[b]={}),U(k[b],a,!0,!0)):k[b]=a});a.bundles&&A(a.bundles,function(a,b){v(a,
+function(a){a!==b&&(aa[a]=b)})});a.shim&&(A(a.shim,function(a,c){H(a)&&(a={deps:a});if((a.exports||a.init)&&!a.exportsFn)a.exportsFn=h.makeShimExports(a);b[c]=a}),k.shim=b);a.packages&&v(a.packages,function(a){var b,a="string"===typeof a?{name:a}:a;b=a.name;a.location&&(k.paths[b]=a.location);k.pkgs[b]=a.name+"/"+(a.main||"main").replace(ha,"").replace(Q,"")});A(m,function(a,b){!a.inited&&!a.map.unnormalized&&(a.map=i(b,null,!0))});if(a.deps||a.callback)h.require(a.deps||[],a.callback)},makeShimExports:function(a){return function(){var b;
+a.init&&(b=a.init.apply(ba,arguments));return b||a.exports&&da(a.exports)}},makeRequire:function(a,j){function g(c,d,p){var k,n;j.enableBuildCallback&&(d&&G(d))&&(d.__requireJsBuild=!0);if("string"===typeof c){if(G(d))return w(B("requireargs","Invalid require call"),p);if(a&&t(L,c))return L[c](m[a.id]);if(e.get)return e.get(h,c,a,g);k=i(c,a,!1,!0);k=k.id;return!t(q,k)?w(B("notloaded",'Module name "'+k+'" has not been loaded yet for context: '+b+(a?"":". Use require([])"))):q[k]}J();h.nextTick(function(){J();
+n=r(i(null,a));n.skipMap=j.skipMap;n.init(c,d,p,{enabled:!0});D()});return g}j=j||{};U(g,{isBrowser:z,toUrl:function(b){var d,e=b.lastIndexOf("."),j=b.split("/")[0];if(-1!==e&&(!("."===j||".."===j)||1<e))d=b.substring(e,b.length),b=b.substring(0,e);return h.nameToUrl(c(b,a&&a.id,!0),d,!0)},defined:function(b){return t(q,i(b,a,!1,!0).id)},specified:function(b){b=i(b,a,!1,!0).id;return t(q,b)||t(m,b)}});a||(g.undef=function(b){x();var c=i(b,a,!0),e=n(m,b);e.undefed=!0;d(b);delete q[b];delete S[c.url];
+delete $[b];T(C,function(a,c){a[0]===b&&C.splice(c,1)});delete h.defQueueMap[b];e&&(e.events.defined&&($[b]=e.events),y(b))});return g},enable:function(a){n(m,a.id)&&r(a).enable()},completeLoad:function(a){var b,c,d=n(k.shim,a)||{},e=d.exports;for(x();C.length;){c=C.shift();if(null===c[0]){c[0]=a;if(b)break;b=!0}else c[0]===a&&(b=!0);E(c)}h.defQueueMap={};c=n(m,a);if(!b&&!t(q,a)&&c&&!c.inited){if(k.enforceDefine&&(!e||!da(e)))return p(a)?void 0:w(B("nodefine","No define call for "+a,null,[a]));E([a,
+d.deps||[],d.exportsFn])}D()},nameToUrl:function(a,b,c){var d,g,i;(d=n(k.pkgs,a))&&(a=d);if(d=n(aa,a))return h.nameToUrl(d,b,c);if(e.jsExtRegExp.test(a))d=a+(b||"");else{d=k.paths;a=a.split("/");for(g=a.length;0<g;g-=1)if(i=a.slice(0,g).join("/"),i=n(d,i)){H(i)&&(i=i[0]);a.splice(0,g,i);break}d=a.join("/");d+=b||(/^data\:|\?/.test(d)||c?"":".js");d=("/"===d.charAt(0)||d.match(/^[\w\+\.\-]+:/)?"":k.baseUrl)+d}return k.urlArgs?d+((-1===d.indexOf("?")?"?":"&")+k.urlArgs):d},load:function(a,b){e.load(h,
+a,b)},execCb:function(a,b,c,d){return b.apply(d,c)},onScriptLoad:function(a){if("load"===a.type||ia.test((a.currentTarget||a.srcElement).readyState))N=null,a=I(a),h.completeLoad(a.id)},onScriptError:function(a){var b=I(a);if(!p(b.id))return w(B("scripterror","Script error for: "+b.id,a,[b.id]))}};h.require=h.makeRequire();return h}var e,x,y,D,I,E,N,J,r,O,ja=/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg,ka=/[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,Q=/\.js$/,ha=/^\.\//;x=Object.prototype;var K=
+x.toString,fa=x.hasOwnProperty,z=!!("undefined"!==typeof window&&"undefined"!==typeof navigator&&window.document),ea=!z&&"undefined"!==typeof importScripts,ia=z&&"PLAYSTATION 3"===navigator.platform?/^complete$/:/^(complete|loaded)$/,Y="undefined"!==typeof opera&&"[object Opera]"===opera.toString(),F={},s={},R=[],M=!1;if("undefined"===typeof define){if("undefined"!==typeof requirejs){if(G(requirejs))return;s=requirejs;requirejs=void 0}"undefined"!==typeof require&&!G(require)&&(s=require,require=
+void 0);e=requirejs=function(b,c,d,p){var g,i="_";!H(b)&&"string"!==typeof b&&(g=b,H(c)?(b=c,c=d,d=p):b=[]);g&&g.context&&(i=g.context);(p=n(F,i))||(p=F[i]=e.s.newContext(i));g&&p.configure(g);return p.require(b,c,d)};e.config=function(b){return e(b)};e.nextTick="undefined"!==typeof setTimeout?function(b){setTimeout(b,4)}:function(b){b()};require||(require=e);e.version="2.1.20";e.jsExtRegExp=/^\/|:|\?|\.js$/;e.isBrowser=z;x=e.s={contexts:F,newContext:ga};e({});v(["toUrl","undef","defined","specified"],
+function(b){e[b]=function(){var c=F._;return c.require[b].apply(c,arguments)}});if(z&&(y=x.head=document.getElementsByTagName("head")[0],D=document.getElementsByTagName("base")[0]))y=x.head=D.parentNode;e.onError=ca;e.createNode=function(b){var c=b.xhtml?document.createElementNS("http://www.w3.org/1999/xhtml","html:script"):document.createElement("script");c.type=b.scriptType||"text/javascript";c.charset="utf-8";c.async=!0;return c};e.load=function(b,c,d){var p=b&&b.config||{},g;if(z){g=e.createNode(p,
+c,d);if(p.onNodeCreated)p.onNodeCreated(g,p,c,d);g.setAttribute("data-requirecontext",b.contextName);g.setAttribute("data-requiremodule",c);g.attachEvent&&!(g.attachEvent.toString&&0>g.attachEvent.toString().indexOf("[native code"))&&!Y?(M=!0,g.attachEvent("onreadystatechange",b.onScriptLoad)):(g.addEventListener("load",b.onScriptLoad,!1),g.addEventListener("error",b.onScriptError,!1));g.src=d;J=g;D?y.insertBefore(g,D):y.appendChild(g);J=null;return g}if(ea)try{importScripts(d),b.completeLoad(c)}catch(i){b.onError(B("importscripts",
+"importScripts failed for "+c+" at "+d,i,[c]))}};z&&!s.skipDataMain&&T(document.getElementsByTagName("script"),function(b){y||(y=b.parentNode);if(I=b.getAttribute("data-main"))return r=I,s.baseUrl||(E=r.split("/"),r=E.pop(),O=E.length?E.join("/")+"/":"./",s.baseUrl=O),r=r.replace(Q,""),e.jsExtRegExp.test(r)&&(r=I),s.deps=s.deps?s.deps.concat(r):[r],!0});define=function(b,c,d){var e,g;"string"!==typeof b&&(d=c,c=b,b=null);H(c)||(d=c,c=null);!c&&G(d)&&(c=[],d.length&&(d.toString().replace(ja,"").replace(ka,
+function(b,d){c.push(d)}),c=(1===d.length?["require"]:["require","exports","module"]).concat(c)));if(M){if(!(e=J))N&&"interactive"===N.readyState||T(document.getElementsByTagName("script"),function(b){if("interactive"===b.readyState)return N=b}),e=N;e&&(b||(b=e.getAttribute("data-requiremodule")),g=F[e.getAttribute("data-requirecontext")])}g?(g.defQueue.push([b,c,d]),g.defQueueMap[b]=!0):R.push([b,c,d])};define.amd={jQuery:!0};e.exec=function(b){return eval(b)};e(s)}})(this);
 
-var get_data = function(endpoint, key){
-  key = key || '';
-  return $.get('https://api.guildwars2.com/v2'+endpoint+key+'&lang=en');
-  //return $.get('https://api.guildwars2.com/v2'+endpoint+key);
-}
 
-var get_data_id = function(endpoint){
-  return $.get('https://api.guildwars2.com/v2'+endpoint);
-}
 
-var get_id_list = function(data){
-  var id_list = [];
-  $.each(data, function(index, value){
-    if(value){
-      id_list.push(value.id);
+
+define('utils/events',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.eventful = eventful;
+
+  function _typeof(obj) {
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  }
+
+  function eventful() {
+    for (var _len = arguments.length, objList = Array(_len), _key = 0; _key < _len; _key++) {
+      objList[_key] = arguments[_key];
     }
-  });
-  id_list.sort(function(a, b) {
-    return a - b;
-  });
-  return id_list;
-}
 
-var create_data_ref = function(id_list, endpoint, defer){
-  var data_ref={};
-  var batch_count = Math.ceil(id_list.length / 200);
-  for(var i = 0; i < batch_count; i++){
-    var id_list_string = id_list.slice(i*200,(i+1)*200).join(',');
-    get_data(endpoint + id_list_string).done(function(items_data){
-      $.each(items_data, function(item_index, item_data){
-        data_ref[item_data.id] = item_data;
-        if(Object.keys(data_ref).length == id_list.length){
-          defer.resolve(data_ref);
-        }
-      });
+    objList.forEach(function (obj) {
+      obj.on = Events.on;
+      obj.off = Events.off;
+      obj.trigger = Events.trigger;
+      obj.bind = Events.bind;
+      obj.unbind = Events.unbind;
+      obj.once = Events.once;
+      obj.listeningTo = Events.listeningTo;
+      obj.listenToOnce = Events.listenToOnce;
+      obj.stopListening = Events.stopListening;
     });
   }
-}
 
-var get_guild = function(guild_id){
-  return $.get('https://api.guildwars2.com/v1/guild_details.json?guild_id='+guild_id); // guild api is not available in v2 atm
-}
+  var Events = {};
+  var eventSplitter = /\s+/;
 
-var create_guild_ref = function(guild_id_list, defer){
-  var data_ref={};
-  $.each(guild_id_list, function(index, guild){
-    get_guild(guild).done(function(guild_data){
-      data_ref[guild_data.guild_id] = guild_data;
-      if(Object.keys(data_ref).length == guild_id_list.length){
-        defer.resolve(data_ref);
+  var eventsApi = function eventsApi(iteratee, events, name, callback, opts) {
+    var i = 0,
+        names;
+
+    if (name && (typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
+      if (callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback;
+
+      for (names = _.keys(name); i < names.length; i++) {
+        events = eventsApi(iteratee, events, names[i], name[names[i]], opts);
       }
+    } else if (name && eventSplitter.test(name)) {
+      for (names = name.split(eventSplitter); i < names.length; i++) {
+        events = iteratee(events, names[i], callback, opts);
+      }
+    } else {
+      events = iteratee(events, name, callback, opts);
+    }
+
+    return events;
+  };
+
+  Events.on = function (name, callback, context) {
+    return internalOn(this, name, callback, context);
+  };
+
+  var internalOn = function internalOn(obj, name, callback, context, listening) {
+    obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
+      context: context,
+      ctx: obj,
+      listening: listening
     });
-  });
-}
 
-// define data rendering functions
+    if (listening) {
+      var listeners = obj._listeners || (obj._listeners = {});
+      listeners[listening.id] = listening;
+    }
 
-var render_account = function(account_data){
-  $('.accountname').text(account_data.name);
-  $('.accountid').text(account_data.id);
-  $('.accountcreated').text(account_data.created);
+    return obj;
+  };
 
-  // render world at the first place
-  get_data('/worlds?ids='+account_data.world).done(function(world_data){
-    $('.worldname').text(world_data[0].name);
-    $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-  });
-}
+  Events.listenTo = function (obj, name, callback) {
+    if (!obj) return this;
 
-var render_characters = function(characters_data){
+    var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
 
-  // setup dataRef_character_items
-  var character_equipment_id_list = [];
-  var character_inventory_id_list = [];
-  var character_inventory_items = [];
-  $.each(characters_data, function(character_index, character){
-    var character_equipment = character.equipment || [];
-    $.each(character_equipment, function(equipment_index, equipment_data){
-      if(equipment_data){
-        character_equipment_id_list.push(equipment_data.id);
-        if(equipment_data.upgrades){
-          character_equipment_id_list = $.merge(character_equipment_id_list, equipment_data.upgrades); // []
-        }
-        if(equipment_data.infusions){
-          character_equipment_id_list = $.merge(character_equipment_id_list, equipment_data.infusions); // []
-        }
-      }
-    });
-    var character_bags = character.bags || [];
-    $.each(character_bags, function(bag_index, bag_data){
-      if(bag_data){
-        character_equipment_id_list.push(bag_data.id);
-        var bag_inventory = bag_data.inventory;
-        if(bag_inventory){
-          $.each(bag_inventory, function(item_index, item_data){
-            if(item_data){
-              character_inventory_id_list.push(item_data.id);
-              if(item_data.infix_upgrade_id){
-                character_inventory_id_list.push(item_data.infix_upgrade_id);
-              }
-              if(item_data.upgrades){
-                character_inventory_id_list = $.merge(character_inventory_id_list, item_data.upgrades); // []
-              }
-              if(item_data.infusions){
-                character_inventory_id_list = $.merge(character_inventory_id_list, item_data.infusions); // []
-              }
-              item_data.position = character.name;
-              //console.log(item_data);
-              character_inventory_items.push(item_data);
-            }
-          });
-        }
-      }
-    });
-  });
-  deferred_prebank.resolve(character_inventory_id_list, character_inventory_items);
+    var listeningTo = this._listeningTo || (this._listeningTo = {});
+    var listening = listeningTo[id];
 
-  var deferred_pre = $.Deferred();
-  //var totalCount = character_equipment_id_list.length;
-  character_equipment_id_list = character_equipment_id_list.filter( function( item, index, inputArray ) {
-    return inputArray.indexOf(item) == index;
-  });
-  create_data_ref(character_equipment_id_list, '/items?ids=', deferred_pre);
+    if (!listening) {
+      var thisId = this._listenId || (this._listenId = _.uniqueId('l'));
 
-  var dataSet=[];
-  var deferred = $.Deferred();
-  var render_characters_with_dataRef = function(characters_data, dataRef, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits){
-    $.each(characters_data, function(character_index, character){
-      var character_name = character.name || '';
-      var character_race = character.race || '';
-      var character_gender = character.gender || '';
-      var character_profession = character.profession || '';
-      var character_level = character.level || '';
-      //var character_created = character.created.replace(/[T]/, '<br />').replace(/Z/,'') || '';
-      var character_created = character.created.substring(0, character.created.indexOf('T')) || '';
-      var character_age = '';
-      if(character.age){
-        var seconds = character.age % 60;
-        var minutes = Math.floor(character.age / 60) % 60;
-        var hours = Math.floor(character.age / 3600);
-        character_age = hours + 'h ' + minutes + 'm ' + seconds + 's';
-      }
-      var character_deaths = character.deaths || '';
-      var character_crafting_list = [];
-      $.each(character.crafting, function(index, value){
-        character_crafting_list.push(value.rating +'|'+ value.discipline);
+      listening = listeningTo[id] = {
+        obj: obj,
+        objId: id,
+        id: thisId,
+        listeningTo: listeningTo,
+        count: 0
+      };
+    }
+
+    internalOn(obj, name, callback, this, listening);
+    return this;
+  };
+
+  var onApi = function onApi(events, name, callback, options) {
+    if (callback) {
+      var handlers = events[name] || (events[name] = []);
+      var context = options.context,
+          ctx = options.ctx,
+          listening = options.listening;
+      if (listening) listening.count++;
+      handlers.push({
+        callback: callback,
+        context: context,
+        ctx: context || ctx,
+        listening: listening
       });
-      var character_crafting = character_crafting_list.join(' <br />') || '';
-      var character_guild = '';
-      if(character.guild){
-        var guild_data = dataRef_guilds[character.guild];
-        character_guild += guild_data.guild_name + '<br />[' + guild_data.tag + ']';
+    }
+
+    return events;
+  };
+
+  Events.off = function (name, callback, context) {
+    if (!this._events) return this;
+    this._events = eventsApi(offApi, this._events, name, callback, {
+      context: context,
+      listeners: this._listeners
+    });
+    return this;
+  };
+
+  Events.stopListening = function (obj, name, callback) {
+    var listeningTo = this._listeningTo;
+    if (!listeningTo) return this;
+    var ids = obj ? [obj._listenId] : _.keys(listeningTo);
+
+    for (var i = 0; i < ids.length; i++) {
+      var listening = listeningTo[ids[i]];
+      if (!listening) break;
+      listening.obj.off(name, callback, this);
+    }
+
+    if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
+    return this;
+  };
+
+  var offApi = function offApi(events, name, callback, options) {
+    if (!events) return;
+    var i = 0,
+        listening;
+    var context = options.context,
+        listeners = options.listeners;
+
+    if (!name && !callback && !context) {
+      var ids = _.keys(listeners);
+
+      for (; i < ids.length; i++) {
+        listening = listeners[ids[i]];
+        delete listeners[listening.id];
+        delete listening.listeningTo[listening.objId];
       }
-      //var character_guild = dataRef_guilds[character.id].guild || '';
-      var character_specializations = character.specializations || '';
-      var get_spec_traits = function(spec_in_mode){
-        var output_string = '';
-        if(spec_in_mode){
-          $.each(spec_in_mode, function(spec_index, spec_data){
-            if(spec_data){
-              var specialization = dataRef_specializations[spec_data.id];
-              var specialization_name = specialization.name;
-              var specialization_icon = specialization.icon;
-              output_string += '<div class="table-item"><img class="medium icon spec" src="'+specialization_icon+'"><span class="">' + specialization_name + '</span></div>';
-              if(spec_data.traits){
-                $.each(spec_data.traits, function(trait_index, trait_id){
-                  if(trait_id){
-                    var trait = dataRef_traits[trait_id];
-                    var trait_name = trait.name;
-                    var trait_icon = trait.icon;
-                    var trait_description = trait.description;
-                    output_string += '<div class="table-item"><img class="small icon" data-toggle="tooltip" data-placement="left" title="'+trait_description+'" src="'+trait_icon+'"><span class="">' + trait_name + '</span></div>';
-                  }
-                });
-              }
-            }
-          });
+
+      return;
+    }
+
+    var names = name ? [name] : _.keys(events);
+
+    for (; i < names.length; i++) {
+      name = names[i];
+      var handlers = events[name];
+      if (!handlers) break;
+      var remaining = [];
+
+      for (var j = 0; j < handlers.length; j++) {
+        var handler = handlers[j];
+
+        if (callback && callback !== handler.callback && callback !== handler.callback._callback || context && context !== handler.context) {
+          remaining.push(handler);
+        } else {
+          listening = handler.listening;
+
+          if (listening && --listening.count === 0) {
+            delete listeners[listening.id];
+            delete listening.listeningTo[listening.objId];
+          }
         }
-        return output_string;
       }
-      var character_specializations_pve = get_spec_traits(character_specializations.pve);
-      var character_specializations_pvp = get_spec_traits(character_specializations.pvp);
-      var character_specializations_wvw = get_spec_traits(character_specializations.wvw);
-      var character_equipment = character.equipment || '';
-      var character_helm = '';
-      var character_shoulders = '';
-      var character_gloves = '';
-      var character_coat = '';
-      var character_leggings = '';
-      var character_boots = '';
-      var character_back = '';
-      var character_aquahelm = '';
-      var character_amulet = '';
-      var character_accessory1 = '';
-      var character_accessory2 = '';
-      var character_ring1 = '';
-      var character_ring2 = '';
-      var character_weaponsA1 = '';
-      var character_weaponsA2 = '';
-      var character_weaponsB1 = '';
-      var character_weaponsB2 = '';
-      var character_weapons_aquaA = '';
-      var character_weapons_aquaB = '';
-      var character_sickle = '';
-      var character_axe = '';
-      var character_pick = '';
-      $.each(character_equipment, function(index, equipment_data){
-        equipment_data.id;
-        equipment_data.upgrades; // []
-        equipment_data.infusions; // []
-        equipment_data.skin;
-        var parse_item_data = function(item_data){
-          var item_string = '';
-          var item_icon = dataRef[item_data.id].icon || '';
-          var item_name = dataRef[item_data.id].name || '';
-          var item_rarity = dataRef[item_data.id].rarity || '';
-          var item_level = '';
-          if(dataRef[item_data.id].level){
-            item_level = ' (' + dataRef[item_data.id].level +')';
-          }
-          var item_tooltip = JSON.stringify(dataRef[item_data.id].details).replace(/"/g, ' ') || '';
-          item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+item_tooltip+'" class="icon medium item '+item_rarity+'" src="'+item_icon+'" /><span class="bold '+item_rarity+'">'+item_name +item_level+ '</span></div>';
-          if(item_data.upgrades){
-            $.each(item_data.upgrades, function(index, upgrade_id){
-              var upgrade_name = dataRef[upgrade_id].name || '';
-              var upgrade_icon = dataRef[upgrade_id].icon || '';
-              var upgrade_rarity = dataRef[upgrade_id].rarity || '';
-              var upgrade_level = '';
-              if(dataRef[upgrade_id].level){
-                upgrade_level = ' (' + dataRef[upgrade_id].level +')';
-              }
-              var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-              item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
-            });
-          }
-          if(item_data.infusions){
-            $.each(item_data.infusions, function(index, upgrade_id){
-              var upgrade_name = dataRef[upgrade_id].name || '';
-              var upgrade_icon = dataRef[upgrade_id].icon || '';
-              var upgrade_rarity = dataRef[upgrade_id].rarity || '';
-              var upgrade_level = '';
-              if(dataRef[upgrade_id].level){
-                upgrade_level = ' (' + dataRef[upgrade_id].level +')';
-              }
-              var upgrade_tooltip = JSON.stringify(dataRef[upgrade_id].details).replace(/"/g, ' ') || '';
-              item_string += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+upgrade_tooltip+'" class="icon small item '+upgrade_rarity+'" src="'+upgrade_icon+'" /><span class="bold '+upgrade_rarity+'">'+upgrade_name+ upgrade_level+'</span></div>';
-            });
-          }
-          if(item_data.skin){
-            var skin_name = dataRef_skins[item_data.skin].name || '';
-            var skin_icon = dataRef_skins[item_data.skin].icon || '';
-            item_string += '<div class="table-item"><img class="icon small item" src="'+skin_icon+'" /><span class="">Skin: '+skin_name +'</span></div>';
-          }
-          return item_string;
-        }
-        switch(equipment_data.slot){
-          case "Helm":
-            character_helm = parse_item_data(equipment_data);
-            break;
-          case "Shoulders":
-            character_shoulders = parse_item_data(equipment_data);
-            break;
-          case "Gloves":
-            character_gloves = parse_item_data(equipment_data);
-            break;
-          case "Coat":
-            character_coat = parse_item_data(equipment_data);
-            break;
-          case "Leggings":
-            character_leggings = parse_item_data(equipment_data);
-            break;
-          case "Boots":
-            character_boots = parse_item_data(equipment_data);
-            break;
-          case "Backpack":
-            character_back = parse_item_data(equipment_data);
-            break;
-          case "HelmAquatic":
-            character_aquahelm = parse_item_data(equipment_data);
-            break;
-          case "Amulet":
-            character_amulet = parse_item_data(equipment_data);
-            break;
-          case "Accessory1":
-            character_accessory1 = parse_item_data(equipment_data);
-            break;
-          case "Accessory2":
-            character_accessory2 = parse_item_data(equipment_data);
-            break;
-          case "Ring1":
-            character_ring1 = parse_item_data(equipment_data);
-            break;
-          case "Ring2":
-            character_ring2 = parse_item_data(equipment_data);
-            break;
-          case "WeaponA1":
-            character_weaponsA1 = parse_item_data(equipment_data);
-            break;
-          case "WeaponA2":
-            character_weaponsA2 = parse_item_data(equipment_data);
-            break;
-          case "WeaponB1":
-            character_weaponsB1 = parse_item_data(equipment_data);
-            break;
-          case "WeaponB2":
-            character_weaponsB2 = parse_item_data(equipment_data);
-            break;
-          case "WeaponAquaticA":
-            character_weapons_aquaA = parse_item_data(equipment_data);
-            break;
-          case "WeaponAquaticB":
-            character_weapons_aquaB = parse_item_data(equipment_data);
-            break;
-          case "Sickle":
-            character_sickle = parse_item_data(equipment_data);
-            break;
-          case "Axe":
-            character_axe = parse_item_data(equipment_data);
-            break;
-          case "Pick":
-            character_pick = parse_item_data(equipment_data);
-            break;
-        }
+
+      if (remaining.length) {
+        events[name] = remaining;
+      } else {
+        delete events[name];
+      }
+    }
+
+    if (_.size(events)) return events;
+  };
+
+  Events.once = function (name, callback, context) {
+    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
+    return this.on(events, void 0, context);
+  };
+
+  Events.listenToOnce = function (obj, name, callback) {
+    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
+    return this.listenTo(obj, events);
+  };
+
+  var onceMap = function onceMap(map, name, callback, offer) {
+    if (callback) {
+      var once = map[name] = _.once(function () {
+        offer(name, once);
+        callback.apply(this, arguments);
       });
-      var character_bags = '';
-      if(character.bags){
-        $.each(character.bags, function(index, bag_data){
-          if(bag_data){
-            var bag_icon = dataRef[bag_data.id].icon || '';
-            var bag_name = dataRef[bag_data.id].name || '';
-            var bag_rarity = dataRef[bag_data.id].rarity || '';
-            var bag_size = bag_data.size || '';
-            var bag_tooltip = dataRef[bag_data.id].description || '';
-            character_bags += '<div class="table-item"><img data-toggle="tooltip" data-placement="left" title="'+bag_tooltip+'" class="icon medium item '+bag_rarity+'" src="'+bag_icon+'" /><span class="bold '+bag_rarity+'">'+bag_name+ '</span></div>';
-          }
+
+      once._callback = callback;
+    }
+
+    return map;
+  };
+
+  Events.trigger = function (name) {
+    if (!this._events) return this;
+    var length = Math.max(0, arguments.length - 1);
+    var args = Array(length);
+
+    for (var i = 0; i < length; i++) {
+      args[i] = arguments[i + 1];
+    }
+
+    eventsApi(triggerApi, this._events, name, void 0, args);
+    return this;
+  };
+
+  var triggerApi = function triggerApi(objEvents, name, cb, args) {
+    if (objEvents) {
+      var events = objEvents[name];
+      var allEvents = objEvents.all;
+      if (events && allEvents) allEvents = allEvents.slice();
+      if (events) triggerEvents(events, args);
+      if (allEvents) triggerEvents(allEvents, [name].concat(args));
+    }
+
+    return objEvents;
+  };
+
+  var triggerEvents = function triggerEvents(events, args) {
+    var ev,
+        i = -1,
+        l = events.length,
+        a1 = args[0],
+        a2 = args[1],
+        a3 = args[2];
+
+    switch (args.length) {
+      case 0:
+        while (++i < l) {
+          (ev = events[i]).callback.call(ev.ctx);
+        }
+
+        return;
+
+      case 1:
+        while (++i < l) {
+          (ev = events[i]).callback.call(ev.ctx, a1);
+        }
+
+        return;
+
+      case 2:
+        while (++i < l) {
+          (ev = events[i]).callback.call(ev.ctx, a1, a2);
+        }
+
+        return;
+
+      case 3:
+        while (++i < l) {
+          (ev = events[i]).callback.call(ev.ctx, a1, a2, a3);
+        }
+
+        return;
+
+      default:
+        while (++i < l) {
+          (ev = events[i]).callback.apply(ev.ctx, args);
+        }
+
+        return;
+    }
+  };
+
+  Events.bind = Events.on;
+  Events.unbind = Events.off;
+});
+
+
+define('model/apiKey',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var key = localStorage.getItem('gw2apikey');
+  var apiKey = exports.apiKey = {
+    getKey: function getKey() {
+      return key;
+    },
+    setKey: function setKey(apiKey) {
+      key = apiKey;
+      localStorage.setItem('gw2apikey', key);
+    }
+  };
+  exports.default = apiKey;
+});
+
+
+define('model/gw2Data/guilds',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.guilds = undefined;
+  var dataRef = {};
+  var loadingRef = {};
+  var guilds = exports.guilds = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load(id) {
+      if (!loadingRef[id]) {
+        var params = {
+          guild_id: id
+        };
+        loadingRef[id] = $.get('https://api.guildwars2.com/v1/guild_details.json?' + $.param(params)).done(function (guildData) {
+          dataRef[guildData.guild_id] = guildData;
         });
       }
+      return loadingRef[id];
+    }
+  };
+});
 
-      var row = [character_name, character_level, character_profession, character_race, character_gender, character_age, character_deaths, character_created, character_guild, character_crafting, character_specializations_pve, character_specializations_pvp, character_specializations_wvw, character_helm, character_shoulders, character_gloves, character_coat, character_leggings, character_boots, character_back, character_aquahelm, character_amulet, character_accessory1, character_accessory2, character_ring1, character_ring2, character_weaponsA1, character_weaponsA2, character_weaponsB1, character_weaponsB2, character_weapons_aquaA, character_weapons_aquaB, character_bags, character_sickle, character_axe, character_pick];
-      dataSet.push(row);
-      if(characters_data.length === dataSet.length){
-        deferred.resolve();
-      }        
-    });
+
+define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/guilds'], function (exports, _apiKey, _guilds) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.characters = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
   }
-  deferred_pre.done(function(dataRef){
-    console.log('dataref');
-    deferred_guilds.done(function(dataRef_guilds){
-      console.log('dataref guilds');
-      deferred_skins.done(function(dataRef_skins){
-        console.log('dataref skins');
-        console.log(dataRef_skins);
-        deferred_specializations.done(function(dataRef_specializations){
-          console.log('dataref specializations');
-          deferred_traits.done(function(dataRef_traits){
-            console.log('dataref traits');
-            render_characters_with_dataRef(characters_data, dataRef, dataRef_guilds, dataRef_skins, dataRef_specializations, dataRef_traits);
+
+  var _createClass = (function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  })();
+
+  var characterList = undefined;
+  var characters = exports.characters = {
+    get: function get() {
+      return characterList;
+    },
+    load: function load() {
+      var page = 0;
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en',
+        page: 0
+      };
+      $.get('https://api.guildwars2.com/v2/characters?' + $.param(params)).done(function (responseData) {
+        var waiting = [];
+        responseData.forEach(function (characterData) {
+          //載入guild
+          if (characterData.guild) {
+            waiting.push(_guilds.guilds.load(characterData.guild));
+          }
+        });
+
+        //全部載入完畢後才resolve loadDeferred
+        $.when.apply($.when, waiting).done(function () {
+          characterList = responseData.map(function (characterData) {
+            var character = new Character(characterData);
+            return character.toJSON();
           });
+          loadDeferred.resolve(characterList);
         });
       });
-    });
-  });
-  deferred.done(function(){
-    $('#characters [data-click]').button('reset');
-    $('#characters-table').DataTable( {
-      data: dataSet,
-      "destroy":true,
-      "pageLength": 50,
-      //"pageing": false,
-      "order": [[ 1, 'dsc' ]],
-      "dom":'',
-      "columnDefs": [
-        {
-          "targets": 0,
-          "render": function ( data, type, row ) {
-            if(data){
-              return '<span class="bold">'+ data + '</span>';
-            }else{
-              return data;
-            }
-          }
-        },{
-          "targets": 3,
-          "render": function ( data, type, row ) {
-            return data + '<br />' + row[4];
-          }
-        },{
-          "targets": [4,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35],
-          "visible": false
+      return loadDeferred;
+    }
+  };
+
+  var Character = (function () {
+    function Character(data) {
+      _classCallCheck(this, Character);
+
+      this._data = data;
+      return this;
+    }
+
+    _createClass(Character, [{
+      key: 'toJSON',
+      value: function toJSON() {
+        var _this = this;
+
+        var result = {};
+        Object.keys(this._data).forEach(function (key) {
+          result[key] = _this[key];
+        });
+        return result;
+      }
+    }, {
+      key: 'name',
+      get: function get() {
+        return this._data.name || '';
+      }
+    }, {
+      key: 'race',
+      get: function get() {
+        return this._data.race || '';
+      }
+    }, {
+      key: 'gender',
+      get: function get() {
+        return this._data.gender || '';
+      }
+    }, {
+      key: 'profession',
+      get: function get() {
+        return this._data.profession || '';
+      }
+    }, {
+      key: 'level',
+      get: function get() {
+        return this._data.level || '';
+      }
+    }, {
+      key: 'created',
+      get: function get() {
+        var created = this._data.created;
+        return created.slice(0, created.indexOf('T')) || '';
+      }
+    }, {
+      key: 'age',
+      get: function get() {
+        var age = this._data.age;
+        var seconds = age % 60;
+        var minutes = Math.floor(age / 60) % 60;
+        var hours = Math.floor(age / 3600);
+        return hours + 'h ' + minutes + 'm ' + seconds + 's';
+      }
+    }, {
+      key: 'deaths',
+      get: function get() {
+        return this._data.deaths || '';
+      }
+    }, {
+      key: 'guild',
+      get: function get() {
+        var guildData = _guilds.guilds.get(this._data.guild);
+
+        return guildData.guild_name + '<br />[' + guildData.tag + ']';
+      }
+    }, {
+      key: 'crafting',
+      get: function get() {
+        var crafting = this._data.crafting;
+
+        if (crafting && crafting.reduce) {
+          return crafting.reduce(function (html, craftData) {
+            return html + (craftData.rating + '|' + craftData.discipline + ' <br />');
+          }, '');
         }
-      ],
-      "initComplete": function( settings, json ) {
+      }
+    }]);
+
+    return Character;
+  })();
+});
+
+
+define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/characters', 'model/gw2Data/guilds'], function (exports, _events, _apiKey, _characters, _guilds) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.gw2Data = undefined;
+  var gw2Data = exports.gw2Data = {
+    loadAll: function loadAll() {
+      return $.when(this.loadCharacters());
+    },
+    loadCharacters: function loadCharacters() {
+      var _this = this;
+
+      this.trigger('load:characters');
+      return _characters.characters.load().done(function (characterList) {
+        _this.trigger('loaded:characters', characterList);
+      });
+    },
+    loadGuild: function loadGuild(guildId) {
+      var _this2 = this;
+
+      this.trigger('load:guild');
+      var guild_id = guildId;
+      return _guilds.guilds.load(guildId).done(function (guildData) {
+        _this2.trigger('loaded:guild', guildData);
+      });;
+    }
+  };
+  exports.default = gw2Data;
+  (0, _events.eventful)(gw2Data);
+});
+
+
+define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, _gw2Data, _apiKey) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.accounts = undefined;
+  var accounts = exports.accounts = {
+    initialize: function initialize() {
+      // show saved apiKey
+      var savedKey = _apiKey.apiKey.getKey();
+      if (savedKey) {
+        $('#api_key').val(savedKey);
+      }
+      this.bindEvents();
+    },
+    bindEvents: function bindEvents() {
+      $('#api_key').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var newKey = $(this).val();
+          _apiKey.apiKey.setKey(newKey);
+          accounts.showLoading();
+          _gw2Data.gw2Data.loadCharacters();
+        }
+      });
+
+      _gw2Data.gw2Data.on('loaded:characters', function () {
+        $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+    },
+    showLoading: function showLoading() {
+      $('#account-status').parent().empty().html('\n      <p id="account-status" class="status" style="display: block;">\n        Loading account...\n      </p>\n      <p id="characters-status" class="status" style="display: block;">\n        Loading characters...\n      </p>\n      <p id="bank-status" class="status" style="display: block;">\n        Loading inventory...\n      </p>\n      <p id="wallet-status" class="status" style="display: block;">\n        Loading wallet...\n      </p>\n    ');
+    }
+  };
+  $(function () {
+    accounts.initialize();
+  });
+});
+
+
+define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.characters = undefined;
+  var characters = exports.characters = {
+    initialize: function initialize() {
+      $('#characters [data-click]').button('reset');
+      this.bindEvents();
+    },
+    bindEvents: function bindEvents() {
+      _gw2Data.gw2Data.on('loaded:characters', function (characterList) {
+        var dataSet = characterList.map(function (character) {
+          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations_pve, character.specializations_pvp, character.specializations_wvw, character.helm, character.shoulders, character.gloves, character.coat, character.leggings, character.boots, character.back, character.aquahelm, character.amulet, character.accessory1, character.accessory2, character.ring1, character.ring2, character.weaponsA1, character.weaponsA2, character.weaponsB1, character.weaponsB2, character.weapons_aquaA, character.weapons_aquaB, character.bags, character.sickle, character.axe, character.pick];
+        });
+        $('#characters-table').DataTable({
+          data: dataSet,
+          destroy: true,
+          pageLength: 50,
+          columnDefs: [{
+            targets: 0,
+            render: function render(data, type, row) {
+              if (data) {
+                return '<span class="bold">' + data + '</span>';
+              } else {
+                return data;
+              }
+            }
+          }, {
+            targets: 3,
+            render: function render(data, type, row) {
+              return data + '<br />' + row[4];
+            }
+          }, {
+            targets: [4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
+            visible: false
+          }]
+        });
         $('#characters .loading').hide();
-        //$('#characters [data-toggle="tooltip"]').tooltip();
-        $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>')
         var table = $('#characters-table').DataTable();
-        $('#characters [data-subset]').on('click tap', function(){
+        $('#characters [data-subset]').on('click tap', function () {
           table.columns('[data-toggle]').visible(false);
           table.columns('[data-toggle="' + $(this).attr('data-subset') + '"]').visible(true);
         });
-        $('#characters [data-click]').on('click tap', function(){
+        $('#characters [data-click]').on('click tap', function () {
           $(this).button('loading');
           $(this).parents('.tab-pane').children('.loading').show();
           var action = $(this).attr('data-click');
-          if(action == 'refreshcharacters'){
+          if (action == 'refreshcharacters') {
             get_render_characters();
           }
         });
-        $('#characters [data-option]').on('click tap', function(){
+        $('#characters [data-option]').on('click tap', function () {
           var searchValue = $(this).attr("data-option");
           table.column([2]).search(searchValue).draw();
         });
-      }
-    });
-  });
-}
-
-var render_wallet = function(wallet_data){
-
-  // render wallet data
-  var dataSet=[];
-  var deferred = $.Deferred();
-  deferred_currencies.done(function(dataRef){
-    $.each(wallet_data, function(wallet_item_index, concurrency){
-      var concurrency_icon = dataRef[concurrency.id].icon || '';
-      var concurrency_name = dataRef[concurrency.id].name || '';
-      var concurrency_value = '';
-      if(concurrency_name == 'Coin'){
-        var copper = concurrency.value % 100;
-        var silver = Math.floor(concurrency.value / 100) % 100;
-        var gold = Math.floor(concurrency.value / 10000);
-        concurrency_value = gold + 'g ' + silver + 's ' + copper + 'c';
-      }else{
-        concurrency_value = concurrency.value || '';
-      }
-      var concurrency_description = dataRef[concurrency.id].description || '';
-      var concurrency_order = dataRef[concurrency.id].order || '';
-      var row = [concurrency_icon,concurrency_name,concurrency_value,concurrency_description,concurrency_order];
-      dataSet.push(row);
-      if(wallet_data.length === dataSet.length){
-        deferred.resolve();
-      }        
-    });
-  });
-  deferred.done(function(){
-    $('#wallet-table').DataTable( {
-      data: dataSet,
-      //"destroy":true,
-      "pageLength": 25,
-      //"pageing": false,
-      "order": [[ 4, 'asc' ]],
-      "dom":'',
-      "columnDefs": [
-        {
-          "targets": 0,
-          "render": function ( data, type, row ) {
-            if(data){
-              return "<img class='large solo icon' src='" + data + "' />";
-            }else{
-              return data;
-            }
-          }
-        },{
-          "targets": 1,
-          "render": function ( data, type, row ) {
-            if(data){
-              return '<span class="bold">'+ data + '</span>';
-            }else{
-              return data;
-            }
-          }
-        }
-      ],
-      "initComplete": function( settings, json ) {
-        $('#wallet .loading').hide();
-        $('#wallet-status').html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-      }
-    });
-  });
-}
-var render_bank = function(bank_data){
-
-  var deferred_pre = $.Deferred();
-  var bank_and_characters_data = [];
-  var totalCount;
-
-  // step 1: create a local copy from items api
-  deferred_prebank.done(function(character_inventory_id_list, character_inventory_items){
-    var idList = $.merge(get_id_list(bank_data), get_id_list(character_inventory_items));
-    totalCount = idList.length;
-
-    idList = idList.filter( function( item, index, inputArray ) {
-      return inputArray.indexOf(item) == index;
-    });
-    bank_and_characters_data = $.merge(bank_data, character_inventory_items);
-    create_data_ref(idList, '/items?ids=', deferred_pre);
-  });
-
-  // step 2: create bank data
-  var dataSet=[];
-  var deferred = $.Deferred();
-  var equipmentCount=utilityCount=toysCount=miscCount=armorCount=weaponCount=backCount=trinketCount=upgradeCount=bagCount=gatheringCount=toolCount=consumableCount=gizmoCount=minipetCount=containerCount=materialCount=trophyCount=traitCount = 0;
-  var count = function(type){
-    if(type == "Armor"){
-      armorCount+=1;
-      equipmentCount+=1;
-    }else if(type == "Weapon"){
-      weaponCount+=1;
-      equipmentCount+=1;
-    }else if(type == "Back"){
-      backCount+=1;
-      equipmentCount+=1;
-    }else if(type == "Trinket"){
-      trinketCount+=1;
-      equipmentCount+=1;
-    }else if(type == "UpgradeComponent"){
-      upgradeCount+=1;
-      equipmentCount+=1;
-    }else if(type == "Bag"){
-      bagCount+=1;
-      utilityCount+=1;
-    }else if(type == "Gathering"){
-      gatheringCount+=1;
-      utilityCount+=1;
-    }else if(type == "Tool"){
-      toolCount+=1;
-      utilityCount+=1;
-    }else if(type == "Consumable"){
-      consumableCount+=1;
-      miscCount+=1;
-    }else if(type == "Gizmo"){
-      gizmoCount+=1;
-      miscCount+=1;
-    }else if(type == "Minipet"){
-      minipetCount+=1;
-      miscCount+=1;
-    }else if(type == "Container"){
-      containerCount+=1;
-      miscCount+=1;
-    }else if(type == "CraftingMaterial"){
-      materialCount+=1;
-    }else if(type == "Trophy"){
-      trophyCount+=1;
-      miscCount+=1;
-    }else if(type == "Trait"){
-      traitCount+=1;
-      miscCount+=1;
+      });
     }
-  }
-  deferred_pre.done(function(dataRef){
-    $.each(bank_and_characters_data, function(item_index, item_data){
-      if(item_data){
-        var item_position;
-        if(item_data.position){
-          item_position = item_data.position;
-        }else if(item_index + 1 < 10){
-          item_position = 'Bank|00'+(item_index + 1);
-        }else if(item_index + 1 < 100){
-          item_position = 'Bank|0'+(item_index + 1);
-        }else{
-          item_position = 'Bank|'+(item_index + 1);
-        }
-        var item_icon = dataRef[item_data.id].icon || "";
-        var item_name = dataRef[item_data.id].name || "";
-        var item_count = item_data.count || "";
-        var item_type = dataRef[item_data.id].type || "";
-        var item_level = dataRef[item_data.id].level || "";
-        var item_rarity = dataRef[item_data.id].rarity || "";
-        var item_binding = '';
-        if(item_data.binding){
-          if(item_data.binding == 'Character'){
-            item_binding = item_data.bound_to;
-          }else{
-            item_binding = item_data.binding;
-          }
-        }
-        var item_details = "";
-        var data_to_text = function(key, value){
-          var text = "";
-          if(typeof value == "string"){
-            text += key + ': ' + value + '. ';
-          }else if(typeof value == "number"){
-            text += key + ': ' + parseInt(value) + '. ';
-          }else if(value.length == 0){
-            text += key + ': . ';
-          }else{
-            text += key + ': ' + JSON.stringify(value) + '. ';
-            //$.each(value, function(value_key, value_value){
-            //  data_to_text(value_key, value_value);
-            //});
-          }
-          return text;
-        };
-        if(dataRef[item_data.id].details){
-          $.each(dataRef[item_data.id].details, function(detail_key, detail_value){
-            item_details += data_to_text(detail_key, detail_value);
-          });
-        }
-        var item_description = dataRef[item_data.id].description + item_details;
-        var row = [item_icon, item_name, item_count, item_type, item_level, item_rarity, item_description, item_position, item_binding];
-        dataSet.push(row);
+  };
+  $(function () {
+    characters.initialize();
+  });
+  exports.default = characters;
+});
 
-        count(item_type);
 
-        if(totalCount === dataSet.length){
-          deferred.resolve();
-          $.each({"all":totalCount, "equipment":equipmentCount, "utilities":utilityCount, "materials":materialCount, "misc":miscCount, "toys":toysCount},function(key, value){
-            $("[data-subset='"+ key +"'] .badge").text(value);
-          });
-          $.each({"Armor":armorCount, "Weapon":weaponCount,"Back":backCount, "Trinket":trinketCount, "UpgradeComponent":upgradeCount, "Bag":bagCount, "Gathering":gatheringCount, "Tool":toolCount, "Consumable":consumableCount,"Gizmo":gizmoCount,"Minipet":minipetCount,"Container":containerCount, "CraftingMaterial":materialCount,"Trophy":trophyCount,"Trait":traitCount},function(key, value){
-            $("[data-option='"+ key +"'] .badge").text(value);
-          });
-        }
-      }
+define('index.js',['view/account', 'view/characters'], function (_account, _characters) {
+  $(function () {
+    $('#tabs').tab();
+    $('body').on('mouseenter', '*[data-toggle="tooltip"]', function () {
+      $(this).tooltip('show');
+    });
+    $('body').on('mouseleave', '*[data-toggle="tooltip"]', function () {
+      $(this).tooltip('hide');
+    });
+    $('.tab-pane [data-subset]').on('click tap', function () {
+      $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
+    });
+    $('[data-click="toggleAbout"]').on('click tap', function () {
+      $('#about').slideToggle();
     });
   });
-  // step 3: datatable
-  deferred.done(function(){
-    // step 3-1: reset refresh button
-    $('#bank [data-click]').button('reset');
-    // step 3-2: initialize datatable
-    $('#bank-table').DataTable( {
-      data: dataSet,
-      "destroy":true,
-      "pageLength": 50,
-      "order": [[ 7, 'asc' ]],
-      "columnDefs": [
-        {
-          "targets": 0,
-          "render": function ( data, type, row ) {
-            //console.log(row[6]);
-            var tooltip = row[6].replace(/"/g, ' ').replace(/'/g, ' ');
-            return "<img class='large solo item icon "+row[5]+"' data-toggle='tooltip' data-placement='right' title='" + tooltip + "' src='" + data + "' />";
-          }
-        },{
-          "targets": [ 6 ],
-          "visible": false
-        },{
-          "targets": [ 1 ],
-          "render": function ( data, type, row ) {
-            return "<span class='bold "+row[5]+"'>" + data + "</span>";
-          }
-        }
-      ],
-      "initComplete": function( settings, json ) {
-        //$('#bank [data-toggle="tooltip"]').tooltip();
-        $('#bank .loading').hide();
-        $('#bank-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-        // step 3-3: enable table search by nav bar click
-        var bankTable = $('#bank-table').DataTable();
-        $('#bank [data-option]').on('click tap', function(){
-          var searchValue = $(this).attr("data-option");
-          bankTable.column([3]).search(searchValue).draw();
-        });
-        $('#bank [data-subset]').on('click tap', function(){
-          var searchCollection = $(this).attr("data-subset");
-          var searchValue = "";
-          if(searchCollection == "equipment"){
-            searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
-          }else if(searchCollection == "utilities"){
-            searchValue = "Bag|Gathering|Tool";
-          }else if(searchCollection == "toys"){
-            searchValue = "";
-          }else if(searchCollection == "materials"){
-            searchValue = "CraftingMaterial";
-          }else if(searchCollection == "misc"){
-            searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
-          }
-          bankTable.column([3]).search(searchValue, true).draw();
-        });
-        // step 3-4: enable table refresh by navbar click
-        $('#bank [data-click]').on('click tap', function(){
-          $(this).button('loading');
-          $(this).parents('.tab-pane').children('.subset').removeClass('active');
-          $(this).parents('.tab-pane').children('.loading').show();
-          var action = $(this).attr('data-click');
-          if(action == 'refreshbank'){
-            get_render_bank();
-          }
-        });
-      }
-    });
-  })
-}
-
-// custimozed behavior for different data sources
-
-var get_render_account = function(){
-  get_data('/account', access_token).done(function(account_data){
-    console.log('get account');
-    $('#account .status').show();
-    render_account(account_data);
-    create_guild_ref(account_data.guilds, deferred_guilds);
-  });
-
-  get_data('/account/skins', access_token).done(function(skins_id_list){
-    console.log('get skins');
-    create_data_ref(skins_id_list, '/skins?ids=', deferred_skins);
-  });
-}
-
-var get_render_characters = function(){
-  get_data('/characters?page=0&access_token=', account_key).done(function(characters_data){
-    console.log('get characters');
-    render_characters(characters_data);
-  });
-}
-
-var get_render_wallet = function(){
-  get_data('/account/wallet', access_token).done(function(wallet_data){
-    console.log('get wallet');
-    render_wallet(wallet_data);
-  });
-}
-
-var get_render_bank = function(){
-  get_data('/account/bank', access_token).done(function(bank_data){
-    console.log('get bank');
-    render_bank(bank_data);
-  });
-}
-
-//var deferred_minis = $.Deferred(); // for wardrobe tab
-//get_data('/account/minis', access_token).done(function(minis_id_list){
-//  create_data_ref(minis_id_list, '/minis?ids=', deferred_minis);
-//});
-
-//deferred_minis.done(function(dataRef_minis){
-//  //get_render_characters(dataRef_minis);
-//});
-
-//var get_render_achievements = function(){
-//  get_data('/account/achievements', access_token).done(function(achievements_data){
-//    render_achievements(achievements_data);
-//  });
-//}
-
-// and take account info dependent actions
-
-var load_page = function(){
-  get_render_characters();
-  get_render_bank();
-  get_render_account();
-  get_render_wallet();
-}
-
-// get static data as soon as page load
-
-var deferred_specializations = $.Deferred();
-get_data_id('/specializations').done(function(specializations_id_list){
-  create_data_ref(specializations_id_list, '/specializations?ids=', deferred_specializations);
 });
 
-var deferred_traits = $.Deferred();
-get_data_id('/traits').done(function(traits_id_list){
-  create_data_ref(traits_id_list, '/traits?ids=', deferred_traits);
-});
-
-var deferred_currencies = $.Deferred();
-get_data_id('/currencies').done(function(currencies_id_list){
-  create_data_ref(currencies_id_list, '/currencies?ids=', deferred_currencies);
-});
-
-var deferred_guilds = $.Deferred(); // for characters tab
-var deferred_skins = $.Deferred(); // for characters and wardrobe tab
-var deferred_prebank = $.Deferred();
-
-var account_key = '';
-var access_token = '';
-var gw2apikey = localStorage.getItem('gw2apikey');
-
-$(document).ready(function(){
-
-  // enable bootstrap tabs ui
-  $('#tabs').tab();
-  $('body').on('mouseenter','*[data-toggle="tooltip"]',function(){$(this).tooltip('show')}); 
-  $('body').on('mouseleave','*[data-toggle="tooltip"]',function(){$(this).tooltip('hide')}); 
-
-  // toggle level 2 navbar
-  $('.tab-pane [data-subset]').on('click tap', function(){
-    $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
-  });
-
-  // toggle about section
-  $('[data-click="toggleAbout"]').on('click tap', function(){
-    $('#about').slideToggle();
-  });
-
-  // get account info
-  if(gw2apikey){
-    $('#api_key').val(gw2apikey);
-  }
-
-  $('#api_key').keypress(function(e){
-    if(e.keyCode == 13){
-      account_key = $(this).val();
-      localStorage.setItem('gw2apikey', account_key);
-      access_token = '?access_token=' + account_key;
-      $('#account-status').show();
-      load_page();
-    }
-  });
-
- });
-
-
-//var render_achievements = function(achievements_data){
-//  // create a local copy from achievements api
-//  var idList = get_id_list(achievements_data);
-//  var deferred_pre = $.Deferred();
-//  create_data_ref(idList, '/achievements?ids=', deferred_pre);
-
-// //  // render achievements data
-//  var dataSet=[];
-//  var deferred = $.Deferred();
-//  deferred_pre.done(function(dataRef){
-//    $.each(achievements_data, function(achievement_index, achievement){
-//      var achievement_icon = dataRef[achievement.id].icon || '';
-//      var achievement_name = dataRef[achievement.id].name || '';
-//      var achievement_current = achievement.current || '';
-//      var achievement_max = achievement.max || '';
-//      var achievement_done = achievement.done || '';
-//      var achievement_description = dataRef[achievement.id].description || '';
-//      var achievement_requirement = dataRef[achievement.id].requirement || '';
-//      var achievement_type = dataRef[achievement.id].type || '';
-//      var achievement_flags = dataRef[achievement.id].flags || '';
-//      var row = [achievement_icon,achievement_name,achievement_current,achievement_max,achievement_done,achievement_description,achievement_requirement,achievement_type,achievement_flags];
-//      dataSet.push(row);
-//      if(achievements_data.length === dataSet.length){
-//        deferred.resolve();
-//      }        
-//    });
-//  });
-//  deferred.done(function(){
-//    $('#achievements-table').DataTable( {
-//      data: dataSet,
-//      //"destroy":true,
-//      "pageLength": 50,
-//      //"pageing": false,
-//      "order": [[ 4, 'dsc' ]],
-//      //"dom":'',
-//      "columnDefs": [
-//        {
-//          "targets": 0,
-//          "render": function ( data, type, row ) {
-//            if(data){
-//              return "<img class='large solo icon' src='" + data + "' />";
-//            }else{
-//              return data;
-//            }
-//          }
-//        },{
-//          "targets": 1,
-//          "render": function ( data, type, row ) {
-//            if(data){
-//              return '<span class="bold">'+ data + '</span>';
-//            }else{
-//              return data;
-//            }
-//          }
-//        },{
-//          "targets": 2,
-//          "render": function ( data, type, row ) {
-//            if(row[3]){
-//              var max;
-//              if(row[3] == -1){
-//                max = '∞';
-//              }else{
-//                max = row[3];
-//              }
-//              return data + "/" + max;
-//            }else{
-//              return data;
-//            }
-//          }
-//        },{
-//          "targets": 4,
-//          "render": function ( data, type, row ) {
-//            if(data){
-//              return '<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>';
-//            }else{
-//              return data;
-//            }
-//          }
-//        },{
-//          "targets": 8,
-//          "render": function ( data, type, row ) {
-//            if(data){
-//              var str = '';
-//              $.each(data, function(index, value){
-//                str += '<span class="label label-default">' + value + '</span> '
-//              });
-//              return str;
-//            }else{
-//              return data;
-//            }
-//          }
-//        },{
-//          "targets": [3,7,8],
-//          "visible": false
-//        }
-//      ],
-//      "initComplete": function( settings, json ) {
-//        $('#achievements .loading').hide();
-//        $('#achievements-status').html('Achievements loaded <span class="glyphicon glyphicon-ok text-success"></span>')
-//      }
-//    });
-//  });
-//}
-
-// discard
-//var render_guilds = function(guilds_data){
-//  var idList=[];
-//  var dataSet=[];
-//  var deferred = $.Deferred();
-//  var totalCount=0;
-//  $.each(guilds_data, function(index, guild_id){
-//    totalCount++;
-//    get_guild(guild_id).done(function(guild){
-//      var guild_emblem = guild.emblem || '';
-//      var guild_foreground = guild_emblem.foreground_id || '';
-//      var guild_background = guild_emblem.background_id || '';
-//      var guild_name = guild.guild_name || '';
-//      var guild_tag = guild.tag || '';
-//      var row = [guild_foreground, guild_background, guild_name, guild_tag];
-//      dataSet.push(row);
-//      if(totalCount === dataSet.length){
-//        deferred.resolve();
-//      }
-//    });
-//  });
-//  deferred.done(function(){
-//    $('#guilds-table').DataTable( {
-//      data: dataSet,
-//      "destroy":true,
-//      //"pageLength": -1,
-//      //"pageing": false,
-//      "orderFixed": [[ 2, 'asc' ]],
-//      "dom":'',
-//      "columnDefs": [
-//        {
-//          "targets": 0,
-//          "visible": false
-//          //"render": function ( data, type, row ) {
-//          //  return "<img class='icon' src='" + data + "' />";
-//          //}
-//        },{
-//          "targets": [ 1 ],
-//          "visible": false
-//        }
-//      ],
-//      "initComplete": function( settings, json ) {
-//        $('#guilds .loading').hide();
-//        //console.log("guilds done");
-//      }
-//    });
-//  });
-//}
-
+require(['index.js']);
