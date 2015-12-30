@@ -530,6 +530,20 @@ define('model/gw2Data/items',['exports'], function (exports) {
     loadByCharacterList: function loadByCharacterList(characterList) {
       var needItemIdList = [];
       characterList.forEach(function (characterData) {
+        if (characterData.bags) {
+          characterData.bags.forEach(function (bag) {
+            if (bag) {
+              needItemIdList.push(bag.id);
+              if (bag.inventory) {
+                bag.inventory.forEach(function (item) {
+                  if (item) {
+                    needItemIdList.push(item.id);
+                  }
+                });
+              }
+            }
+          });
+        }
         if (characterData.equipment) {
           characterData.equipment.forEach(function (equipment) {
             if (equipment) {
@@ -713,13 +727,54 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           wvw: getSpecializationHtml(specializations.wvw)
         };
       }
+    }, {
+      key: 'equipment',
+      get: function get() {
+        var equipmentArray = this._data.equipment;
+        var equipment = {};
+        equipmentArray.forEach(function (element, index, array) {
+          equipment[element.slot] = {};
+          equipment[element.slot].id = element.id;
+          equipment[element.slot].upgrades = element.upgrades;
+          equipment[element.slot].infusions = element.infusions;
+        });
+        return {
+          Helm: getEquipmentItemHtml(equipment.Helm),
+          Shoulders: getEquipmentItemHtml(equipment.Shoulders),
+          Gloves: getEquipmentItemHtml(equipment.Gloves),
+          Coat: getEquipmentItemHtml(equipment.Coat),
+          Leggings: getEquipmentItemHtml(equipment.Leggings),
+          Boots: getEquipmentItemHtml(equipment.Boots),
+          Backpack: getEquipmentItemHtml(equipment.Backpack),
+          HelmAquatic: getEquipmentItemHtml(equipment.HelmAquatic),
+          Amulet: getEquipmentItemHtml(equipment.Amulet),
+          Accessory1: getEquipmentItemHtml(equipment.Accessory1),
+          Accessory2: getEquipmentItemHtml(equipment.Accessory2),
+          Ring1: getEquipmentItemHtml(equipment.Ring1),
+          Ring2: getEquipmentItemHtml(equipment.Ring2),
+          WeaponA1: getEquipmentItemHtml(equipment.WeaponA1),
+          WeaponA2: getEquipmentItemHtml(equipment.WeaponA2),
+          WeaponB1: getEquipmentItemHtml(equipment.WeaponB1),
+          WeaponB2: getEquipmentItemHtml(equipment.WeaponB2),
+          WeaponAquaticA: getEquipmentItemHtml(equipment.WeaponAquaticA),
+          WeaponAquaticB: getEquipmentItemHtml(equipment.WeaponAquaticB),
+          Sickle: getEquipmentItemHtml(equipment.Sickle),
+          Axe: getEquipmentItemHtml(equipment.Axe),
+          Pick: getEquipmentItemHtml(equipment.Pick)
+        };
+      }
+    }, {
+      key: 'bags',
+      get: function get() {
+        var bags = this._data.bags;
+        return getBagHtml(bags);
+      }
     }]);
 
     return Character;
   })();
 
   function getSpecializationHtml(dataList) {
-    var output_string = '';
     return dataList.reduce(function (html, specializationData) {
       if (specializationData) {
         var specialization = _specializations.specializations.get(specializationData.id);
@@ -739,6 +794,58 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         }
 
         return html + ('\n        <div class="table-item">\n          <img class="medium icon spec" src="' + specialization.icon + '" />\n          <span>' + specialization.name + '</span>\n        </div>\n        ' + traitHtml + '\n      ');
+      } else {
+        return html;
+      }
+    }, '');
+  }
+
+  function getEquipmentItemHtml(data) {
+    var html = '';
+
+    if (data) {
+      var equipment = _items.items.get(data.id);
+
+      var upgradeHtml = '';
+
+      if (data.upgrades) {
+        upgradeHtml = data.upgrades.reduce(function (upgradeHtml, upgradeId) {
+          var upgrade = _items.items.get(upgradeId);
+
+          if (upgrade) {
+            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'' + upgrade.description + '\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <small>(' + upgrade.level + ')</small>\n              </span>\n            </div>\n          ');
+          } else {
+            return upgradeHtml;
+          }
+        }, '');
+      }
+
+      var infusionHtml = '';
+
+      if (data.infusions) {
+        infusionHtml = data.infusions.reduce(function (infusionHtml, infusionId) {
+          var infusion = _items.items.get(infusionId);
+
+          if (infusion) {
+            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'' + infusion.description + '\' src="' + infusion.icon + '">\n              <span>' + infusion.name + '</span>\n            </div>\n          ');
+          } else {
+            return infusionHtml;
+          }
+        }, '');
+      }
+
+      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title=\'\' class="icon medium item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <small>(' + equipment.level + ')</small>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
+    } else {
+      return html;
+    }
+  }
+
+  function getBagHtml(dataList) {
+    return dataList.reduce(function (html, bagData) {
+      if (bagData) {
+        var bag = _items.items.get(bagData.id);
+
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="' + bag.description + '" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <small>(' + bag.details.size + ' slots)</small>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }
@@ -803,6 +910,15 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       _gw2Data.gw2Data.on('loaded:characters', function () {
         $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
+      _gw2Data.gw2Data.on('loaded:account', function () {
+        $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+      _gw2Data.gw2Data.on('loaded:wallet', function () {
+        $('#wallet-status').html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+      _gw2Data.gw2Data.on('loaded:bank', function () {
+        $('#bank-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
     },
     showLoading: function showLoading() {
       $('#account-status').parent().empty().html('\n      <p id="account-status" class="status" style="display: block;">\n        Loading account...\n      </p>\n      <p id="characters-status" class="status" style="display: block;">\n        Loading characters...\n      </p>\n      <p id="bank-status" class="status" style="display: block;">\n        Loading inventory...\n      </p>\n      <p id="wallet-status" class="status" style="display: block;">\n        Loading wallet...\n      </p>\n    ');
@@ -827,7 +943,7 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
     bindEvents: function bindEvents() {
       _gw2Data.gw2Data.on('loaded:characters', function (characterList) {
         var dataSet = characterList.map(function (character) {
-          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations.pve, character.specializations.pvp, character.specializations.wvw, character.helm, character.shoulders, character.gloves, character.coat, character.leggings, character.boots, character.back, character.aquahelm, character.amulet, character.accessory1, character.accessory2, character.ring1, character.ring2, character.weaponsA1, character.weaponsA2, character.weaponsB1, character.weaponsB2, character.weapons_aquaA, character.weapons_aquaB, character.bags, character.sickle, character.axe, character.pick];
+          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations.pve, character.specializations.pvp, character.specializations.wvw, character.equipment.Helm, character.equipment.Shoulders, character.equipment.Gloves, character.equipment.Coat, character.equipment.Leggings, character.equipment.Boots, character.equipment.Backpack, character.equipment.HelmAquatic, character.equipment.Amulet, character.equipment.Accessory1, character.equipment.Accessory2, character.equipment.Ring1, character.equipment.Ring2, character.equipment.WeaponA1, character.equipment.WeaponA2, character.equipment.WeaponB1, character.equipment.WeaponB2, character.equipment.WeaponAquaticA, character.equipment.WeaponAquaticB, character.bags, character.equipment.Sickle, character.equipment.Axe, character.equipment.Pick];
         });
         $('#characters-table').DataTable({
           data: dataSet,

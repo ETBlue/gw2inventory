@@ -51,6 +51,20 @@ define(['exports'], function (exports) {
     loadByCharacterList: function loadByCharacterList(characterList) {
       var needItemIdList = [];
       characterList.forEach(function (characterData) {
+        if (characterData.bags) {
+          characterData.bags.forEach(function (bag) {
+            if (bag) {
+              needItemIdList.push(bag.id);
+              if (bag.inventory) {
+                bag.inventory.forEach(function (item) {
+                  if (item) {
+                    needItemIdList.push(item.id);
+                  }
+                });
+              }
+            }
+          });
+        }
         if (characterData.equipment) {
           characterData.equipment.forEach(function (equipment) {
             if (equipment) {

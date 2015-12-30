@@ -29,6 +29,20 @@ export const items = {
   loadByCharacterList(characterList) {
     const needItemIdList = [];
     characterList.forEach((characterData) => {
+      if (characterData.bags) {
+        characterData.bags.forEach((bag) => {
+          if (bag) {
+            needItemIdList.push(bag.id);
+            if (bag.inventory) {
+              bag.inventory.forEach((item) => {
+                if (item) {
+                  needItemIdList.push(item.id);
+                }
+              });
+            }
+          }
+        });
+      }
       if (characterData.equipment) {
         characterData.equipment.forEach((equipment) => {
           if (equipment) {

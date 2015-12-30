@@ -104,11 +104,54 @@ class Character {
       wvw: getSpecializationHtml(specializations.wvw)
     };
   }
+
+  get equipment() {
+    const equipmentArray = this._data.equipment;
+
+    // 先把 equipment array 轉成 hash
+    const equipment = {};
+    equipmentArray.forEach(function(element, index, array){
+      equipment[element.slot] = {};
+      equipment[element.slot].id = element.id;
+      equipment[element.slot].upgrades = element.upgrades;
+      equipment[element.slot].infusions = element.infusions;
+    });
+
+    return {
+      Helm: getEquipmentItemHtml(equipment.Helm),
+      Shoulders: getEquipmentItemHtml(equipment.Shoulders),
+      Gloves: getEquipmentItemHtml(equipment.Gloves),
+      Coat: getEquipmentItemHtml(equipment.Coat),
+      Leggings: getEquipmentItemHtml(equipment.Leggings),
+      Boots: getEquipmentItemHtml(equipment.Boots),
+      Backpack: getEquipmentItemHtml(equipment.Backpack),
+      HelmAquatic: getEquipmentItemHtml(equipment.HelmAquatic),
+      Amulet: getEquipmentItemHtml(equipment.Amulet),
+      Accessory1: getEquipmentItemHtml(equipment.Accessory1),
+      Accessory2: getEquipmentItemHtml(equipment.Accessory2),
+      Ring1: getEquipmentItemHtml(equipment.Ring1),
+      Ring2: getEquipmentItemHtml(equipment.Ring2),
+      WeaponA1: getEquipmentItemHtml(equipment.WeaponA1),
+      WeaponA2: getEquipmentItemHtml(equipment.WeaponA2),
+      WeaponB1: getEquipmentItemHtml(equipment.WeaponB1),
+      WeaponB2: getEquipmentItemHtml(equipment.WeaponB2),
+      WeaponAquaticA: getEquipmentItemHtml(equipment.WeaponAquaticA),
+      WeaponAquaticB: getEquipmentItemHtml(equipment.WeaponAquaticB),
+      Sickle: getEquipmentItemHtml(equipment.Sickle),
+      Axe: getEquipmentItemHtml(equipment.Axe),
+      Pick: getEquipmentItemHtml(equipment.Pick)
+    };
+  }
+
+  get bags() {
+    const bags = this._data.bags;
+    return getBagHtml(bags);
+  }
+
 }
 
 
 function getSpecializationHtml(dataList) {
-  var output_string = '';
   return dataList.reduce((html, specializationData) => {
     if (specializationData) {
       const specialization = specializations.get(specializationData.id);
@@ -142,3 +185,79 @@ function getSpecializationHtml(dataList) {
     }
   }, '');
 }
+
+function getEquipmentItemHtml(data) {
+  var html = '';
+  if (data) {
+    const equipment = items.get(data.id);
+    let upgradeHtml = '';
+    if (data.upgrades) {
+      upgradeHtml = data.upgrades.reduce((upgradeHtml, upgradeId) => {
+        const upgrade = items.get(upgradeId);
+        if (upgrade) {
+          return upgradeHtml + `
+            <div class="table-item">
+              <img class="small icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='${upgrade.description}' src="${upgrade.icon}">
+              <span class="bold ${upgrade.rarity}">${upgrade.name}
+                <small>(${upgrade.level})</small>
+              </span>
+            </div>
+          `;
+        }
+        else {    
+          return upgradeHtml;
+        }
+      }, '')
+    }
+    let infusionHtml = '';
+    if (data.infusions) {
+      infusionHtml = data.infusions.reduce((infusionHtml, infusionId) => {
+        const infusion = items.get(infusionId);
+        if (infusion) {
+          return infusionHtml + `
+            <div class="table-item">
+              <img class="small icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='${infusion.description}' src="${infusion.icon}">
+              <span>${infusion.name}</span>
+            </div>
+          `;
+        }
+        else {
+          return infusionHtml;
+        }
+      }, '')
+    }
+    return html + `
+      <div class="table-item">
+        <img data-toggle="tooltip" data-placement="left" title='' class="icon medium item ${equipment.rarity}" src="${equipment.icon}" />
+        <span class="bold ${equipment.rarity}">${equipment.name}
+          <small>(${equipment.level})</small>
+        </span>
+      </div>
+      ${upgradeHtml}
+      ${infusionHtml}
+    `;
+  }
+  else {
+    return html;
+  }
+}
+
+function getBagHtml(dataList) {
+  return dataList.reduce((html, bagData) => {
+    if (bagData) {
+      const bag = items.get(bagData.id);
+      return html + `
+        <div class="table-item">
+          <img data-toggle="tooltip" data-placement="left" title="${bag.description}" class="icon medium item ${bag.rarity}" src="${bag.icon}" />
+          <span class="bold ${bag.rarity}">${bag.name} 
+            <small>(${bag.details.size} slots)</small>
+          </span>
+        </div>
+      `;
+    }
+    else {
+      return html;
+    }
+  }, '');
+}
+
