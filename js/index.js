@@ -344,6 +344,149 @@ define('model/apiKey',['exports'], function (exports) {
 });
 
 
+define('model/gw2Data/worlds',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var worlds = exports.worlds = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load() {
+      if (!loadingRef) {
+        var params = {
+          ids: 'all',
+          lang: 'en'
+        };
+        loadingRef = $.get('https://api.guildwars2.com/v2/worlds?' + $.param(params)).done(function (worldsData) {
+          worldsData.forEach(function (worldData) {
+            dataRef[worldData.id] = worldData;
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds'], function (exports, _apiKey, _worlds) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.account = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = (function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  })();
+
+  var dataRef = undefined;
+  var account = exports.account = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey()
+      };
+      var waiting = [];
+      $.get('https://api.guildwars2.com/v2/account?' + $.param(params)).done(function (accountData) {
+        //載入worlds
+        waiting.push(_worlds.worlds.load());
+
+        //全部載入完畢後才resolve loadDeferred
+        $.when.apply($.when, waiting).done(function () {
+          var account = new Account(accountData);
+          dataRef = account.toJSON();
+          loadDeferred.resolve(dataRef);
+        });
+      });
+      return loadDeferred;
+    }
+  };
+
+  var Account = (function () {
+    function Account(data) {
+      _classCallCheck(this, Account);
+
+      this._data = data;
+      return this;
+    }
+
+    _createClass(Account, [{
+      key: 'toJSON',
+      value: function toJSON() {
+        var _this = this;
+
+        var result = {};
+        Object.keys(this._data).forEach(function (key) {
+          result[key] = _this[key];
+        });
+        return result;
+      }
+    }, {
+      key: 'id',
+      get: function get() {
+        return this._data.id || '';
+      }
+    }, {
+      key: 'name',
+      get: function get() {
+        return this._data.name || '';
+      }
+    }, {
+      key: 'world',
+      get: function get() {
+        var worldData = _worlds.worlds.get(this._data.world);
+
+        return '' + worldData.name;
+      }
+    }, {
+      key: 'created',
+      get: function get() {
+        var created = this._data.created;
+        return created.slice(0, created.indexOf('T')) || '';
+      }
+    }, {
+      key: 'access',
+      get: function get() {
+        return this._data.access || '';
+      }
+    }, {
+      key: 'fractal_level',
+      get: function get() {
+        return this._data.fractal_level || '';
+      }
+    }]);
+
+    return Account;
+  })();
+});
+
+
 define('model/gw2Data/guilds',['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -393,7 +536,7 @@ define('model/gw2Data/specializations',['exports'], function (exports) {
     load: function load() {
       if (!loadingRef) {
         var params = {
-          ids: '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54',
+          ids: 'all',
           lang: 'en'
         };
         loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done(function (specializationDatas) {
@@ -518,8 +661,8 @@ define('model/gw2Data/items',['exports'], function (exports) {
         }
 
         deferrerResponse.forEach(function (response) {
-          var traitList = response[0];
-          traitList.forEach(function (item) {
+          var itemList = response[0];
+          itemList.forEach(function (item) {
             dataRef[item.id] = item;
           });
         });
@@ -854,27 +997,35 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
 });
 
 
-define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/characters', 'model/gw2Data/guilds'], function (exports, _events, _apiKey, _characters, _guilds) {
+define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds'], function (exports, _events, _apiKey, _account, _characters, _guilds) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.gw2Data = undefined;
   var gw2Data = exports.gw2Data = {
-    loadCharacters: function loadCharacters() {
+    loadAccount: function loadAccount() {
       var _this = this;
+
+      this.trigger('load:account');
+      return _account.account.load().done(function (accountData) {
+        _this.trigger('loaded:account', accountData);
+      });
+    },
+    loadCharacters: function loadCharacters() {
+      var _this2 = this;
 
       this.trigger('load:characters');
       return _characters.characters.load().done(function (characterList) {
-        _this.trigger('loaded:characters', characterList);
+        _this2.trigger('loaded:characters', characterList);
       });
     },
     loadGuild: function loadGuild(guildId) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.trigger('load:guild');
       var guild_id = guildId;
       return _guilds.guilds.load(guildId).done(function (guildData) {
-        _this2.trigger('loaded:guild', guildData);
+        _this3.trigger('loaded:guild', guildData);
       });;
     }
   };
@@ -883,12 +1034,12 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
 });
 
 
-define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, _gw2Data, _apiKey) {
+define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/gw2Data/account', 'model/apiKey'], function (exports, _gw2Data, _account, _apiKey) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.accounts = undefined;
-  var accounts = exports.accounts = {
+  exports.app = undefined;
+  var app = exports.app = {
     initialize: function initialize() {
       // show saved apiKey
       var savedKey = _apiKey.apiKey.getKey();
@@ -902,15 +1053,21 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
         if (e.keyCode == 13) {
           var newKey = $(this).val();
           _apiKey.apiKey.setKey(newKey);
-          accounts.showLoading();
+          app.showLoading();
           _gw2Data.gw2Data.loadCharacters();
+          _gw2Data.gw2Data.loadAccount();
         }
       });
 
       _gw2Data.gw2Data.on('loaded:characters', function () {
         $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
-      _gw2Data.gw2Data.on('loaded:account', function () {
+      _gw2Data.gw2Data.on('loaded:account', function (account) {
+        $('.accountname').text(account.name);
+        $('.accountid').text(account.id);
+        $('.accountcreated').text(account.created);
+        $('.worldname').html(account.world);
+
         $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
       _gw2Data.gw2Data.on('loaded:wallet', function () {
@@ -925,7 +1082,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
     }
   };
   $(function () {
-    accounts.initialize();
+    app.initialize();
   });
 });
 

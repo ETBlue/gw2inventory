@@ -1,7 +1,8 @@
 import {gw2Data} from 'model/gw2Data/gw2Data';
+import {account} from 'model/gw2Data/account';
 import {apiKey} from 'model/apiKey';
 
-export const accounts = {
+export const app = {
   initialize() {
     // show saved apiKey
     const savedKey = apiKey.getKey();
@@ -15,14 +16,32 @@ export const accounts = {
       if (e.keyCode == 13) {
         const newKey = $(this).val();
         apiKey.setKey(newKey);
-        accounts.showLoading();
+        app.showLoading();
         gw2Data.loadCharacters();
+        gw2Data.loadAccount();
       }
     });
 
     gw2Data.on('loaded:characters', () => {
       $('#characters-status')
         .html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+    });
+    gw2Data.on('loaded:account', (account) => {
+      $('.accountname').text(account.name);
+      $('.accountid').text(account.id);
+      $('.accountcreated').text(account.created);
+      $('.worldname').html(account.world);
+
+      $('#account-status')
+        .html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+    });
+    gw2Data.on('loaded:wallet', () => {
+      $('#wallet-status')
+        .html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+    });
+    gw2Data.on('loaded:bank', () => {
+      $('#bank-status')
+        .html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
   },
   showLoading() {
@@ -44,5 +63,5 @@ export const accounts = {
 };
 
 $(() => {
-  accounts.initialize();
+  app.initialize();
 });

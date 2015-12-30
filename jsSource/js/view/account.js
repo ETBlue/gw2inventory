@@ -1,11 +1,11 @@
 'use strict';
 
-define(['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, _gw2Data, _apiKey) {
+define(['exports', 'model/gw2Data/gw2Data', 'model/gw2Data/account', 'model/apiKey'], function (exports, _gw2Data, _account, _apiKey) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.accounts = undefined;
-  var accounts = exports.accounts = {
+  exports.app = undefined;
+  var app = exports.app = {
     initialize: function initialize() {
       // show saved apiKey
       var savedKey = _apiKey.apiKey.getKey();
@@ -19,13 +19,28 @@ define(['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, 
         if (e.keyCode == 13) {
           var newKey = $(this).val();
           _apiKey.apiKey.setKey(newKey);
-          accounts.showLoading();
+          app.showLoading();
           _gw2Data.gw2Data.loadCharacters();
+          _gw2Data.gw2Data.loadAccount();
         }
       });
 
       _gw2Data.gw2Data.on('loaded:characters', function () {
         $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+      _gw2Data.gw2Data.on('loaded:account', function (account) {
+        $('.accountname').text(account.name);
+        $('.accountid').text(account.id);
+        $('.accountcreated').text(account.created);
+        $('.worldname').html(account.world);
+
+        $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+      _gw2Data.gw2Data.on('loaded:wallet', function () {
+        $('#wallet-status').html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+      _gw2Data.gw2Data.on('loaded:bank', function () {
+        $('#bank-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
     },
     showLoading: function showLoading() {
@@ -33,6 +48,6 @@ define(['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, 
     }
   };
   $(function () {
-    accounts.initialize();
+    app.initialize();
   });
 });

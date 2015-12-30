@@ -1,9 +1,16 @@
 import {eventful} from 'utils/events';
 import {apiKey} from 'model/apiKey';
+import {account} from 'model/gw2Data/account';
 import {characters} from 'model/gw2Data/characters';
 import {guilds} from 'model/gw2Data/guilds';
 
 export const gw2Data = {
+  loadAccount() {
+    this.trigger('load:account');
+    return account.load().done((accountData) => {
+      this.trigger('loaded:account', accountData);
+    });
+  },
   loadCharacters() {
     this.trigger('load:characters');
     return characters.load().done((characterList) => {
