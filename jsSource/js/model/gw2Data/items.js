@@ -39,8 +39,8 @@ define(['exports'], function (exports) {
         }
 
         deferrerResponse.forEach(function (response) {
-          var traitList = response[0];
-          traitList.forEach(function (item) {
+          var itemList = response[0];
+          itemList.forEach(function (item) {
             dataRef[item.id] = item;
           });
         });

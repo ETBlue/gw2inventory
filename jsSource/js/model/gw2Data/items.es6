@@ -17,8 +17,8 @@ export const items = {
     }
     $.when.apply($.when, waiting).done((one, ...deferrerResponse) => {
       deferrerResponse.forEach((response) => {
-        const traitList = response[0];
-        traitList.forEach((item) => {
+        const itemList = response[0];
+        itemList.forEach((item) => {
           dataRef[ item.id ] = item;
         });
       });
