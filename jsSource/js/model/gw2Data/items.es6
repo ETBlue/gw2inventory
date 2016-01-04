@@ -37,6 +37,16 @@ export const items = {
               bag.inventory.forEach((item) => {
                 if (item) {
                   needItemIdList.push(item.id);
+                  if (item.upgrades) {
+                    item.upgrades.forEach((upgradeId) => {
+                      needItemIdList.push(upgradeId);
+                    });
+                  }
+                  if (item.infusions) {
+                    item.infusions.forEach((infusionId) => {
+                      needItemIdList.push(infusionId);
+                    });
+                  }
                 }
               });
             }
