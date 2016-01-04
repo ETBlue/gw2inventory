@@ -104,13 +104,12 @@ class Character {
       wvw: getSpecializationHtml(specializations.wvw)
     };
   }
-
   get equipment() {
     const equipmentArray = this._data.equipment;
 
     // 先把 equipment array 轉成 hash
     const equipment = {};
-    equipmentArray.forEach(function(element, index, array){
+    equipmentArray.forEach((element) => {
       equipment[element.slot] = {};
       equipment[element.slot].id = element.id;
       equipment[element.slot].upgrades = element.upgrades;
@@ -142,14 +141,95 @@ class Character {
       Pick: getEquipmentItemHtml(equipment.Pick)
     };
   }
-
   get bags() {
     const bags = this._data.bags;
     return getBagHtml(bags);
   }
+  get inventory() {
+    const bags = this._data.bags;
+    const inventory = {
+      services: [],
+      special: [],
+      boosts: [],
+      style: [],
+      misc: []
+    };
+
+    bags.forEach((bag) => {
+      if (bag) {
+        bag.inventory.forEach((item) => {
+          if (item) {
+            const itemData = items[item.id];
+            itemData.count = item.count || "";
+            itemData.binding = item.binding || "";
+            itemData.bound_to = item.bound_to || "";
+            if (itemData.type == "Consumable") {
+              if (itemData.details.type == "AppearanceChange") {
+                inventory.services.push(itemData);
+              }
+              if (itemData.details.type == "Booze") {
+                // alcohol
+              }
+              if (itemData.details.type == "ContractNpc") {
+                inventory.services.push(itemData);
+              }
+              if (itemData.details.type == "Food") {
+                inventory.boosts.push(itemData);
+              }
+              if (itemData.details.type == "Generic") {
+                inventory.misc.push(itemData);
+              }
+              if (itemData.details.type == "Halloween") {
+                inventory.boosts.push(itemData);
+              }
+              if (itemData.details.type == "Immediate") {
+                inventory.misc.push(itemData);
+              }
+              if (itemData.details.type == "Transmutation") {
+                inventory.style.push(itemData);
+              }
+              if (itemData.details.type == "Unlock") {
+                inventory.misc.push(itemData);
+              }
+              if (itemData.details.type == "UpgradeRemoval") {
+                inventory.special.push(itemData);
+              }
+              if (itemData.details.type == "Utility") {
+                inventory.boosts.push(itemData);
+              }
+              if (itemData.details.type == "TeleportToFriend") {
+                inventory.special.push(itemData);
+              }
+            }
+            if (itemData.type == "Gizmo") {
+              if (itemData.details.type == "Default") {
+                inventory.misc.push(itemData);
+              }
+              if (itemData.details.type == "ContainerKey") {
+                inventory.special.push(itemData);
+              }
+              if (itemData.details.type == "RentableContractNpc") {
+                inventory.services.push(itemData);
+              }
+              if (itemData.details.type == "UnlimitedConsumable") {
+                inventory.services.push(itemData);
+              }
+            }
+          }
+        });
+      }
+    });
+
+    return {
+      services: getInventoryHtml(inventory.services),
+      special: getInventoryHtml(inventory.special),
+      boosts: getInventoryHtml(inventory.boosts),
+      style: getInventoryHtml(inventory.style),
+      misc: getInventoryHtml(inventory.misc)
+    };
+  }
 
 }
-
 
 function getSpecializationHtml(dataList) {
   return dataList.reduce((html, specializationData) => {
@@ -261,3 +341,19 @@ function getBagHtml(dataList) {
   }, '');
 }
 
+function getInventoryHtml(dataList) {
+  return dataList.reduce((html, item) => {
+    if (item) {
+      return html + `
+        <div class="table-item">
+          <img data-toggle="tooltip" data-placement="left" title="${item.description}" class="icon medium item ${item.rarity}" src="${item.icon}" />
+          <span class="bold ${item.rarity}">${item.name}
+          </span>
+        </div>
+      `;
+    }
+    else {
+      return html;
+    }
+  }, '');
+}

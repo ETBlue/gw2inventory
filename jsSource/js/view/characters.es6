@@ -42,6 +42,11 @@ export const characters = {
           character.equipment.WeaponAquaticA,
           character.equipment.WeaponAquaticB,
           character.bags,
+          character.inventory.services,
+          character.inventory.special,
+          character.inventory.boosts,
+          character.inventory.style,
+          character.inventory.misc,
           character.equipment.Sickle,
           character.equipment.Axe,
           character.equipment.Pick
@@ -70,7 +75,7 @@ export const characters = {
             }
           },
           {
-            targets: [4,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35],
+            targets: [4,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],
             visible: false
           }
         ]
