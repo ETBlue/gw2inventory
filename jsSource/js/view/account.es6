@@ -1,5 +1,4 @@
 import {gw2Data} from 'model/gw2Data/gw2Data';
-import {account} from 'model/gw2Data/account';
 import {apiKey} from 'model/apiKey';
 
 export const app = {
