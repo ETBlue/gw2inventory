@@ -53,6 +53,7 @@ class Character {
     Object.keys(this._data).forEach((key) => {
       result[key] = this[key];
     });
+    result.inventory = this.inventory;
     return result;
   }
   get name() {
