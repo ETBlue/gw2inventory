@@ -3,6 +3,7 @@ import {apiKey} from 'model/apiKey';
 import {account} from 'model/gw2Data/account';
 import {characters} from 'model/gw2Data/characters';
 import {guilds} from 'model/gw2Data/guilds';
+import {bank} from 'model/gw2Data/bank';
 
 export const gw2Data = {
   loadAccount() {
