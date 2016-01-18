@@ -18,6 +18,7 @@ export const app = {
         app.showLoading();
         gw2Data.loadCharacters();
         gw2Data.loadAccount();
+        gw2Data.loadWallet();
       }
     });
 
@@ -30,6 +31,8 @@ export const app = {
       $('.accountid').text(account.id);
       $('.accountcreated').text(account.created);
       $('.worldname').html(account.world);
+      $('.fractal_level').html(account.fractal_level);
+      $('.access').html(account.access);
 
       $('#account-status')
         .html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');

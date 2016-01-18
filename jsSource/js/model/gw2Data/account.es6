@@ -11,6 +11,7 @@ export const account = {
     const loadDeferred = new $.Deferred();
     const params = {
       access_token: apiKey.getKey(),
+      lang: 'en'
     };
     const waiting = [];
     $.get('https://api.guildwars2.com/v2/account?' + $.param(params))
