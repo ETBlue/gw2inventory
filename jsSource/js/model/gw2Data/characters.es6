@@ -152,7 +152,7 @@ class Character {
       services: [],
       special: [],
       boosts: [],
-      style: [],
+      //style: [],
       misc: []
     };
 
@@ -160,60 +160,62 @@ class Character {
       if (bag) {
         bag.inventory.forEach((item) => {
           if (item) {
-            const itemData = items[item.id];
-            itemData.count = item.count || "";
-            itemData.binding = item.binding || "";
-            itemData.bound_to = item.bound_to || "";
-            if (itemData.type == "Consumable") {
-              if (itemData.details.type == "AppearanceChange") {
-                inventory.services.push(itemData);
+            const itemData = items.get(item.id);
+            if (itemData) {
+              itemData.count = item.count || "";
+              itemData.binding = item.binding || "";
+              itemData.bound_to = item.bound_to || "";
+              if (itemData.type == "Consumable") {
+                //if (itemData.details.type == "AppearanceChange") {
+                //  inventory.services.push(itemData);
+                //}
+                if (itemData.details.type == "Booze") {
+                  // alcohol
+                }
+                //if (itemData.details.type == "ContractNpc") {
+                //  inventory.services.push(itemData);
+                //}
+                if (itemData.details.type == "Food") {
+                  inventory.boosts.push(itemData);
+                }
+                if (itemData.details.type == "Generic") {
+                  inventory.misc.push(itemData);
+                }
+                if (itemData.details.type == "Halloween") {
+                  inventory.boosts.push(itemData);
+                }
+                if (itemData.details.type == "Immediate") {
+                  inventory.misc.push(itemData);
+                }
+                //if (itemData.details.type == "Transmutation") {
+                //  inventory.style.push(itemData);
+                //}
+                if (itemData.details.type == "Unlock") {
+                  inventory.misc.push(itemData);
+                }
+                //if (itemData.details.type == "UpgradeRemoval") {
+                //  inventory.special.push(itemData);
+                //}
+                if (itemData.details.type == "Utility") {
+                  inventory.boosts.push(itemData);
+                }
+                //if (itemData.details.type == "TeleportToFriend") {
+                //  inventory.special.push(itemData);
+                //}
               }
-              if (itemData.details.type == "Booze") {
-                // alcohol
-              }
-              if (itemData.details.type == "ContractNpc") {
-                inventory.services.push(itemData);
-              }
-              if (itemData.details.type == "Food") {
-                inventory.boosts.push(itemData);
-              }
-              if (itemData.details.type == "Generic") {
-                inventory.misc.push(itemData);
-              }
-              if (itemData.details.type == "Halloween") {
-                inventory.boosts.push(itemData);
-              }
-              if (itemData.details.type == "Immediate") {
-                inventory.misc.push(itemData);
-              }
-              if (itemData.details.type == "Transmutation") {
-                inventory.style.push(itemData);
-              }
-              if (itemData.details.type == "Unlock") {
-                inventory.misc.push(itemData);
-              }
-              if (itemData.details.type == "UpgradeRemoval") {
-                inventory.special.push(itemData);
-              }
-              if (itemData.details.type == "Utility") {
-                inventory.boosts.push(itemData);
-              }
-              if (itemData.details.type == "TeleportToFriend") {
-                inventory.special.push(itemData);
-              }
-            }
-            if (itemData.type == "Gizmo") {
-              if (itemData.details.type == "Default") {
-                inventory.misc.push(itemData);
-              }
-              if (itemData.details.type == "ContainerKey") {
-                inventory.special.push(itemData);
-              }
-              if (itemData.details.type == "RentableContractNpc") {
-                inventory.services.push(itemData);
-              }
-              if (itemData.details.type == "UnlimitedConsumable") {
-                inventory.services.push(itemData);
+              if (itemData.type == "Gizmo") {
+                if (itemData.details.type == "Default") {
+                  inventory.misc.push(itemData);
+                }
+                //if (itemData.details.type == "ContainerKey") {
+                //  inventory.special.push(itemData);
+                //}
+                //if (itemData.details.type == "RentableContractNpc") {
+                //  inventory.services.push(itemData);
+                //}
+                //if (itemData.details.type == "UnlimitedConsumable") {
+                //  inventory.services.push(itemData);
+                //}
               }
             }
           }
@@ -222,10 +224,10 @@ class Character {
     });
 
     return {
-      services: getInventoryHtml(inventory.services),
-      special: getInventoryHtml(inventory.special),
+      //services: getInventoryHtml(inventory.services),
+      //special: getInventoryHtml(inventory.special),
       boosts: getInventoryHtml(inventory.boosts),
-      style: getInventoryHtml(inventory.style),
+      //style: getInventoryHtml(inventory.style),
       misc: getInventoryHtml(inventory.misc)
     };
   }
@@ -348,7 +350,8 @@ function getInventoryHtml(dataList) {
       return html + `
         <div class="table-item">
           <img data-toggle="tooltip" data-placement="left" title="${item.description}" class="icon medium item ${item.rarity}" src="${item.icon}" />
-          <span class="bold ${item.rarity}">${item.name}
+          <span class="bold ${item.rarity}">${item.name} 
+            <small>(${item.count})</small>
           </span>
         </div>
       `;
