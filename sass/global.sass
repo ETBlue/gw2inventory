@@ -128,6 +128,9 @@ img.icon
     height: 2em
   &.small
     height: 1.5em
+  &.inline
+    height: 1em
+    float: none
   &.item
     border-right: 0.5em #fff solid
     &.Trash
@@ -147,8 +150,17 @@ img.icon
     &.Legendary
       border-color: #4C139D
 
+.coin
+  &.gold
+    color: shade(gold, 40%)
+  &.silver
+    color: shade(#ccc, 40%)
+  &.copper
+    color: shade(#C87533,10%)
+
 .inline-block
   display: inline-block
+
 .text
   margin-right: 0.25em
   margin-left: 0.25em
