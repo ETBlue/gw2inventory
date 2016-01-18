@@ -125,7 +125,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         var seconds = age % 60;
         var minutes = Math.floor(age / 60) % 60;
         var hours = Math.floor(age / 3600);
-        return hours + 'h ' + minutes + 'm ' + seconds + 's';
+        return hours + ':' + minutes + ':' + seconds;
       }
     }, {
       key: 'deaths',

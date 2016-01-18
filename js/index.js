@@ -847,7 +847,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         var seconds = age % 60;
         var minutes = Math.floor(age / 60) % 60;
         var hours = Math.floor(age / 3600);
-        return hours + 'h ' + minutes + 'm ' + seconds + 's';
+        return hours + ':' + minutes + ':' + seconds;
       }
     }, {
       key: 'deaths',
@@ -1209,8 +1209,16 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
       get: function get() {
         var value = this._data.value || '';
 
-        if (_currencies.currencies.get(this._data.id).name == 'Coin') {
+        var name = _currencies.currencies.get(this._data.id).name;
+
+        if (name == 'Coin') {
           return getCoinHtml(value);
+        } else if (name == 'Gem') {
+          return '<span class=\'currency gem\'>' + value + '</span>';
+        } else if (name == 'Karma') {
+          return '<span class=\'currency karma\'>' + value + '</span>';
+        } else if (name == 'Laurel') {
+          return '<span class=\'currency laurel\'>' + value + '</span>';
         } else {
           return value;
         }
@@ -1379,6 +1387,9 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
               return data + '<br />' + row[4];
             }
           }, {
+            targets: [1, 5, 6],
+            type: 'natural'
+          }, {
             targets: [4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37],
             visible: false
           }]
@@ -1432,7 +1443,7 @@ define('view/wallet',['exports', 'model/gw2Data/gw2Data'], function (exports, _g
           pageLength: 50,
           "order": [[4, 'asc']],
           "dom": '',
-          "columnDefs": []
+          "columnDefs": [{ type: 'natural', targets: 2 }]
         });
         $('#wallet .loading').hide();
         var table = $('#wallet-table').DataTable();

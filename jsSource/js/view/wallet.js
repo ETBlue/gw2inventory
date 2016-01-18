@@ -21,7 +21,7 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           pageLength: 50,
           "order": [[4, 'asc']],
           "dom": '',
-          "columnDefs": []
+          "columnDefs": [{ type: 'natural', targets: 2 }]
         });
         $('#wallet .loading').hide();
         var table = $('#wallet-table').DataTable();

@@ -203,6 +203,16 @@ img.icon.item.Legendary {
   color: #b4692d;
 }
 
+.currency.gem {
+  color: #407fbf;
+}
+.currency.karma {
+  color: #914db3;
+}
+.currency.laurel {
+  color: #339933;
+}
+
 .inline-block {
   display: inline-block;
 }

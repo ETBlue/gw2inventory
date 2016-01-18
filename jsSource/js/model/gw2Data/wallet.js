@@ -98,8 +98,16 @@ define(['exports', 'model/apiKey', 'model/gw2Data/currencies'], function (export
       get: function get() {
         var value = this._data.value || '';
 
-        if (_currencies.currencies.get(this._data.id).name == 'Coin') {
+        var name = _currencies.currencies.get(this._data.id).name;
+
+        if (name == 'Coin') {
           return getCoinHtml(value);
+        } else if (name == 'Gem') {
+          return '<span class=\'currency gem\'>' + value + '</span>';
+        } else if (name == 'Karma') {
+          return '<span class=\'currency karma\'>' + value + '</span>';
+        } else if (name == 'Laurel') {
+          return '<span class=\'currency laurel\'>' + value + '</span>';
         } else {
           return value;
         }
