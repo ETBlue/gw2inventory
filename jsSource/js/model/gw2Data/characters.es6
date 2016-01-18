@@ -80,7 +80,7 @@ class Character {
     const seconds = age % 60;
     const minutes = Math.floor(age / 60) % 60;
     const hours = Math.floor(age / 3600);
-    return `${hours}h ${minutes}m ${seconds}s`;
+    return `${hours}:${minutes}:${seconds}`;
   }
   get deaths() {
     return this._data.deaths || '';

@@ -22,7 +22,7 @@ export const wallet = {
         pageLength: 50,
         "order": [[ 4, 'asc' ]],
         "dom":'',
-        "columnDefs": []
+        "columnDefs": [{ type: 'natural', targets: 2 }]
       });
       $('#wallet .loading').hide();
       var table = $('#wallet-table').DataTable();
