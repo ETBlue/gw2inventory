@@ -38,7 +38,8 @@ define(['exports', 'model/apiKey', 'model/gw2Data/worlds'], function (exports, _
     load: function load() {
       var loadDeferred = new $.Deferred();
       var params = {
-        access_token: _apiKey.apiKey.getKey()
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en'
       };
       var waiting = [];
       $.get('https://api.guildwars2.com/v2/account?' + $.param(params)).done(function (accountData) {

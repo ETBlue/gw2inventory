@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'model/gw2Data/gw2Data', 'model/gw2Data/account', 'model/apiKey'], function (exports, _gw2Data, _account, _apiKey) {
+define(['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, _gw2Data, _apiKey) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -22,6 +22,7 @@ define(['exports', 'model/gw2Data/gw2Data', 'model/gw2Data/account', 'model/apiK
           app.showLoading();
           _gw2Data.gw2Data.loadCharacters();
           _gw2Data.gw2Data.loadAccount();
+          _gw2Data.gw2Data.loadWallet();
         }
       });
 
@@ -33,6 +34,8 @@ define(['exports', 'model/gw2Data/gw2Data', 'model/gw2Data/account', 'model/apiK
         $('.accountid').text(account.id);
         $('.accountcreated').text(account.created);
         $('.worldname').html(account.world);
+        $('.fractal_level').html(account.fractal_level);
+        $('.access').html(account.access);
 
         $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });

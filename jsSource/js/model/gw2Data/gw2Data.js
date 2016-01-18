@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds'], function (exports, _events, _apiKey, _account, _characters, _guilds) {
+define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -22,13 +22,21 @@ define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'mod
         _this2.trigger('loaded:characters', characterList);
       });
     },
-    loadGuild: function loadGuild(guildId) {
+    loadWallet: function loadWallet() {
       var _this3 = this;
+
+      this.trigger('load:wallet');
+      return _wallet.wallet.load().done(function (walletData) {
+        _this3.trigger('loaded:wallet', walletData);
+      });
+    },
+    loadGuild: function loadGuild(guildId) {
+      var _this4 = this;
 
       this.trigger('load:guild');
       var guild_id = guildId;
       return _guilds.guilds.load(guildId).done(function (guildData) {
-        _this3.trigger('loaded:guild', guildData);
+        _this4.trigger('loaded:guild', guildData);
       });;
     }
   };

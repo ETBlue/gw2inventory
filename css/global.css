@@ -161,6 +161,10 @@ img.icon.medium {
 img.icon.small {
   height: 1.5em;
 }
+img.icon.inline {
+  height: 1em;
+  float: none;
+}
 img.icon.item {
   border-right: 0.5em #fff solid;
 }
@@ -187,6 +191,16 @@ img.icon.item.Ascended {
 }
 img.icon.item.Legendary {
   border-color: #4C139D;
+}
+
+.coin.gold {
+  color: #998100;
+}
+.coin.silver {
+  color: #7a7a7a;
+}
+.coin.copper {
+  color: #b4692d;
 }
 
 .inline-block {

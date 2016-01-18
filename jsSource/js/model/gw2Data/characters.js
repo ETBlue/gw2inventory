@@ -84,6 +84,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         Object.keys(this._data).forEach(function (key) {
           result[key] = _this[key];
         });
+        result.inventory = this.inventory;
         return result;
       }
     }, {
@@ -164,7 +165,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
       get: function get() {
         var equipmentArray = this._data.equipment;
         var equipment = {};
-        equipmentArray.forEach(function (element, index, array) {
+        equipmentArray.forEach(function (element) {
           equipment[element.slot] = {};
           equipment[element.slot].id = element.id;
           equipment[element.slot].upgrades = element.upgrades;
@@ -200,6 +201,70 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
       get: function get() {
         var bags = this._data.bags;
         return getBagHtml(bags);
+      }
+    }, {
+      key: 'inventory',
+      get: function get() {
+        var bags = this._data.bags;
+        var inventory = {
+          services: [],
+          special: [],
+          boosts: [],
+          misc: []
+        };
+        bags.forEach(function (bag) {
+          if (bag) {
+            bag.inventory.forEach(function (item) {
+              if (item) {
+                var itemData = _items.items.get(item.id);
+
+                if (itemData) {
+                  itemData.count = item.count || "";
+                  itemData.binding = item.binding || "";
+                  itemData.bound_to = item.bound_to || "";
+
+                  if (itemData.type == "Consumable") {
+                    if (itemData.details.type == "Booze") {}
+
+                    if (itemData.details.type == "Food") {
+                      inventory.boosts.push(itemData);
+                    }
+
+                    if (itemData.details.type == "Generic") {
+                      inventory.misc.push(itemData);
+                    }
+
+                    if (itemData.details.type == "Halloween") {
+                      inventory.boosts.push(itemData);
+                    }
+
+                    if (itemData.details.type == "Immediate") {
+                      inventory.misc.push(itemData);
+                    }
+
+                    if (itemData.details.type == "Unlock") {
+                      inventory.misc.push(itemData);
+                    }
+
+                    if (itemData.details.type == "Utility") {
+                      inventory.boosts.push(itemData);
+                    }
+                  }
+
+                  if (itemData.type == "Gizmo") {
+                    if (itemData.details.type == "Default") {
+                      inventory.misc.push(itemData);
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+        return {
+          boosts: getInventoryHtml(inventory.boosts),
+          misc: getInventoryHtml(inventory.misc)
+        };
       }
     }]);
 
@@ -278,6 +343,16 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         var bag = _items.items.get(bagData.id);
 
         return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="' + bag.description + '" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <small>(' + bag.details.size + ' slots)</small>\n          </span>\n        </div>\n      ');
+      } else {
+        return html;
+      }
+    }, '');
+  }
+
+  function getInventoryHtml(dataList) {
+    return dataList.reduce(function (html, item) {
+      if (item) {
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="' + item.description + '" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <small>(' + item.count + ')</small>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }

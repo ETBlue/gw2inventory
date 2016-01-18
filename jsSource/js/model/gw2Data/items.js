@@ -59,6 +59,16 @@ define(['exports'], function (exports) {
                 bag.inventory.forEach(function (item) {
                   if (item) {
                     needItemIdList.push(item.id);
+                    if (item.upgrades) {
+                      item.upgrades.forEach(function (upgradeId) {
+                        needItemIdList.push(upgradeId);
+                      });
+                    }
+                    if (item.infusions) {
+                      item.infusions.forEach(function (infusionId) {
+                        needItemIdList.push(infusionId);
+                      });
+                    }
                   }
                 });
               }
