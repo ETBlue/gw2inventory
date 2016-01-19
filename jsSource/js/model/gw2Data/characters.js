@@ -36,7 +36,6 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
       return dataRef;
     },
     load: function load() {
-      var page = 0;
       var loadDeferred = new $.Deferred();
       var params = {
         access_token: _apiKey.apiKey.getKey(),

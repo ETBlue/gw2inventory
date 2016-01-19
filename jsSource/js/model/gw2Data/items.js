@@ -94,6 +94,15 @@ define(['exports'], function (exports) {
         }
       });
       return this.load(needItemIdList);
+    },
+    loadByBankList: function loadByBankList(bankList) {
+      var needItemIdList = [];
+      bankList.forEach(function (itemData) {
+        if (itemData) {
+          needItemIdList.push(itemData.id);
+        }
+      });
+      return this.load(needItemIdList);
     }
   };
 });
