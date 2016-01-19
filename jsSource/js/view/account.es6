@@ -19,6 +19,7 @@ export const app = {
         gw2Data.loadCharacters();
         gw2Data.loadAccount();
         gw2Data.loadWallet();
+        gw2Data.loadBank();
       }
     });
 

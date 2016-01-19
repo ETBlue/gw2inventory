@@ -72,5 +72,14 @@ export const items = {
       }
     });
     return this.load(needItemIdList);
+  },
+  loadByBankList(bankList) {
+    const needItemIdList = [];
+    bankList.forEach((itemData) => {
+      if (itemData) {
+        needItemIdList.push(itemData.id);
+      }
+    });
+    return this.load(needItemIdList);
   }
 };

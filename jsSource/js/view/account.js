@@ -23,6 +23,7 @@ define(['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], function (exports, 
           _gw2Data.gw2Data.loadCharacters();
           _gw2Data.gw2Data.loadAccount();
           _gw2Data.gw2Data.loadWallet();
+          _gw2Data.gw2Data.loadBank();
         }
       });
 

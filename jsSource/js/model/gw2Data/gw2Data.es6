@@ -4,7 +4,7 @@ import {account} from 'model/gw2Data/account';
 import {characters} from 'model/gw2Data/characters';
 import {guilds} from 'model/gw2Data/guilds';
 import {wallet} from 'model/gw2Data/wallet';
-//import {bank} from 'model/gw2Data/bank';
+import {bank} from 'model/gw2Data/bank';
 
 export const gw2Data = {
   loadAccount() {
@@ -23,6 +23,12 @@ export const gw2Data = {
     this.trigger('load:wallet');
     return wallet.load().done((walletData) => {
       this.trigger('loaded:wallet', walletData);
+    });
+  },
+  loadBank() {
+    this.trigger('load:bank');
+    return bank.load().done((bankData) => {
+      this.trigger('loaded:bank', bankData);
     });
   },
   loadGuild(guildId) {

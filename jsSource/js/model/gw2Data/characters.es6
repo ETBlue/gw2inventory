@@ -11,7 +11,6 @@ export const characters = {
     return dataRef;
   },
   load() {
-    let page = 0;
     const loadDeferred = new $.Deferred();
     const params = {
       access_token: apiKey.getKey(),
