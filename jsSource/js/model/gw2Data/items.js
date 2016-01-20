@@ -95,6 +95,35 @@ define(['exports'], function (exports) {
       });
       return this.load(needItemIdList);
     },
+    loadByCharacterInventory: function loadByCharacterInventory(characterList) {
+      var needItemIdList = [];
+      characterList.forEach(function (characterData) {
+        if (characterData.bags) {
+          characterData.bags.forEach(function (bag) {
+            if (bag) {
+              if (bag.inventory) {
+                bag.inventory.forEach(function (item) {
+                  if (item) {
+                    needItemIdList.push(item.id);
+                    if (item.upgrades) {
+                      item.upgrades.forEach(function (upgradeId) {
+                        needItemIdList.push(upgradeId);
+                      });
+                    }
+                    if (item.infusions) {
+                      item.infusions.forEach(function (infusionId) {
+                        needItemIdList.push(infusionId);
+                      });
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+      return this.load(needItemIdList);
+    },
     loadByBankList: function loadByBankList(bankList) {
       var needItemIdList = [];
       bankList.forEach(function (itemData) {

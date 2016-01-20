@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'model/apiKey', 'model/gw2Data/items'], function (exports, _apiKey, _items) {
+define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters'], function (exports, _apiKey, _items, _characters) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -43,6 +43,9 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items'], function (exports, _a
         page: 0
       };
       var waiting = [];
+      waiting.push(_characters.characters.load(function (characterList) {
+        waiting.push(_items.items.loadByCharacterInventory(characterList));
+      }));
       //載入bank
       $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
         //載入items
@@ -50,7 +53,8 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items'], function (exports, _a
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(function () {
-          dataRef = bankData.map(function (bankItem, index) {
+          dataRef = [];
+          var bankDataRef = bankData.map(function (bankItem, index) {
             if (bankItem) {
               var itemInfo = _items.items.get(bankItem.id);
               var position = 'Bank|' + (index + 1);
@@ -58,6 +62,23 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items'], function (exports, _a
               return item.toJSON();
             }
           });
+          $.merge(dataRef, bankDataRef);
+          var characterDataRef = [];
+          _characters.characters.get().forEach(function (character) {
+            character._data.bags.forEach(function (bag) {
+              if (bag) {
+                bag.inventory.forEach(function (bagItem) {
+                  if (bagItem) {
+                    var itemInfo = _items.items.get(bagItem.id);
+                    var position = character.name;
+                    var item = new Item(position, bagItem, itemInfo);
+                    characterDataRef.push(item.toJSON());
+                  }
+                });
+              }
+            });
+          });
+          $.merge(dataRef, characterDataRef);
           loadDeferred.resolve(dataRef);
         });
       });

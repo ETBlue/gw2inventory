@@ -84,6 +84,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
           result[key] = _this[key];
         });
         result.inventory = this.inventory;
+        result._data = this._data;
         return result;
       }
     }, {
