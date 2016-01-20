@@ -747,18 +747,18 @@ define('model/gw2Data/items',['exports'], function (exports) {
       });
       return this.load(needItemIdList);
     },
-    loadByBankList: function loadByBankList(bankList) {
+    loadByBankList: function loadByBankList(bankData) {
       var needItemIdList = [];
-      bankList.forEach(function (itemData) {
+      bankData.forEach(function (itemData) {
         if (itemData) {
           needItemIdList.push(itemData.id);
         }
       });
       return this.load(needItemIdList);
     },
-    loadByVaultList: function loadByVaultList(vaultList) {
+    loadByVaultList: function loadByVaultList(vaultData) {
       var needItemIdList = [];
-      vaultList.forEach(function (itemData) {
+      vaultData.forEach(function (itemData) {
         if (itemData) {
           needItemIdList.push(itemData.id);
         }
@@ -1358,6 +1358,35 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
     value: true
   });
   exports.bank = undefined;
+  var dataRef = undefined;
+  var bank = exports.bank = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en',
+        page: 0
+      };
+
+      //載入銀行
+      $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
+        dataRef = bankData;
+        loadDeferred.resolve(dataRef);
+      });
+      return loadDeferred;
+    }
+  };
+});
+
+
+define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault', 'model/gw2Data/bank'], function (exports, _apiKey, _items, _characters, _materials, _vault, _bank) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.inventory = undefined;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -1384,7 +1413,7 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
   })();
 
   var dataRef = undefined;
-  var bank = exports.bank = {
+  var inventory = exports.inventory = {
     get: function get() {
       return dataRef;
     },
@@ -1396,30 +1425,30 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
         page: 0
       };
       var waiting = [];
-      waiting.push(_materials.materials.load());
-      waiting.push(_characters.characters.load(function (characterList) {
-        waiting.push(_items.items.loadByCharacterInventory(characterList));
-      }));
-      waiting.push(_vault.vault.load(function (vaultList) {
-        waiting.push(_items.items.loadByVaultList(vaultList));
-      }));
-      //載入bank
-      $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
-        //載入items
-        waiting.push(_items.items.loadByBankList(bankData));
 
-        //全部載入完畢後才resolve loadDeferred
-        $.when.apply($.when, waiting).done(function () {
+      // 載入材料分類表
+      waiting.push(_materials.materials.load());
+
+      // 載入角色包包與物品資料
+      waiting.push(_characters.characters.load());
+
+      // 載入倉庫與物品資料
+      waiting.push(_vault.vault.load());
+
+      //載入銀行
+      waiting.push(_bank.bank.load());
+
+      $.when.apply($.when, waiting).done(function () {
+        var waitingLoadItems = [];
+        //載入銀行物品資料
+        waitingLoadItems.push(_items.items.loadByBankList(_bank.bank.get()));
+        waitingLoadItems.push(_items.items.loadByVaultList(_vault.vault.get()));
+
+        //全部載入完畢後才 merge
+        $.when.apply($.when, waitingLoadItems).done(function () {
+
           dataRef = [];
-          var bankDataRef = bankData.map(function (bankItem, index) {
-            if (bankItem) {
-              var itemInfo = _items.items.get(bankItem.id);
-              var position = 'Bank|' + (index + 1);
-              var item = new Item(position, bankItem, itemInfo);
-              return item.toJSON();
-            }
-          });
-          $.merge(dataRef, bankDataRef);
+
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
             character._data.bags.forEach(function (bag) {
@@ -1436,14 +1465,27 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
             });
           });
           $.merge(dataRef, characterDataRef);
+
+          var bankDataRef = _bank.bank.get().map(function (bankItem, index) {
+            if (bankItem) {
+              var itemInfo = _items.items.get(bankItem.id);
+              var position = 'Bank|' + (index + 1);
+              var item = new Item(position, bankItem, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, bankDataRef);
+
           var vaultDataRef = _vault.vault.get().map(function (material, index) {
             if (material) {
               var itemInfo = _items.items.get(material.id);
+              console.log(itemInfo);
               var position = 'Vault|' + (index + 1);
               var item = new Item(position, material, itemInfo);
               return item.toJSON();
             }
           });
+          $.merge(dataRef, vaultDataRef);
 
           loadDeferred.resolve(dataRef);
         });
@@ -1492,7 +1534,7 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
     }, {
       key: 'count',
       get: function get() {
-        return this._data.count || '';
+        return parseInt(this._data.count, 10);
       }
     }, {
       key: 'type',
@@ -1538,7 +1580,11 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
     }, {
       key: 'category',
       get: function get() {
-        return this._data.category || '';
+        if (this._data.category) {
+          return _materials.materials.get(this._data.category).name || '';
+        } else {
+          return '';
+        }
       }
     }]);
 
@@ -1547,7 +1593,7 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
 });
 
 
-define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank) {
+define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank', 'model/gw2Data/inventory'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank, _inventory) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -1581,7 +1627,7 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
       var _this4 = this;
 
       this.trigger('load:bank');
-      return _bank.bank.load().done(function (bankData) {
+      return _inventory.inventory.load().done(function (bankData) {
         _this4.trigger('loaded:bank', bankData);
       });
     },
@@ -1826,7 +1872,7 @@ define('view/bank',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2
             } else if (searchCollection == "all") {
               searchValue = "";
             }
-            table.column([3]).search(searchValue, true).draw();
+            table.column([9]).search('').column([3]).search(searchValue, true).draw();
           }
         });
         $('#bank [data-option]').on('click tap', function () {
@@ -1835,9 +1881,9 @@ define('view/bank',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2
           if (searchTarget == 'rarity') {
             table.column([5]).search(searchValue).draw();
           } else if (searchTarget == 'category') {
-            table.column([9]).search(searchValue).draw();
+            table.column([3]).search('').column([9]).search(searchValue).draw();
           } else {
-            table.column([3]).search(searchValue).draw();
+            table.column([9]).search('').column([3]).search(searchValue).draw();
           }
         });
         // TODO: enable table refresh by navbar click

@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank) {
+define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank', 'model/gw2Data/inventory'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank, _inventory) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -34,7 +34,7 @@ define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'mod
       var _this4 = this;
 
       this.trigger('load:bank');
-      return _bank.bank.load().done(function (bankData) {
+      return _inventory.inventory.load().done(function (bankData) {
         _this4.trigger('loaded:bank', bankData);
       });
     },

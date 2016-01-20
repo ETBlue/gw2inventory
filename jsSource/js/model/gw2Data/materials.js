@@ -6,7 +6,7 @@ define(['exports'], function (exports) {
   });
   var dataRef = {};
   var loadingRef = undefined;
-  var specializations = exports.specializations = {
+  var materials = exports.materials = {
     get: function get(id) {
       return dataRef[id];
     },
@@ -16,9 +16,9 @@ define(['exports'], function (exports) {
           ids: 'all',
           lang: 'en'
         };
-        loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done(function (specializationData) {
-          specializationData.forEach(function (specialization) {
-            dataRef[specialization.id] = specialization;
+        loadingRef = $.get('https://api.guildwars2.com/v2/materials?' + $.param(params)).done(function (categories) {
+          categories.forEach(function (category) {
+            dataRef[category.id] = category;
           });
         });
       }

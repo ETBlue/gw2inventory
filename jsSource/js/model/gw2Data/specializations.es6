@@ -12,8 +12,8 @@ export const specializations = {
         lang: 'en'
       };
       loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params))
-        .done((specializationDatas) => {
-          specializationDatas.forEach((specialization) => {
+        .done((specializationData) => {
+          specializationData.forEach((specialization) => {
             dataRef[ specialization.id ] = specialization;
           });
         });

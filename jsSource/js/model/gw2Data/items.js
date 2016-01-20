@@ -124,9 +124,18 @@ define(['exports'], function (exports) {
       });
       return this.load(needItemIdList);
     },
-    loadByBankList: function loadByBankList(bankList) {
+    loadByBankList: function loadByBankList(bankData) {
       var needItemIdList = [];
-      bankList.forEach(function (itemData) {
+      bankData.forEach(function (itemData) {
+        if (itemData) {
+          needItemIdList.push(itemData.id);
+        }
+      });
+      return this.load(needItemIdList);
+    },
+    loadByVaultList: function loadByVaultList(vaultData) {
+      var needItemIdList = [];
+      vaultData.forEach(function (itemData) {
         if (itemData) {
           needItemIdList.push(itemData.id);
         }
