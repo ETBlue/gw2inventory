@@ -86,8 +86,12 @@ class Character {
     return this._data.deaths || '';
   }
   get guild() {
-    const guildData = guilds.get(this._data.guild);
-    return `${guildData.guild_name}<br />[${guildData.tag}]`;
+    if (this._data.guild) {
+      const guildData = guilds.get(this._data.guild);
+      return `${guildData.guild_name}<br />[${guildData.tag}]`;
+    } else {
+      return ``;
+    }
   }
   get crafting() {
     const crafting = this._data.crafting;
