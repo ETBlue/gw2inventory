@@ -17,5 +17,5 @@ $(() => {
 
 import {account} from 'view/account';
 import {characters} from 'view/characters';
+import {inventory} from 'view/inventory';
 import {wallet} from 'view/wallet';
-import {bank} from 'view/bank';

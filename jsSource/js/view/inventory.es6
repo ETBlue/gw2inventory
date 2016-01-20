@@ -1,12 +1,12 @@
 import {gw2Data} from 'model/gw2Data/gw2Data';
 
-export const bank = {
+export const inventory = {
   initialize() {
-    $('#bank [data-click]').button('reset');
+    $('#inventory [data-click]').button('reset');
     this.bindEvents();
   },
   bindEvents() {
-    gw2Data.on('loaded:bank', (itemList) => {
+    gw2Data.on('loaded:inventory', (itemList) => {
       const fullList = itemList.filter(function(n){ return n != undefined });
       const dataSet = fullList.map((item) => {
         return [
@@ -22,7 +22,7 @@ export const bank = {
           item.category
         ];
       });
-      var table = $('#bank-table').DataTable({
+      var table = $('#inventory-table').DataTable({
         data: dataSet,
         "destroy":true,
         "pageLength": 50,
@@ -37,12 +37,12 @@ export const bank = {
           }
         ]
       });
-      $('#bank .loading').hide();
+      $('#inventory .loading').hide();
 
       var searchValue = "";
       var searchCollection = "";
       // enable table search by nav bar click
-      $('#bank [data-subset]').on('click tap', function(){
+      $('#inventory [data-subset]').on('click tap', function(){
         searchCollection = $(this).attr("data-subset");
         if(searchCollection == "rarity"){
         } else {
@@ -62,7 +62,7 @@ export const bank = {
           table.column([9]).search('').column([3]).search(searchValue, true).draw();
         }
       });
-      $('#bank [data-option]').on('click tap', function(){
+      $('#inventory [data-option]').on('click tap', function(){
         searchValue = $(this).attr("data-option");
         var searchTarget = $(this).attr("data-target");
         if ( searchTarget == 'rarity' ) {
@@ -74,13 +74,13 @@ export const bank = {
         }
       });
       // TODO: enable table refresh by navbar click
-      $('#bank [data-click]').on('click tap', function(){
+      $('#inventory [data-click]').on('click tap', function(){
         $(this).button('loading');
         $(this).parents('.tab-pane').children('.subset').removeClass('active');
         $(this).parents('.tab-pane').children('.loading').show();
         var action = $(this).attr('data-click');
-        if(action == 'refreshbank'){
-          //get_render_bank();
+        if(action == 'refreshinventory'){
+          //get_render_inventory();
         }
       });
     });
@@ -88,7 +88,7 @@ export const bank = {
 };
 
 $(() => {
-  bank.initialize();
+  inventory.initialize();
 });
 
-export default bank;
+export default inventory;

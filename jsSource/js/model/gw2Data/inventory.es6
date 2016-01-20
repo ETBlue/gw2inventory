@@ -73,7 +73,6 @@ export const inventory = {
           const vaultDataRef = vault.get().map((material, index) => {
             if (material) {
               const itemInfo = items.get(material.id);
-              console.log(itemInfo);
               const position = 'Vault|' + (index + 1);
               const item = new Item(position, material, itemInfo);
               return item.toJSON();

@@ -1,8 +1,4 @@
 import {apiKey} from 'model/apiKey';
-import {items} from 'model/gw2Data/items';
-import {characters} from 'model/gw2Data/characters';
-import {materials} from 'model/gw2Data/materials';
-import {vault} from 'model/gw2Data/vault';
 
 let dataRef;
 

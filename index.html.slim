@@ -73,7 +73,7 @@ html lang='en'
             li
               a data-toggle='tab' href='#characters' Characters
             li
-              a data-toggle='tab' href='#bank' Inventory
+              a data-toggle='tab' href='#inventory' Inventory
             //li
             //  a data-toggle='tab' href='#wardrobe' Wardrobe
             li
@@ -126,8 +126,8 @@ html lang='en'
           section.text-center
             p#account-status.status Loading account...
             p#characters-status.status Loading characters...
-            p#bank-status.status Loading inventory...
-            //p#bank-status.status Loading wardrobe...
+            p#inventory-status.status Loading inventory...
+            //p#inventory-status.status Loading wardrobe...
             p#wallet-status.status Loading wallet...
             //p#achievements-status.status Loading achievements...
 
@@ -281,7 +281,7 @@ html lang='en'
                 td.text-center colspan='36'
                   .timer-loader.loading
 
-      section.tab-pane#bank
+      section.tab-pane#inventory
         nav.navbar.collapse-top.medium
           .container.border-bottom
             .navbar-header
@@ -351,7 +351,7 @@ html lang='en'
                       a href='#' data-option='Junk' data-target='rarity'
                         | Junk 
                 //li
-                //  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshbank' Refresh
+                //  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshinventory' Refresh
         section.subset#equipment
           nav.navbar.collapse-top.small
             .container
@@ -478,7 +478,7 @@ html lang='en'
                     | Trait 
                     //span.badge.light 0
         .container.table-responsive
-          table#bank-table.datatable.table.table-striped width='100%'
+          table#inventory-table.datatable.table.table-striped width='100%'
             thead
               tr
                 th Icon
@@ -579,10 +579,10 @@ html lang='en'
       ga('send', 'pageview');
 
 
-    //- bank().each do |bank_item|
+    //- inventory().each do |inventory_item|
     //  div
-    //    = bank_item.inspect
+    //    = inventory_item.inspect
     //    h2 
-    //      = "#{bank_item["name"]} X #{bank_item["count"]}"
-    //    img src="#{bank_item["icon"]}"
+    //      = "#{inventory_item["name"]} X #{inventory_item["count"]}"
+    //    img src="#{inventory_item["icon"]}"
 

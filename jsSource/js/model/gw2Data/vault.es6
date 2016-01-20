@@ -12,7 +12,7 @@ export const vault = {
       access_token: apiKey.getKey(),
       lang: 'en'
     };
-    //載入specializations
+    //載入倉庫
     $.get('https://api.guildwars2.com/v2/account/materials?' + $.param(params))
       .done((materialList) => {
         dataRef = materialList;

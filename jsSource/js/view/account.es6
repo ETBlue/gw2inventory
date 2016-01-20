@@ -16,10 +16,10 @@ export const app = {
         const newKey = $(this).val();
         apiKey.setKey(newKey);
         app.showLoading();
-        gw2Data.loadCharacters();
         gw2Data.loadAccount();
+        gw2Data.loadCharacters();
+        gw2Data.loadInventory();
         gw2Data.loadWallet();
-        gw2Data.loadBank();
       }
     });
 
@@ -42,8 +42,8 @@ export const app = {
       $('#wallet-status')
         .html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
-    gw2Data.on('loaded:bank', () => {
-      $('#bank-status')
+    gw2Data.on('loaded:inventory', () => {
+      $('#inventory-status')
         .html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
   },
@@ -55,7 +55,7 @@ export const app = {
       <p id="characters-status" class="status" style="display: block;">
         Loading characters...
       </p>
-      <p id="bank-status" class="status" style="display: block;">
+      <p id="inventory-status" class="status" style="display: block;">
         Loading inventory...
       </p>
       <p id="wallet-status" class="status" style="display: block;">
