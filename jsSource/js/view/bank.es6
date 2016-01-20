@@ -38,14 +38,11 @@ export const bank = {
       });
       $('#bank .loading').hide();
 
-      $('#bank [data-option]').on('click tap', function(){
-        var searchValue = $(this).attr("data-option");
-        table.search(searchValue).draw();
-      });
+      var searchValue = "";
+      var searchCollection = "";
       // enable table search by nav bar click
       $('#bank [data-subset]').on('click tap', function(){
-        var searchCollection = $(this).attr("data-subset");
-        var searchValue = "";
+        searchCollection = $(this).attr("data-subset");
         if(searchCollection == "equipment"){
           searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
         }else if(searchCollection == "utilities"){
@@ -59,7 +56,15 @@ export const bank = {
         }else if(searchCollection == "rarity"){
           searchValue = "";
         }
-        table.search(searchValue, true).draw();
+        table.column([3]).search(searchValue, true).draw();
+      });
+      $('#bank [data-option]').on('click tap', function(){
+        searchValue = $(this).attr("data-option");
+        if ( $(this).attr("data-target") == 'rarity' ) {
+          table.column([5]).search(searchValue).draw();
+        } else {
+          table.column([3]).search(searchValue).draw();
+        }
       });
       // TODO: enable table refresh by navbar click
       $('#bank [data-click]').on('click tap', function(){
