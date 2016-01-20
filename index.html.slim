@@ -295,28 +295,32 @@ html lang='en'
                 li.active
                   a href='#' data-subset='all'
                     | All 
-                    span.badge.light 0
+                    //span.badge.light 0
                     span.sr-only (current)
                 li
                   a href='#' data-subset='equipment'
                     | Equipment 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-subset='utilities'
                     | Utilities 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-subset='materials'
                     | Materials 
-                    span.badge.light 0
+                    //span.badge.light 0
                 //li
                 //  a href='#' data-subset='toys'
                 //    | Consumables 
-                //    span.badge.light 0
+                //    //span.badge.light 0
                 li
                   a href='#' data-subset='misc'
                     | Others 
-                    span.badge.light 0
+                    //span.badge.light 0
+                li
+                  a href='#' data-subset='rarity'
+                    | Rarity 
+                    //span.badge.light 0
               ul.nav.navbar-nav.navbar-right
                 li
                   a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshbank' Refresh
@@ -332,23 +336,23 @@ html lang='en'
                 li
                   a href='#' data-option='Armor'
                     | Armor 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Weapon'
                     | Weapons 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Back'
                     | Backpack 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Trinket'
                     | Trinkets 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='UpgradeComponent'
                     | Upgrade Components 
-                    span.badge.light 0
+                    //span.badge.light 0
         section.subset#utilities
           nav.navbar.collapse-top.small
             .container
@@ -361,15 +365,15 @@ html lang='en'
                 li
                   a href='#' data-option='Bag'
                     | Bags 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Gathering'
                     | Gathering Tools 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Tool'
                     | Salvage Tools 
-                    span.badge.light 0
+                    //span.badge.light 0
         //section.subset#toys
         //  nav.navbar.collapse-top.small
         //    .container
@@ -382,7 +386,7 @@ html lang='en'
         //        li
         //          a href='#' data-option='MiniPet'
         //            | Miniatures 
-        //            span.badge.light 0
+        //            //span.badge.light 0
         section.subset#materials
           nav.navbar.collapse-top.small
             .container
@@ -395,7 +399,7 @@ html lang='en'
                 li
                   a href='#' data-option='CraftingMaterial'
                     | Crafting Materials 
-                    span.badge.light 0
+                    //span.badge.light 0
         section.subset#misc
           nav.navbar.collapse-top.small
             .container
@@ -408,23 +412,64 @@ html lang='en'
                 li
                   a href='#' data-option='Consumable'
                     | Consumables 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Gizmo'
                     | Gizmo 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Container'
                     | Containers 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Trophy'
                     | Trophies 
-                    span.badge.light 0
+                    //span.badge.light 0
                 li
                   a href='#' data-option='Trait'
                     | Trait 
-                    span.badge.light 0
+                    //span.badge.light 0
+        section.subset#rarity
+          nav.navbar.collapse-top.small
+            .container
+              .navbar-header
+                .navbar-brand Rarity
+                button.navbar-toggle.collapsed aria-expanded="false" data-target="#rarity-menu-collapse" data-toggle="collapse" type="button" 
+                  span.glyphicon.glyphicon-option-horizontal
+                  span.sr-only Toggle navigation
+              ul.nav.navbar-nav#rarity-menu-collapse.collapse.navbar-collapse
+                li
+                  a href='#' data-option='Legendary'
+                    | Legendary 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Ascended'
+                    | Ascended 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Exotic'
+                    | Exotic 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Rare'
+                    | Rare 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Masterwork'
+                    | Masterwork 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Fine'
+                    | Fine 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Basic'
+                    | Basic 
+                    //span.badge.light 0
+                li
+                  a href='#' data-option='Junk'
+                    | Junk 
+                    //span.badge.light 0
         .container.table-responsive
           table#bank-table.datatable.table.table-striped width='100%'
             thead

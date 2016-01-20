@@ -53,6 +53,7 @@ class Character {
       result[key] = this[key];
     });
     result.inventory = this.inventory;
+    result._data = this._data;
     return result;
   }
   get name() {
@@ -230,7 +231,6 @@ class Character {
       misc: getInventoryHtml(inventory.misc)
     };
   }
-
 }
 
 function getSpecializationHtml(dataList) {

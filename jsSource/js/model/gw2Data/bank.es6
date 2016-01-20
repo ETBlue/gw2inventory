@@ -1,6 +1,6 @@
 import {apiKey} from 'model/apiKey';
 import {items} from 'model/gw2Data/items';
-//import {characters} from 'model/gw2Data/characters';
+import {characters} from 'model/gw2Data/characters';
 
 let dataRef;
 
@@ -16,6 +16,9 @@ export const bank = {
       page: 0
     };
     const waiting = [];
+    waiting.push(characters.load((characterList) => {
+      waiting.push(items.loadByCharacterInventory(characterList));
+    }));
     //載入bank
     $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params))
       .done((bankData) => {
@@ -24,7 +27,8 @@ export const bank = {
 
         //全部載入完畢後才resolve loadDeferred
         $.when.apply($.when, waiting).done(() => {
-          dataRef = bankData.map((bankItem, index) => {
+          dataRef = [];
+          const bankDataRef = bankData.map((bankItem, index) => {
             if (bankItem) {
               const itemInfo = items.get(bankItem.id);
               const position = 'Bank|' + (index + 1);
@@ -32,8 +36,26 @@ export const bank = {
               return item.toJSON();
             }
           });
+          $.merge(dataRef, bankDataRef);
+          const characterDataRef = [];
+          characters.get().forEach((character) => {
+            character._data.bags.forEach((bag) => {
+              if (bag) {
+                bag.inventory.forEach((bagItem) => {
+                  if (bagItem) {
+                    const itemInfo = items.get(bagItem.id);
+                    const position = character.name;
+                    const item = new Item(position, bagItem, itemInfo);
+                    characterDataRef.push( item.toJSON() );
+                  }
+                });
+              }
+            });
+          });
+          $.merge(dataRef, characterDataRef);
           loadDeferred.resolve(dataRef);
         });
+
       });
     return loadDeferred;
   }

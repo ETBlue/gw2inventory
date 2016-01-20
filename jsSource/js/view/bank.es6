@@ -7,19 +7,19 @@ export const bank = {
   },
   bindEvents() {
     gw2Data.on('loaded:bank', (itemList) => {
-      itemList = itemList.filter(function(n){ return n != undefined });
-      const dataSet = itemList.map((item) => {
-          return [
-            item.icon,
-            item.name,
-            item.count,
-            item.type,
-            item.level,
-            item.rarity,
-            item.position,
-            item.binding,
-            item.description
-          ];
+      const fullList = itemList.filter(function(n){ return n != undefined });
+      const dataSet = fullList.map((item) => {
+        return [
+          item.icon,
+          item.name,
+          item.count,
+          item.type,
+          item.level,
+          item.rarity,
+          item.position,
+          item.binding,
+          item.description
+        ];
       });
       var table = $('#bank-table').DataTable({
         data: dataSet,
@@ -29,7 +29,7 @@ export const bank = {
         "columnDefs": [
           {
             type: 'natural',
-            targets: 6
+            targets: [2,4,6]
           },{
             visible: false,
             targets: 8
@@ -40,7 +40,7 @@ export const bank = {
 
       $('#bank [data-option]').on('click tap', function(){
         var searchValue = $(this).attr("data-option");
-        table.column([3]).search(searchValue).draw();
+        table.search(searchValue).draw();
       });
       // enable table search by nav bar click
       $('#bank [data-subset]').on('click tap', function(){
@@ -56,8 +56,10 @@ export const bank = {
           searchValue = "CraftingMaterial";
         }else if(searchCollection == "misc"){
           searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
+        }else if(searchCollection == "rarity"){
+          searchValue = "";
         }
-        table.column([3]).search(searchValue, true).draw();
+        table.search(searchValue, true).draw();
       });
       // TODO: enable table refresh by navbar click
       $('#bank [data-click]').on('click tap', function(){

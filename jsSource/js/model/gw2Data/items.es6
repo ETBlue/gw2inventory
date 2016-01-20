@@ -73,6 +73,35 @@ export const items = {
     });
     return this.load(needItemIdList);
   },
+  loadByCharacterInventory(characterList) {
+    const needItemIdList = [];
+    characterList.forEach((characterData) => {
+      if (characterData.bags) {
+        characterData.bags.forEach((bag) => {
+          if (bag) {
+            if (bag.inventory) {
+              bag.inventory.forEach((item) => {
+                if (item) {
+                  needItemIdList.push(item.id);
+                  if (item.upgrades) {
+                    item.upgrades.forEach((upgradeId) => {
+                      needItemIdList.push(upgradeId);
+                    });
+                  }
+                  if (item.infusions) {
+                    item.infusions.forEach((infusionId) => {
+                      needItemIdList.push(infusionId);
+                    });
+                  }
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+    return this.load(needItemIdList);
+  },
   loadByBankList(bankList) {
     const needItemIdList = [];
     bankList.forEach((itemData) => {
