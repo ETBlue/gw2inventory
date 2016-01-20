@@ -18,7 +18,8 @@ export const bank = {
           item.rarity,
           item.position,
           item.binding,
-          item.description
+          item.description,
+          item.category
         ];
       });
       var table = $('#bank-table').DataTable({
@@ -32,7 +33,7 @@ export const bank = {
             targets: [2,4,6]
           },{
             visible: false,
-            targets: 8
+            targets: [8,9]
           }
         ]
       });
@@ -43,27 +44,33 @@ export const bank = {
       // enable table search by nav bar click
       $('#bank [data-subset]').on('click tap', function(){
         searchCollection = $(this).attr("data-subset");
-        if(searchCollection == "equipment"){
-          searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
-        }else if(searchCollection == "utilities"){
-          searchValue = "Bag|Gathering|Tool";
-        }else if(searchCollection == "toys"){
-          searchValue = "";
-        }else if(searchCollection == "materials"){
-          searchValue = "CraftingMaterial";
-        }else if(searchCollection == "misc"){
-          searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
-        }else if(searchCollection == "rarity"){
-          searchValue = "";
+        if(searchCollection == "rarity"){
+        } else {
+          if(searchCollection == "equipment"){
+            searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+          }else if(searchCollection == "utilities"){
+            searchValue = "Bag|Gathering|Tool";
+          }else if(searchCollection == "toys"){
+            searchValue = "";
+          }else if(searchCollection == "materials"){
+            searchValue = "CraftingMaterial";
+          }else if(searchCollection == "misc"){
+            searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
+          }else if(searchCollection == "all"){
+            searchValue = "";
+          }
+          table.column([9]).search('').column([3]).search(searchValue, true).draw();
         }
-        table.column([3]).search(searchValue, true).draw();
       });
       $('#bank [data-option]').on('click tap', function(){
         searchValue = $(this).attr("data-option");
-        if ( $(this).attr("data-target") == 'rarity' ) {
+        var searchTarget = $(this).attr("data-target");
+        if ( searchTarget == 'rarity' ) {
           table.column([5]).search(searchValue).draw();
+        } else if ( searchTarget == 'category' ) {
+          table.column([3]).search('').column([9]).search(searchValue).draw();
         } else {
-          table.column([3]).search(searchValue).draw();
+          table.column([9]).search('').column([3]).search(searchValue).draw();
         }
       });
       // TODO: enable table refresh by navbar click

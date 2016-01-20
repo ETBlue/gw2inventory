@@ -317,13 +317,41 @@ html lang='en'
                   a href='#' data-subset='misc'
                     | Others 
                     //span.badge.light 0
-                li
-                  a href='#' data-subset='rarity'
-                    | Rarity 
-                    //span.badge.light 0
               ul.nav.navbar-nav.navbar-right
-                li
-                  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshbank' Refresh
+                li.dropdown
+                  a.dropdown-toggle data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' href='#' data-subset='rarity'
+                    | Rarity 
+                    span.caret
+                  ul.dropdown-menu
+                    li
+                      a href='#' data-option='' data-target='rarity'
+                        | All Rarity 
+                    li
+                      a href='#' data-option='Legendary' data-target='rarity'
+                        | Legendary 
+                    li
+                      a href='#' data-option='Ascended' data-target='rarity'
+                        | Ascended 
+                    li
+                      a href='#' data-option='Exotic' data-target='rarity'
+                        | Exotic 
+                    li
+                      a href='#' data-option='Rare' data-target='rarity'
+                        | Rare 
+                    li
+                      a href='#' data-option='Masterwork' data-target='rarity'
+                        | Masterwork 
+                    li
+                      a href='#' data-option='Fine' data-target='rarity'
+                        | Fine 
+                    li
+                      a href='#' data-option='Basic' data-target='rarity'
+                        | Basic 
+                    li
+                      a href='#' data-option='Junk' data-target='rarity'
+                        | Junk 
+                //li
+                //  a.btn.btn-default data-loading-text='Refreshing...' type='button' data-click='refreshbank' Refresh
         section.subset#equipment
           nav.navbar.collapse-top.small
             .container
@@ -396,10 +424,30 @@ html lang='en'
                   span.glyphicon.glyphicon-option-horizontal
                   span.sr-only Toggle navigation
               ul.nav.navbar-nav#materials-menu-collapse.collapse.navbar-collapse
+                //li
+                //  a href='#' data-option=''
+                //    | All 
                 li
-                  a href='#' data-option='CraftingMaterial'
-                    | Crafting Materials 
-                    //span.badge.light 0
+                  a href='#' data-option='Common Crafting Materials' data-target='category'
+                    | Common 
+                li
+                  a href='#' data-option='Fine Crafting Materials' data-target='category'
+                    | Fine 
+                li
+                  a href='#' data-option='Rare Crafting Materials' data-target='category'
+                    | Rare 
+                li
+                  a href='#' data-option='Ascended Materials' data-target='category'
+                    | Ascended 
+                li
+                  a href='#' data-option='Gemstones and Jewels' data-target='category'
+                    | Stones 
+                li
+                  a href='#' data-option='Cooking Materials' data-target='category'
+                    | Cooking 
+                li
+                  a href='#' data-option='Festive Materials' data-target='category'
+                    | Festive 
         section.subset#misc
           nav.navbar.collapse-top.small
             .container
@@ -429,47 +477,6 @@ html lang='en'
                   a href='#' data-option='Trait'
                     | Trait 
                     //span.badge.light 0
-        section.subset#rarity
-          nav.navbar.collapse-top.small
-            .container
-              .navbar-header
-                .navbar-brand Rarity
-                button.navbar-toggle.collapsed aria-expanded="false" data-target="#rarity-menu-collapse" data-toggle="collapse" type="button" 
-                  span.glyphicon.glyphicon-option-horizontal
-                  span.sr-only Toggle navigation
-              ul.nav.navbar-nav#rarity-menu-collapse.collapse.navbar-collapse
-                li
-                  a href='#' data-option='Legendary' data-target='rarity'
-                    | Legendary 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Ascended' data-target='rarity'
-                    | Ascended 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Exotic' data-target='rarity'
-                    | Exotic 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Rare' data-target='rarity'
-                    | Rare 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Masterwork' data-target='rarity'
-                    | Masterwork 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Fine' data-target='rarity'
-                    | Fine 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Basic' data-target='rarity'
-                    | Basic 
-                    //span.badge.light 0
-                li
-                  a href='#' data-option='Junk' data-target='rarity'
-                    | Junk 
-                    //span.badge.light 0
         .container.table-responsive
           table#bank-table.datatable.table.table-striped width='100%'
             thead
@@ -483,6 +490,7 @@ html lang='en'
                 th Position
                 th Binding
                 th Description
+                th Category
             tfoot
               tr
                 th Icon
@@ -494,6 +502,7 @@ html lang='en'
                 th Position
                 th Binding
                 th Description
+                th Category
             tbody
               tr
                 td.text-center colspan='9'

@@ -102,9 +102,18 @@ export const items = {
     });
     return this.load(needItemIdList);
   },
-  loadByBankList(bankList) {
+  loadByBankList(bankData) {
     const needItemIdList = [];
-    bankList.forEach((itemData) => {
+    bankData.forEach((itemData) => {
+      if (itemData) {
+        needItemIdList.push(itemData.id);
+      }
+    });
+    return this.load(needItemIdList);
+  },
+  loadByVaultList(vaultData) {
+    const needItemIdList = [];
+    vaultData.forEach((itemData) => {
       if (itemData) {
         needItemIdList.push(itemData.id);
       }
