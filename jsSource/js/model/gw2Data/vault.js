@@ -16,7 +16,7 @@ define(['exports', 'model/apiKey'], function (exports, _apiKey) {
         access_token: _apiKey.apiKey.getKey(),
         lang: 'en'
       };
-      //載入specializations
+      //載入倉庫
       $.get('https://api.guildwars2.com/v2/account/materials?' + $.param(params)).done(function (materialList) {
         dataRef = materialList;
         loadDeferred.resolve(dataRef);

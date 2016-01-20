@@ -97,7 +97,6 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/charact
           var vaultDataRef = _vault.vault.get().map(function (material, index) {
             if (material) {
               var itemInfo = _items.items.get(material.id);
-              console.log(itemInfo);
               var position = 'Vault|' + (index + 1);
               var item = new Item(position, material, itemInfo);
               return item.toJSON();

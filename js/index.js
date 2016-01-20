@@ -1134,6 +1134,300 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
 });
 
 
+define('model/gw2Data/materials',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var materials = exports.materials = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load() {
+      if (!loadingRef) {
+        var params = {
+          ids: 'all',
+          lang: 'en'
+        };
+        loadingRef = $.get('https://api.guildwars2.com/v2/materials?' + $.param(params)).done(function (categories) {
+          categories.forEach(function (category) {
+            dataRef[category.id] = category;
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/vault',['exports', 'model/apiKey'], function (exports, _apiKey) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.vault = undefined;
+  var dataRef = undefined;
+  var vault = exports.vault = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en'
+      };
+      //載入倉庫
+      $.get('https://api.guildwars2.com/v2/account/materials?' + $.param(params)).done(function (materialList) {
+        dataRef = materialList;
+        loadDeferred.resolve(dataRef);
+      });
+      return loadDeferred;
+    }
+  };
+});
+
+
+define('model/gw2Data/bank',['exports', 'model/apiKey'], function (exports, _apiKey) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.bank = undefined;
+  var dataRef = undefined;
+  var bank = exports.bank = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en',
+        page: 0
+      };
+
+      //載入銀行
+      $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
+        dataRef = bankData;
+        loadDeferred.resolve(dataRef);
+      });
+      return loadDeferred;
+    }
+  };
+});
+
+
+define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault', 'model/gw2Data/bank'], function (exports, _apiKey, _items, _characters, _materials, _vault, _bank) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.inventory = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = (function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  })();
+
+  var dataRef = undefined;
+  var inventory = exports.inventory = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en',
+        page: 0
+      };
+      var waiting = [];
+
+      // 載入材料分類表
+      waiting.push(_materials.materials.load());
+
+      // 載入角色包包與物品資料
+      waiting.push(_characters.characters.load());
+
+      // 載入倉庫與物品資料
+      waiting.push(_vault.vault.load());
+
+      //載入銀行
+      waiting.push(_bank.bank.load());
+
+      $.when.apply($.when, waiting).done(function () {
+        var waitingLoadItems = [];
+        //載入銀行物品資料
+        waitingLoadItems.push(_items.items.loadByBankList(_bank.bank.get()));
+        waitingLoadItems.push(_items.items.loadByVaultList(_vault.vault.get()));
+
+        //全部載入完畢後才 merge
+        $.when.apply($.when, waitingLoadItems).done(function () {
+
+          dataRef = [];
+
+          var characterDataRef = [];
+          _characters.characters.get().forEach(function (character) {
+            character._data.bags.forEach(function (bag) {
+              if (bag) {
+                bag.inventory.forEach(function (bagItem) {
+                  if (bagItem) {
+                    var itemInfo = _items.items.get(bagItem.id);
+                    var position = character.name;
+                    var item = new Item(position, bagItem, itemInfo);
+                    characterDataRef.push(item.toJSON());
+                  }
+                });
+              }
+            });
+          });
+          $.merge(dataRef, characterDataRef);
+
+          var bankDataRef = _bank.bank.get().map(function (bankItem, index) {
+            if (bankItem) {
+              var itemInfo = _items.items.get(bankItem.id);
+              var position = 'Bank|' + (index + 1);
+              var item = new Item(position, bankItem, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, bankDataRef);
+
+          var vaultDataRef = _vault.vault.get().map(function (material, index) {
+            if (material) {
+              var itemInfo = _items.items.get(material.id);
+              var position = 'Vault|' + (index + 1);
+              var item = new Item(position, material, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, vaultDataRef);
+
+          loadDeferred.resolve(dataRef);
+        });
+      });
+      return loadDeferred;
+    }
+  };
+
+  var Item = (function () {
+    function Item(position, data, itemInfo) {
+      _classCallCheck(this, Item);
+
+      this._data = data || {};
+      this._data.position = position || '';
+      this._ref = itemInfo || {};
+      return this;
+    }
+
+    _createClass(Item, [{
+      key: 'toJSON',
+      value: function toJSON() {
+        var _this = this;
+
+        var result = {};
+        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description', 'category'];
+        keys.forEach(function (key) {
+          result[key] = _this[key];
+        });
+        return result;
+      }
+    }, {
+      key: 'icon',
+      get: function get() {
+        var icon = this._ref.icon || '';
+        var rarity = this._ref.rarity || '';
+        var description = this._ref.description || '';
+        return '<img class=\'large solo item icon ' + rarity + '\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'\' src=\'' + icon + '\' />';
+      }
+    }, {
+      key: 'name',
+      get: function get() {
+        var name = this._ref.name || '';
+        var rarity = this._ref.rarity || '';
+        return '<span class="bold ' + rarity + '">' + name + '</span>';
+      }
+    }, {
+      key: 'count',
+      get: function get() {
+        return parseInt(this._data.count, 10);
+      }
+    }, {
+      key: 'type',
+      get: function get() {
+        return this._ref.type || '';
+      }
+    }, {
+      key: 'level',
+      get: function get() {
+        return this._ref.level || '';
+      }
+    }, {
+      key: 'rarity',
+      get: function get() {
+        return this._ref.rarity || '';
+      }
+    }, {
+      key: 'position',
+      get: function get() {
+        return this._data.position || '';
+      }
+    }, {
+      key: 'binding',
+      get: function get() {
+        var binding = this._data.binding;
+        var bound_to = this._data.bound_to;
+
+        if (binding) {
+          if (bound_to) {
+            return bound_to;
+          } else {
+            return binding;
+          }
+        } else {
+          return '';
+        }
+      }
+    }, {
+      key: 'description',
+      get: function get() {
+        return this._ref.description || '';
+      }
+    }, {
+      key: 'category',
+      get: function get() {
+        if (this._data.category) {
+          return _materials.materials.get(this._data.category).name || '';
+        } else {
+          return '';
+        }
+      }
+    }]);
+
+    return Item;
+  })();
+});
+
+
 define('model/gw2Data/currencies',['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -1298,302 +1592,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
 });
 
 
-define('model/gw2Data/materials',['exports'], function (exports) {
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var dataRef = {};
-  var loadingRef = undefined;
-  var materials = exports.materials = {
-    get: function get(id) {
-      return dataRef[id];
-    },
-    load: function load() {
-      if (!loadingRef) {
-        var params = {
-          ids: 'all',
-          lang: 'en'
-        };
-        loadingRef = $.get('https://api.guildwars2.com/v2/materials?' + $.param(params)).done(function (categories) {
-          categories.forEach(function (category) {
-            dataRef[category.id] = category;
-          });
-        });
-      }
-      return loadingRef;
-    }
-  };
-});
-
-
-define('model/gw2Data/vault',['exports', 'model/apiKey'], function (exports, _apiKey) {
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.vault = undefined;
-  var dataRef = undefined;
-  var vault = exports.vault = {
-    get: function get() {
-      return dataRef;
-    },
-    load: function load() {
-      var loadDeferred = new $.Deferred();
-      var params = {
-        access_token: _apiKey.apiKey.getKey(),
-        lang: 'en'
-      };
-      //載入specializations
-      $.get('https://api.guildwars2.com/v2/account/materials?' + $.param(params)).done(function (materialList) {
-        dataRef = materialList;
-        loadDeferred.resolve(dataRef);
-      });
-      return loadDeferred;
-    }
-  };
-});
-
-
-define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault'], function (exports, _apiKey, _items, _characters, _materials, _vault) {
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.bank = undefined;
-  var dataRef = undefined;
-  var bank = exports.bank = {
-    get: function get() {
-      return dataRef;
-    },
-    load: function load() {
-      var loadDeferred = new $.Deferred();
-      var params = {
-        access_token: _apiKey.apiKey.getKey(),
-        lang: 'en',
-        page: 0
-      };
-
-      //載入銀行
-      $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
-        dataRef = bankData;
-        loadDeferred.resolve(dataRef);
-      });
-      return loadDeferred;
-    }
-  };
-});
-
-
-define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault', 'model/gw2Data/bank'], function (exports, _apiKey, _items, _characters, _materials, _vault, _bank) {
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.inventory = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = (function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  })();
-
-  var dataRef = undefined;
-  var inventory = exports.inventory = {
-    get: function get() {
-      return dataRef;
-    },
-    load: function load() {
-      var loadDeferred = new $.Deferred();
-      var params = {
-        access_token: _apiKey.apiKey.getKey(),
-        lang: 'en',
-        page: 0
-      };
-      var waiting = [];
-
-      // 載入材料分類表
-      waiting.push(_materials.materials.load());
-
-      // 載入角色包包與物品資料
-      waiting.push(_characters.characters.load());
-
-      // 載入倉庫與物品資料
-      waiting.push(_vault.vault.load());
-
-      //載入銀行
-      waiting.push(_bank.bank.load());
-
-      $.when.apply($.when, waiting).done(function () {
-        var waitingLoadItems = [];
-        //載入銀行物品資料
-        waitingLoadItems.push(_items.items.loadByBankList(_bank.bank.get()));
-        waitingLoadItems.push(_items.items.loadByVaultList(_vault.vault.get()));
-
-        //全部載入完畢後才 merge
-        $.when.apply($.when, waitingLoadItems).done(function () {
-
-          dataRef = [];
-
-          var characterDataRef = [];
-          _characters.characters.get().forEach(function (character) {
-            character._data.bags.forEach(function (bag) {
-              if (bag) {
-                bag.inventory.forEach(function (bagItem) {
-                  if (bagItem) {
-                    var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name;
-                    var item = new Item(position, bagItem, itemInfo);
-                    characterDataRef.push(item.toJSON());
-                  }
-                });
-              }
-            });
-          });
-          $.merge(dataRef, characterDataRef);
-
-          var bankDataRef = _bank.bank.get().map(function (bankItem, index) {
-            if (bankItem) {
-              var itemInfo = _items.items.get(bankItem.id);
-              var position = 'Bank|' + (index + 1);
-              var item = new Item(position, bankItem, itemInfo);
-              return item.toJSON();
-            }
-          });
-          $.merge(dataRef, bankDataRef);
-
-          var vaultDataRef = _vault.vault.get().map(function (material, index) {
-            if (material) {
-              var itemInfo = _items.items.get(material.id);
-              console.log(itemInfo);
-              var position = 'Vault|' + (index + 1);
-              var item = new Item(position, material, itemInfo);
-              return item.toJSON();
-            }
-          });
-          $.merge(dataRef, vaultDataRef);
-
-          loadDeferred.resolve(dataRef);
-        });
-      });
-      return loadDeferred;
-    }
-  };
-
-  var Item = (function () {
-    function Item(position, data, itemInfo) {
-      _classCallCheck(this, Item);
-
-      this._data = data || {};
-      this._data.position = position || '';
-      this._ref = itemInfo || {};
-      return this;
-    }
-
-    _createClass(Item, [{
-      key: 'toJSON',
-      value: function toJSON() {
-        var _this = this;
-
-        var result = {};
-        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description', 'category'];
-        keys.forEach(function (key) {
-          result[key] = _this[key];
-        });
-        return result;
-      }
-    }, {
-      key: 'icon',
-      get: function get() {
-        var icon = this._ref.icon || '';
-        var rarity = this._ref.rarity || '';
-        var description = this._ref.description || '';
-        return '<img class=\'large solo item icon ' + rarity + '\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'\' src=\'' + icon + '\' />';
-      }
-    }, {
-      key: 'name',
-      get: function get() {
-        var name = this._ref.name || '';
-        var rarity = this._ref.rarity || '';
-        return '<span class="bold ' + rarity + '">' + name + '</span>';
-      }
-    }, {
-      key: 'count',
-      get: function get() {
-        return parseInt(this._data.count, 10);
-      }
-    }, {
-      key: 'type',
-      get: function get() {
-        return this._ref.type || '';
-      }
-    }, {
-      key: 'level',
-      get: function get() {
-        return this._ref.level || '';
-      }
-    }, {
-      key: 'rarity',
-      get: function get() {
-        return this._ref.rarity || '';
-      }
-    }, {
-      key: 'position',
-      get: function get() {
-        return this._data.position || '';
-      }
-    }, {
-      key: 'binding',
-      get: function get() {
-        var binding = this._data.binding;
-        var bound_to = this._data.bound_to;
-
-        if (binding) {
-          if (bound_to) {
-            return bound_to;
-          } else {
-            return binding;
-          }
-        } else {
-          return '';
-        }
-      }
-    }, {
-      key: 'description',
-      get: function get() {
-        return this._ref.description || '';
-      }
-    }, {
-      key: 'category',
-      get: function get() {
-        if (this._data.category) {
-          return _materials.materials.get(this._data.category).name || '';
-        } else {
-          return '';
-        }
-      }
-    }]);
-
-    return Item;
-  })();
-});
-
-
-define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank', 'model/gw2Data/inventory'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank, _inventory) {
+define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/inventory', 'model/gw2Data/wallet'], function (exports, _events, _apiKey, _account, _characters, _inventory, _wallet) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -1615,30 +1614,21 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
         _this2.trigger('loaded:characters', characterList);
       });
     },
-    loadWallet: function loadWallet() {
+    loadInventory: function loadInventory() {
       var _this3 = this;
+
+      this.trigger('load:inventory');
+      return _inventory.inventory.load().done(function (inventoryData) {
+        _this3.trigger('loaded:inventory', inventoryData);
+      });
+    },
+    loadWallet: function loadWallet() {
+      var _this4 = this;
 
       this.trigger('load:wallet');
       return _wallet.wallet.load().done(function (walletData) {
-        _this3.trigger('loaded:wallet', walletData);
+        _this4.trigger('loaded:wallet', walletData);
       });
-    },
-    loadBank: function loadBank() {
-      var _this4 = this;
-
-      this.trigger('load:bank');
-      return _inventory.inventory.load().done(function (bankData) {
-        _this4.trigger('loaded:bank', bankData);
-      });
-    },
-    loadGuild: function loadGuild(guildId) {
-      var _this5 = this;
-
-      this.trigger('load:guild');
-      var guild_id = guildId;
-      return _guilds.guilds.load(guildId).done(function (guildData) {
-        _this5.trigger('loaded:guild', guildData);
-      });;
     }
   };
   exports.default = gw2Data;
@@ -1666,10 +1656,10 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
           var newKey = $(this).val();
           _apiKey.apiKey.setKey(newKey);
           app.showLoading();
-          _gw2Data.gw2Data.loadCharacters();
           _gw2Data.gw2Data.loadAccount();
+          _gw2Data.gw2Data.loadCharacters();
+          _gw2Data.gw2Data.loadInventory();
           _gw2Data.gw2Data.loadWallet();
-          _gw2Data.gw2Data.loadBank();
         }
       });
 
@@ -1689,12 +1679,12 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       _gw2Data.gw2Data.on('loaded:wallet', function () {
         $('#wallet-status').html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
-      _gw2Data.gw2Data.on('loaded:bank', function () {
-        $('#bank-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      _gw2Data.gw2Data.on('loaded:inventory', function () {
+        $('#inventory-status').html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
     },
     showLoading: function showLoading() {
-      $('#account-status').parent().empty().html('\n      <p id="account-status" class="status" style="display: block;">\n        Loading account...\n      </p>\n      <p id="characters-status" class="status" style="display: block;">\n        Loading characters...\n      </p>\n      <p id="bank-status" class="status" style="display: block;">\n        Loading inventory...\n      </p>\n      <p id="wallet-status" class="status" style="display: block;">\n        Loading wallet...\n      </p>\n    ');
+      $('#account-status').parent().empty().html('\n      <p id="account-status" class="status" style="display: block;">\n        Loading account...\n      </p>\n      <p id="characters-status" class="status" style="display: block;">\n        Loading characters...\n      </p>\n      <p id="inventory-status" class="status" style="display: block;">\n        Loading inventory...\n      </p>\n      <p id="wallet-status" class="status" style="display: block;">\n        Loading wallet...\n      </p>\n    ');
     }
   };
   $(function () {
@@ -1777,6 +1767,92 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
 });
 
 
+define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.inventory = undefined;
+  var inventory = exports.inventory = {
+    initialize: function initialize() {
+      $('#inventory [data-click]').button('reset');
+      this.bindEvents();
+    },
+    bindEvents: function bindEvents() {
+      _gw2Data.gw2Data.on('loaded:inventory', function (itemList) {
+        var fullList = itemList.filter(function (n) {
+          return n != undefined;
+        });
+        var dataSet = fullList.map(function (item) {
+          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, item.description, item.category];
+        });
+        var table = $('#inventory-table').DataTable({
+          data: dataSet,
+          "destroy": true,
+          "pageLength": 50,
+          "order": [[6, 'asc']],
+          "columnDefs": [{
+            type: 'natural',
+            targets: [2, 4, 6]
+          }, {
+            visible: false,
+            targets: [8, 9]
+          }]
+        });
+        $('#inventory .loading').hide();
+
+        var searchValue = "";
+        var searchCollection = "";
+        // enable table search by nav bar click
+        $('#inventory [data-subset]').on('click tap', function () {
+          searchCollection = $(this).attr("data-subset");
+          if (searchCollection == "rarity") {} else {
+            if (searchCollection == "equipment") {
+              searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+            } else if (searchCollection == "utilities") {
+              searchValue = "Bag|Gathering|Tool";
+            } else if (searchCollection == "toys") {
+              searchValue = "";
+            } else if (searchCollection == "materials") {
+              searchValue = "CraftingMaterial";
+            } else if (searchCollection == "misc") {
+              searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
+            } else if (searchCollection == "all") {
+              searchValue = "";
+            }
+            table.column([9]).search('').column([3]).search(searchValue, true).draw();
+          }
+        });
+        $('#inventory [data-option]').on('click tap', function () {
+          searchValue = $(this).attr("data-option");
+          var searchTarget = $(this).attr("data-target");
+          if (searchTarget == 'rarity') {
+            table.column([5]).search(searchValue).draw();
+          } else if (searchTarget == 'category') {
+            table.column([3]).search('').column([9]).search(searchValue).draw();
+          } else {
+            table.column([9]).search('').column([3]).search(searchValue).draw();
+          }
+        });
+        // TODO: enable table refresh by navbar click
+        $('#inventory [data-click]').on('click tap', function () {
+          $(this).button('loading');
+          $(this).parents('.tab-pane').children('.subset').removeClass('active');
+          $(this).parents('.tab-pane').children('.loading').show();
+          var action = $(this).attr('data-click');
+          if (action == 'refreshinventory') {
+            //get_render_inventory();
+          }
+        });
+      });
+    }
+  };
+  $(function () {
+    inventory.initialize();
+  });
+  exports.default = inventory;
+});
+
+
 define('view/wallet',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -1820,93 +1896,7 @@ define('view/wallet',['exports', 'model/gw2Data/gw2Data'], function (exports, _g
 });
 
 
-define('view/bank',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.bank = undefined;
-  var bank = exports.bank = {
-    initialize: function initialize() {
-      $('#bank [data-click]').button('reset');
-      this.bindEvents();
-    },
-    bindEvents: function bindEvents() {
-      _gw2Data.gw2Data.on('loaded:bank', function (itemList) {
-        var fullList = itemList.filter(function (n) {
-          return n != undefined;
-        });
-        var dataSet = fullList.map(function (item) {
-          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, item.description, item.category];
-        });
-        var table = $('#bank-table').DataTable({
-          data: dataSet,
-          "destroy": true,
-          "pageLength": 50,
-          "order": [[6, 'asc']],
-          "columnDefs": [{
-            type: 'natural',
-            targets: [2, 4, 6]
-          }, {
-            visible: false,
-            targets: [8, 9]
-          }]
-        });
-        $('#bank .loading').hide();
-
-        var searchValue = "";
-        var searchCollection = "";
-        // enable table search by nav bar click
-        $('#bank [data-subset]').on('click tap', function () {
-          searchCollection = $(this).attr("data-subset");
-          if (searchCollection == "rarity") {} else {
-            if (searchCollection == "equipment") {
-              searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
-            } else if (searchCollection == "utilities") {
-              searchValue = "Bag|Gathering|Tool";
-            } else if (searchCollection == "toys") {
-              searchValue = "";
-            } else if (searchCollection == "materials") {
-              searchValue = "CraftingMaterial";
-            } else if (searchCollection == "misc") {
-              searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
-            } else if (searchCollection == "all") {
-              searchValue = "";
-            }
-            table.column([9]).search('').column([3]).search(searchValue, true).draw();
-          }
-        });
-        $('#bank [data-option]').on('click tap', function () {
-          searchValue = $(this).attr("data-option");
-          var searchTarget = $(this).attr("data-target");
-          if (searchTarget == 'rarity') {
-            table.column([5]).search(searchValue).draw();
-          } else if (searchTarget == 'category') {
-            table.column([3]).search('').column([9]).search(searchValue).draw();
-          } else {
-            table.column([9]).search('').column([3]).search(searchValue).draw();
-          }
-        });
-        // TODO: enable table refresh by navbar click
-        $('#bank [data-click]').on('click tap', function () {
-          $(this).button('loading');
-          $(this).parents('.tab-pane').children('.subset').removeClass('active');
-          $(this).parents('.tab-pane').children('.loading').show();
-          var action = $(this).attr('data-click');
-          if (action == 'refreshbank') {
-            //get_render_bank();
-          }
-        });
-      });
-    }
-  };
-  $(function () {
-    bank.initialize();
-  });
-  exports.default = bank;
-});
-
-
-define('index.js',['view/account', 'view/characters', 'view/wallet', 'view/bank'], function (_account, _characters, _wallet, _bank) {
+define('index.js',['view/account', 'view/characters', 'view/inventory', 'view/wallet'], function (_account, _characters, _inventory, _wallet) {
   $(function () {
     $('#tabs').tab();
     $('body').on('mouseenter', '*[data-toggle="tooltip"]', function () {

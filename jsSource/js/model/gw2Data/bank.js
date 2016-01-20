@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault'], function (exports, _apiKey, _items, _characters, _materials, _vault) {
+define(['exports', 'model/apiKey'], function (exports, _apiKey) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });

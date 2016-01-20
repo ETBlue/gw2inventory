@@ -1,6 +1,6 @@
 'use strict';
 
-define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/guilds', 'model/gw2Data/wallet', 'model/gw2Data/bank', 'model/gw2Data/inventory'], function (exports, _events, _apiKey, _account, _characters, _guilds, _wallet, _bank, _inventory) {
+define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/inventory', 'model/gw2Data/wallet'], function (exports, _events, _apiKey, _account, _characters, _inventory, _wallet) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -22,30 +22,21 @@ define(['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'mod
         _this2.trigger('loaded:characters', characterList);
       });
     },
-    loadWallet: function loadWallet() {
+    loadInventory: function loadInventory() {
       var _this3 = this;
+
+      this.trigger('load:inventory');
+      return _inventory.inventory.load().done(function (inventoryData) {
+        _this3.trigger('loaded:inventory', inventoryData);
+      });
+    },
+    loadWallet: function loadWallet() {
+      var _this4 = this;
 
       this.trigger('load:wallet');
       return _wallet.wallet.load().done(function (walletData) {
-        _this3.trigger('loaded:wallet', walletData);
+        _this4.trigger('loaded:wallet', walletData);
       });
-    },
-    loadBank: function loadBank() {
-      var _this4 = this;
-
-      this.trigger('load:bank');
-      return _inventory.inventory.load().done(function (bankData) {
-        _this4.trigger('loaded:bank', bankData);
-      });
-    },
-    loadGuild: function loadGuild(guildId) {
-      var _this5 = this;
-
-      this.trigger('load:guild');
-      var guild_id = guildId;
-      return _guilds.guilds.load(guildId).done(function (guildData) {
-        _this5.trigger('loaded:guild', guildData);
-      });;
     }
   };
   exports.default = gw2Data;
