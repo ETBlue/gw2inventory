@@ -135,9 +135,13 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     }, {
       key: 'guild',
       get: function get() {
-        var guildData = _guilds.guilds.get(this._data.guild);
+        if (this._data.guild) {
+          var guildData = _guilds.guilds.get(this._data.guild);
 
-        return guildData.guild_name + '<br />[' + guildData.tag + ']';
+          return guildData.guild_name + '<br />[' + guildData.tag + ']';
+        } else {
+          return '';
+        }
       }
     }, {
       key: 'crafting',

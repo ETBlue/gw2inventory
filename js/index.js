@@ -540,8 +540,8 @@ define('model/gw2Data/specializations',['exports'], function (exports) {
           ids: 'all',
           lang: 'en'
         };
-        loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done(function (specializationDatas) {
-          specializationDatas.forEach(function (specialization) {
+        loadingRef = $.get('https://api.guildwars2.com/v2/specializations?' + $.param(params)).done(function (specializationData) {
+          specializationData.forEach(function (specialization) {
             dataRef[specialization.id] = specialization;
           });
         });
@@ -755,6 +755,15 @@ define('model/gw2Data/items',['exports'], function (exports) {
         }
       });
       return this.load(needItemIdList);
+    },
+    loadByVaultList: function loadByVaultList(vaultList) {
+      var needItemIdList = [];
+      vaultList.forEach(function (itemData) {
+        if (itemData) {
+          needItemIdList.push(itemData.id);
+        }
+      });
+      return this.load(needItemIdList);
     }
   };
 });
@@ -895,9 +904,13 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }, {
       key: 'guild',
       get: function get() {
-        var guildData = _guilds.guilds.get(this._data.guild);
+        if (this._data.guild) {
+          var guildData = _guilds.guilds.get(this._data.guild);
 
-        return guildData.guild_name + '<br />[' + guildData.tag + ']';
+          return guildData.guild_name + '<br />[' + guildData.tag + ']';
+        } else {
+          return '';
+        }
       }
     }, {
       key: 'crafting',
@@ -1285,7 +1298,62 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
 });
 
 
-define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters'], function (exports, _apiKey, _items, _characters) {
+define('model/gw2Data/materials',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var materials = exports.materials = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load() {
+      if (!loadingRef) {
+        var params = {
+          ids: 'all',
+          lang: 'en'
+        };
+        loadingRef = $.get('https://api.guildwars2.com/v2/materials?' + $.param(params)).done(function (categories) {
+          categories.forEach(function (category) {
+            dataRef[category.id] = category;
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/vault',['exports', 'model/apiKey'], function (exports, _apiKey) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.vault = undefined;
+  var dataRef = undefined;
+  var vault = exports.vault = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en'
+      };
+      //載入specializations
+      $.get('https://api.guildwars2.com/v2/account/materials?' + $.param(params)).done(function (materialList) {
+        dataRef = materialList;
+        loadDeferred.resolve(dataRef);
+      });
+      return loadDeferred;
+    }
+  };
+});
+
+
+define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault'], function (exports, _apiKey, _items, _characters, _materials, _vault) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -1328,8 +1396,12 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
         page: 0
       };
       var waiting = [];
+      waiting.push(_materials.materials.load());
       waiting.push(_characters.characters.load(function (characterList) {
         waiting.push(_items.items.loadByCharacterInventory(characterList));
+      }));
+      waiting.push(_vault.vault.load(function (vaultList) {
+        waiting.push(_items.items.loadByVaultList(vaultList));
       }));
       //載入bank
       $.get('https://api.guildwars2.com/v2/account/bank?' + $.param(params)).done(function (bankData) {
@@ -1364,6 +1436,15 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
             });
           });
           $.merge(dataRef, characterDataRef);
+          var vaultDataRef = _vault.vault.get().map(function (material, index) {
+            if (material) {
+              var itemInfo = _items.items.get(material.id);
+              var position = 'Vault|' + (index + 1);
+              var item = new Item(position, material, itemInfo);
+              return item.toJSON();
+            }
+          });
+
           loadDeferred.resolve(dataRef);
         });
       });
@@ -1387,7 +1468,7 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
         var _this = this;
 
         var result = {};
-        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description'];
+        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description', 'category'];
         keys.forEach(function (key) {
           result[key] = _this[key];
         });
@@ -1453,6 +1534,11 @@ define('model/gw2Data/bank',['exports', 'model/apiKey', 'model/gw2Data/items', '
       key: 'description',
       get: function get() {
         return this._ref.description || '';
+      }
+    }, {
+      key: 'category',
+      get: function get() {
+        return this._data.category || '';
       }
     }]);
 
@@ -1704,7 +1790,7 @@ define('view/bank',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2
           return n != undefined;
         });
         var dataSet = fullList.map(function (item) {
-          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, item.description];
+          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, item.description, item.category];
         });
         var table = $('#bank-table').DataTable({
           data: dataSet,
@@ -1716,33 +1802,43 @@ define('view/bank',['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2
             targets: [2, 4, 6]
           }, {
             visible: false,
-            targets: 8
+            targets: [8, 9]
           }]
         });
         $('#bank .loading').hide();
 
-        $('#bank [data-option]').on('click tap', function () {
-          var searchValue = $(this).attr("data-option");
-          table.search(searchValue).draw();
-        });
+        var searchValue = "";
+        var searchCollection = "";
         // enable table search by nav bar click
         $('#bank [data-subset]').on('click tap', function () {
-          var searchCollection = $(this).attr("data-subset");
-          var searchValue = "";
-          if (searchCollection == "equipment") {
-            searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
-          } else if (searchCollection == "utilities") {
-            searchValue = "Bag|Gathering|Tool";
-          } else if (searchCollection == "toys") {
-            searchValue = "";
-          } else if (searchCollection == "materials") {
-            searchValue = "CraftingMaterial";
-          } else if (searchCollection == "misc") {
-            searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
-          } else if (searchCollection == "rarity") {
-            searchValue = "";
+          searchCollection = $(this).attr("data-subset");
+          if (searchCollection == "rarity") {} else {
+            if (searchCollection == "equipment") {
+              searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+            } else if (searchCollection == "utilities") {
+              searchValue = "Bag|Gathering|Tool";
+            } else if (searchCollection == "toys") {
+              searchValue = "";
+            } else if (searchCollection == "materials") {
+              searchValue = "CraftingMaterial";
+            } else if (searchCollection == "misc") {
+              searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
+            } else if (searchCollection == "all") {
+              searchValue = "";
+            }
+            table.column([3]).search(searchValue, true).draw();
           }
-          table.search(searchValue, true).draw();
+        });
+        $('#bank [data-option]').on('click tap', function () {
+          searchValue = $(this).attr("data-option");
+          var searchTarget = $(this).attr("data-target");
+          if (searchTarget == 'rarity') {
+            table.column([5]).search(searchValue).draw();
+          } else if (searchTarget == 'category') {
+            table.column([9]).search(searchValue).draw();
+          } else {
+            table.column([3]).search(searchValue).draw();
+          }
         });
         // TODO: enable table refresh by navbar click
         $('#bank [data-click]').on('click tap', function () {
