@@ -1104,7 +1104,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         }, '');
       }
 
-      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title=\'\' class="icon medium item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <small>(' + equipment.level + ')</small>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
+      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <small>(' + equipment.level + ')</small>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
     } else {
       return html;
     }
@@ -1125,7 +1125,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
   function getInventoryHtml(dataList) {
     return dataList.reduce(function (html, item) {
       if (item) {
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="' + item.description + '" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <small>(' + item.count + ')</small>\n          </span>\n        </div>\n      ');
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <small>(' + item.count + ')</small>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }

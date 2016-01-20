@@ -283,7 +283,7 @@ function getEquipmentItemHtml(data) {
         if (upgrade) {
           return upgradeHtml + `
             <div class="table-item">
-              <img class="small icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='${upgrade.description}' src="${upgrade.icon}">
+              <img class="small icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${upgrade.icon}">
               <span class="bold ${upgrade.rarity}">${upgrade.name}
                 <small>(${upgrade.level})</small>
               </span>
@@ -302,7 +302,7 @@ function getEquipmentItemHtml(data) {
         if (infusion) {
           return infusionHtml + `
             <div class="table-item">
-              <img class="small icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='${infusion.description}' src="${infusion.icon}">
+              <img class="small icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${infusion.icon}">
               <span>${infusion.name}</span>
             </div>
           `;
@@ -314,7 +314,7 @@ function getEquipmentItemHtml(data) {
     }
     return html + `
       <div class="table-item">
-        <img data-toggle="tooltip" data-placement="left" title='' class="icon medium item ${equipment.rarity}" src="${equipment.icon}" />
+        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${equipment.rarity}" src="${equipment.icon}" />
         <span class="bold ${equipment.rarity}">${equipment.name}
           <small>(${equipment.level})</small>
         </span>
@@ -334,7 +334,7 @@ function getBagHtml(dataList) {
       const bag = items.get(bagData.id);
       return html + `
         <div class="table-item">
-          <img data-toggle="tooltip" data-placement="left" title="${bag.description}" class="icon medium item ${bag.rarity}" src="${bag.icon}" />
+          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${bag.rarity}" src="${bag.icon}" />
           <span class="bold ${bag.rarity}">${bag.name} 
             <small>(${bag.details.size} slots)</small>
           </span>
@@ -352,7 +352,7 @@ function getInventoryHtml(dataList) {
     if (item) {
       return html + `
         <div class="table-item">
-          <img data-toggle="tooltip" data-placement="left" title="${item.description}" class="icon medium item ${item.rarity}" src="${item.icon}" />
+          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${item.rarity}" src="${item.icon}" />
           <span class="bold ${item.rarity}">${item.name} 
             <small>(${item.count})</small>
           </span>
