@@ -16,7 +16,7 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           return n != undefined;
         });
         var dataSet = fullList.map(function (item) {
-          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, item.description, item.category];
+          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, 'item.description', item.category];
         });
         var table = $('#inventory-table').DataTable({
           data: dataSet,
@@ -29,7 +29,12 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           }, {
             visible: false,
             targets: [8, 9]
-          }]
+          }],
+          drawCallback: function drawCallback() {
+            var api = this.api();
+            $('.dataTables_length #sum').remove();
+            $('.dataTables_length').append("<span id='sum'>. Current amount: " + api.column(2, { page: 'current' }).data().sum() + '</span>');
+          }
         });
         $('#inventory .loading').hide();
 
