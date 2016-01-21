@@ -38,8 +38,8 @@ export const inventory = {
         ],
         drawCallback: function() {
           var api = this.api();
-          $('.dataTables_length #sum').remove();
-          $('.dataTables_length').append(
+          $('#inventory .dataTables_length #sum').remove();
+          $('#inventory .dataTables_length').append(
             "<span id='sum'>. Current amount: " + api.column(2, {page:'current'}).data().sum() + '</span>'
           );
         },
