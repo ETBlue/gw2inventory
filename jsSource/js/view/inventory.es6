@@ -18,7 +18,7 @@ export const inventory = {
           item.rarity,
           item.position,
           item.binding,
-          item.description,
+          'item.description',
           item.category
         ];
       });
@@ -35,7 +35,14 @@ export const inventory = {
             visible: false,
             targets: [8,9]
           }
-        ]
+        ],
+        drawCallback: function() {
+          var api = this.api();
+          $('.dataTables_length #sum').remove();
+          $('.dataTables_length').append(
+            "<span id='sum'>. Current amount: " + api.column(2, {page:'current'}).data().sum() + '</span>'
+          );
+        },
       });
       $('#inventory .loading').hide();
 
