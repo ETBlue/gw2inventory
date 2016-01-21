@@ -92,7 +92,7 @@ p {
     min-width: 14em;
   }
 }
-.table > tbody > tr > td .bold.Trash {
+.table > tbody > tr > td .bold.Junk {
   color: #aaa;
 }
 .table > tbody > tr > td .bold.Basic {
@@ -168,7 +168,7 @@ img.icon.inline {
 img.icon.item {
   border-right: 0.5em #fff solid;
 }
-img.icon.item.Trash {
+img.icon.item.Junk {
   border-color: #aaa;
 }
 img.icon.item.Basic {
