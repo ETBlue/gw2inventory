@@ -54,13 +54,13 @@ export const inventory = {
         if(searchCollection == "rarity"){
         } else {
           if(searchCollection == "equipment"){
-            searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+            searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
           }else if(searchCollection == "utilities"){
             searchValue = "Bag|Gathering|Tool";
           }else if(searchCollection == "toys"){
             searchValue = "";
           }else if(searchCollection == "materials"){
-            searchValue = "CraftingMaterial";
+            searchValue = "Material";
           }else if(searchCollection == "misc"){
             searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
           }else if(searchCollection == "all"){

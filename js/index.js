@@ -1287,12 +1287,21 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
 
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
+            character._data.equipment.forEach(function (equipmentItem) {
+              if (equipmentItem) {
+                var itemInfo = _items.items.get(equipmentItem.id);
+                var position = character.name + ' (equipped)';
+                equipmentItem.count = 1;
+                var item = new Item(position, equipmentItem, itemInfo);
+                characterDataRef.push(item.toJSON());
+              }
+            });
             character._data.bags.forEach(function (bag) {
               if (bag) {
                 bag.inventory.forEach(function (bagItem) {
                   if (bagItem) {
                     var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name;
+                    var position = character.name + ' (bag)';
                     var item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push(item.toJSON());
                   }
@@ -1374,7 +1383,15 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }, {
       key: 'type',
       get: function get() {
-        return this._ref.type || '';
+        var type = this._ref.type || '';
+
+        if (type == 'UpgradeComponent') {
+          type = 'Upgrades';
+        } else if (type == 'CraftingMaterial') {
+          type = 'Material';
+        }
+
+        return type;
       }
     }, {
       key: 'level',
@@ -1799,8 +1816,8 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
           }],
           drawCallback: function drawCallback() {
             var api = this.api();
-            $('.dataTables_length #sum').remove();
-            $('.dataTables_length').append("<span id='sum'>. Current amount: " + api.column(2, { page: 'current' }).data().sum() + '</span>');
+            $('#inventory .dataTables_length #sum').remove();
+            $('#inventory .dataTables_length').append("<span id='sum'>. Current amount: " + api.column(2, { page: 'current' }).data().sum() + '</span>');
           }
         });
         $('#inventory .loading').hide();
@@ -1812,13 +1829,13 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
           searchCollection = $(this).attr("data-subset");
           if (searchCollection == "rarity") {} else {
             if (searchCollection == "equipment") {
-              searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+              searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
             } else if (searchCollection == "utilities") {
               searchValue = "Bag|Gathering|Tool";
             } else if (searchCollection == "toys") {
               searchValue = "";
             } else if (searchCollection == "materials") {
-              searchValue = "CraftingMaterial";
+              searchValue = "Material";
             } else if (searchCollection == "misc") {
               searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
             } else if (searchCollection == "all") {

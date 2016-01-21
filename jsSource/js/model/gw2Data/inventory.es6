@@ -49,6 +49,7 @@ export const inventory = {
               if (equipmentItem) {
                 const itemInfo = items.get(equipmentItem.id);
                 const position = character.name + ' (equipped)';
+                equipmentItem.count = 1;
                 const item = new Item(position, equipmentItem, itemInfo);
                 characterDataRef.push( item.toJSON() );
               }
@@ -58,7 +59,7 @@ export const inventory = {
                 bag.inventory.forEach((bagItem) => {
                   if (bagItem) {
                     const itemInfo = items.get(bagItem.id);
-                    const position = character.name;
+                    const position = character.name + ' (bag)';
                     const item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push( item.toJSON() );
                   }
@@ -133,7 +134,13 @@ class Item {
     return parseInt(this._data.count,10);
   }
   get type() {
-    return this._ref.type || '';
+    var type = this._ref.type || '';
+    if ( type == 'UpgradeComponent' ) {
+      type = 'Upgrades';
+    } else if ( type == 'CraftingMaterial' ) {
+      type = 'Material';
+    }
+    return type;
   }
   get level() {
     return this._ref.level || '';

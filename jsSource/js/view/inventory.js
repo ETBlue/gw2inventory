@@ -32,8 +32,8 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           }],
           drawCallback: function drawCallback() {
             var api = this.api();
-            $('.dataTables_length #sum').remove();
-            $('.dataTables_length').append("<span id='sum'>. Current amount: " + api.column(2, { page: 'current' }).data().sum() + '</span>');
+            $('#inventory .dataTables_length #sum').remove();
+            $('#inventory .dataTables_length').append("<span id='sum'>. Current amount: " + api.column(2, { page: 'current' }).data().sum() + '</span>');
           }
         });
         $('#inventory .loading').hide();
@@ -45,13 +45,13 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           searchCollection = $(this).attr("data-subset");
           if (searchCollection == "rarity") {} else {
             if (searchCollection == "equipment") {
-              searchValue = "Armor|Weapon|Trinket|UpgradeComponent|Back";
+              searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
             } else if (searchCollection == "utilities") {
               searchValue = "Bag|Gathering|Tool";
             } else if (searchCollection == "toys") {
               searchValue = "";
             } else if (searchCollection == "materials") {
-              searchValue = "CraftingMaterial";
+              searchValue = "Material";
             } else if (searchCollection == "misc") {
               searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
             } else if (searchCollection == "all") {

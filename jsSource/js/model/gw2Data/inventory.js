@@ -69,12 +69,21 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/charact
 
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
+            character._data.equipment.forEach(function (equipmentItem) {
+              if (equipmentItem) {
+                var itemInfo = _items.items.get(equipmentItem.id);
+                var position = character.name + ' (equipped)';
+                equipmentItem.count = 1;
+                var item = new Item(position, equipmentItem, itemInfo);
+                characterDataRef.push(item.toJSON());
+              }
+            });
             character._data.bags.forEach(function (bag) {
               if (bag) {
                 bag.inventory.forEach(function (bagItem) {
                   if (bagItem) {
                     var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name;
+                    var position = character.name + ' (bag)';
                     var item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push(item.toJSON());
                   }
@@ -156,7 +165,15 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/charact
     }, {
       key: 'type',
       get: function get() {
-        return this._ref.type || '';
+        var type = this._ref.type || '';
+
+        if (type == 'UpgradeComponent') {
+          type = 'Upgrades';
+        } else if (type == 'CraftingMaterial') {
+          type = 'Material';
+        }
+
+        return type;
       }
     }, {
       key: 'level',
