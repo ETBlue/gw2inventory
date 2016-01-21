@@ -45,6 +45,14 @@ export const inventory = {
 
           const characterDataRef = [];
           characters.get().forEach((character) => {
+            character._data.equipment.forEach((equipmentItem) => {
+              if (equipmentItem) {
+                const itemInfo = items.get(equipmentItem.id);
+                const position = character.name + ' (equipped)';
+                const item = new Item(position, equipmentItem, itemInfo);
+                characterDataRef.push( item.toJSON() );
+              }
+            });
             character._data.bags.forEach((bag) => {
               if (bag) {
                 bag.inventory.forEach((bagItem) => {
