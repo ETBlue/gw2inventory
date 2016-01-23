@@ -229,3 +229,11 @@ img.icon.item.Legendary {
 #about, .status {
   display: none;
 }
+
+.align-right {
+  text-align: right;
+}
+
+#account #api_key #recent a {
+  cursor: pointer;
+}

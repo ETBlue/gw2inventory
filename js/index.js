@@ -330,14 +330,38 @@ define('model/apiKey',['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var key = localStorage.getItem('gw2apikey');
+  var key = JSON.parse(localStorage.getItem('gw2apikey'));
   var apiKey = exports.apiKey = {
     getKey: function getKey() {
-      return key;
+      if (key) {
+        return key.current;
+      } else {
+        return null;
+      }
     },
     setKey: function setKey(apiKey) {
-      key = apiKey;
-      localStorage.setItem('gw2apikey', key);
+      if (!key) {
+        key = { current: '', recent: {} };
+      } else if (!key.current) {
+        key = { current: '', recent: {} };
+      }
+      key.current = apiKey;
+      localStorage.setItem('gw2apikey', JSON.stringify(key));
+    },
+    getHistory: function getHistory() {
+      return key.recent;
+    },
+    setHistory: function setHistory(apiKey, accountId) {
+      if (!key) {
+        key = { current: '', recent: {} };
+      } else if (!key.recent) {
+        key = { current: '', recent: {} };
+      }
+      key.recent[apiKey] = accountId;
+      localStorage.setItem('gw2apikey', JSON.stringify(key));
+    },
+    clearHistory: function clearHistory() {
+      localStorage.removeItem('gw2apikey');
     }
   };
   exports.default = apiKey;
@@ -1663,27 +1687,68 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       // show saved apiKey
       var savedKey = _apiKey.apiKey.getKey();
       if (savedKey) {
-        $('#api_key').val(savedKey);
+        $('#api_key #current').val(savedKey);
+        $('#api_key #recent').html(function () {
+          var savedKeyHistory = _apiKey.apiKey.getHistory();
+          if (savedKeyHistory) {
+            var html = '';
+            Object.keys(savedKeyHistory).forEach(function (key) {
+              html += '\n              <li>\n                <a data-key=\'' + key + '\'>' + savedKeyHistory[key] + '</a>\n              </li>\n            ';
+            });
+            html += '\n              <li role="separator" class="divider"></li>\n              <li>\n                <a data-action="clear">Clear Hostory</a>\n              </li>\n          ';
+            return html;
+          }
+        });
       }
       this.bindEvents();
     },
     bindEvents: function bindEvents() {
-      $('#api_key').keypress(function (e) {
+      var newKey = undefined;
+      function loadpage() {
+        app.showLoading();
+        _gw2Data.gw2Data.loadAccount();
+        _gw2Data.gw2Data.loadCharacters();
+        _gw2Data.gw2Data.loadInventory();
+        _gw2Data.gw2Data.loadWallet();
+      }
+      function drawHistory() {
+        $('#api_key #recent').html(function () {
+          var savedKeyHistory = _apiKey.apiKey.getHistory();
+          if (savedKeyHistory) {
+            var html = '';
+            Object.keys(savedKeyHistory).forEach(function (key) {
+              html += '\n              <li>\n                <a data-key=\'' + key + '\'>' + savedKeyHistory[key] + '</a>\n              </li>\n            ';
+            });
+            html += '\n              <li role="separator" class="divider"></li>\n              <li>\n                <a data-action="clear">Clear Hostory</a>\n              </li>\n          ';
+            return html;
+          }
+        });
+      }
+      $('#api_key #current').keypress(function (e) {
         if (e.keyCode == 13) {
-          var newKey = $(this).val();
+          newKey = $(this).val();
           _apiKey.apiKey.setKey(newKey);
-          app.showLoading();
-          _gw2Data.gw2Data.loadAccount();
-          _gw2Data.gw2Data.loadCharacters();
-          _gw2Data.gw2Data.loadInventory();
-          _gw2Data.gw2Data.loadWallet();
+          loadpage();
         }
+      });
+      $('#api_key #recent').on('click tap', '[data-key]', function (e) {
+        newKey = $(this).attr('data-key');
+        $('#api_key #current').val(newKey);
+        _apiKey.apiKey.setKey(newKey);
+        loadpage();
+      });
+      $('#api_key #recent').on('click tap', '[data-action="clear"]', function (e) {
+        $('#api_key #current').val('');
+        _apiKey.apiKey.clearHistory();
+        $('#api_key #recent').html('<li><a>Hmmm. No history yet.</a></li>');
       });
 
       _gw2Data.gw2Data.on('loaded:characters', function () {
         $('#characters-status').html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
       });
       _gw2Data.gw2Data.on('loaded:account', function (account) {
+        _apiKey.apiKey.setHistory(newKey, account.name);
+        drawHistory();
         $('.accountname').text(account.name);
         $('.accountid').text(account.id);
         $('.accountcreated').text(account.created);
