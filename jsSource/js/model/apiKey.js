@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-define(['exports'], function (exports) {
+define(["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   var storage = localStorage.getItem('gw2apikey');
   var key = undefined;
 
-  if (storage.indexOf('{') < 0) {
+  if (storage.current) {
     key = JSON.parse(storage);
   } else {
     key = "{current: '" + key + "', recent: {}}";
