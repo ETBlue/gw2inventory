@@ -105,7 +105,21 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     }, {
       key: 'profession',
       get: function get() {
-        return this._data.profession || '';
+        var profession = this._data.profession || '';
+        var characterSpecializations = this._data.specializations;
+        Object.keys(characterSpecializations).forEach(function (context) {
+          characterSpecializations[context].forEach(function (specialization) {
+            if (specialization) {
+              var specializationRef = _specializations.specializations.get(specialization.id);
+
+              if (specializationRef.elite) {
+                console.log(specializationRef.name);
+                profession = specializationRef.name + '<br />(' + specializationRef.profession + ')';
+              }
+            }
+          });
+        });
+        return profession;
       }
     }, {
       key: 'level',

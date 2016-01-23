@@ -66,7 +66,20 @@ class Character {
     return this._data.gender || '';
   }
   get profession() {
-    return this._data.profession || '';
+    let profession = this._data.profession || '';
+    const characterSpecializations = this._data.specializations;
+    Object.keys(characterSpecializations).forEach((context) => {
+      characterSpecializations[context].forEach((specialization) => {
+        if (specialization) {
+          const specializationRef = specializations.get(specialization.id);
+          if ( specializationRef.elite ) {
+            console.log(specializationRef.name);
+            profession = `${specializationRef.name}<br />(${specializationRef.profession})`;
+          }
+        }
+      });
+    });
+    return profession;
   }
   get level() {
     return this._data.level || '';
