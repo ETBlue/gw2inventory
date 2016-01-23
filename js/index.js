@@ -333,10 +333,12 @@ define('model/apiKey',["exports"], function (exports) {
   var storage = localStorage.getItem('gw2apikey');
   var key = undefined;
 
-  if (storage.current) {
-    key = JSON.parse(storage);
-  } else {
-    key = "{current: '" + key + "', recent: {}}";
+  if (storage) {
+    if (storage.current) {
+      key = JSON.parse(storage);
+    } else {
+      key = "{current: '" + key + "', recent: {}}";
+    }
   }
 
   var apiKey = exports.apiKey = {

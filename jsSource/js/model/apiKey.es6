@@ -1,9 +1,11 @@
 let storage = localStorage.getItem('gw2apikey');
 let key;
-if ( storage.current ) {
-  key = JSON.parse(storage);
-} else {
-  key = "{current: '" + key + "', recent: {}}";
+if ( storage ) {
+  if (storage.current) {
+    key = JSON.parse(storage);
+  } else {
+    key = "{current: '" + key + "', recent: {}}";
+  }
 }
 
 export const apiKey = {
