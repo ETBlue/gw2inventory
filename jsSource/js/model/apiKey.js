@@ -4,7 +4,15 @@ define(['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var key = JSON.parse(localStorage.getItem('gw2apikey'));
+  var storage = localStorage.getItem('gw2apikey');
+  var key = undefined;
+
+  if (storage.indexOf('{')) {
+    key = JSON.parse(storage);
+  } else {
+    key = "{current: '" + key + "', recent: {}}";
+  }
+
   var apiKey = exports.apiKey = {
     getKey: function getKey() {
       if (key) {
