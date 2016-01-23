@@ -913,17 +913,14 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       get: function get() {
         var profession = this._data.profession || '';
         var characterSpecializations = this._data.specializations;
-        Object.keys(characterSpecializations).forEach(function (context) {
-          characterSpecializations[context].forEach(function (specialization) {
-            if (specialization) {
-              var specializationRef = _specializations.specializations.get(specialization.id);
+        characterSpecializations.pve.forEach(function (specialization) {
+          if (specialization) {
+            var specializationRef = _specializations.specializations.get(specialization.id);
 
-              if (specializationRef.elite) {
-                console.log(specializationRef.name);
-                profession = specializationRef.name + '<br />(' + specializationRef.profession + ')';
-              }
+            if (specializationRef.elite) {
+              profession = specializationRef.name + '<br />(' + specializationRef.profession + ')';
             }
-          });
+          }
         });
         return profession;
       }
