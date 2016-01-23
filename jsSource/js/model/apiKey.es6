@@ -1,13 +1,13 @@
 let storage = localStorage.getItem('gw2apikey');
 let key;
 if ( storage ) {
-  if (storage.current) {
+  if ( storage.indexOf('{') > 0) {
     key = JSON.parse(storage);
   } else {
     key = "{current: '" + key + "', recent: {}}";
   }
 }
-
+console.log(key);
 export const apiKey = {
   getKey() {
     if (key) {

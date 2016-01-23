@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-define(["exports"], function (exports) {
+define(['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -8,13 +8,14 @@ define(["exports"], function (exports) {
   var key = undefined;
 
   if (storage) {
-    if (storage.current) {
+    if (storage.indexOf('{') > 0) {
       key = JSON.parse(storage);
     } else {
       key = "{current: '" + key + "', recent: {}}";
     }
   }
 
+  console.log(key);
   var apiKey = exports.apiKey = {
     getKey: function getKey() {
       if (key) {
