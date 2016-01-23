@@ -91,9 +91,16 @@ html lang='en'
     section.tab-content
       section.tab-pane#account.active
         .container
-          .input-group
+          #api_key.input-group
             span.input-group-addon API KEY
-            input#api_key autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
+            input#current autofocus='true' type='text' class='form-control' placeholdr='' aria-describedby=''
+            span.input-group-btn
+              button#apikey-menu.btn.btn-default.dropdown-toggle data-toggle='dropdown' aria-haspopup='true' aria-expanded='true' type='button'
+                | Recent 
+                span.caret
+              ul#recent.dropdown-menu.dropdown-menu-right aria-labelledby='apikey-menu'
+                li
+                  a Hmmm. No history yet.
           .alert.alert-info.text-center
             | Don't have an API key? Get one for your account on Anet's official website! 
             a.inline-block.text href='https://account.arena.net/applications' target='_blank'
