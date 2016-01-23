@@ -8,14 +8,16 @@ define(['exports'], function (exports) {
   var key = undefined;
 
   if (storage) {
-    if (storage.indexOf('{') > 0) {
+    if (storage.indexOf('current') > -1) {
       key = JSON.parse(storage);
     } else {
-      key = "{current: '" + key + "', recent: {}}";
+      key = {
+        current: storage,
+        recent: {}
+      };
     }
   }
 
-  console.log(key);
   var apiKey = exports.apiKey = {
     getKey: function getKey() {
       if (key) {
