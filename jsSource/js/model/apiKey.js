@@ -7,7 +7,7 @@ define(['exports'], function (exports) {
   var storage = localStorage.getItem('gw2apikey');
   var key = undefined;
 
-  if (storage.indexOf('{')) {
+  if (storage.indexOf('{') < 0) {
     key = JSON.parse(storage);
   } else {
     key = "{current: '" + key + "', recent: {}}";
