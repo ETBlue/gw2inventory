@@ -48,7 +48,7 @@ export const inventory = {
             character._data.equipment.forEach((equipmentItem) => {
               if (equipmentItem) {
                 const itemInfo = items.get(equipmentItem.id);
-                const position = character.name + ' (equipped)';
+                const position = character.name + '<br /><span class="small light">(equipped)</span>';
                 equipmentItem.count = 1;
                 const item = new Item(position, equipmentItem, itemInfo);
                 characterDataRef.push( item.toJSON() );
@@ -59,7 +59,7 @@ export const inventory = {
                 bag.inventory.forEach((bagItem) => {
                   if (bagItem) {
                     const itemInfo = items.get(bagItem.id);
-                    const position = character.name + ' (bag)';
+                    const position = character.name + '<br /><span class="small light">(bag)</span>';
                     const item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push( item.toJSON() );
                   }

@@ -1338,7 +1338,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
             character._data.equipment.forEach(function (equipmentItem) {
               if (equipmentItem) {
                 var itemInfo = _items.items.get(equipmentItem.id);
-                var position = character.name + ' (equipped)';
+                var position = character.name + '<br /><span class="small light">(equipped)</span>';
                 equipmentItem.count = 1;
                 var item = new Item(position, equipmentItem, itemInfo);
                 characterDataRef.push(item.toJSON());
@@ -1349,7 +1349,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
                 bag.inventory.forEach(function (bagItem) {
                   if (bagItem) {
                     var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name + ' (bag)';
+                    var position = character.name + '<br /><span class="small light">(bag)</span>';
                     var item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push(item.toJSON());
                   }
