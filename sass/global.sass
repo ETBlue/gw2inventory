@@ -77,23 +77,22 @@ p
     @media screen and (max-width: 767px)
       white-space: normal
       min-width: 14em
-  .bold
-    &.Junk
-      color: #aaa
-    &.Basic
-      color: #666
-    &.Fine
-      color: #62A4DA
-    &.Masterwork
-      color: #1a9306
-    &.Rare
-      color: shade(#fcd00b,15%)
-    &.Exotic
-      color: shade(#ffa405,5%)
-    &.Ascended
-      color: shade(#fb3e8d,5%)
-    &.Legendary
-      color: #4C139D
+  .Junk
+    color: #aaa
+  .Basic
+    color: #666
+  .Fine
+    color: shade(#62A4DA,15%)
+  .Masterwork
+    color: #1a9306
+  .Rare
+    color: shade(#fcd00b,25%)
+  .Exotic
+    color: shade(#ffa405,15%)
+  .Ascended
+    color: shade(#fb3e8d,5%)
+  .Legendary
+    color: #4C139D
 
 .table-responsive
   border: none
@@ -132,7 +131,7 @@ img.icon
     height: 1em
     float: none
   &.item
-    border-right: 0.5em #fff solid
+    border-right: 0.25em #fff solid
     &.Junk
       border-color: #aaa
     &.Basic
@@ -183,3 +182,7 @@ img.icon
 
 #account #api_key #recent a
   cursor: pointer
+
+.small
+  &.light
+    opacity: 0.7

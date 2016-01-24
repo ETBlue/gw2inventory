@@ -13,7 +13,7 @@ export const characters = {
           character.level,
           character.profession,
           character.race,
-          character.gender,
+          //character.gender,
           character.age,
           character.deaths,
           character.created,
@@ -69,15 +69,10 @@ export const characters = {
             }
           },
           {
-            targets: 3,
-            render: function ( data, type, row ) {
-              return data + '<br />' + row[4];
-            }
-          },{
-            targets: [1,5,6],
+            targets: [1,4,5],
             type: 'natural'
           },{
-            targets: [4,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],
+            targets: [9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
             visible: false
           }
         ]

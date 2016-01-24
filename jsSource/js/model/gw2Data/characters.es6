@@ -60,7 +60,7 @@ class Character {
     return this._data.name || '';
   }
   get race() {
-    return this._data.race || '';
+    return `${this._data.race}<br /><span class="small light">${this._data.gender}</span>`;
   }
   get gender() {
     return this._data.gender || '';
@@ -72,7 +72,7 @@ class Character {
       if (specialization) {
         const specializationRef = specializations.get(specialization.id);
         if ( specializationRef.elite ) {
-          profession = `${specializationRef.name}<br />(${specializationRef.profession})`;
+          profession = `${specializationRef.name}<br /><span class="small light">${specializationRef.profession}</span>`;
         }
       }
     });
@@ -98,7 +98,7 @@ class Character {
   get guild() {
     if (this._data.guild) {
       const guildData = guilds.get(this._data.guild);
-      return `${guildData.guild_name}<br />[${guildData.tag}]`;
+      return `${guildData.guild_name}<br /><span class="small light">[${guildData.tag}]</span>`;
     } else {
       return ``;
     }
@@ -295,7 +295,7 @@ function getEquipmentItemHtml(data) {
             <div class="table-item">
               <img class="small icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${upgrade.icon}">
               <span class="bold ${upgrade.rarity}">${upgrade.name}
-                <small>(${upgrade.level})</small>
+                <span class="small light">(${upgrade.level})</span>
               </span>
             </div>
           `;
@@ -313,7 +313,7 @@ function getEquipmentItemHtml(data) {
           return infusionHtml + `
             <div class="table-item">
               <img class="small icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${infusion.icon}">
-              <span>${infusion.name}</span>
+              <span class="bold ${infusion.rarity}">${infusion.name}</span>
             </div>
           `;
         }
@@ -324,9 +324,9 @@ function getEquipmentItemHtml(data) {
     }
     return html + `
       <div class="table-item">
-        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${equipment.rarity}" src="${equipment.icon}" />
+        <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ${equipment.rarity}" src="${equipment.icon}" />
         <span class="bold ${equipment.rarity}">${equipment.name}
-          <small>(${equipment.level})</small>
+          <span class="small light">(${equipment.level})</span>
         </span>
       </div>
       ${upgradeHtml}
@@ -346,7 +346,7 @@ function getBagHtml(dataList) {
         <div class="table-item">
           <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${bag.rarity}" src="${bag.icon}" />
           <span class="bold ${bag.rarity}">${bag.name} 
-            <small>(${bag.details.size} slots)</small>
+            <span class="small light">(${bag.details.size} slots)</span>
           </span>
         </div>
       `;
@@ -362,9 +362,9 @@ function getInventoryHtml(dataList) {
     if (item) {
       return html + `
         <div class="table-item">
-          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${item.rarity}" src="${item.icon}" />
+          <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ${item.rarity}" src="${item.icon}" />
           <span class="bold ${item.rarity}">${item.name} 
-            <small>(${item.count})</small>
+            <span class="small light">(${item.count})</span>
           </span>
         </div>
       `;
