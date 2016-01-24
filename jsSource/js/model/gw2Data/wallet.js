@@ -120,7 +120,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/currencies'], function (export
     }, {
       key: 'order',
       get: function get() {
-        return _currencies.currencies.get(this._data.id).order || '';
+        return '<span class="small light">' + _currencies.currencies.get(this._data.id).order + '</span>';
       }
     }]);
 

@@ -74,7 +74,7 @@ class Wallet {
     return currencies.get(this._data.id).description || '';
   }
   get order() {
-    return currencies.get(this._data.id).order || '';
+    return `<span class="small light">${currencies.get(this._data.id).order}</span>`;
   }
 }
 
