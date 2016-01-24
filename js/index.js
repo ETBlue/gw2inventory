@@ -901,7 +901,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }, {
       key: 'race',
       get: function get() {
-        return this._data.race || '';
+        return this._data.race + '<br /><span class="small light">' + this._data.gender + '</span>';
       }
     }, {
       key: 'gender',
@@ -918,7 +918,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
             var specializationRef = _specializations.specializations.get(specialization.id);
 
             if (specializationRef.elite) {
-              profession = specializationRef.name + '<br />(' + specializationRef.profession + ')';
+              profession = specializationRef.name + '<br /><span class="small light">' + specializationRef.profession + '</span>';
             }
           }
         });
@@ -955,7 +955,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         if (this._data.guild) {
           var guildData = _guilds.guilds.get(this._data.guild);
 
-          return guildData.guild_name + '<br />[' + guildData.tag + ']';
+          return guildData.guild_name + '<br /><span class="small light">[' + guildData.tag + ']</span>';
         } else {
           return '';
         }
@@ -1131,7 +1131,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           var upgrade = _items.items.get(upgradeId);
 
           if (upgrade) {
-            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <small>(' + upgrade.level + ')</small>\n              </span>\n            </div>\n          ');
+            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <span class="small light">(' + upgrade.level + ')</span>\n              </span>\n            </div>\n          ');
           } else {
             return upgradeHtml;
           }
@@ -1145,14 +1145,14 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           var infusion = _items.items.get(infusionId);
 
           if (infusion) {
-            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n              <span>' + infusion.name + '</span>\n            </div>\n          ');
+            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n              <span class="bold ' + infusion.rarity + '">' + infusion.name + '</span>\n            </div>\n          ');
           } else {
             return infusionHtml;
           }
         }, '');
       }
 
-      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <small>(' + equipment.level + ')</small>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
+      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <span class="small light">(' + equipment.level + ')</span>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
     } else {
       return html;
     }
@@ -1163,7 +1163,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       if (bagData) {
         var bag = _items.items.get(bagData.id);
 
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <small>(' + bag.details.size + ' slots)</small>\n          </span>\n        </div>\n      ');
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <span class="small light">(' + bag.details.size + ' slots)</span>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }
@@ -1173,7 +1173,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
   function getInventoryHtml(dataList) {
     return dataList.reduce(function (html, item) {
       if (item) {
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <small>(' + item.count + ')</small>\n          </span>\n        </div>\n      ');
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.count + ')</span>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }
@@ -1812,7 +1812,9 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
     bindEvents: function bindEvents() {
       _gw2Data.gw2Data.on('loaded:characters', function (characterList) {
         var dataSet = characterList.map(function (character) {
-          return [character.name, character.level, character.profession, character.race, character.gender, character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations.pve, character.specializations.pvp, character.specializations.wvw, character.equipment.Helm, character.equipment.Shoulders, character.equipment.Gloves, character.equipment.Coat, character.equipment.Leggings, character.equipment.Boots, character.equipment.Backpack, character.equipment.HelmAquatic, character.equipment.Amulet, character.equipment.Accessory1, character.equipment.Accessory2, character.equipment.Ring1, character.equipment.Ring2, character.equipment.WeaponA1, character.equipment.WeaponA2, character.equipment.WeaponB1, character.equipment.WeaponB2, character.equipment.WeaponAquaticA, character.equipment.WeaponAquaticB, character.bags,
+          return [character.name, character.level, character.profession, character.race,
+          //character.gender,
+          character.age, character.deaths, character.created, character.guild, character.crafting, character.specializations.pve, character.specializations.pvp, character.specializations.wvw, character.equipment.Helm, character.equipment.Shoulders, character.equipment.Gloves, character.equipment.Coat, character.equipment.Leggings, character.equipment.Boots, character.equipment.Backpack, character.equipment.HelmAquatic, character.equipment.Amulet, character.equipment.Accessory1, character.equipment.Accessory2, character.equipment.Ring1, character.equipment.Ring2, character.equipment.WeaponA1, character.equipment.WeaponA2, character.equipment.WeaponB1, character.equipment.WeaponB2, character.equipment.WeaponAquaticA, character.equipment.WeaponAquaticB, character.bags,
           //character.inventory.services,
           //character.inventory.special,
           character.inventory.boosts,
@@ -1833,15 +1835,10 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
               }
             }
           }, {
-            targets: 3,
-            render: function render(data, type, row) {
-              return data + '<br />' + row[4];
-            }
-          }, {
-            targets: [1, 5, 6],
+            targets: [1, 4, 5],
             type: 'natural'
           }, {
-            targets: [4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37],
+            targets: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
             visible: false
           }]
         });

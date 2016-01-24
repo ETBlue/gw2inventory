@@ -92,28 +92,28 @@ p {
     min-width: 14em;
   }
 }
-.table > tbody > tr > td .bold.Junk {
+.table > tbody > tr > td .Junk {
   color: #aaa;
 }
-.table > tbody > tr > td .bold.Basic {
+.table > tbody > tr > td .Basic {
   color: #666;
 }
-.table > tbody > tr > td .bold.Fine {
-  color: #62A4DA;
+.table > tbody > tr > td .Fine {
+  color: #538bb9;
 }
-.table > tbody > tr > td .bold.Masterwork {
+.table > tbody > tr > td .Masterwork {
   color: #1a9306;
 }
-.table > tbody > tr > td .bold.Rare {
-  color: #d6b009;
+.table > tbody > tr > td .Rare {
+  color: #bd9c08;
 }
-.table > tbody > tr > td .bold.Exotic {
-  color: #f29b04;
+.table > tbody > tr > td .Exotic {
+  color: #d88b04;
 }
-.table > tbody > tr > td .bold.Ascended {
+.table > tbody > tr > td .Ascended {
   color: #ee3a85;
 }
-.table > tbody > tr > td .bold.Legendary {
+.table > tbody > tr > td .Legendary {
   color: #4C139D;
 }
 
@@ -166,7 +166,7 @@ img.icon.inline {
   float: none;
 }
 img.icon.item {
-  border-right: 0.5em #fff solid;
+  border-right: 0.25em #fff solid;
 }
 img.icon.item.Junk {
   border-color: #aaa;
@@ -236,4 +236,8 @@ img.icon.item.Legendary {
 
 #account #api_key #recent a {
   cursor: pointer;
+}
+
+.small.light {
+  opacity: 0.7;
 }

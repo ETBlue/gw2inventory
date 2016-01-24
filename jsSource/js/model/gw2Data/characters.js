@@ -95,7 +95,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     }, {
       key: 'race',
       get: function get() {
-        return this._data.race || '';
+        return this._data.race + '<br /><span class="small light">' + this._data.gender + '</span>';
       }
     }, {
       key: 'gender',
@@ -112,7 +112,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
             var specializationRef = _specializations.specializations.get(specialization.id);
 
             if (specializationRef.elite) {
-              profession = specializationRef.name + '<br />(' + specializationRef.profession + ')';
+              profession = specializationRef.name + '<br /><span class="small light">' + specializationRef.profession + '</span>';
             }
           }
         });
@@ -149,7 +149,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
         if (this._data.guild) {
           var guildData = _guilds.guilds.get(this._data.guild);
 
-          return guildData.guild_name + '<br />[' + guildData.tag + ']';
+          return guildData.guild_name + '<br /><span class="small light">[' + guildData.tag + ']</span>';
         } else {
           return '';
         }
@@ -325,7 +325,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
           var upgrade = _items.items.get(upgradeId);
 
           if (upgrade) {
-            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <small>(' + upgrade.level + ')</small>\n              </span>\n            </div>\n          ');
+            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <span class="small light">(' + upgrade.level + ')</span>\n              </span>\n            </div>\n          ');
           } else {
             return upgradeHtml;
           }
@@ -339,14 +339,14 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
           var infusion = _items.items.get(infusionId);
 
           if (infusion) {
-            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n              <span>' + infusion.name + '</span>\n            </div>\n          ');
+            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n              <span class="bold ' + infusion.rarity + '">' + infusion.name + '</span>\n            </div>\n          ');
           } else {
             return infusionHtml;
           }
         }, '');
       }
 
-      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <small>(' + equipment.level + ')</small>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
+      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <span class="small light">(' + equipment.level + ')</span>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
     } else {
       return html;
     }
@@ -357,7 +357,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
       if (bagData) {
         var bag = _items.items.get(bagData.id);
 
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <small>(' + bag.details.size + ' slots)</small>\n          </span>\n        </div>\n      ');
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <span class="small light">(' + bag.details.size + ' slots)</span>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }
@@ -367,7 +367,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
   function getInventoryHtml(dataList) {
     return dataList.reduce(function (html, item) {
       if (item) {
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <small>(' + item.count + ')</small>\n          </span>\n        </div>\n      ');
+        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.count + ')</span>\n          </span>\n        </div>\n      ');
       } else {
         return html;
       }
