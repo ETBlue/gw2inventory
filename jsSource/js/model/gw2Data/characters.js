@@ -383,9 +383,9 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     });
 
     if (slotCount - bagCount > 1) {
-      countHtml += ' (' + (slotCount - bagCount) + ' slots unused';
+      countHtml += ' (' + (slotCount - bagCount) + ' unused slots)';
     } else if (slotCount - bagCount == 1) {
-      countHtml += ' (1 slot unused';
+      countHtml += ' (1 unused slot)';
     }
 
     return '\n    <p>' + bagCount + ' bags: ' + countHtml + '</p>\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
@@ -401,7 +401,6 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     var holloweenCount = 0;
     dataList.forEach(function (item) {
       if (item) {
-        console.log(item.name, item.type, item.details.type);
         iconHtml += '\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n      ';
         nameHtml += '\n        <div>' + item.count + ' \n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.level + ')</span>\n          </span>\n        </div>\n      ';
 
@@ -431,6 +430,10 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
       count.push('1 Booster');
     }
 
-    return '\n    <p>' + count.join(', ') + ':</p>\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
+    if (count.length > 0) {
+      countHtml = '<p>' + count.join(', ') + ':</p>';
+    }
+
+    return '\n    ' + countHtml + '\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
   }
 });

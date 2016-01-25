@@ -373,9 +373,9 @@ function getBagHtml(dataList) {
     }
   });
   if (slotCount - bagCount > 1) {
-    countHtml += ` (${slotCount - bagCount} slots unused`;
+    countHtml += ` (${slotCount - bagCount} unused slots)`;
   } else if (slotCount - bagCount == 1) {
-    countHtml += ` (1 slot unused`;
+    countHtml += ` (1 unused slot)`;
   }
   return `
     <p>${bagCount} bags: ${countHtml}</p>
@@ -398,7 +398,6 @@ function getInventoryHtml(dataList) {
   let holloweenCount = 0;
   dataList.forEach((item) => {
     if (item) {
-      console.log(item.name, item.type, item.details.type);
       iconHtml += `
         <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${item.rarity}" src="${item.icon}" />
       `;
@@ -431,8 +430,11 @@ function getInventoryHtml(dataList) {
   } else if (holloweenCount == 1) {
     count.push(`1 Booster`);
   }
+  if (count.length > 0) {
+    countHtml = `<p>${count.join(', ')}:</p>`;
+  }
   return `
-    <p>${count.join(', ')}:</p>
+    ${countHtml}
     <div class="equipment">
       ${iconHtml}
     </div>
