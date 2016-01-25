@@ -151,9 +151,9 @@ class Character {
       WeaponB2: getEquipmentItemHtml(equipment.WeaponB2),
       WeaponAquaticA: getEquipmentItemHtml(equipment.WeaponAquaticA),
       WeaponAquaticB: getEquipmentItemHtml(equipment.WeaponAquaticB),
-      Sickle: getEquipmentItemHtml(equipment.Sickle),
-      Axe: getEquipmentItemHtml(equipment.Axe),
-      Pick: getEquipmentItemHtml(equipment.Pick)
+      Sickle: getToolItemHtml(equipment.Sickle),
+      Axe: getToolItemHtml(equipment.Axe),
+      Pick: getToolItemHtml(equipment.Pick)
     };
   }
   get bags() {
@@ -242,7 +242,7 @@ class Character {
       //special: getInventoryHtml(inventory.special),
       boosts: getInventoryHtml(inventory.boosts),
       //style: getInventoryHtml(inventory.style),
-      misc: getInventoryHtml(inventory.misc)
+      //misc: getInventoryHtml(inventory.misc)
     };
   }
 }
@@ -282,95 +282,162 @@ function getSpecializationHtml(dataList) {
   }, '');
 }
 
-function getEquipmentItemHtml(data) {
-  var html = '';
+function getToolItemHtml(data) {
+  let html = '';
   if (data) {
-    const equipment = items.get(data.id);
-    let upgradeHtml = '';
-    if (data.upgrades) {
-      upgradeHtml = data.upgrades.reduce((upgradeHtml, upgradeId) => {
-        const upgrade = items.get(upgradeId);
-        if (upgrade) {
-          return upgradeHtml + `
-            <div class="table-item">
-              <img class="small icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${upgrade.icon}">
-              <span class="bold ${upgrade.rarity}">${upgrade.name}
-                <span class="small light">(${upgrade.level})</span>
-              </span>
-            </div>
-          `;
-        }
-        else {    
-          return upgradeHtml;
-        }
-      }, '')
-    }
-    let infusionHtml = '';
-    if (data.infusions) {
-      infusionHtml = data.infusions.reduce((infusionHtml, infusionId) => {
-        const infusion = items.get(infusionId);
-        if (infusion) {
-          return infusionHtml + `
-            <div class="table-item">
-              <img class="small icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${infusion.icon}">
-              <span class="bold ${infusion.rarity}">${infusion.name}</span>
-            </div>
-          `;
-        }
-        else {
-          return infusionHtml;
-        }
-      }, '')
-    }
-    return html + `
-      <div class="table-item">
-        <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ${equipment.rarity}" src="${equipment.icon}" />
-        <span class="bold ${equipment.rarity}">${equipment.name}
-          <span class="small light">(${equipment.level})</span>
-        </span>
+    let tool = items.get(data.id);
+    html += `
+      <div class='table-item'>
+        <img class="medium icon item ${tool.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${tool.icon}">
+        <div class="bold ${tool.rarity}">${tool.name}
+          <span class="small light">(${tool.level})</span>
+        </div>
       </div>
-      ${upgradeHtml}
-      ${infusionHtml}
     `;
   }
-  else {
-    return html;
+  return html;
+}
+
+function getEquipmentItemHtml(data) {
+  let html = '';
+  let iconHtml = '';
+  let nameHtml = '';
+  if (data) {
+    const equipment = items.get(data.id);
+    if (data.upgrades || data.infusions) {
+      nameHtml += '<hr />';
+    }
+    if (data.upgrades) {
+      data.upgrades.forEach((upgradeId) => {
+        const upgrade = items.get(upgradeId);
+        if (upgrade) {
+          iconHtml += `
+            <img class="medium icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${upgrade.icon}">
+          `;
+          nameHtml += `
+            <div class="small bold ${upgrade.rarity}">${upgrade.name}
+              <span class="light">(${upgrade.level})</span>
+            </div>
+            `;
+        }
+      });
+    }
+    if (data.infusions) {
+      data.infusions.forEach((infusionId) => {
+        const infusion = items.get(infusionId);
+        if (infusion) {
+          iconHtml += `
+            <img class="medium icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${infusion.icon}">
+          `;
+          nameHtml += `
+            <div class="small bold ${infusion.rarity}">${infusion.name}</div>
+          `;
+        }
+      });
+    }
+    html = `
+      <div class='equipment'>
+        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ${equipment.rarity}" src="${equipment.icon}" />
+        ${iconHtml}
+      </div>
+      <div class='equipment'>
+        <div class="bold ${equipment.rarity}">${equipment.name}
+          <span class="small light">(${equipment.level})</span>
+        </div>
+        ${nameHtml}
+      </div>
+      `;
   }
+  return html;
 }
 
 function getBagHtml(dataList) {
-  return dataList.reduce((html, bagData) => {
+  let iconHtml = '';
+  let nameHtml = '';
+  let countHtml = '';
+  let bagCount = 0;
+  let slotCount = 0;
+  dataList.forEach((bagData) => {
+    slotCount += 1;
     if (bagData) {
+      bagCount += 1;
       const bag = items.get(bagData.id);
-      return html + `
-        <div class="table-item">
-          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${bag.rarity}" src="${bag.icon}" />
-          <span class="bold ${bag.rarity}">${bag.name} 
-            <span class="small light">(${bag.details.size} slots)</span>
-          </span>
+      iconHtml += `
+        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ${bag.rarity}" src="${bag.icon}" />
+      `;
+      nameHtml += `
+        <div class="bold ${bag.rarity}">${bag.name} 
+          <span class="small light">(${bag.details.size} slots)</span>
         </div>
       `;
     }
-    else {
-      return html;
-    }
-  }, '');
+  });
+  if (slotCount - bagCount > 1) {
+    countHtml += ` (${slotCount - bagCount} slots unused`;
+  } else if (slotCount - bagCount == 1) {
+    countHtml += ` (1 slot unused`;
+  }
+  return `
+    <p>${bagCount} bags: ${countHtml}</p>
+    <div class="equipment">
+      ${iconHtml}
+    </div>
+    <div class="equipment">
+      ${nameHtml}
+    </div>
+  `;
 }
 
 function getInventoryHtml(dataList) {
-  return dataList.reduce((html, item) => {
+  let iconHtml = '';
+  let nameHtml = '';
+  let countHtml = '';
+  let count = [];
+  let foodCount = 0;
+  let utilityCount = 0;
+  let holloweenCount = 0;
+  dataList.forEach((item) => {
     if (item) {
-      return html + `
-        <div class="table-item">
-          <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ${item.rarity}" src="${item.icon}" />
+      console.log(item.name, item.type, item.details.type);
+      iconHtml += `
+        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${item.rarity}" src="${item.icon}" />
+      `;
+      nameHtml += `
+        <div>${item.count} 
           <span class="bold ${item.rarity}">${item.name} 
-            <span class="small light">(${item.count})</span>
+            <span class="small light">(${item.level})</span>
           </span>
         </div>
       `;
+      if (item.details.type == "Food") {
+        foodCount ++;
+      } else if (item.details.type == "Utility") {
+        utilityCount ++;
+      } else if (item.details.type == "Halloween") {
+        holloweenCount ++;
+      }
     }
-    else {
-      return html;
-    }
-  }, '');
+  });
+  if (foodCount > 0) {
+    count.push(`${foodCount} food`);
+  }
+  if (utilityCount > 1) {
+    count.push(`${utilityCount} utilities`);
+  } else if (utilityCount == 1) {
+    count.push(`${utilityCount} utility`);
+  }
+  if (holloweenCount > 1) {
+    count.push(`${holloweenCount} Boosters`);
+  } else if (holloweenCount == 1) {
+    count.push(`1 Booster`);
+  }
+  return `
+    <p>${count.join(', ')}:</p>
+    <div class="equipment">
+      ${iconHtml}
+    </div>
+    <div class="equipment">
+      ${nameHtml}
+    </div>
+  `;
 }

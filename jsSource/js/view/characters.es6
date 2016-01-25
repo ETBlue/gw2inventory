@@ -46,7 +46,7 @@ export const characters = {
           //character.inventory.special,
           character.inventory.boosts,
           //character.inventory.style,
-          character.inventory.misc,
+          'character.inventory.misc',
           character.equipment.Sickle,
           character.equipment.Axe,
           character.equipment.Pick
@@ -67,8 +67,7 @@ export const characters = {
                 return data;
               }
             }
-          },
-          {
+          },{
             targets: [1,4,5],
             type: 'natural'
           },{
@@ -94,6 +93,8 @@ export const characters = {
       $('#characters [data-option]').on('click tap', function(){
         var searchValue = $(this).attr("data-option");
         table.column([2]).search(searchValue).draw();
+      });
+      $('#characters').on('click tap', '.equipment', function () {
       });
 
     });

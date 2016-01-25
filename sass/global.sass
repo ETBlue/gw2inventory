@@ -68,15 +68,30 @@ p
 .bold
   font-weight: bold
 
+#wallet, #inventory
+  .table td
+    vertical-align: middle
+
 .table>tbody>tr>td
   line-height: 1em
-  vertical-align: middle
+  //vertical-align: middle
   font-family: "Noto Sans", sans-serif
   .table-item
     clear: both
     @media screen and (max-width: 767px)
       white-space: normal
       min-width: 14em
+  .equipment
+    clear: both
+    img.item.icon
+      border-width: 0 0 0.15em 0
+      margin: 0
+      //float: none
+      //display: inline
+  hr
+    margin: 0.1em 0
+    border-style: dashed
+    border-color: rgba(#000, 0.1)
   .Junk
     color: #aaa
   .Basic
@@ -116,22 +131,22 @@ p
 img.icon
   margin-right: 0.25em
   float: left
+  height: 1em
   &.spec
     margin-left: -0.25em
     float: none
   &.solo
     margin: -8px
   &.large
-    height: 3em
+    font-size: 3rem
   &.medium
-    height: 2em
+    font-size: 2rem
   &.small
-    height: 1.5em
-  &.inline
-    height: 1em
-    float: none
+    font-size: 1.5rem
   &.item
-    border-right: 0.25em #fff solid
+    border-width: 0 0.15em 0 0
+    border-color: #fff
+    border-style: solid
     &.Junk
       border-color: #aaa
     &.Basic
@@ -184,5 +199,5 @@ img.icon
   cursor: pointer
 
 .small
-  &.light
-    opacity: 0.7
+.light
+  opacity: 0.7
