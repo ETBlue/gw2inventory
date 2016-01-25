@@ -20,7 +20,7 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           //character.inventory.special,
           character.inventory.boosts,
           //character.inventory.style,
-          character.inventory.misc, character.equipment.Sickle, character.equipment.Axe, character.equipment.Pick];
+          'character.inventory.misc', character.equipment.Sickle, character.equipment.Axe, character.equipment.Pick];
         });
         $('#characters-table').DataTable({
           data: dataSet,
@@ -61,6 +61,7 @@ define(['exports', 'model/gw2Data/gw2Data'], function (exports, _gw2Data) {
           var searchValue = $(this).attr("data-option");
           table.column([2]).search(searchValue).draw();
         });
+        $('#characters').on('click tap', '.equipment', function () {});
       });
     }
   };

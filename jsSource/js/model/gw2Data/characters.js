@@ -206,9 +206,9 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
           WeaponB2: getEquipmentItemHtml(equipment.WeaponB2),
           WeaponAquaticA: getEquipmentItemHtml(equipment.WeaponAquaticA),
           WeaponAquaticB: getEquipmentItemHtml(equipment.WeaponAquaticB),
-          Sickle: getEquipmentItemHtml(equipment.Sickle),
-          Axe: getEquipmentItemHtml(equipment.Axe),
-          Pick: getEquipmentItemHtml(equipment.Pick)
+          Sickle: getToolItemHtml(equipment.Sickle),
+          Axe: getToolItemHtml(equipment.Axe),
+          Pick: getToolItemHtml(equipment.Pick)
         };
       }
     }, {
@@ -277,8 +277,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
           }
         });
         return {
-          boosts: getInventoryHtml(inventory.boosts),
-          misc: getInventoryHtml(inventory.misc)
+          boosts: getInventoryHtml(inventory.boosts)
         };
       }
     }]);
@@ -312,65 +311,126 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     }, '');
   }
 
+  function getToolItemHtml(data) {
+    var html = '';
+
+    if (data) {
+      var tool = _items.items.get(data.id);
+
+      html += '\n      <div class=\'table-item\'>\n        <img class="medium icon item ' + tool.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + tool.icon + '">\n        <div class="bold ' + tool.rarity + '">' + tool.name + '\n          <span class="small light">(' + tool.level + ')</span>\n        </div>\n      </div>\n    ';
+    }
+
+    return html;
+  }
+
   function getEquipmentItemHtml(data) {
     var html = '';
+    var iconHtml = '';
+    var nameHtml = '';
 
     if (data) {
       var equipment = _items.items.get(data.id);
 
-      var upgradeHtml = '';
+      if (data.upgrades || data.infusions) {
+        nameHtml += '<hr />';
+      }
 
       if (data.upgrades) {
-        upgradeHtml = data.upgrades.reduce(function (upgradeHtml, upgradeId) {
+        data.upgrades.forEach(function (upgradeId) {
           var upgrade = _items.items.get(upgradeId);
 
           if (upgrade) {
-            return upgradeHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n              <span class="bold ' + upgrade.rarity + '">' + upgrade.name + '\n                <span class="small light">(' + upgrade.level + ')</span>\n              </span>\n            </div>\n          ');
-          } else {
-            return upgradeHtml;
+            iconHtml += '\n            <img class="medium icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n          ';
+            nameHtml += '\n            <div class="small bold ' + upgrade.rarity + '">' + upgrade.name + '\n              <span class="light">(' + upgrade.level + ')</span>\n            </div>\n            ';
           }
-        }, '');
+        });
       }
 
-      var infusionHtml = '';
-
       if (data.infusions) {
-        infusionHtml = data.infusions.reduce(function (infusionHtml, infusionId) {
+        data.infusions.forEach(function (infusionId) {
           var infusion = _items.items.get(infusionId);
 
           if (infusion) {
-            return infusionHtml + ('\n            <div class="table-item">\n              <img class="small icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n              <span class="bold ' + infusion.rarity + '">' + infusion.name + '</span>\n            </div>\n          ');
-          } else {
-            return infusionHtml;
+            iconHtml += '\n            <img class="medium icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n          ';
+            nameHtml += '\n            <div class="small bold ' + infusion.rarity + '">' + infusion.name + '</div>\n          ';
           }
-        }, '');
+        });
       }
 
-      return html + ('\n      <div class="table-item">\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        <span class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <span class="small light">(' + equipment.level + ')</span>\n        </span>\n      </div>\n      ' + upgradeHtml + '\n      ' + infusionHtml + '\n    ');
-    } else {
-      return html;
+      html = '\n      <div class=\'equipment\'>\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        ' + iconHtml + '\n      </div>\n      <div class=\'equipment\'>\n        <div class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <span class="small light">(' + equipment.level + ')</span>\n        </div>\n        ' + nameHtml + '\n      </div>\n      ';
     }
+
+    return html;
   }
 
   function getBagHtml(dataList) {
-    return dataList.reduce(function (html, bagData) {
+    var iconHtml = '';
+    var nameHtml = '';
+    var countHtml = '';
+    var bagCount = 0;
+    var slotCount = 0;
+    dataList.forEach(function (bagData) {
+      slotCount += 1;
+
       if (bagData) {
+        bagCount += 1;
+
         var bag = _items.items.get(bagData.id);
 
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + bag.rarity + '" src="' + bag.icon + '" />\n          <span class="bold ' + bag.rarity + '">' + bag.name + ' \n            <span class="small light">(' + bag.details.size + ' slots)</span>\n          </span>\n        </div>\n      ');
-      } else {
-        return html;
+        iconHtml += '\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ' + bag.rarity + '" src="' + bag.icon + '" />\n      ';
+        nameHtml += '\n        <div class="bold ' + bag.rarity + '">' + bag.name + ' \n          <span class="small light">(' + bag.details.size + ' slots)</span>\n        </div>\n      ';
       }
-    }, '');
+    });
+
+    if (slotCount - bagCount > 1) {
+      countHtml += ' (' + (slotCount - bagCount) + ' slots unused';
+    } else if (slotCount - bagCount == 1) {
+      countHtml += ' (1 slot unused';
+    }
+
+    return '\n    <p>' + bagCount + ' bags: ' + countHtml + '</p>\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
   }
 
   function getInventoryHtml(dataList) {
-    return dataList.reduce(function (html, item) {
+    var iconHtml = '';
+    var nameHtml = '';
+    var countHtml = '';
+    var count = [];
+    var foodCount = 0;
+    var utilityCount = 0;
+    var holloweenCount = 0;
+    dataList.forEach(function (item) {
       if (item) {
-        return html + ('\n        <div class="table-item">\n          <img data-toggle="tooltip" data-placement="left" title="" class="icon small item ' + item.rarity + '" src="' + item.icon + '" />\n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.count + ')</span>\n          </span>\n        </div>\n      ');
-      } else {
-        return html;
+        console.log(item.name, item.type, item.details.type);
+        iconHtml += '\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n      ';
+        nameHtml += '\n        <div>' + item.count + ' \n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.level + ')</span>\n          </span>\n        </div>\n      ';
+
+        if (item.details.type == "Food") {
+          foodCount++;
+        } else if (item.details.type == "Utility") {
+          utilityCount++;
+        } else if (item.details.type == "Halloween") {
+          holloweenCount++;
+        }
       }
-    }, '');
+    });
+
+    if (foodCount > 0) {
+      count.push(foodCount + ' food');
+    }
+
+    if (utilityCount > 1) {
+      count.push(utilityCount + ' utilities');
+    } else if (utilityCount == 1) {
+      count.push(utilityCount + ' utility');
+    }
+
+    if (holloweenCount > 1) {
+      count.push(holloweenCount + ' Boosters');
+    } else if (holloweenCount == 1) {
+      count.push('1 Booster');
+    }
+
+    return '\n    <p>' + count.join(', ') + ':</p>\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
   }
 });

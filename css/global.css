@@ -78,9 +78,12 @@ p {
   font-weight: bold;
 }
 
+#wallet .table td, #inventory .table td {
+  vertical-align: middle;
+}
+
 .table > tbody > tr > td {
   line-height: 1em;
-  vertical-align: middle;
   font-family: "Noto Sans", sans-serif;
 }
 .table > tbody > tr > td .table-item {
@@ -91,6 +94,18 @@ p {
     white-space: normal;
     min-width: 14em;
   }
+}
+.table > tbody > tr > td .equipment {
+  clear: both;
+}
+.table > tbody > tr > td .equipment img.item.icon {
+  border-width: 0 0 0.15em 0;
+  margin: 0;
+}
+.table > tbody > tr > td hr {
+  margin: 0.1em 0;
+  border-style: dashed;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 .table > tbody > tr > td .Junk {
   color: #aaa;
@@ -144,6 +159,7 @@ p {
 img.icon {
   margin-right: 0.25em;
   float: left;
+  height: 1em;
 }
 img.icon.spec {
   margin-left: -0.25em;
@@ -153,20 +169,18 @@ img.icon.solo {
   margin: -8px;
 }
 img.icon.large {
-  height: 3em;
+  font-size: 3rem;
 }
 img.icon.medium {
-  height: 2em;
+  font-size: 2rem;
 }
 img.icon.small {
-  height: 1.5em;
-}
-img.icon.inline {
-  height: 1em;
-  float: none;
+  font-size: 1.5rem;
 }
 img.icon.item {
-  border-right: 0.25em #fff solid;
+  border-width: 0 0.15em 0 0;
+  border-color: #fff;
+  border-style: solid;
 }
 img.icon.item.Junk {
   border-color: #aaa;
@@ -238,6 +252,6 @@ img.icon.item.Legendary {
   cursor: pointer;
 }
 
-.small.light {
+.light {
   opacity: 0.7;
 }
