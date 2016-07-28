@@ -1840,6 +1840,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       _gw2Data.gw2Data.on('loaded:account', function (account) {
         _apiKey.apiKey.setHistory(newKey, account.name);
         _this.drawHistory();
+        $('title').html(account.name + ' | Guild Wars 2 Inventory');
         $('.accountname').text(account.name);
         $('.accountid').text(account.id);
         $('.accountcreated').text(account.created);
