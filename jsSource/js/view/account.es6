@@ -80,6 +80,7 @@ export const app = {
     gw2Data.on('loaded:account', (account) => {
       apiKey.setHistory(newKey, account.name);
       this.drawHistory();
+      $('title').html(account.name + ' | Guild Wars 2 Inventory');
       $('.accountname').text(account.name);
       $('.accountid').text(account.id);
       $('.accountcreated').text(account.created);
