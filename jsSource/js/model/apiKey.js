@@ -34,6 +34,7 @@ define(['exports'], function (exports) {
       }
       key.current = apiKey;
       localStorage.setItem('gw2apikey', JSON.stringify(key));
+      history.pushState({}, '', '?source=' + apiKey);
     },
     getHistory: function getHistory() {
       return key.recent;
