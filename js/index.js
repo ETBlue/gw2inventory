@@ -918,7 +918,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
             var specializationRef = _specializations.specializations.get(specialization.id);
 
             if (specializationRef.elite) {
-              profession = specializationRef.name + '<br /><span class="small light">' + specializationRef.profession + '</span>';
+              profession = specializationRef.profession + '<br /><span class="small light">' + specializationRef.name + '</span>';
             }
           }
         });
