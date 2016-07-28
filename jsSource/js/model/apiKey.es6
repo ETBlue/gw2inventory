@@ -23,6 +23,7 @@ export const apiKey = {
     }
     key.current = apiKey;
     localStorage.setItem('gw2apikey', JSON.stringify(key));
+    history.pushState({},'','?source=' + apiKey);
   },
   getHistory() {
     return key.recent;

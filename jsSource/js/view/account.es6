@@ -7,30 +7,34 @@ export const app = {
     const savedKey = apiKey.getKey();
     if (savedKey) {
       $('#api_key #current').val(savedKey);
-      $('#api_key #recent').html(function() {
-        const savedKeyHistory = apiKey.getHistory();
-        if (savedKeyHistory) {
-          let html = '';
-          Object.keys(savedKeyHistory).forEach((key) => {
-            html += `
-              <li>
-                <a data-key='${key}'>${savedKeyHistory[key]}</a>
-              </li>
-            `;
-          });
-          html += `
-              <li role="separator" class="divider"></li>
-              <li>
-                <a data-action="clear">Clear Hostory</a>
-              </li>
-          `;
-          return html;
-        }
-      });
+      this.drawHistory();
     }
     this.bindEvents();
   },
+  drawHistory() {
+    $('#api_key #recent').html(function() {
+      const savedKeyHistory = apiKey.getHistory();
+      if (savedKeyHistory) {
+        let html = '';
+        Object.keys(savedKeyHistory).forEach((key) => {
+          html += `
+            <li>
+              <a data-key='${key}'>${savedKeyHistory[key]}</a>
+            </li>
+          `;
+        });
+        html += `
+            <li role="separator" class="divider"></li>
+            <li>
+              <a data-action="clear">Clear Hostory</a>
+            </li>
+        `;
+        return html;
+      }
+    });
+  },
   bindEvents() {
+
     let newKey;
     function loadpage() {
       app.showLoading();
@@ -39,28 +43,14 @@ export const app = {
       gw2Data.loadInventory();
       gw2Data.loadWallet();      
     }
-    function drawHistory() {
-      $('#api_key #recent').html(function() {
-        const savedKeyHistory = apiKey.getHistory();
-        if (savedKeyHistory) {
-          let html = '';
-          Object.keys(savedKeyHistory).forEach((key) => {
-            html += `
-              <li>
-                <a data-key='${key}'>${savedKeyHistory[key]}</a>
-              </li>
-            `;
-          });
-          html += `
-              <li role="separator" class="divider"></li>
-              <li>
-                <a data-action="clear">Clear Hostory</a>
-              </li>
-          `;
-          return html;
-        }
-      });
+
+    let matchQuery;
+    if (matchQuery = location.href.match(/(s|source)=(.*)/)) {
+        newKey = decodeURIComponent(matchQuery[2]);
+        apiKey.setKey(newKey);
+        loadpage();
     }
+
     $('#api_key #current').keypress(function(e) {
       if (e.keyCode == 13) {
         newKey = $(this).val();
@@ -68,12 +58,14 @@ export const app = {
         loadpage();
       }
     });
+
     $('#api_key #recent').on('click tap', '[data-key]', function(e) {
       newKey = $(this).attr('data-key');
       $('#api_key #current').val(newKey);
       apiKey.setKey(newKey);
       loadpage();
     });
+
     $('#api_key #recent').on('click tap', '[data-action="clear"]', function(e) {
       $('#api_key #current').val('');
       apiKey.clearHistory();
@@ -84,9 +76,10 @@ export const app = {
       $('#characters-status')
         .html('Characters loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
+
     gw2Data.on('loaded:account', (account) => {
       apiKey.setHistory(newKey, account.name);
-      drawHistory();
+      this.drawHistory();
       $('.accountname').text(account.name);
       $('.accountid').text(account.id);
       $('.accountcreated').text(account.created);
@@ -97,10 +90,12 @@ export const app = {
       $('#account-status')
         .html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
+
     gw2Data.on('loaded:wallet', () => {
       $('#wallet-status')
         .html('Wallet loaded <span class="glyphicon glyphicon-ok text-success"></span>');
     });
+
     gw2Data.on('loaded:inventory', () => {
       $('#inventory-status')
         .html('Inventory loaded <span class="glyphicon glyphicon-ok text-success"></span>');
