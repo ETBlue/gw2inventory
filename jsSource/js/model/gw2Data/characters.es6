@@ -72,7 +72,7 @@ class Character {
       if (specialization) {
         const specializationRef = specializations.get(specialization.id);
         if ( specializationRef.elite ) {
-          profession = `${specializationRef.name}<br /><span class="small light">${specializationRef.profession}</span>`;
+          profession = `${specializationRef.profession}<br /><span class="small light">${specializationRef.name}</span>`;
         }
       }
     });
