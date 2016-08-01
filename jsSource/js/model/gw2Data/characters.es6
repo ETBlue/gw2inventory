@@ -93,7 +93,15 @@ class Character {
     return `${hours}:${minutes}:${seconds}`;
   }
   get deaths() {
-    return this._data.deaths || '';
+    const deathCount = this._data.deaths
+    if (deathCount > 0) {
+      const age = this._data.age / this._data.deaths;
+      const minutes = Math.floor(age / 60);
+      const deathPeriod = `${minutes} mins`;
+      return `${this._data.deaths}<br /><span class="small light">${deathPeriod}</span>`;
+    } else {
+      return this._data.deaths || '';
+    }
   }
   get guild() {
     if (this._data.guild) {

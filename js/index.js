@@ -948,7 +948,16 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }, {
       key: 'deaths',
       get: function get() {
-        return this._data.deaths || '';
+        var deathCount = this._data.deaths;
+
+        if (deathCount > 0) {
+          var age = this._data.age / this._data.deaths;
+          var minutes = Math.floor(age / 60);
+          var deathPeriod = minutes + ' mins';
+          return this._data.deaths + '<br /><span class="small light">' + deathPeriod + '</span>';
+        } else {
+          return this._data.deaths || '';
+        }
       }
     }, {
       key: 'guild',
