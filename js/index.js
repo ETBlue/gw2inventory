@@ -885,6 +885,15 @@ define('model/gw2Data/items',['exports'], function (exports) {
         }
       });
       return this.load(needItemIdList);
+    },
+    loadByAccountInventoryList: function loadByAccountInventoryList(accountInventoryData) {
+      var needItemIdList = [];
+      accountInventoryData.forEach(function (itemData) {
+        if (itemData) {
+          needItemIdList.push(itemData.id);
+        }
+      });
+      return this.load(needItemIdList);
     }
   };
 });
@@ -1422,7 +1431,36 @@ define('model/gw2Data/bank',['exports', 'model/apiKey'], function (exports, _api
 });
 
 
-define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault', 'model/gw2Data/bank'], function (exports, _apiKey, _items, _characters, _materials, _vault, _bank) {
+define('model/gw2Data/accountInventory',['exports', 'model/apiKey'], function (exports, _apiKey) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.accountInventory = undefined;
+  var dataRef = undefined;
+  var accountInventory = exports.accountInventory = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en',
+        page: 0
+      };
+
+      //載入銀行
+      $.get('https://api.guildwars2.com/v2/account/inventory?' + $.param(params)).done(function (accountInventoryData) {
+        dataRef = accountInventoryData;
+        loadDeferred.resolve(dataRef);
+      });
+      return loadDeferred;
+    }
+  };
+});
+
+
+define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/characters', 'model/gw2Data/materials', 'model/gw2Data/vault', 'model/gw2Data/bank', 'model/gw2Data/accountInventory'], function (exports, _apiKey, _items, _characters, _materials, _vault, _bank, _accountInventory) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -1478,11 +1516,15 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
       //載入銀行
       waiting.push(_bank.bank.load());
 
+      //載入 shared inventory slots
+      waiting.push(_accountInventory.accountInventory.load());
+
       $.when.apply($.when, waiting).done(function () {
         var waitingLoadItems = [];
         //載入銀行物品資料
         waitingLoadItems.push(_items.items.loadByBankList(_bank.bank.get()));
         waitingLoadItems.push(_items.items.loadByVaultList(_vault.vault.get()));
+        waitingLoadItems.push(_items.items.loadByAccountInventoryList(_accountInventory.accountInventory.get()));
 
         //全部載入完畢後才 merge
         $.when.apply($.when, waitingLoadItems).done(function () {
@@ -1534,6 +1576,16 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
             }
           });
           $.merge(dataRef, vaultDataRef);
+
+          var accountInventoryDataRef = _accountInventory.accountInventory.get().map(function (accountInventoryItem, index) {
+            if (accountInventoryItem) {
+              var itemInfo = _items.items.get(accountInventoryItem.id);
+              var position = 'Shared|' + (index + 1);
+              var item = new Item(position, accountInventoryItem, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, accountInventoryDataRef);
 
           loadDeferred.resolve(dataRef);
         });
