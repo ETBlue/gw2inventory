@@ -1,6 +1,7 @@
 import {eventful} from 'utils/events';
 import {apiKey} from 'model/apiKey';
 import {account} from 'model/gw2Data/account';
+import {accountTitles} from 'model/gw2Data/accountTitles';
 import {characters} from 'model/gw2Data/characters';
 import {inventory} from 'model/gw2Data/inventory';
 import {wallet} from 'model/gw2Data/wallet';
@@ -11,6 +12,12 @@ export const gw2Data = {
     this.trigger('load:account');
     return account.load().done((accountData) => {
       this.trigger('loaded:account', accountData);
+    });
+  },
+  loadAccountTitles() {
+    this.trigger('load:accountTitles');
+    return accountTitles.load().done((accountTitlesData) => {
+      this.trigger('loaded:accountTitles', accountTitlesData);
     });
   },
   loadCharacters() {

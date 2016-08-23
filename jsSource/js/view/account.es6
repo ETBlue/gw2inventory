@@ -39,6 +39,7 @@ export const app = {
     function loadpage() {
       app.showLoading();
       gw2Data.loadAccount();
+      gw2Data.loadAccountTitles();
       gw2Data.loadCharacters();
       gw2Data.loadInventory();
       gw2Data.loadWallet();      
@@ -90,9 +91,12 @@ export const app = {
       $('.monthly_ap').html(account.monthly_ap);
       $('.wvw_rank').html(account.wvw_rank);
       $('.access').html(account.access);
-
       $('#account-status')
         .html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+    });
+
+    gw2Data.on('loaded:accountTitles', (accountTitles) => {
+      $('.titles').html(accountTitles);
     });
 
     gw2Data.on('loaded:wallet', () => {
