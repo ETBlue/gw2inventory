@@ -453,7 +453,7 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
       };
       var waiting = [];
       $.get('https://api.guildwars2.com/v2/account?' + $.param(params)).done(function (accountData) {
-        //載入worlds
+        //載入 worlds
         waiting.push(_worlds.worlds.load());
 
         //全部載入完畢後才resolve loadDeferred
@@ -519,10 +519,93 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
       get: function get() {
         return this._data.fractal_level || '';
       }
+    }, {
+      key: 'daily_ap',
+      get: function get() {
+        return this._data.daily_ap || '';
+      }
+    }, {
+      key: 'monthly_ap',
+      get: function get() {
+        return this._data.monthly_ap || '';
+      }
+    }, {
+      key: 'wvw_rank',
+      get: function get() {
+        return this._data.wvw_rank || '';
+      }
     }]);
 
     return Account;
   })();
+});
+
+
+define('model/gw2Data/titles',['exports'], function (exports) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var dataRef = {};
+  var loadingRef = undefined;
+  var titles = exports.titles = {
+    get: function get(id) {
+      return dataRef[id];
+    },
+    load: function load() {
+      if (!loadingRef) {
+        var params = {
+          ids: 'all',
+          lang: 'en'
+        };
+        loadingRef = $.get('https://api.guildwars2.com/v2/titles?' + $.param(params)).done(function (titlesData) {
+          titlesData.forEach(function (titleData) {
+            dataRef[titleData.id] = titleData;
+          });
+        });
+      }
+      return loadingRef;
+    }
+  };
+});
+
+
+define('model/gw2Data/accountTitles',['exports', 'model/apiKey', 'model/gw2Data/titles'], function (exports, _apiKey, _titles) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.accountTitles = undefined;
+  var dataRef = undefined;
+  var accountTitles = exports.accountTitles = {
+    get: function get() {
+      return dataRef;
+    },
+    load: function load() {
+      var loadDeferred = new $.Deferred();
+      var params = {
+        access_token: _apiKey.apiKey.getKey(),
+        lang: 'en'
+      };
+      var waiting = [];
+      $.get('https://api.guildwars2.com/v2/account/titles?' + $.param(params)).done(function (accountTitlesData) {
+        //載入 titles
+        waiting.push(_titles.titles.load());
+
+        //全部載入完畢後才resolve loadDeferred
+        $.when.apply($.when, waiting).done(function () {
+          var titleList = [];
+          accountTitlesData.forEach(function (id) {
+            var titleData = _titles.titles.get(id);
+            if (titleData) {
+              titleList.push(titleData.name);
+            }
+          });
+          dataRef = titleList.join(', ');
+          loadDeferred.resolve(dataRef);
+        });
+      });
+      return loadDeferred;
+    }
+  };
 });
 
 
@@ -1730,7 +1813,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
 });
 
 
-define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/characters', 'model/gw2Data/inventory', 'model/gw2Data/wallet'], function (exports, _events, _apiKey, _account, _characters, _inventory, _wallet) {
+define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'model/gw2Data/account', 'model/gw2Data/accountTitles', 'model/gw2Data/characters', 'model/gw2Data/inventory', 'model/gw2Data/wallet'], function (exports, _events, _apiKey, _account, _accountTitles, _characters, _inventory, _wallet) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -1744,28 +1827,36 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
         _this.trigger('loaded:account', accountData);
       });
     },
-    loadCharacters: function loadCharacters() {
+    loadAccountTitles: function loadAccountTitles() {
       var _this2 = this;
+
+      this.trigger('load:accountTitles');
+      return _accountTitles.accountTitles.load().done(function (accountTitlesData) {
+        _this2.trigger('loaded:accountTitles', accountTitlesData);
+      });
+    },
+    loadCharacters: function loadCharacters() {
+      var _this3 = this;
 
       this.trigger('load:characters');
       return _characters.characters.load().done(function (characterList) {
-        _this2.trigger('loaded:characters', characterList);
+        _this3.trigger('loaded:characters', characterList);
       });
     },
     loadInventory: function loadInventory() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.trigger('load:inventory');
       return _inventory.inventory.load().done(function (inventoryData) {
-        _this3.trigger('loaded:inventory', inventoryData);
+        _this4.trigger('loaded:inventory', inventoryData);
       });
     },
     loadWallet: function loadWallet() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.trigger('load:wallet');
       return _wallet.wallet.load().done(function (walletData) {
-        _this4.trigger('loaded:wallet', walletData);
+        _this5.trigger('loaded:wallet', walletData);
       });
     }
   };
@@ -1809,6 +1900,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       function loadpage() {
         app.showLoading();
         _gw2Data.gw2Data.loadAccount();
+        _gw2Data.gw2Data.loadAccountTitles();
         _gw2Data.gw2Data.loadCharacters();
         _gw2Data.gw2Data.loadInventory();
         _gw2Data.gw2Data.loadWallet();
@@ -1855,9 +1947,15 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
         $('.accountcreated').text(account.created);
         $('.worldname').html(account.world);
         $('.fractal_level').html(account.fractal_level);
+        $('.daily_ap').html(account.daily_ap);
+        $('.monthly_ap').html(account.monthly_ap);
+        $('.wvw_rank').html(account.wvw_rank);
         $('.access').html(account.access);
-
         $('#account-status').html('Account loaded <span class="glyphicon glyphicon-ok text-success"></span>');
+      });
+
+      _gw2Data.gw2Data.on('loaded:accountTitles', function (accountTitles) {
+        $('.titles').html(accountTitles);
       });
 
       _gw2Data.gw2Data.on('loaded:wallet', function () {
