@@ -4,6 +4,7 @@ import {characters} from 'model/gw2Data/characters';
 import {materials} from 'model/gw2Data/materials';
 import {vault} from 'model/gw2Data/vault';
 import {bank} from 'model/gw2Data/bank';
+import {accountInventory} from 'model/gw2Data/accountInventory';
 
 let dataRef;
 
@@ -32,11 +33,15 @@ export const inventory = {
     //載入銀行
     waiting.push(bank.load());
 
+    //載入 shared inventory slots
+    waiting.push(accountInventory.load());
+
     $.when.apply($.when, waiting).done(() => {
       const waitingLoadItems = [];
       //載入銀行物品資料
       waitingLoadItems.push(items.loadByBankList(bank.get()));
       waitingLoadItems.push(items.loadByVaultList(vault.get()));
+      waitingLoadItems.push(items.loadByAccountInventoryList(accountInventory.get()));
       
       //全部載入完畢後才 merge
       $.when.apply($.when, waitingLoadItems).done(() => {
@@ -88,6 +93,16 @@ export const inventory = {
             }
           });
           $.merge(dataRef, vaultDataRef);
+
+          const accountInventoryDataRef = accountInventory.get().map((accountInventoryItem, index) => {
+            if (accountInventoryItem) {
+              const itemInfo = items.get(accountInventoryItem.id);
+              const position = 'Shared|' + (index + 1);
+              const item = new Item(position, accountInventoryItem, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, accountInventoryDataRef);
 
           loadDeferred.resolve(dataRef);
         

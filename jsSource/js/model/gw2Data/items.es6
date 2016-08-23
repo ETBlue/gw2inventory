@@ -119,5 +119,14 @@ export const items = {
       }
     });
     return this.load(needItemIdList);
+  },
+  loadByAccountInventoryList(accountInventoryData) {
+    const needItemIdList = [];
+    accountInventoryData.forEach((itemData) => {
+      if (itemData) {
+        needItemIdList.push(itemData.id);
+      }
+    });
+    return this.load(needItemIdList);
   }
 };
