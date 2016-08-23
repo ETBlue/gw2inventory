@@ -62,5 +62,14 @@ class Account {
   get fractal_level() {
     return this._data.fractal_level || '';
   }
+  get daily_ap() {
+    return this._data.daily_ap || '';
+  }
+  get monthly_ap() {
+    return this._data.monthly_ap || '';
+  }
+  get wvw_rank() {
+    return this._data.wvw_rank || '';
+  }
 
 }

@@ -86,6 +86,9 @@ export const app = {
       $('.accountcreated').text(account.created);
       $('.worldname').html(account.world);
       $('.fractal_level').html(account.fractal_level);
+      $('.daily_ap').html(account.daily_ap);
+      $('.monthly_ap').html(account.monthly_ap);
+      $('.wvw_rank').html(account.wvw_rank);
       $('.access').html(account.access);
 
       $('#account-status')
