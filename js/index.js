@@ -2246,8 +2246,9 @@ define('index.js',['view/account', 'view/characters', 'view/inventory', 'view/wa
     $('.tab-pane [data-subset]').on('click tap', function () {
       $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
     });
-    $('[data-click="toggleAbout"]').on('click tap', function () {
+    $('[data-click="toggleAbout"]').on('click tap', function (event) {
       $('#about').slideToggle();
+      event.preventDefault();
     });
   });
 });
