@@ -16,7 +16,7 @@ export const account = {
     const waiting = [];
     $.get('https://api.guildwars2.com/v2/account?' + $.param(params))
       .done((accountData) => {
-        //載入worlds
+        //載入 worlds
         waiting.push(worlds.load());
 
         //全部載入完畢後才resolve loadDeferred
@@ -71,5 +71,4 @@ class Account {
   get wvw_rank() {
     return this._data.wvw_rank || '';
   }
-
 }
