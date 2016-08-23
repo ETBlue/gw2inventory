@@ -10,8 +10,9 @@ $(() => {
   });
 
   // toggle about section
-  $('[data-click="toggleAbout"]').on('click tap', function(){
+  $('[data-click="toggleAbout"]').on('click tap', function(event){
     $('#about').slideToggle();
+    event.preventDefault();
   });
 });
 
