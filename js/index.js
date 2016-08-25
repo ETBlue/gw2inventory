@@ -596,7 +596,7 @@ define('model/gw2Data/accountTitles',['exports', 'model/apiKey', 'model/gw2Data/
           accountTitlesData.forEach(function (id) {
             var titleData = _titles.titles.get(id);
             if (titleData) {
-              titleList.push(titleData.name);
+              titleList.push('<span class="inline-block">' + titleData.name + '</span>');
             }
           });
           dataRef = titleList.join(', ');

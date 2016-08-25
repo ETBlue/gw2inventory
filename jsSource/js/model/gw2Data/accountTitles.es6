@@ -25,7 +25,7 @@ export const accountTitles = {
           accountTitlesData.forEach((id) => {
             const titleData = titles.get(id);
             if (titleData) {
-              titleList.push(titleData.name);
+              titleList.push(`<span class="inline-block">${titleData.name}</span>`);
             }
           });
           dataRef = titleList.join(', ');
