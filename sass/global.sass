@@ -1,5 +1,5 @@
 @charset "UTF-8"
-@import compass/css3
+//@import compass/css3
 
 html, body
   font-size: 16px
@@ -64,9 +64,13 @@ p
       padding-bottom: 0.6em
     .btn
 
-.tooltip
-  font-size: 1rem
-  line-height: 1em
+.tooltip-inner
+  font-size: 0.9rem
+  line-height: 1.2em
+  padding: 0.5em 0.8em
+  text-align: left
+  max-width: 20rem
+  color: rgba(#fff, 0.9)
 
 .bold
   font-weight: bold
@@ -100,15 +104,15 @@ p
   .Basic
     color: #666
   .Fine
-    color: shade(#62A4DA,15%)
+    color: darken(#62A4DA,15%)
   .Masterwork
     color: #1a9306
   .Rare
-    color: shade(#fcd00b,25%)
+    color: darken(#fcd00b,25%)
   .Exotic
-    color: shade(#ffa405,15%)
+    color: darken(#ffa405,15%)
   .Ascended
-    color: shade(#fb3e8d,5%)
+    color: darken(#fb3e8d,5%)
   .Legendary
     color: #4C139D
 
@@ -169,11 +173,11 @@ img.icon
 
 .coin
   &.gold
-    color: shade(gold, 40%)
+    color: darken(gold, 40%)
   &.silver
-    color: shade(#ccc, 40%)
+    color: darken(#ccc, 40%)
   &.copper
-    color: shade(#C87533,10%)
+    color: darken(#C87533,10%)
 .currency
   &.gem
     color: hsla(210,50,50,1)
