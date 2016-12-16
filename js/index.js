@@ -44,9 +44,11 @@ define('utils/events',['exports'], function (exports) {
   });
   exports.eventful = eventful;
 
-  function _typeof(obj) {
-    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
-  }
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
 
   function eventful() {
     for (var _len = arguments.length, objList = Array(_len), _key = 0; _key < _len; _key++) {
@@ -66,34 +68,54 @@ define('utils/events',['exports'], function (exports) {
     });
   }
 
+  // Backbone.Events
+  // ---------------
+  // A module that can be mixed in to *any object* in order to provide it with
+  // a custom event channel. You may bind a callback to an event with `on` or
+  // remove with `off`; `trigger`-ing an event fires all callbacks in
+  // succession.
+  //
+  //     var object = {};
+  //     _.extend(object, Backbone.Events);
+  //     object.on('expand', function(){ alert('expanded'); });
+  //     object.trigger('expand');
+  //
   var Events = {};
+
+  // Regular expression used to split event strings.
   var eventSplitter = /\s+/;
 
+  // Iterates over the standard `event, callback` (as well as the fancy multiple
+  // space-separated events `"change blur", callback` and jQuery-style event
+  // maps `{event: callback}`).
   var eventsApi = function eventsApi(iteratee, events, name, callback, opts) {
     var i = 0,
         names;
-
     if (name && (typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
+      // Handle event maps.
       if (callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback;
-
       for (names = _.keys(name); i < names.length; i++) {
         events = eventsApi(iteratee, events, names[i], name[names[i]], opts);
       }
     } else if (name && eventSplitter.test(name)) {
+      // Handle space separated event names by delegating them individually.
       for (names = name.split(eventSplitter); i < names.length; i++) {
         events = iteratee(events, names[i], callback, opts);
       }
     } else {
+      // Finally, standard events.
       events = iteratee(events, name, callback, opts);
     }
-
     return events;
   };
 
+  // Bind an event to a `callback` function. Passing `"all"` will bind
+  // the callback to all events fired.
   Events.on = function (name, callback, context) {
     return internalOn(this, name, callback, context);
   };
 
+  // Guard the `listening` argument from the public API.
   var internalOn = function internalOn(obj, name, callback, context, listening) {
     obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
       context: context,
@@ -109,30 +131,28 @@ define('utils/events',['exports'], function (exports) {
     return obj;
   };
 
+  // Inversion-of-control versions of `on`. Tell *this* object to listen to
+  // an event in another object... keeping track of what it's listening to
+  // for easier unbinding later.
   Events.listenTo = function (obj, name, callback) {
     if (!obj) return this;
-
     var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
-
     var listeningTo = this._listeningTo || (this._listeningTo = {});
     var listening = listeningTo[id];
 
+    // This object is not listening to any other events on `obj` yet.
+    // Setup the necessary references to track the listening callbacks.
     if (!listening) {
       var thisId = this._listenId || (this._listenId = _.uniqueId('l'));
-
-      listening = listeningTo[id] = {
-        obj: obj,
-        objId: id,
-        id: thisId,
-        listeningTo: listeningTo,
-        count: 0
-      };
+      listening = listeningTo[id] = { obj: obj, objId: id, id: thisId, listeningTo: listeningTo, count: 0 };
     }
 
+    // Bind callbacks on obj, and keep track of them on listening.
     internalOn(obj, name, callback, this, listening);
     return this;
   };
 
+  // The reducing API that adds a callback to the `events` object.
   var onApi = function onApi(events, name, callback, options) {
     if (callback) {
       var handlers = events[name] || (events[name] = []);
@@ -140,17 +160,16 @@ define('utils/events',['exports'], function (exports) {
           ctx = options.ctx,
           listening = options.listening;
       if (listening) listening.count++;
-      handlers.push({
-        callback: callback,
-        context: context,
-        ctx: context || ctx,
-        listening: listening
-      });
-    }
 
+      handlers.push({ callback: callback, context: context, ctx: context || ctx, listening: listening });
+    }
     return events;
   };
 
+  // Remove one or many callbacks. If `context` is null, removes all
+  // callbacks with that function. If `callback` is null, removes all
+  // callbacks for the event. If `name` is null, removes all bound
+  // callbacks for all events.
   Events.off = function (name, callback, context) {
     if (!this._events) return this;
     this._events = eventsApi(offApi, this._events, name, callback, {
@@ -160,56 +179,64 @@ define('utils/events',['exports'], function (exports) {
     return this;
   };
 
+  // Tell this object to stop listening to either specific events ... or
+  // to every object it's currently listening to.
   Events.stopListening = function (obj, name, callback) {
     var listeningTo = this._listeningTo;
     if (!listeningTo) return this;
+
     var ids = obj ? [obj._listenId] : _.keys(listeningTo);
 
     for (var i = 0; i < ids.length; i++) {
       var listening = listeningTo[ids[i]];
+
+      // If listening doesn't exist, this object is not currently
+      // listening to obj. Break out early.
       if (!listening) break;
+
       listening.obj.off(name, callback, this);
     }
-
     if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
+
     return this;
   };
 
+  // The reducing API that removes a callback from the `events` object.
   var offApi = function offApi(events, name, callback, options) {
     if (!events) return;
+
     var i = 0,
         listening;
     var context = options.context,
         listeners = options.listeners;
 
+    // Delete all events listeners and "drop" events.
     if (!name && !callback && !context) {
       var ids = _.keys(listeners);
-
       for (; i < ids.length; i++) {
         listening = listeners[ids[i]];
         delete listeners[listening.id];
         delete listening.listeningTo[listening.objId];
       }
-
       return;
     }
 
     var names = name ? [name] : _.keys(events);
-
     for (; i < names.length; i++) {
       name = names[i];
       var handlers = events[name];
-      if (!handlers) break;
-      var remaining = [];
 
+      // Bail out if there are no events stored.
+      if (!handlers) break;
+
+      // Replace events if there are any remaining.  Otherwise, clean up.
+      var remaining = [];
       for (var j = 0; j < handlers.length; j++) {
         var handler = handlers[j];
-
         if (callback && callback !== handler.callback && callback !== handler.callback._callback || context && context !== handler.context) {
           remaining.push(handler);
         } else {
           listening = handler.listening;
-
           if (listening && --listening.count === 0) {
             delete listeners[listening.id];
             delete listening.listeningTo[listening.objId];
@@ -217,52 +244,62 @@ define('utils/events',['exports'], function (exports) {
         }
       }
 
+      // Update tail event if the list has any events.  Otherwise, clean up.
       if (remaining.length) {
         events[name] = remaining;
       } else {
         delete events[name];
       }
     }
-
     if (_.size(events)) return events;
   };
 
+  // Bind an event to only be triggered a single time. After the first time
+  // the callback is invoked, its listener will be removed. If multiple events
+  // are passed in using the space-separated syntax, the handler will fire
+  // once for each event, not once for a combination of all events.
   Events.once = function (name, callback, context) {
+    // Map the event into a `{event: once}` object.
     var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
     return this.on(events, void 0, context);
   };
 
+  // Inversion-of-control versions of `once`.
   Events.listenToOnce = function (obj, name, callback) {
+    // Map the event into a `{event: once}` object.
     var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
     return this.listenTo(obj, events);
   };
 
+  // Reduces the event callbacks into a map of `{event: onceWrapper}`.
+  // `offer` unbinds the `onceWrapper` after it has been called.
   var onceMap = function onceMap(map, name, callback, offer) {
     if (callback) {
       var once = map[name] = _.once(function () {
         offer(name, once);
         callback.apply(this, arguments);
       });
-
       once._callback = callback;
     }
-
     return map;
   };
 
+  // Trigger one or many events, firing all bound callbacks. Callbacks are
+  // passed the same arguments as `trigger` is, apart from the event name
+  // (unless you're listening on `"all"`, which will cause your callback to
+  // receive the true name of the event as the first argument).
   Events.trigger = function (name) {
     if (!this._events) return this;
+
     var length = Math.max(0, arguments.length - 1);
     var args = Array(length);
-
     for (var i = 0; i < length; i++) {
       args[i] = arguments[i + 1];
-    }
-
-    eventsApi(triggerApi, this._events, name, void 0, args);
+    }eventsApi(triggerApi, this._events, name, void 0, args);
     return this;
   };
 
+  // Handles triggering the appropriate event callbacks.
   var triggerApi = function triggerApi(objEvents, name, cb, args) {
     if (objEvents) {
       var events = objEvents[name];
@@ -271,10 +308,12 @@ define('utils/events',['exports'], function (exports) {
       if (events) triggerEvents(events, args);
       if (allEvents) triggerEvents(allEvents, [name].concat(args));
     }
-
     return objEvents;
   };
 
+  // A difficult-to-believe, but optimized internal dispatch function for
+  // triggering events. Tries to keep the usual cases speedy (most internal
+  // Backbone events have 3 arguments).
   var triggerEvents = function triggerEvents(events, args) {
     var ev,
         i = -1,
@@ -282,45 +321,31 @@ define('utils/events',['exports'], function (exports) {
         a1 = args[0],
         a2 = args[1],
         a3 = args[2];
-
     switch (args.length) {
       case 0:
         while (++i < l) {
           (ev = events[i]).callback.call(ev.ctx);
-        }
-
-        return;
-
+        }return;
       case 1:
         while (++i < l) {
           (ev = events[i]).callback.call(ev.ctx, a1);
-        }
-
-        return;
-
+        }return;
       case 2:
         while (++i < l) {
           (ev = events[i]).callback.call(ev.ctx, a1, a2);
-        }
-
-        return;
-
+        }return;
       case 3:
         while (++i < l) {
           (ev = events[i]).callback.call(ev.ctx, a1, a2, a3);
-        }
-
-        return;
-
+        }return;
       default:
         while (++i < l) {
           (ev = events[i]).callback.apply(ev.ctx, args);
-        }
-
-        return;
+        }return;
     }
   };
 
+  // Aliases for backwards compatibility.
   Events.bind = Events.on;
   Events.unbind = Events.off;
 });
@@ -331,19 +356,14 @@ define('model/apiKey',['exports'], function (exports) {
     value: true
   });
   var storage = localStorage.getItem('gw2apikey');
-  var key = undefined;
-
+  var key = void 0;
   if (storage) {
     if (storage.indexOf('current') > -1) {
       key = JSON.parse(storage);
     } else {
-      key = {
-        current: storage,
-        recent: {}
-      };
+      key = { current: storage, recent: {} };
     }
   }
-
   var apiKey = exports.apiKey = {
     getKey: function getKey() {
       if (key) {
@@ -378,6 +398,7 @@ define('model/apiKey',['exports'], function (exports) {
       localStorage.removeItem('gw2apikey');
     }
   };
+
   exports.default = apiKey;
 });
 
@@ -387,7 +408,8 @@ define('model/gw2Data/worlds',['exports'], function (exports) {
     value: true
   });
   var dataRef = {};
-  var loadingRef = undefined;
+  var loadingRef = void 0;
+
   var worlds = exports.worlds = {
     get: function get(id) {
       return dataRef[id];
@@ -422,7 +444,7 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
     }
   }
 
-  var _createClass = (function () {
+  var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -438,9 +460,10 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
       if (staticProps) defineProperties(Constructor, staticProps);
       return Constructor;
     };
-  })();
+  }();
 
-  var dataRef = undefined;
+  var dataRef = void 0;
+
   var account = exports.account = {
     get: function get() {
       return dataRef;
@@ -467,7 +490,7 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
     }
   };
 
-  var Account = (function () {
+  var Account = function () {
     function Account(data) {
       _classCallCheck(this, Account);
 
@@ -500,7 +523,6 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
       key: 'world',
       get: function get() {
         var worldData = _worlds.worlds.get(this._data.world);
-
         return '' + worldData.name;
       }
     }, {
@@ -537,7 +559,7 @@ define('model/gw2Data/account',['exports', 'model/apiKey', 'model/gw2Data/worlds
     }]);
 
     return Account;
-  })();
+  }();
 });
 
 
@@ -546,7 +568,8 @@ define('model/gw2Data/titles',['exports'], function (exports) {
     value: true
   });
   var dataRef = {};
-  var loadingRef = undefined;
+  var loadingRef = void 0;
+
   var titles = exports.titles = {
     get: function get(id) {
       return dataRef[id];
@@ -574,7 +597,10 @@ define('model/gw2Data/accountTitles',['exports', 'model/apiKey', 'model/gw2Data/
     value: true
   });
   exports.accountTitles = undefined;
-  var dataRef = undefined;
+
+
+  var dataRef = void 0;
+
   var accountTitles = exports.accountTitles = {
     get: function get() {
       return dataRef;
@@ -615,6 +641,7 @@ define('model/gw2Data/guilds',['exports'], function (exports) {
   });
   var dataRef = {};
   var loadingRef = {};
+
   var guilds = exports.guilds = {
     get: function get(id) {
       return dataRef[id];
@@ -650,7 +677,8 @@ define('model/gw2Data/specializations',['exports'], function (exports) {
     value: true
   });
   var dataRef = {};
-  var loadingRef = undefined;
+  var loadingRef = void 0;
+
   var specializations = exports.specializations = {
     get: function get(id) {
       return dataRef[id];
@@ -691,6 +719,7 @@ define('model/gw2Data/traits',['exports'], function (exports) {
   }
 
   var dataRef = {};
+
   var traits = exports.traits = {
     get: function get(id) {
       return dataRef[id];
@@ -762,6 +791,7 @@ define('model/gw2Data/items',['exports'], function (exports) {
   }
 
   var dataRef = {};
+
   var items = exports.items = {
     get: function get(id) {
       return dataRef[id];
@@ -911,7 +941,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }
   }
 
-  var _createClass = (function () {
+  var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -927,9 +957,10 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       if (staticProps) defineProperties(Constructor, staticProps);
       return Constructor;
     };
-  })();
+  }();
 
-  var dataRef = undefined;
+  var dataRef = void 0;
+
   var characters = exports.characters = {
     get: function get() {
       return dataRef;
@@ -965,7 +996,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }
   };
 
-  var Character = (function () {
+  var Character = function () {
     function Character(data) {
       _classCallCheck(this, Character);
 
@@ -994,7 +1025,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }, {
       key: 'race',
       get: function get() {
-        return this._data.race + '<br /><span class="small light">' + this._data.gender + '</span>';
+        return this._data.race + '<br /><span class=\'small light\'>' + this._data.gender + '</span>';
       }
     }, {
       key: 'gender',
@@ -1009,9 +1040,8 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
         characterSpecializations.pve.forEach(function (specialization) {
           if (specialization) {
             var specializationRef = _specializations.specializations.get(specialization.id);
-
             if (specializationRef.elite) {
-              profession = specializationRef.profession + '<br /><span class="small light">' + specializationRef.name + '</span>';
+              profession = specializationRef.profession + '<br /><span class=\'small light\'>' + specializationRef.name + '</span>';
             }
           }
         });
@@ -1041,12 +1071,11 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       key: 'deaths',
       get: function get() {
         var deathCount = this._data.deaths;
-
         if (deathCount > 0) {
           var age = this._data.age / this._data.deaths;
           var minutes = Math.floor(age / 60);
           var deathPeriod = minutes + ' mins';
-          return this._data.deaths + '<br /><span class="small light">' + deathPeriod + '</span>';
+          return this._data.deaths + '<br /><span class=\'small light\'>' + deathPeriod + '</span>';
         } else {
           return this._data.deaths || '';
         }
@@ -1056,8 +1085,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       get: function get() {
         if (this._data.guild) {
           var guildData = _guilds.guilds.get(this._data.guild);
-
-          return guildData.guild_name + '<br /><span class="small light">[' + guildData.tag + ']</span>';
+          return guildData.guild_name + '<br /><span class=\'small light\'>[' + guildData.tag + ']</span>';
         } else {
           return '';
         }
@@ -1066,7 +1094,6 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       key: 'crafting',
       get: function get() {
         var crafting = this._data.crafting;
-
         if (crafting && crafting.reduce) {
           return crafting.reduce(function (html, craftData) {
             return html + (craftData.rating + '|' + craftData.discipline + ' <br />');
@@ -1087,6 +1114,8 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
       key: 'equipment',
       get: function get() {
         var equipmentArray = this._data.equipment;
+
+        // 先把 equipment array 轉成 hash
         var equipment = {};
         equipmentArray.forEach(function (element) {
           equipment[element.slot] = {};
@@ -1094,6 +1123,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           equipment[element.slot].upgrades = element.upgrades;
           equipment[element.slot].infusions = element.infusions;
         });
+
         return {
           Helm: getEquipmentItemHtml(equipment.Helm),
           Shoulders: getEquipmentItemHtml(equipment.Shoulders),
@@ -1133,86 +1163,104 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
           services: [],
           special: [],
           boosts: [],
+          //style: [],
           misc: []
         };
+
         bags.forEach(function (bag) {
           if (bag) {
             bag.inventory.forEach(function (item) {
               if (item) {
                 var itemData = _items.items.get(item.id);
-
                 if (itemData) {
-                  itemData.count = item.count || "";
-                  itemData.binding = item.binding || "";
-                  itemData.bound_to = item.bound_to || "";
+                  itemData.count = item.count || '';
+                  itemData.binding = item.binding || '';
+                  itemData.bound_to = item.bound_to || '';
+                  if (itemData.type == 'Consumable') {
+                    //if (itemData.details.type == 'AppearanceChange') {
+                    //  inventory.services.push(itemData);
+                    //}
+                    if (itemData.details.type == 'Booze') {}
+                    // alcohol
 
-                  if (itemData.type == "Consumable") {
-                    if (itemData.details.type == "Booze") {}
-
-                    if (itemData.details.type == "Food") {
+                    //if (itemData.details.type == 'ContractNpc') {
+                    //  inventory.services.push(itemData);
+                    //}
+                    if (itemData.details.type == 'Food') {
                       inventory.boosts.push(itemData);
                     }
-
-                    if (itemData.details.type == "Generic") {
+                    if (itemData.details.type == 'Generic') {
                       inventory.misc.push(itemData);
                     }
-
-                    if (itemData.details.type == "Halloween") {
+                    if (itemData.details.type == 'Halloween') {
                       inventory.boosts.push(itemData);
                     }
-
-                    if (itemData.details.type == "Immediate") {
+                    if (itemData.details.type == 'Immediate') {
                       inventory.misc.push(itemData);
                     }
-
-                    if (itemData.details.type == "Unlock") {
+                    //if (itemData.details.type == 'Transmutation') {
+                    //  inventory.style.push(itemData);
+                    //}
+                    if (itemData.details.type == 'Unlock') {
                       inventory.misc.push(itemData);
                     }
-
-                    if (itemData.details.type == "Utility") {
+                    //if (itemData.details.type == 'UpgradeRemoval') {
+                    //  inventory.special.push(itemData);
+                    //}
+                    if (itemData.details.type == 'Utility') {
                       inventory.boosts.push(itemData);
                     }
+                    //if (itemData.details.type == 'TeleportToFriend') {
+                    //  inventory.special.push(itemData);
+                    //}
                   }
-
-                  if (itemData.type == "Gizmo") {
-                    if (itemData.details.type == "Default") {
+                  if (itemData.type == 'Gizmo') {
+                    if (itemData.details.type == 'Default') {
                       inventory.misc.push(itemData);
                     }
+                    //if (itemData.details.type == 'ContainerKey') {
+                    //  inventory.special.push(itemData);
+                    //}
+                    //if (itemData.details.type == 'RentableContractNpc') {
+                    //  inventory.services.push(itemData);
+                    //}
+                    //if (itemData.details.type == 'UnlimitedConsumable') {
+                    //  inventory.services.push(itemData);
+                    //}
                   }
                 }
               }
             });
           }
         });
+
         return {
+          //services: getInventoryHtml(inventory.services),
+          //special: getInventoryHtml(inventory.special),
           boosts: getInventoryHtml(inventory.boosts)
         };
       }
     }]);
 
     return Character;
-  })();
+  }();
 
   function getSpecializationHtml(dataList) {
     return dataList.reduce(function (html, specializationData) {
       if (specializationData) {
         var specialization = _specializations.specializations.get(specializationData.id);
-
         var traitHtml = '';
-
         if (specializationData.traits) {
           traitHtml = specializationData.traits.reduce(function (traitHtml, traitId) {
             var trait = _traits.traits.get(traitId);
-
             if (trait) {
-              return traitHtml + ('\n              <div class="table-item">\n                <img class="small icon" data-toggle="tooltip" data-placement="left" title="' + trait.description + '" src="' + trait.icon + '">\n                <span>' + trait.name + '</span>\n              </div>\n            ');
+              return traitHtml + ('\n              <div class=\'table-item\'>\n                <img class=\'small icon\' data-toggle=\'tooltip\' data-placement=\'top\' data-html=\'true\' title=\'' + trait.description + '\' src=\'' + trait.icon + '\'>\n                <span>' + trait.name + '</span>\n              </div>\n            ');
             } else {
               return traitHtml;
             }
           }, '');
         }
-
-        return html + ('\n        <div class="table-item">\n          <img class="medium icon spec" src="' + specialization.icon + '" />\n          <span>' + specialization.name + '</span>\n        </div>\n        ' + traitHtml + '\n      ');
+        return html + ('\n        <div class=\'table-item\'>\n          <img class=\'medium icon spec\' src=\'' + specialization.icon + '\' />\n          <span>' + specialization.name + '</span>\n        </div>\n        ' + traitHtml + '\n      ');
       } else {
         return html;
       }
@@ -1221,54 +1269,51 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
 
   function getToolItemHtml(data) {
     var html = '';
-
     if (data) {
       var tool = _items.items.get(data.id);
-
-      html += '\n      <div class=\'table-item\'>\n        <img class="medium icon item ' + tool.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + tool.icon + '">\n        <div class="bold ' + tool.rarity + '">' + tool.name + '\n          <span class="small light">(' + tool.level + ')</span>\n        </div>\n      </div>\n    ';
+      var descriptionHtml = getToolTipHtml(tool);
+      html += '\n      <div class=\'table-item\'>\n        <img class=\'medium icon item ' + tool.rarity + '\' data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' src=\'' + tool.icon + '\'>\n        <div class=\'bold ' + tool.rarity + '\'>' + tool.name + '\n          <span class=\'small light\'>(' + tool.level + ')</span>\n        </div>\n      </div>\n    ';
     }
-
     return html;
   }
 
   function getEquipmentItemHtml(data) {
-    var html = '';
     var iconHtml = '';
     var nameHtml = '';
-
     if (data) {
       var equipment = _items.items.get(data.id);
-
       if (data.upgrades || data.infusions) {
         nameHtml += '<hr />';
       }
-
       if (data.upgrades) {
         data.upgrades.forEach(function (upgradeId) {
           var upgrade = _items.items.get(upgradeId);
-
           if (upgrade) {
-            iconHtml += '\n            <img class="medium icon item ' + upgrade.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + upgrade.icon + '">\n          ';
-            nameHtml += '\n            <div class="small bold ' + upgrade.rarity + '">' + upgrade.name + '\n              <span class="light">(' + upgrade.level + ')</span>\n            </div>\n            ';
+            var descriptionHtml = getToolTipHtml(upgrade);
+            iconHtml += '\n            <img class=\'medium icon item ' + upgrade.rarity + '\' data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' src=\'' + upgrade.icon + '\'>\n          ';
+            nameHtml += '\n            <div class=\'small bold ' + upgrade.rarity + '\'>' + upgrade.name + '\n              <span class=\'light\'>(' + upgrade.level + ')</span>\n            </div>\n            ';
           }
         });
       }
-
       if (data.infusions) {
         data.infusions.forEach(function (infusionId) {
           var infusion = _items.items.get(infusionId);
-
           if (infusion) {
-            iconHtml += '\n            <img class="medium icon item ' + infusion.rarity + '" data-toggle="tooltip" data-placement="left" title=\'\' src="' + infusion.icon + '">\n          ';
-            nameHtml += '\n            <div class="small bold ' + infusion.rarity + '">' + infusion.name + '</div>\n          ';
+            var descriptionHtml = getToolTipHtml(infusion);
+            iconHtml += '\n            <img class=\'medium icon item ' + infusion.rarity + '\' data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' src=\'' + infusion.icon + '\'>\n          ';
+            nameHtml += '\n            <div class=\'small bold ' + infusion.rarity + '\'>' + infusion.name + '</div>\n          ';
           }
         });
       }
-
-      html = '\n      <div class=\'equipment\'>\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ' + equipment.rarity + '" src="' + equipment.icon + '" />\n        ' + iconHtml + '\n      </div>\n      <div class=\'equipment\'>\n        <div class="bold ' + equipment.rarity + '">' + equipment.name + '\n          <span class="small light">(' + equipment.level + ')</span>\n        </div>\n        ' + nameHtml + '\n      </div>\n      ';
+      if (equipment) {
+        var descriptionHtml = getToolTipHtml(equipment);
+        return '\n        <div class=\'equipment\'>\n          <img data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' class=\'icon large item ' + equipment.rarity + '\' src=\'' + equipment.icon + '\' />\n          ' + iconHtml + '\n        </div>\n        <div class=\'equipment\'>\n          <div class=\'bold ' + equipment.rarity + '\'>' + equipment.name + '\n            <span class=\'small light\'>(' + equipment.level + ')</span>\n          </div>\n          ' + nameHtml + '\n        </div>\n        ';
+      } else {
+        return '';
+      }
+    } else {
+      return '';
     }
-
-    return html;
   }
 
   function getBagHtml(dataList) {
@@ -1279,24 +1324,20 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     var slotCount = 0;
     dataList.forEach(function (bagData) {
       slotCount += 1;
-
       if (bagData) {
         bagCount += 1;
-
         var bag = _items.items.get(bagData.id);
-
-        iconHtml += '\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ' + bag.rarity + '" src="' + bag.icon + '" />\n      ';
-        nameHtml += '\n        <div class="bold ' + bag.rarity + '">' + bag.name + ' \n          <span class="small light">(' + bag.details.size + ' slots)</span>\n        </div>\n      ';
+        var descriptionHtml = getToolTipHtml(bag);
+        iconHtml += '\n        <img data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' class=\'icon large item ' + bag.rarity + '\' src=\'' + bag.icon + '\' />\n      ';
+        nameHtml += '\n        <div class=\'bold ' + bag.rarity + '\'>' + bag.name + ' \n          <span class=\'small light\'>(' + bag.details.size + ' slots)</span>\n        </div>\n      ';
       }
     });
-
     if (slotCount - bagCount > 1) {
       countHtml += ' (' + (slotCount - bagCount) + ' unused slots)';
     } else if (slotCount - bagCount == 1) {
       countHtml += ' (1 unused slot)';
     }
-
-    return '\n    <p>' + bagCount + ' bags: ' + countHtml + '</p>\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
+    return '\n    <p>' + bagCount + ' bags: ' + countHtml + '</p>\n    <div class=\'equipment\'>\n      ' + iconHtml + '\n    </div>\n    <div class=\'equipment\'>\n      ' + nameHtml + '\n    </div>\n  ';
   }
 
   function getInventoryHtml(dataList) {
@@ -1309,40 +1350,87 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     var holloweenCount = 0;
     dataList.forEach(function (item) {
       if (item) {
-        iconHtml += '\n        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ' + item.rarity + '" src="' + item.icon + '" />\n      ';
-        nameHtml += '\n        <div>' + item.count + ' \n          <span class="bold ' + item.rarity + '">' + item.name + ' \n            <span class="small light">(' + item.level + ')</span>\n          </span>\n        </div>\n      ';
-
-        if (item.details.type == "Food") {
+        var descriptionHtml = getToolTipHtml(item);
+        iconHtml += '\n        <img data-toggle=\'tooltip\' data-placement=\'top\' title=\'' + descriptionHtml + '\' class=\'icon medium item ' + item.rarity + '\' src=\'' + item.icon + '\' />\n      ';
+        nameHtml += '\n        <div>' + item.count + ' \n          <span class=\'bold ' + item.rarity + '\'>' + item.name + ' \n            <span class=\'small light\'>(' + item.level + ')</span>\n          </span>\n        </div>\n      ';
+        if (item.details.type == 'Food') {
           foodCount++;
-        } else if (item.details.type == "Utility") {
+        } else if (item.details.type == 'Utility') {
           utilityCount++;
-        } else if (item.details.type == "Halloween") {
+        } else if (item.details.type == 'Halloween') {
           holloweenCount++;
         }
       }
     });
-
     if (foodCount > 0) {
       count.push(foodCount + ' food');
     }
-
     if (utilityCount > 1) {
       count.push(utilityCount + ' utilities');
     } else if (utilityCount == 1) {
       count.push(utilityCount + ' utility');
     }
-
     if (holloweenCount > 1) {
       count.push(holloweenCount + ' Boosters');
     } else if (holloweenCount == 1) {
       count.push('1 Booster');
     }
-
     if (count.length > 0) {
       countHtml = '<p>' + count.join(', ') + ':</p>';
     }
+    return '\n    ' + countHtml + '\n    <div class=\'equipment\'>\n      ' + iconHtml + '\n    </div>\n    <div class=\'equipment\'>\n      ' + nameHtml + '\n    </div>\n  ';
+  }
 
-    return '\n    ' + countHtml + '\n    <div class="equipment">\n      ' + iconHtml + '\n    </div>\n    <div class="equipment">\n      ' + nameHtml + '\n    </div>\n  ';
+  function escapeHtml(data) {
+
+    var entityMap = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': '&quot;',
+      "'": '&#39;',
+      "/": '&#x2F;'
+    };
+
+    return String(data).replace(/[&<>"'\/]/g, function (s) {
+      return entityMap[s];
+    });
+
+    var escape = document.createElement('textarea');
+    escape.textContent = data;
+    var html = escape.innerHTML;
+    html = html.replace(/(?:\r\n|\r|\n)/g, '<br />').replace();
+  }
+
+  function getToolTipHtml(item) {
+    var html = '';
+    if (item.details) {
+      if (item.details.infix_upgrade) {
+        if (item.details.infix_upgrade.attributes) {
+          item.details.infix_upgrade.attributes.forEach(function (attribute) {
+            html += attribute.attribute + ': ' + attribute.modifier + '<br />';
+          });
+        }
+        if (item.details.infix_upgrade.buff) {
+          //        item.details.infix_upgrade.buff.forEach((skill) => {
+          //          const description = skill.description || '';
+          //          html += escapeHtml(description);
+          //        });
+        }
+      }
+      if (item.details.stat_choices) {}
+      if (item.details.description) {
+        var description = item.details.description || '';
+        html += escapeHtml(description);
+      } else if (item.description) {
+        var _description = item.description || '';
+        html += escapeHtml(_description);
+      }
+    } else if (item.description) {
+      var _description2 = item.description || '';
+      html += escapeHtml(_description2);
+    }
+    return html;
   }
 });
 
@@ -1352,7 +1440,8 @@ define('model/gw2Data/materials',['exports'], function (exports) {
     value: true
   });
   var dataRef = {};
-  var loadingRef = undefined;
+  var loadingRef = void 0;
+
   var materials = exports.materials = {
     get: function get(id) {
       return dataRef[id];
@@ -1380,7 +1469,10 @@ define('model/gw2Data/vault',['exports', 'model/apiKey'], function (exports, _ap
     value: true
   });
   exports.vault = undefined;
-  var dataRef = undefined;
+
+
+  var dataRef = void 0;
+
   var vault = exports.vault = {
     get: function get() {
       return dataRef;
@@ -1407,7 +1499,10 @@ define('model/gw2Data/bank',['exports', 'model/apiKey'], function (exports, _api
     value: true
   });
   exports.bank = undefined;
-  var dataRef = undefined;
+
+
+  var dataRef = void 0;
+
   var bank = exports.bank = {
     get: function get() {
       return dataRef;
@@ -1436,7 +1531,10 @@ define('model/gw2Data/accountInventory',['exports', 'model/apiKey'], function (e
     value: true
   });
   exports.accountInventory = undefined;
-  var dataRef = undefined;
+
+
+  var dataRef = void 0;
+
   var accountInventory = exports.accountInventory = {
     get: function get() {
       return dataRef;
@@ -1472,7 +1570,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }
   }
 
-  var _createClass = (function () {
+  var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -1488,9 +1586,10 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
       if (staticProps) defineProperties(Constructor, staticProps);
       return Constructor;
     };
-  })();
+  }();
 
-  var dataRef = undefined;
+  var dataRef = void 0;
+
   var inventory = exports.inventory = {
     get: function get() {
       return dataRef;
@@ -1536,7 +1635,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
             character._data.equipment.forEach(function (equipmentItem) {
               if (equipmentItem) {
                 var itemInfo = _items.items.get(equipmentItem.id);
-                var position = character.name + '<br /><span class="small light">(equipped)</span>';
+                var position = character.name + '<br /><span class=\'small light\'>(equipped)</span>';
                 equipmentItem.count = 1;
                 var item = new Item(position, equipmentItem, itemInfo);
                 characterDataRef.push(item.toJSON());
@@ -1547,7 +1646,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
                 bag.inventory.forEach(function (bagItem) {
                   if (bagItem) {
                     var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name + '<br /><span class="small light">(bag)</span>';
+                    var position = character.name + '<br /><span class=\'small light\'>(bag)</span>';
                     var item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push(item.toJSON());
                   }
@@ -1594,7 +1693,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }
   };
 
-  var Item = (function () {
+  var Item = function () {
     function Item(position, data, itemInfo) {
       _classCallCheck(this, Item);
 
@@ -1610,26 +1709,37 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
         var _this = this;
 
         var result = {};
-        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description', 'category'];
+        var keys = ['icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'id', 'category'];
         keys.forEach(function (key) {
           result[key] = _this[key];
         });
+        //Object.keys(this._data).forEach((key) => {
+        //  result[key] = this[key];
+        //});
+        //Object.keys(this._ref).forEach((key) => {
+        //  result[key] = this[key];
+        //});
         return result;
+      }
+    }, {
+      key: 'id',
+      get: function get() {
+        return this._data.id || '';
       }
     }, {
       key: 'icon',
       get: function get() {
         var icon = this._ref.icon || '';
         var rarity = this._ref.rarity || '';
-        var description = this._ref.description || '';
-        return '<img class=\'large solo item icon ' + rarity + '\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'\' src=\'' + icon + '\' />';
+        var description = getToolTipHtml(this._ref);
+        return '<img class=\'large solo item icon ' + rarity + '\' data-toggle=\'tooltip\' data-html=\'true\' data-placement=\'right\' title=\'' + description + '\' src=\'' + icon + '\' />';
       }
     }, {
       key: 'name',
       get: function get() {
         var name = this._ref.name || '';
         var rarity = this._ref.rarity || '';
-        return '<span class="bold ' + rarity + '">' + name + '</span>';
+        return '<span class=\'bold ' + rarity + '\'>' + name + '</span>';
       }
     }, {
       key: 'count',
@@ -1640,13 +1750,11 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
       key: 'type',
       get: function get() {
         var type = this._ref.type || '';
-
         if (type == 'UpgradeComponent') {
           type = 'Upgrades';
         } else if (type == 'CraftingMaterial') {
           type = 'Material';
         }
-
         return type;
       }
     }, {
@@ -1662,14 +1770,19 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }, {
       key: 'position',
       get: function get() {
-        return this._data.position || '';
+        var html = this._data.position || '';
+        if (this._data.category) {
+          var category = _materials.materials.get(this._data.category).name || '';
+          return html += '<br /><span class=\'small light\'>' + category + '</span>';
+        } else {
+          return html;
+        }
       }
     }, {
       key: 'binding',
       get: function get() {
         var binding = this._data.binding;
         var bound_to = this._data.bound_to;
-
         if (binding) {
           if (bound_to) {
             return bound_to;
@@ -1697,7 +1810,59 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }]);
 
     return Item;
-  })();
+  }();
+
+  function escapeHtml(data) {
+
+    var entityMap = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': '&quot;',
+      "'": '&#39;',
+      "/": '&#x2F;'
+    };
+
+    return String(data).replace(/[&<>"'\/]/g, function (s) {
+      return entityMap[s];
+    });
+
+    var escape = document.createElement('textarea');
+    escape.textContent = data;
+    var html = escape.innerHTML;
+    html = html.replace(/(?:\r\n|\r|\n)/g, '<br />').replace();
+  }
+
+  function getToolTipHtml(item) {
+    var html = '';
+    if (item.details) {
+      if (item.details.infix_upgrade) {
+        if (item.details.infix_upgrade.attributes) {
+          item.details.infix_upgrade.attributes.forEach(function (attribute) {
+            html += attribute.attribute + ': ' + attribute.modifier + '<br />';
+          });
+        }
+        if (item.details.infix_upgrade.buff) {
+          //        item.details.infix_upgrade.buff.forEach((skill) => {
+          //          const description = skill.description || '';
+          //          html += escapeHtml(description);
+          //        });
+        }
+      }
+      if (item.details.stat_choices) {}
+      if (item.details.description) {
+        var description = item.details.description || '';
+        html += escapeHtml(description);
+      } else if (item.description) {
+        var _description = item.description || '';
+        html += escapeHtml(_description);
+      }
+    } else if (item.description) {
+      var _description2 = item.description || '';
+      html += escapeHtml(_description2);
+    }
+    return html;
+  }
 });
 
 
@@ -1706,7 +1871,8 @@ define('model/gw2Data/currencies',['exports'], function (exports) {
     value: true
   });
   var dataRef = {};
-  var loadingRef = undefined;
+  var loadingRef = void 0;
+
   var currencies = exports.currencies = {
     get: function get(id) {
       return dataRef[id];
@@ -1741,7 +1907,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
     }
   }
 
-  var _createClass = (function () {
+  var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -1757,9 +1923,10 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
       if (staticProps) defineProperties(Constructor, staticProps);
       return Constructor;
     };
-  })();
+  }();
 
-  var dataRef = undefined;
+  var dataRef = void 0;
+
   var wallet = exports.wallet = {
     get: function get() {
       return dataRef;
@@ -1788,7 +1955,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
     }
   };
 
-  var Wallet = (function () {
+  var Wallet = function () {
     function Wallet(data) {
       _classCallCheck(this, Wallet);
 
@@ -1826,9 +1993,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
       key: 'value',
       get: function get() {
         var value = this._data.value || '';
-
         var name = _currencies.currencies.get(this._data.id).name;
-
         if (name == 'Coin') {
           return getCoinHtml(value);
         } else if (name == 'Gem') {
@@ -1854,7 +2019,7 @@ define('model/gw2Data/wallet',['exports', 'model/apiKey', 'model/gw2Data/currenc
     }]);
 
     return Wallet;
-  })();
+  }();
 
   function getCoinHtml(value) {
     var copper = value % 100;
@@ -1913,6 +2078,8 @@ define('model/gw2Data/gw2Data',['exports', 'utils/events', 'model/apiKey', 'mode
     }
   };
   exports.default = gw2Data;
+
+
   (0, _events.eventful)(gw2Data);
 });
 
@@ -1948,7 +2115,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
     bindEvents: function bindEvents() {
       var _this = this;
 
-      var newKey = undefined;
+      var newKey = void 0;
       function loadpage() {
         app.showLoading();
         _gw2Data.gw2Data.loadAccount();
@@ -1958,7 +2125,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
         _gw2Data.gw2Data.loadWallet();
       }
 
-      var matchQuery = undefined;
+      var matchQuery = void 0;
       if (matchQuery = location.href.match(/(s|source)=(.*)/)) {
         newKey = decodeURIComponent(matchQuery[2]);
         _apiKey.apiKey.setKey(newKey);
@@ -2022,6 +2189,7 @@ define('view/account',['exports', 'model/gw2Data/gw2Data', 'model/apiKey'], func
       $('#account-status').parent().empty().html('\n      <p id="account-status" class="status" style="display: block;">\n        Loading account...\n      </p>\n      <p id="characters-status" class="status" style="display: block;">\n        Loading characters...\n      </p>\n      <p id="inventory-status" class="status" style="display: block;">\n        Loading inventory...\n      </p>\n      <p id="wallet-status" class="status" style="display: block;">\n        Loading wallet...\n      </p>\n    ');
     }
   };
+
   $(function () {
     app.initialize();
   });
@@ -2093,9 +2261,11 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
       });
     }
   };
+
   $(function () {
     characters.initialize();
   });
+
   exports.default = characters;
 });
 
@@ -2115,8 +2285,20 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
         var fullList = itemList.filter(function (n) {
           return n != undefined;
         });
+        var idList = {};
+        fullList.forEach(function (item) {
+          if (idList[item.id]) {
+            idList[item.id] += 1;
+          } else {
+            idList[item.id] = 1;
+          }
+        });
         var dataSet = fullList.map(function (item) {
-          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, 'item.description', item.category];
+          var duplicated = '';
+          if (idList[item.id] > 1) {
+            duplicated = 'duplicated';
+          }
+          return [item.icon, item.name, item.count, item.type, item.level, item.rarity, item.position, item.binding, duplicated, item.category];
         });
         var table = $('#inventory-table').DataTable({
           data: dataSet,
@@ -2129,7 +2311,7 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
           }, {
             visible: false,
             targets: [8, 9]
-          }],
+          }, {}],
           drawCallback: function drawCallback() {
             var api = this.api();
             $('#inventory .dataTables_length #sum').remove();
@@ -2140,6 +2322,7 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
 
         var searchValue = "";
         var searchCollection = "";
+        var searchDuplicated = false;
         // enable table search by nav bar click
         $('#inventory [data-subset]').on('click tap', function () {
           searchCollection = $(this).attr("data-subset");
@@ -2171,6 +2354,14 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
             table.column([9]).search('').column([3]).search(searchValue).draw();
           }
         });
+        $('#inventory [data-filter="duplicated"]').on('click tap', function () {
+          if (searchDuplicated) {
+            table.column([8]).search('').draw();
+          } else {
+            table.column([8]).search('duplicated').draw();
+          }
+          searchDuplicated = !searchDuplicated;
+        });
         // TODO: enable table refresh by navbar click
         $('#inventory [data-click]').on('click tap', function () {
           $(this).button('loading');
@@ -2184,9 +2375,11 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
       });
     }
   };
+
   $(function () {
     inventory.initialize();
   });
+
   exports.default = inventory;
 });
 
@@ -2227,15 +2420,18 @@ define('view/wallet',['exports', 'model/gw2Data/gw2Data'], function (exports, _g
       });
     }
   };
+
   $(function () {
     wallet.initialize();
   });
+
   exports.default = wallet;
 });
 
 
 define('index.js',['view/account', 'view/characters', 'view/inventory', 'view/wallet'], function (_account, _characters, _inventory, _wallet) {
   $(function () {
+    // enable bootstrap tabs ui
     $('#tabs').tab();
     $('body').on('mouseenter', '*[data-toggle="tooltip"]', function () {
       $(this).tooltip('show');
@@ -2243,9 +2439,13 @@ define('index.js',['view/account', 'view/characters', 'view/inventory', 'view/wa
     $('body').on('mouseleave', '*[data-toggle="tooltip"]', function () {
       $(this).tooltip('hide');
     });
+
+    // toggle level 2 navbar
     $('.tab-pane [data-subset]').on('click tap', function () {
       $(this).parents('.tab-pane').children('.subset').removeClass('active').filter('#' + $(this).attr('data-subset')).addClass('active');
     });
+
+    // toggle about section
     $('[data-click="toggleAbout"]').on('click tap', function (event) {
       $('#about').slideToggle();
       event.preventDefault();
