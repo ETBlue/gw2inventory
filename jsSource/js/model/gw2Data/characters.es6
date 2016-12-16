@@ -60,7 +60,7 @@ class Character {
     return this._data.name || '';
   }
   get race() {
-    return `${this._data.race}<br /><span class="small light">${this._data.gender}</span>`;
+    return `${this._data.race}<br /><span class='small light'>${this._data.gender}</span>`;
   }
   get gender() {
     return this._data.gender || '';
@@ -72,7 +72,7 @@ class Character {
       if (specialization) {
         const specializationRef = specializations.get(specialization.id);
         if ( specializationRef.elite ) {
-          profession = `${specializationRef.profession}<br /><span class="small light">${specializationRef.name}</span>`;
+          profession = `${specializationRef.profession}<br /><span class='small light'>${specializationRef.name}</span>`;
         }
       }
     });
@@ -98,7 +98,7 @@ class Character {
       const age = this._data.age / this._data.deaths;
       const minutes = Math.floor(age / 60);
       const deathPeriod = `${minutes} mins`;
-      return `${this._data.deaths}<br /><span class="small light">${deathPeriod}</span>`;
+      return `${this._data.deaths}<br /><span class='small light'>${deathPeriod}</span>`;
     } else {
       return this._data.deaths || '';
     }
@@ -106,7 +106,7 @@ class Character {
   get guild() {
     if (this._data.guild) {
       const guildData = guilds.get(this._data.guild);
-      return `${guildData.guild_name}<br /><span class="small light">[${guildData.tag}]</span>`;
+      return `${guildData.guild_name}<br /><span class='small light'>[${guildData.tag}]</span>`;
     } else {
       return ``;
     }
@@ -184,58 +184,58 @@ class Character {
           if (item) {
             const itemData = items.get(item.id);
             if (itemData) {
-              itemData.count = item.count || "";
-              itemData.binding = item.binding || "";
-              itemData.bound_to = item.bound_to || "";
-              if (itemData.type == "Consumable") {
-                //if (itemData.details.type == "AppearanceChange") {
+              itemData.count = item.count || '';
+              itemData.binding = item.binding || '';
+              itemData.bound_to = item.bound_to || '';
+              if (itemData.type == 'Consumable') {
+                //if (itemData.details.type == 'AppearanceChange') {
                 //  inventory.services.push(itemData);
                 //}
-                if (itemData.details.type == "Booze") {
+                if (itemData.details.type == 'Booze') {
                   // alcohol
                 }
-                //if (itemData.details.type == "ContractNpc") {
+                //if (itemData.details.type == 'ContractNpc') {
                 //  inventory.services.push(itemData);
                 //}
-                if (itemData.details.type == "Food") {
+                if (itemData.details.type == 'Food') {
                   inventory.boosts.push(itemData);
                 }
-                if (itemData.details.type == "Generic") {
+                if (itemData.details.type == 'Generic') {
                   inventory.misc.push(itemData);
                 }
-                if (itemData.details.type == "Halloween") {
+                if (itemData.details.type == 'Halloween') {
                   inventory.boosts.push(itemData);
                 }
-                if (itemData.details.type == "Immediate") {
+                if (itemData.details.type == 'Immediate') {
                   inventory.misc.push(itemData);
                 }
-                //if (itemData.details.type == "Transmutation") {
+                //if (itemData.details.type == 'Transmutation') {
                 //  inventory.style.push(itemData);
                 //}
-                if (itemData.details.type == "Unlock") {
+                if (itemData.details.type == 'Unlock') {
                   inventory.misc.push(itemData);
                 }
-                //if (itemData.details.type == "UpgradeRemoval") {
+                //if (itemData.details.type == 'UpgradeRemoval') {
                 //  inventory.special.push(itemData);
                 //}
-                if (itemData.details.type == "Utility") {
+                if (itemData.details.type == 'Utility') {
                   inventory.boosts.push(itemData);
                 }
-                //if (itemData.details.type == "TeleportToFriend") {
+                //if (itemData.details.type == 'TeleportToFriend') {
                 //  inventory.special.push(itemData);
                 //}
               }
-              if (itemData.type == "Gizmo") {
-                if (itemData.details.type == "Default") {
+              if (itemData.type == 'Gizmo') {
+                if (itemData.details.type == 'Default') {
                   inventory.misc.push(itemData);
                 }
-                //if (itemData.details.type == "ContainerKey") {
+                //if (itemData.details.type == 'ContainerKey') {
                 //  inventory.special.push(itemData);
                 //}
-                //if (itemData.details.type == "RentableContractNpc") {
+                //if (itemData.details.type == 'RentableContractNpc') {
                 //  inventory.services.push(itemData);
                 //}
-                //if (itemData.details.type == "UnlimitedConsumable") {
+                //if (itemData.details.type == 'UnlimitedConsumable') {
                 //  inventory.services.push(itemData);
                 //}
               }
@@ -265,8 +265,8 @@ function getSpecializationHtml(dataList) {
           const trait = traits.get(traitId);
           if (trait) {
             return traitHtml + `
-              <div class="table-item">
-                <img class="small icon" data-toggle="tooltip" data-placement="left" title="${trait.description}" src="${trait.icon}">
+              <div class='table-item'>
+                <img class='small icon' data-toggle='tooltip' data-placement='top' data-html='true' title='${trait.description}' src='${trait.icon}'>
                 <span>${trait.name}</span>
               </div>
             `;
@@ -277,8 +277,8 @@ function getSpecializationHtml(dataList) {
         }, '')
       }
       return html + `
-        <div class="table-item">
-          <img class="medium icon spec" src="${specialization.icon}" />
+        <div class='table-item'>
+          <img class='medium icon spec' src='${specialization.icon}' />
           <span>${specialization.name}</span>
         </div>
         ${traitHtml}
@@ -294,11 +294,12 @@ function getToolItemHtml(data) {
   let html = '';
   if (data) {
     let tool = items.get(data.id);
+    const descriptionHtml = getToolTipHtml(tool);
     html += `
       <div class='table-item'>
-        <img class="medium icon item ${tool.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${tool.icon}">
-        <div class="bold ${tool.rarity}">${tool.name}
-          <span class="small light">(${tool.level})</span>
+        <img class='medium icon item ${tool.rarity}' data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' src='${tool.icon}'>
+        <div class='bold ${tool.rarity}'>${tool.name}
+          <span class='small light'>(${tool.level})</span>
         </div>
       </div>
     `;
@@ -307,7 +308,6 @@ function getToolItemHtml(data) {
 }
 
 function getEquipmentItemHtml(data) {
-  let html = '';
   let iconHtml = '';
   let nameHtml = '';
   if (data) {
@@ -319,12 +319,13 @@ function getEquipmentItemHtml(data) {
       data.upgrades.forEach((upgradeId) => {
         const upgrade = items.get(upgradeId);
         if (upgrade) {
+          const descriptionHtml = getToolTipHtml(upgrade);
           iconHtml += `
-            <img class="medium icon item ${upgrade.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${upgrade.icon}">
+            <img class='medium icon item ${upgrade.rarity}' data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' src='${upgrade.icon}'>
           `;
           nameHtml += `
-            <div class="small bold ${upgrade.rarity}">${upgrade.name}
-              <span class="light">(${upgrade.level})</span>
+            <div class='small bold ${upgrade.rarity}'>${upgrade.name}
+              <span class='light'>(${upgrade.level})</span>
             </div>
             `;
         }
@@ -334,29 +335,36 @@ function getEquipmentItemHtml(data) {
       data.infusions.forEach((infusionId) => {
         const infusion = items.get(infusionId);
         if (infusion) {
+          const descriptionHtml = getToolTipHtml(infusion);
           iconHtml += `
-            <img class="medium icon item ${infusion.rarity}" data-toggle="tooltip" data-placement="left" title='' src="${infusion.icon}">
+            <img class='medium icon item ${infusion.rarity}' data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' src='${infusion.icon}'>
           `;
           nameHtml += `
-            <div class="small bold ${infusion.rarity}">${infusion.name}</div>
+            <div class='small bold ${infusion.rarity}'>${infusion.name}</div>
           `;
         }
       });
     }
-    html = `
-      <div class='equipment'>
-        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ${equipment.rarity}" src="${equipment.icon}" />
-        ${iconHtml}
-      </div>
-      <div class='equipment'>
-        <div class="bold ${equipment.rarity}">${equipment.name}
-          <span class="small light">(${equipment.level})</span>
+    if (equipment) {
+      const descriptionHtml = getToolTipHtml(equipment);
+      return `
+        <div class='equipment'>
+          <img data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' class='icon large item ${equipment.rarity}' src='${equipment.icon}' />
+          ${iconHtml}
         </div>
-        ${nameHtml}
-      </div>
-      `;
+        <div class='equipment'>
+          <div class='bold ${equipment.rarity}'>${equipment.name}
+            <span class='small light'>(${equipment.level})</span>
+          </div>
+          ${nameHtml}
+        </div>
+        `;
+    } else {
+      return '';
+    }
+  } else {
+    return '';
   }
-  return html;
 }
 
 function getBagHtml(dataList) {
@@ -370,12 +378,13 @@ function getBagHtml(dataList) {
     if (bagData) {
       bagCount += 1;
       const bag = items.get(bagData.id);
+      const descriptionHtml = getToolTipHtml(bag);
       iconHtml += `
-        <img data-toggle="tooltip" data-placement="left" title="" class="icon large item ${bag.rarity}" src="${bag.icon}" />
+        <img data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' class='icon large item ${bag.rarity}' src='${bag.icon}' />
       `;
       nameHtml += `
-        <div class="bold ${bag.rarity}">${bag.name} 
-          <span class="small light">(${bag.details.size} slots)</span>
+        <div class='bold ${bag.rarity}'>${bag.name} 
+          <span class='small light'>(${bag.details.size} slots)</span>
         </div>
       `;
     }
@@ -387,10 +396,10 @@ function getBagHtml(dataList) {
   }
   return `
     <p>${bagCount} bags: ${countHtml}</p>
-    <div class="equipment">
+    <div class='equipment'>
       ${iconHtml}
     </div>
-    <div class="equipment">
+    <div class='equipment'>
       ${nameHtml}
     </div>
   `;
@@ -406,21 +415,22 @@ function getInventoryHtml(dataList) {
   let holloweenCount = 0;
   dataList.forEach((item) => {
     if (item) {
+      const descriptionHtml = getToolTipHtml(item);
       iconHtml += `
-        <img data-toggle="tooltip" data-placement="left" title="" class="icon medium item ${item.rarity}" src="${item.icon}" />
+        <img data-toggle='tooltip' data-placement='top' title='${descriptionHtml}' class='icon medium item ${item.rarity}' src='${item.icon}' />
       `;
       nameHtml += `
         <div>${item.count} 
-          <span class="bold ${item.rarity}">${item.name} 
-            <span class="small light">(${item.level})</span>
+          <span class='bold ${item.rarity}'>${item.name} 
+            <span class='small light'>(${item.level})</span>
           </span>
         </div>
       `;
-      if (item.details.type == "Food") {
+      if (item.details.type == 'Food') {
         foodCount ++;
-      } else if (item.details.type == "Utility") {
+      } else if (item.details.type == 'Utility') {
         utilityCount ++;
-      } else if (item.details.type == "Halloween") {
+      } else if (item.details.type == 'Halloween') {
         holloweenCount ++;
       }
     }
@@ -443,11 +453,66 @@ function getInventoryHtml(dataList) {
   }
   return `
     ${countHtml}
-    <div class="equipment">
+    <div class='equipment'>
       ${iconHtml}
     </div>
-    <div class="equipment">
+    <div class='equipment'>
       ${nameHtml}
     </div>
   `;
+}
+
+function escapeHtml(data) {
+
+  const entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+  };
+
+  return String(data).replace(/[&<>"'\/]/g, function (s) {
+    return entityMap[s];
+  });
+
+  let escape = document.createElement('textarea');
+  escape.textContent = data;
+  let html = escape.innerHTML;
+  html = html.replace(/(?:\r\n|\r|\n)/g, '<br />').replace();
+
+}
+
+function getToolTipHtml(item) {
+  let html = '';
+  if (item.details) {
+    if (item.details.infix_upgrade) {
+      if (item.details.infix_upgrade.attributes) {
+        item.details.infix_upgrade.attributes.forEach((attribute) => {
+          html += `${attribute.attribute}: ${attribute.modifier}<br />`;
+        });
+      }
+      if (item.details.infix_upgrade.buff) {
+//        item.details.infix_upgrade.buff.forEach((skill) => {
+//          const description = skill.description || '';
+//          html += escapeHtml(description);
+//        });
+      }
+    }
+    if (item.details.stat_choices) {
+      
+    }
+    if (item.details.description) {
+      const description = item.details.description || '';
+      html += escapeHtml(description);
+    } else if (item.description) {
+      const description = item.description || '';
+      html += escapeHtml(description);
+    }
+  } else if (item.description) {
+    const description = item.description || '';
+    html += escapeHtml(description);
+  }
+  return html;
 }

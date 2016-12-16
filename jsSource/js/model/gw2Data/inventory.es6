@@ -53,7 +53,7 @@ export const inventory = {
             character._data.equipment.forEach((equipmentItem) => {
               if (equipmentItem) {
                 const itemInfo = items.get(equipmentItem.id);
-                const position = character.name + '<br /><span class="small light">(equipped)</span>';
+                const position = character.name + `<br /><span class='small light'>(equipped)</span>`;
                 equipmentItem.count = 1;
                 const item = new Item(position, equipmentItem, itemInfo);
                 characterDataRef.push( item.toJSON() );
@@ -64,7 +64,7 @@ export const inventory = {
                 bag.inventory.forEach((bagItem) => {
                   if (bagItem) {
                     const itemInfo = items.get(bagItem.id);
-                    const position = character.name + '<br /><span class="small light">(bag)</span>';
+                    const position = character.name + `<br /><span class='small light'>(bag)</span>`;
                     const item = new Item(position, bagItem, itemInfo);
                     characterDataRef.push( item.toJSON() );
                   }
@@ -137,19 +137,19 @@ class Item {
   get icon() {
     const icon = this._ref.icon || '';
     const rarity = this._ref.rarity || '';
-    const description = this._ref.description || '';    
-    return `<img class='large solo item icon ${rarity}' data-toggle='tooltip' data-placement='right' title='' src='${icon}' />`;
+    const description = getToolTipHtml(this._ref);
+    return `<img class='large solo item icon ${rarity}' data-toggle='tooltip' data-html='true' data-placement='right' title='${description}' src='${icon}' />`;
   }
   get name() {
     const name = this._ref.name || '';
     const rarity = this._ref.rarity || '';
-    return `<span class="bold ${rarity}">${name}</span>`;
+    return `<span class='bold ${rarity}'>${name}</span>`;
   }
   get count() {
     return parseInt(this._data.count,10);
   }
   get type() {
-    var type = this._ref.type || '';
+    let type = this._ref.type || '';
     if ( type == 'UpgradeComponent' ) {
       type = 'Upgrades';
     } else if ( type == 'CraftingMaterial' ) {
@@ -164,7 +164,13 @@ class Item {
     return this._ref.rarity || '';
   }
   get position() {
-    return this._data.position || '';
+    let html = this._data.position || ''
+    if (this._data.category) {
+      const category = materials.get(this._data.category).name || '';
+      return html += `<br /><span class='small light'>${category}</span>`;
+    } else {
+      return html;
+    }
   }
   get binding() {
     const binding = this._data.binding;
@@ -189,4 +195,59 @@ class Item {
       return '';
     }
   }
+}
+
+function escapeHtml(data) {
+
+  const entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+  };
+
+  return String(data).replace(/[&<>"'\/]/g, function (s) {
+    return entityMap[s];
+  });
+
+  let escape = document.createElement('textarea');
+  escape.textContent = data;
+  let html = escape.innerHTML;
+  html = html.replace(/(?:\r\n|\r|\n)/g, '<br />').replace();
+
+}
+
+function getToolTipHtml(item) {
+  let html = '';
+  if (item.details) {
+    if (item.details.infix_upgrade) {
+      if (item.details.infix_upgrade.attributes) {
+        item.details.infix_upgrade.attributes.forEach((attribute) => {
+          html += `${attribute.attribute}: ${attribute.modifier}<br />`;
+        });
+      }
+      if (item.details.infix_upgrade.buff) {
+//        item.details.infix_upgrade.buff.forEach((skill) => {
+//          const description = skill.description || '';
+//          html += escapeHtml(description);
+//        });
+      }
+    }
+    if (item.details.stat_choices) {
+      
+    }
+    if (item.details.description) {
+      const description = item.details.description || '';
+      html += escapeHtml(description);
+    } else if (item.description) {
+      const description = item.description || '';
+      html += escapeHtml(description);
+    }
+  } else if (item.description) {
+    const description = item.description || '';
+    html += escapeHtml(description);
+  }
+  return html;
 }
