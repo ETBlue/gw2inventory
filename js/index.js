@@ -2326,22 +2326,20 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
         // enable table search by nav bar click
         $('#inventory [data-subset]').on('click tap', function () {
           searchCollection = $(this).attr("data-subset");
-          if (searchCollection == "rarity") {} else {
-            if (searchCollection == "equipment") {
-              searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
-            } else if (searchCollection == "utilities") {
-              searchValue = "Bag|Gathering|Tool";
-            } else if (searchCollection == "toys") {
-              searchValue = "";
-            } else if (searchCollection == "materials") {
-              searchValue = "Material";
-            } else if (searchCollection == "misc") {
-              searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
-            } else if (searchCollection == "all") {
-              searchValue = "";
-            }
-            table.column([9]).search('').column([3]).search(searchValue, true).draw();
+          if (searchCollection == "equipment") {
+            searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
+          } else if (searchCollection == "utilities") {
+            searchValue = "Bag|Gathering|Tool";
+          } else if (searchCollection == "toys") {
+            searchValue = "";
+          } else if (searchCollection == "materials") {
+            searchValue = "Material";
+          } else if (searchCollection == "misc") {
+            searchValue = "Container|Trophy|Trait|Consumable|Gizmo|Minipet";
+          } else if (searchCollection == "all") {
+            searchValue = "";
           }
+          table.column([9]).search('').column([3]).search(searchValue, true).draw();
         });
         $('#inventory [data-option]').on('click tap', function () {
           searchValue = $(this).attr("data-option");
