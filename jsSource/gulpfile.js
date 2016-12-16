@@ -16,6 +16,23 @@ const connectLivereload = require('connect-livereload');
 const livereload = require('gulp-livereload');
 const util = require('gulp-util');
 
+const sass = require('gulp-sass');
+ 
+gulp.task('sass', function () {
+  return gulp.src(
+    '../sass/*.sass'
+    )
+    .pipe(
+      sass.sync().on('error', sass.logError)
+    )
+    .pipe(
+      gulp.dest('../css')
+    )
+    .pipe(
+      livereload()
+    );
+});
+
 gulp.task('es6', function() {
   return gulp
     .src(
@@ -79,11 +96,12 @@ gulp.task('js', ['es6'], function() {
 });
 
 
-gulp.task('default', ['js', 'watch']);
+gulp.task('default', ['js', 'sass', 'watch']);
 
 gulp.task('watch', ['server'], function() {
   livereload.listen({silent: true});
   gulp.watch(['js/**/*.es6'], ['js']);
+  gulp.watch(['../sass/*.sass'], ['sass']);
 });
 
 gulp.task('server', function() {
