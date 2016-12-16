@@ -122,7 +122,7 @@ class Item {
   }
   toJSON() {
     const result = {};
-    const keys = [ 'icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'description', 'category' ];
+    const keys = [ 'icon', 'name', 'count', 'type', 'level', 'rarity', 'position', 'binding', 'id', 'category' ];
     keys.forEach((key) => {
       result[key] = this[key];
     });
@@ -133,6 +133,9 @@ class Item {
     //  result[key] = this[key];
     //});
     return result;
+  }
+  get id() {
+    return this._data.id || '';
   }
   get icon() {
     const icon = this._ref.icon || '';

@@ -342,6 +342,9 @@ html lang='en'
                     | Others 
                     //span.badge.light 0
               ul.nav.navbar-nav.navbar-right
+                li
+                  a.pointer data-filter='duplicated'
+                    | Duplicated 
                 li.dropdown
                   a.pointer.dropdown-toggle data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' data-subset='rarity'
                     | Rarity 
@@ -513,7 +516,7 @@ html lang='en'
                 th Rarity
                 th Position
                 th Binding
-                th Description
+                th Duplicated
                 th Category
             tfoot
               tr
@@ -525,7 +528,7 @@ html lang='en'
                 th Rarity
                 th Position
                 th Binding
-                th Description
+                th Duplicated
                 th Category
             tbody
               tr
