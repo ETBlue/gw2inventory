@@ -79,6 +79,8 @@ export const characters = {
       $('#characters .loading').hide();
       var table = $('#characters-table').DataTable();
       $('#characters [data-subset]').on('click tap', function(){
+        $('#characters [data-subset]').parent('li').removeClass('active');
+        $(this).parent('li').addClass('active');
         table.columns('[data-toggle]').visible(false);
         table.columns('[data-toggle="' + $(this).attr('data-subset') + '"]').visible(true);
       });
@@ -91,6 +93,8 @@ export const characters = {
         }
       });
       $('#characters [data-option]').on('click tap', function(){
+        $('#characters [data-option]').parent('li').removeClass('active');
+        $(this).parent('li').addClass('active');
         var searchValue = $(this).attr("data-option");
         table.column([2]).search(searchValue).draw();
       });

@@ -64,6 +64,9 @@ export const inventory = {
       let searchDuplicated = false;
       // enable table search by nav bar click
       $('#inventory [data-subset]').on('click tap', function(){
+        $('#inventory [data-subset]').parent('li').removeClass('active');
+        $('#inventory [data-option]').parent('li').removeClass('active');
+        $(this).parent('li').addClass('active');
         searchCollection = $(this).attr("data-subset");
         if(searchCollection == "equipment"){
           searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
@@ -81,17 +84,25 @@ export const inventory = {
         table.column([9]).search('').column([3]).search(searchValue, true).draw();
       });
       $('#inventory [data-option]').on('click tap', function(){
+        $('#inventory [data-option]').parent('li').removeClass('active');
+        $(this).parent('li').addClass('active');
         searchValue = $(this).attr("data-option");
         var searchTarget = $(this).attr("data-target");
-        if ( searchTarget == 'rarity' ) {
-          table.column([5]).search(searchValue).draw();
-        } else if ( searchTarget == 'category' ) {
+        if ( searchTarget == 'category' ) {
           table.column([3]).search('').column([9]).search(searchValue).draw();
         } else {
           table.column([9]).search('').column([3]).search(searchValue).draw();
         }
       });
+      $('#inventory [data-rarity').on('click tap', function(){
+        $('#inventory [data-rarity]').parent('li').removeClass('active');
+        $(this).parent('li').addClass('active');
+        $('#inventory #rarity').text($(this).text());
+        searchValue = $(this).attr("data-rarity");
+        table.column([5]).search(searchValue).draw();
+      });
       $('#inventory [data-filter="duplicated"]').on('click tap', function(){
+        $(this).parent('li').toggleClass('active');
         if (searchDuplicated) {
           table.column([8]).search('').draw();
         } else {
