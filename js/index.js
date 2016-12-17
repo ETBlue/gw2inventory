@@ -2242,6 +2242,8 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
         $('#characters .loading').hide();
         var table = $('#characters-table').DataTable();
         $('#characters [data-subset]').on('click tap', function () {
+          $('#characters [data-subset]').parent('li').removeClass('active');
+          $(this).parent('li').addClass('active');
           table.columns('[data-toggle]').visible(false);
           table.columns('[data-toggle="' + $(this).attr('data-subset') + '"]').visible(true);
         });
@@ -2254,6 +2256,8 @@ define('view/characters',['exports', 'model/gw2Data/gw2Data'], function (exports
           }
         });
         $('#characters [data-option]').on('click tap', function () {
+          $('#characters [data-option]').parent('li').removeClass('active');
+          $(this).parent('li').addClass('active');
           var searchValue = $(this).attr("data-option");
           table.column([2]).search(searchValue).draw();
         });
@@ -2325,6 +2329,9 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
         var searchDuplicated = false;
         // enable table search by nav bar click
         $('#inventory [data-subset]').on('click tap', function () {
+          $('#inventory [data-subset]').parent('li').removeClass('active');
+          $('#inventory [data-option]').parent('li').removeClass('active');
+          $(this).parent('li').addClass('active');
           searchCollection = $(this).attr("data-subset");
           if (searchCollection == "equipment") {
             searchValue = "Armor|Weapon|Trinket|Upgrades|Back";
@@ -2342,17 +2349,25 @@ define('view/inventory',['exports', 'model/gw2Data/gw2Data'], function (exports,
           table.column([9]).search('').column([3]).search(searchValue, true).draw();
         });
         $('#inventory [data-option]').on('click tap', function () {
+          $('#inventory [data-option]').parent('li').removeClass('active');
+          $(this).parent('li').addClass('active');
           searchValue = $(this).attr("data-option");
           var searchTarget = $(this).attr("data-target");
-          if (searchTarget == 'rarity') {
-            table.column([5]).search(searchValue).draw();
-          } else if (searchTarget == 'category') {
+          if (searchTarget == 'category') {
             table.column([3]).search('').column([9]).search(searchValue).draw();
           } else {
             table.column([9]).search('').column([3]).search(searchValue).draw();
           }
         });
+        $('#inventory [data-rarity').on('click tap', function () {
+          $('#inventory [data-rarity]').parent('li').removeClass('active');
+          $(this).parent('li').addClass('active');
+          $('#inventory #rarity').text($(this).text());
+          searchValue = $(this).attr("data-rarity");
+          table.column([5]).search(searchValue).draw();
+        });
         $('#inventory [data-filter="duplicated"]').on('click tap', function () {
+          $(this).parent('li').toggleClass('active');
           if (searchDuplicated) {
             table.column([8]).search('').draw();
           } else {
