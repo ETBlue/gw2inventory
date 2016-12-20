@@ -7,6 +7,7 @@ import {bank} from 'model/gw2Data/bank';
 import {accountInventory} from 'model/gw2Data/accountInventory';
 
 let dataRef;
+let materialRef;
 
 export const inventory = {
   get() {
@@ -47,6 +48,18 @@ export const inventory = {
       $.when.apply($.when, waitingLoadItems).done(() => {
     
           dataRef = [];
+          materialRef = {};
+
+          const vaultDataRef = vault.get().map((material, index) => {
+            if (material) {
+              materialRef[material.id] = materials.get(material.category).name;
+              const itemInfo = items.get(material.id);
+              const position = 'Vault|' + (index + 1);
+              const item = new Item(position, material, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, vaultDataRef);
 
           const characterDataRef = [];
           characters.get().forEach((character) => {
@@ -83,16 +96,6 @@ export const inventory = {
             }
           });
           $.merge(dataRef, bankDataRef);
-
-          const vaultDataRef = vault.get().map((material, index) => {
-            if (material) {
-              const itemInfo = items.get(material.id);
-              const position = 'Vault|' + (index + 1);
-              const item = new Item(position, material, itemInfo);
-              return item.toJSON();
-            }
-          });
-          $.merge(dataRef, vaultDataRef);
 
           const accountInventoryDataRef = accountInventory.get().map((accountInventoryItem, index) => {
             if (accountInventoryItem) {
@@ -192,8 +195,8 @@ class Item {
     return this._ref.description || '';
   }
   get category() {
-    if (this._data.category) {
-      return materials.get(this._data.category).name || '';
+    if (materialRef[this._data.id]) {
+      return materialRef[this._data.id] || '';
     } else {
       return '';
     }
