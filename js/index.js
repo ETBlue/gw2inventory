@@ -1589,6 +1589,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
   }();
 
   var dataRef = void 0;
+  var materialRef = void 0;
 
   var inventory = exports.inventory = {
     get: function get() {
@@ -1629,6 +1630,18 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
         $.when.apply($.when, waitingLoadItems).done(function () {
 
           dataRef = [];
+          materialRef = {};
+
+          var vaultDataRef = _vault.vault.get().map(function (material, index) {
+            if (material) {
+              materialRef[material.id] = _materials.materials.get(material.category).name;
+              var itemInfo = _items.items.get(material.id);
+              var position = 'Vault|' + (index + 1);
+              var item = new Item(position, material, itemInfo);
+              return item.toJSON();
+            }
+          });
+          $.merge(dataRef, vaultDataRef);
 
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
@@ -1665,16 +1678,6 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
             }
           });
           $.merge(dataRef, bankDataRef);
-
-          var vaultDataRef = _vault.vault.get().map(function (material, index) {
-            if (material) {
-              var itemInfo = _items.items.get(material.id);
-              var position = 'Vault|' + (index + 1);
-              var item = new Item(position, material, itemInfo);
-              return item.toJSON();
-            }
-          });
-          $.merge(dataRef, vaultDataRef);
 
           var accountInventoryDataRef = _accountInventory.accountInventory.get().map(function (accountInventoryItem, index) {
             if (accountInventoryItem) {
@@ -1801,8 +1804,8 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
     }, {
       key: 'category',
       get: function get() {
-        if (this._data.category) {
-          return _materials.materials.get(this._data.category).name || '';
+        if (materialRef[this._data.id]) {
+          return materialRef[this._data.id] || '';
         } else {
           return '';
         }
