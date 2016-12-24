@@ -74,6 +74,12 @@ export const inventory = {
             });
             character._data.bags.forEach((bag) => {
               if (bag) {
+                const itemInfo = items.get(bag.id);
+                const position = character.name + `<br /><span class='small light'>(equipped)</span>`;
+                bag.count = 1;
+                const item = new Item(position, bag, itemInfo);
+                characterDataRef.push( item.toJSON() );
+
                 bag.inventory.forEach((bagItem) => {
                   if (bagItem) {
                     const itemInfo = items.get(bagItem.id);
