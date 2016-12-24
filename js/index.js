@@ -1656,12 +1656,18 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
             });
             character._data.bags.forEach(function (bag) {
               if (bag) {
+                var itemInfo = _items.items.get(bag.id);
+                var position = character.name + '<br /><span class=\'small light\'>(equipped)</span>';
+                bag.count = 1;
+                var item = new Item(position, bag, itemInfo);
+                characterDataRef.push(item.toJSON());
+
                 bag.inventory.forEach(function (bagItem) {
                   if (bagItem) {
-                    var itemInfo = _items.items.get(bagItem.id);
-                    var position = character.name + '<br /><span class=\'small light\'>(bag)</span>';
-                    var item = new Item(position, bagItem, itemInfo);
-                    characterDataRef.push(item.toJSON());
+                    var _itemInfo = _items.items.get(bagItem.id);
+                    var _position = character.name + '<br /><span class=\'small light\'>(bag)</span>';
+                    var _item = new Item(_position, bagItem, _itemInfo);
+                    characterDataRef.push(_item.toJSON());
                   }
                 });
               }
