@@ -165,7 +165,7 @@ class Character {
     };
   }
   get bags() {
-    const bags = this._data.bags;
+    const bags = this._data.bags || [];
     return getBagHtml(bags);
   }
   get inventory() {

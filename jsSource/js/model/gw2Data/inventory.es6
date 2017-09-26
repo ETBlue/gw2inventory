@@ -63,6 +63,7 @@ export const inventory = {
 
           const characterDataRef = [];
           characters.get().forEach((character) => {
+            character._data.equipment = character._data.equipment || [];
             character._data.equipment.forEach((equipmentItem) => {
               if (equipmentItem) {
                 const itemInfo = items.get(equipmentItem.id);
@@ -72,6 +73,7 @@ export const inventory = {
                 characterDataRef.push( item.toJSON() );
               }
             });
+            character._data.bags = character._data.bags || [];
             character._data.bags.forEach((bag) => {
               if (bag) {
                 const itemInfo = items.get(bag.id);
