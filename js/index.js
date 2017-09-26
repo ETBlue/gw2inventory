@@ -1152,7 +1152,7 @@ define('model/gw2Data/characters',['exports', 'model/apiKey', 'model/gw2Data/gui
     }, {
       key: 'bags',
       get: function get() {
-        var bags = this._data.bags;
+        var bags = this._data.bags || [];
         return getBagHtml(bags);
       }
     }, {
@@ -1645,6 +1645,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
 
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
+            character._data.equipment = character._data.equipment || [];
             character._data.equipment.forEach(function (equipmentItem) {
               if (equipmentItem) {
                 var itemInfo = _items.items.get(equipmentItem.id);
@@ -1654,6 +1655,7 @@ define('model/gw2Data/inventory',['exports', 'model/apiKey', 'model/gw2Data/item
                 characterDataRef.push(item.toJSON());
               }
             });
+            character._data.bags = character._data.bags || [];
             character._data.bags.forEach(function (bag) {
               if (bag) {
                 var itemInfo = _items.items.get(bag.id);
