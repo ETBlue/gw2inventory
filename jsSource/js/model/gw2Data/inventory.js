@@ -69,6 +69,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/charact
 
           var characterDataRef = [];
           _characters.characters.get().forEach(function (character) {
+            character._data.equipment = character._data.equipment || [];
             character._data.equipment.forEach(function (equipmentItem) {
               if (equipmentItem) {
                 var itemInfo = _items.items.get(equipmentItem.id);
@@ -78,6 +79,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/items', 'model/gw2Data/charact
                 characterDataRef.push(item.toJSON());
               }
             });
+            character._data.bags = character._data.bags || [];
             character._data.bags.forEach(function (bag) {
               if (bag) {
                 bag.inventory.forEach(function (bagItem) {

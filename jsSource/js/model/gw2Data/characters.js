@@ -220,7 +220,7 @@ define(['exports', 'model/apiKey', 'model/gw2Data/guilds', 'model/gw2Data/specia
     }, {
       key: 'inventory',
       get: function get() {
-        var bags = this._data.bags;
+        var bags = this._data.bags || [];
         var inventory = {
           services: [],
           special: [],
