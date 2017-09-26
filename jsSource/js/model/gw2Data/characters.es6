@@ -169,7 +169,7 @@ class Character {
     return getBagHtml(bags);
   }
   get inventory() {
-    const bags = this._data.bags;
+    const bags = this._data.bags || [];
     const inventory = {
       services: [],
       special: [],
