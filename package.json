@@ -1,5 +1,6 @@
 {
-  "name": "v2",
+  "name": "gw2inventory",
+  "homepage": "https://etblue.github.io/gw2inventory",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
