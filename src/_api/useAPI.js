@@ -1,21 +1,34 @@
 import {useState, useCallback} from 'react'
+import queryString from 'query-string'
 import axios from 'axios'
 
 import {API_SERVER, TIMEOUT_IN_SECONDS} from '../SETTINGS'
 
 const httpClient = axios.create()
+httpClient.defaults.baseURL = API_SERVER
 httpClient.defaults.timeout = TIMEOUT_IN_SECONDS * 1000
 
-const getPath = ({endpoint, query, id = undefined}) => {
-  const params = query ? `?${query}` : ''
-  const path = endpoint + params
-  if (id !== undefined) {
-    return API_SERVER + path.replace(':id', id)
+const getPath = ({endpoint, query, id = undefined, token}) => {
+  let params = query || token ? {} : null
+  if (query) {
+    params = {...query}
   }
-  return API_SERVER + path
+  if (token) {
+    params.access_token = token
+  }
+
+  let path = endpoint
+  if (params) {
+    path += `?${queryString.stringify(params)}`
+  }
+  if (id !== undefined) {
+    return path.replace(':id', id)
+  } else {
+    return path
+  }
 }
 
-const useAPI = ({endpoint}) => {
+const useAPI = ({endpoint, token}) => {
   const [status, setStatus] = useState('ready')
   const [resData, setResData] = useState(undefined)
   const [errorData, setErrorData] = useState(undefined)
@@ -37,7 +50,7 @@ const useAPI = ({endpoint}) => {
   }, [])
 
   const call = useCallback(async ({id, done, error, query}) => {
-    const url = getPath({endpoint, query, id})
+    const url = getPath({endpoint, query, id, token})
 
     setStatus('loading')
     await httpClient.get(url).then(res => {
@@ -45,7 +58,7 @@ const useAPI = ({endpoint}) => {
     }).catch(err => {
       handleException({err, error})
     })
-  }, [endpoint, handleException, handleResponse])
+  }, [endpoint, handleException, handleResponse, token])
 
   return {status, resData, errorData, call}
 }

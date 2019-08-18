@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import {HashRouter as Router} from 'react-router-dom'
 
 import {SystemContextProvider} from './_context/SystemContext'
+import {AccountContextProvider} from './_context/AccountContext'
 import {App} from './App'
 import './index.scss'
 
@@ -10,9 +11,11 @@ import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render((
   <Router>
+    <AccountContextProvider>
       <SystemContextProvider>
         <App />
       </SystemContextProvider>
+    </AccountContextProvider>
   </Router>
 ), document.getElementById('root'))
 
