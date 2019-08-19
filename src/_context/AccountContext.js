@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react'
 
 import useAPI from '../_api/useAPI'
 
-import {LOCAL_STORAGE_KEY} from '../SETTINGS'
+import {LOCAL_STORAGE_KEY, APP_NAME} from '../SETTINGS'
 
 const AccountContext = React.createContext()
 
@@ -81,6 +81,7 @@ const AccountContextProvider = (props) => {
     accountInfo.call({
       done: async (data) => {
         setAccount(data)
+        document.title = `${data.name} | ${APP_NAME}`
       }
     })
   }, [token])
