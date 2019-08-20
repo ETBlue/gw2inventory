@@ -3,10 +3,31 @@
   display: flex;
   flex-direction: column;
 
+  .Header {
+    margin: 0;
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+    &,
+    .item {
+      border-radius: 0;
+    }
+    .logo {
+      height: 2rem;
+      margin: -0.5rem 0;
+      img {
+        height: 100%;
+      }
+    }
+    .ui.dropdown.item {
+      .inverted.menu {
+        background: hsla(0,0%,30%,1);
+        .item {
+          color: #eee!important;
+          &:hover {
+            color: #fff!important;
+          }
+        }
+      }
+    }
   }
   to {
     transform: rotate(360deg);

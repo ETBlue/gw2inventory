@@ -9,22 +9,17 @@ const AccountContext = React.createContext()
 const getStorage = () => {
   const storage = localStorage.getItem(LOCAL_STORAGE_KEY)
   if (storage) {
-    return JSON.parse(storage)
+    const parsedStorage = JSON.parse(storage)
+    return parsedStorage
   } else {
-    return null
+    return {}
   }
 }
 
 const setStorage = (key, object) => {
-  const storage = getStorage()
-  if (storage) {
-    storage[key] = object
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storage))
-  } else {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
-      [key]: object
-    }))
-  }
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+    [key]: object
+  }))
 }
 
 const AccountContextProvider = (props) => {
@@ -58,17 +53,26 @@ const AccountContextProvider = (props) => {
     if (storage && storage.history) {
       setHistory(storage.history)
     }
-  }, [setHistory])
+  }, [])
 
   // identify current user
 
   const [token, setToken] = useState(undefined)
-  const [account, setAccount] = useState({})
+  const [account, setAccount] = useState(undefined)
 
   const accountInfo = useAPI({
     endpoint: '/account',
     token
   })
+
+  const getAccountInfo = useCallback(async () => {
+    await accountInfo.call({
+      done: async (data) => {
+        setAccount(data)
+        document.title = `${data.name} | ${APP_NAME}`
+      }
+    })
+  }, [accountInfo])
 
   const adoptToken = useCallback((string) => {
     setToken(string)
@@ -78,18 +82,17 @@ const AccountContextProvider = (props) => {
     if (!token) {
       return
     }
-    accountInfo.call({
-      done: async (data) => {
-        setAccount(data)
-        document.title = `${data.name} | ${APP_NAME}`
-      }
-    })
+    getAccountInfo()
   }, [token])
 
   // update history on user change
 
   useEffect(() => {
-    const newHistory = history.filter(item => item.token !== token)
+    if (!account) {
+      return
+    }
+
+    const newHistory = history.filter(item => item.token && item.token !== token)
     newHistory.unshift({
       token,
       name: account.name
@@ -122,7 +125,7 @@ const AccountContextProvider = (props) => {
   }, [account, guilds, guildInfo])
 
   useEffect(() => {
-    if (!account.guilds) {
+    if (!account) {
       return
     }
     fetchGuilds()
@@ -134,6 +137,7 @@ const AccountContextProvider = (props) => {
     <AccountContext.Provider value={{
       history,
       account,
+      getAccountInfo,
       guilds,
       token,
       adoptToken
