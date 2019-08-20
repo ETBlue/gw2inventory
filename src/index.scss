@@ -21,3 +21,15 @@ code {
 .ui.header {
   font-family: Rosario;
 }
+
+.ui.button.borderless {
+  &,
+  &:hover {
+    box-shadow: none;
+    border: none;
+  }
+
+  &:hover {
+    background: none!important;
+  }
+}

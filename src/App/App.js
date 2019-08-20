@@ -24,6 +24,12 @@ const TOP_MENU = [
   }
 ]
 
+const TOP_ROUTES = [
+  {
+    path: 'account',
+    component: Account
+  }
+]
 const App = ({location}) => {
   // retrieve access token from url
 
@@ -70,6 +76,11 @@ const App = ({location}) => {
           </div>
         </div>
       </nav>
+      <Switch>
+        {TOP_ROUTES.map(route => (
+          <Route key={route.path} path={`/${route.path}`} component={route.component} />
+        ))}
+      </Switch>
       <footer>
       </footer>
     </div>
