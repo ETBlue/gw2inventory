@@ -17,6 +17,10 @@ code {
     monospace;
 }
 
+.ui.basic.pink.label {
+  background: none!important;
+}
+
 .ui.menu ,
 .ui.header {
   font-family: Rosario;
@@ -33,3 +37,10 @@ code {
     background: none!important;
   }
 }
+
+.sub {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+

@@ -29,47 +29,4 @@
       }
     }
   }
-  .Account {
-    flex-grow: 1;
-    flex-shrink: 1;
-    background-image: linear-gradient(
-      to bottom right,
-      hsla(330, 100%, 97%, 1),
-      hsla(330, 100%, 95%, 1) 10%,
-      hsla(330, 80%, 97%, 1) 60%,
-      hsla(330, 50%, 99%, 1)
-      );
-
-    [name='header'] {
-      text-align: center;
-      position: relative;
-      border-top: 1px hsla(330, 100%, 70%, 1) solid;
-      padding-bottom: 1rem;
-
-      [name='refresh'] {
-        position: absolute!important;
-        top: 0;
-        right: 0;
-
-        .ui.button {
-          &,
-          &.loading {
-            margin: 0;
-          }
-        }
-      }
-    }
-
-    [name='divider'] {
-      border-top: 1px hsla(330, 80%, 80%, 0.8) solid;
-      border-bottom: 1px hsla(330, 100%, 100%, 0.8) solid;
-    }
-
-    [name='content'] {
-      width: 100%;
-      max-width: 50rem;
-      margin: 0 auto;
-      padding: 2rem 0;
-    }
-  }
 }

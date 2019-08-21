@@ -1,17 +1,23 @@
 import React, {useContext, useState, useEffect, useCallback} from 'react'
 import {Link, NavLink, Route, Switch, withRouter, Redirect} from 'react-router-dom'
 import queryString from 'query-string'
+import moment from 'moment'
 
 import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
 
+import {DATE_FORMAT} from '../SETTINGS'
+
+import Overview from './Overview'
+import './Account.scss'
+
 const ACCOUNT_MENU = [
   {
-    id: 'info',
-    name: 'Info'
+    id: 'overview',
+    name: 'Overview'
   }, {
-    id: 'home',
-    name: 'Home'
+    id: 'achievement',
+    name: 'Achievements'
   }, {
     id: 'mastery',
     name: 'Masteries'
@@ -21,37 +27,37 @@ const ACCOUNT_MENU = [
   }
 ]
 
-const Info = () => {
-  const {account, guilds} = useContext(AccountContext)
-  if (!account) {
-    return null
-  }
-  const guildList = account.guilds.map(id => (
-    <div key={id} className='item'>
-      <span className='ui pink horizontal label'>
-        {guilds[id] && guilds[id].tag}
-      </span>
-      {guilds[id] && guilds[id].name}
-    </div>
-  ))
+const Achievement = () => {
   return (
-    <div className='ui two colume stackable grid'>
-      <div className='eight wide column'>
-        lalala
-      </div>
-      <div className='eight wide column'>
-        <div className='ui list'>
-          {guildList}
-        </div>
-      </div>
-    </div>
+    <p>lalala</p>
+  )
+}
+
+const Mastery = () => {
+  return (
+    <p>lalala</p>
+  )
+}
+
+const Fashion = () => {
+  return (
+    <p>lalala</p>
   )
 }
 
 const ACCOUNT_ROUTES = [
   {
-    path: 'info',
-    component: Info
+    path: 'overview',
+    component: Overview
+  }, {
+    path: 'achievement',
+    component: Achievement
+  }, {
+    path: 'mastery',
+    component: Mastery
+  }, {
+    path: 'fashion',
+    component: Fashion
   }
 ]
 
@@ -60,14 +66,21 @@ const trimPath = ({level, path}) => {
   return `${segments.slice(0, level).join('/')}`
 }
 
+// const getTimeStamp = () => {
+//   const now = new moment()
+//   return now.format(DATE_FORMAT)
+// }
+
 const Account = ({location}) => {
-  const {items, worlds} = useContext(SystemContext)
-  const {token, account, guilds, getAccountInfo} = useContext(AccountContext)
+  const {worlds} = useContext(SystemContext)
+  const {token, account, getAccountInfo} = useContext(AccountContext)
 
   const [buttonState, setButtonState] = useState('')
+  // const [timestamp, setTimestamp] = useState('')
   const handleRefresh = useCallback(async () => {
     setButtonState('loading')
     await getAccountInfo()
+    // setTimestamp(getTimeStamp())
     setButtonState('')
   }, [getAccountInfo])
 
@@ -80,8 +93,15 @@ const Account = ({location}) => {
             <i className='icon refresh' />
           </span>
         </div>
-        <h1 className='ui pink icon header'>
-          {account && `${account.name} from ${worlds[account.world] && worlds[account.world].name}`}
+        <h1 className='ui pink header'>
+          {account && account.commander ? (
+            <span className='ui small image'>
+              <img src='../assets/Commander_tag_(purple).png' />
+            </span>
+          ) : null}
+          <div className='content'>
+            {account ? account.name : 'loading...'} in {account && worlds[account.world] ? worlds[account.world].name : 'loading...'}
+          </div>
         </h1>
         <hr className='ui hidden fitted divider' />
         <nav className='ui secondary compact menu'>
@@ -94,9 +114,6 @@ const Account = ({location}) => {
           ))}
         </nav>
       </header>
-      <div className='ui container'>
-        <div name='divider' />
-      </div>
       <article name='content'>
         <div className='ui container'>
           {account && (

@@ -1,0 +1,41 @@
+.Account {
+  flex-grow: 1;
+  flex-shrink: 1;
+  background-image: linear-gradient(
+    to bottom right,
+    hsla(330, 100%, 97%, 1),
+    hsla(330, 100%, 95%, 1) 10%,
+    hsla(330, 80%, 97%, 1) 60%,
+    hsla(330, 50%, 99%, 1)
+    );
+
+  [name='header'] {
+    text-align: center;
+    position: relative;
+    border-top: 2px solid #e03997;
+    padding-bottom: 1rem;
+
+    [name='refresh'] {
+      position: absolute!important;
+      top: 0;
+      right: 0;
+
+      .ui.button {
+        &,
+        &.loading {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  [name='content'] {
+    padding: 2rem 0;
+
+    [name='node'] {
+      .content::first-letter {
+        text-transform: capitalize;
+      }
+    }
+  }
+}

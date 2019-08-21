@@ -5,7 +5,7 @@ import queryString from 'query-string'
 import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
 
-import Account from './Account'
+import {Account} from '../Account'
 import './App.scss'
 
 const TOP_MENU = [
