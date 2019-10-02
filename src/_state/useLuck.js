@@ -2,6 +2,8 @@ import {useState, useEffect} from 'react'
 
 import useAPI from '../_api/useAPI'
 
+// luck definition
+
 const MF_LUCK = [
   {mf: 0, luck: 0},
   {mf: 1, luck: 100},
@@ -336,14 +338,23 @@ const getMF = (luck) => {
   return search([...MF_LUCK], luck)
 }
 
+// the hook
+
 const useLuck = (token) => {
+  // setup account luck
+
   const [luck, setLuck] = useState(undefined)
+
   const luckInfo = useAPI({
     endpoint: '/account/luck',
     token
   })
 
+  // setup account mf
+
   const [magicFind, setMagicFind] = useState(undefined)
+
+  // update account luck on token change
 
   useEffect(() => {
     if (!token) {
@@ -353,7 +364,6 @@ const useLuck = (token) => {
     luckInfo.call({
       done: (data) => {
         const luckValue = data[0].value
-        const mf = getMF(luckValue)
         setMagicFind(getMF(luckValue))
         setLuck(luckValue)
       }

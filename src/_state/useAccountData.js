@@ -4,21 +4,19 @@ import {APP_NAME} from '../SETTINGS'
 import useAPI from '../_api/useAPI'
 
 const useAccountData = () => {
-  // identify current user
+  // setup account data
 
   const [token, setToken] = useState(undefined)
   const [account, setAccount] = useState(undefined)
+
+  // setup account api
 
   const accountInfo = useAPI({
     endpoint: '/account',
     token
   })
 
-  const adoptToken = useCallback((string) => {
-    setToken(string)
-  }, [])
-
-  const getAccountInfo = useCallback(async () => {
+  const fetchAccountInfo = useCallback(async () => {
     await accountInfo.call({
       done: async (data) => {
         setAccount(data)
@@ -27,18 +25,20 @@ const useAccountData = () => {
     })
   }, [accountInfo])
 
+  // fetch account data on token change
+
   useEffect(() => {
     if (!token) {
       return
     }
-    getAccountInfo()
+    fetchAccountInfo()
   }, [token])
 
   return {
     account,
     token,
-    adoptToken,
-    getAccountInfo
+    setToken,
+    fetchAccountInfo
   }
 }
 

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useCallback} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {Link, NavLink, Route, Switch, withRouter} from 'react-router-dom'
 import queryString from 'query-string'
 
@@ -33,14 +33,14 @@ const TOP_ROUTES = [
 const App = ({location}) => {
   // retrieve access token from url
 
-  const {history, account, token, adoptToken} = useContext(AccountContext)
+  const {history, account, token, setToken} = useContext(AccountContext)
 
   // update token on url params change
 
   useEffect(() => {
     const query = queryString.parse(location.search)
     if (query.source && query.source !== token) {
-      adoptToken(query.source)
+      setToken(query.source)
     }
   }, [location.search])
 

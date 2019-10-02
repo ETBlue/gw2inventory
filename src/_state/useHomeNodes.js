@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react'
 import useAPI from '../_api/useAPI'
 
 const useHomeNodes = (token) => {
-  // home nodes
+  // get all home nodes on app load
 
   const [homeNodes, setHomeNodes] = useState(undefined)
   const nodeList = useAPI({
@@ -17,6 +17,8 @@ const useHomeNodes = (token) => {
       }
     })
   }, [])
+
+  // get account home nodes when ready
 
   const [accountHomeNodes, setAccountHomeNodes] = useState(undefined)
   const accountNodeList = useAPI({

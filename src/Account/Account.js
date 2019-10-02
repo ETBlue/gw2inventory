@@ -73,16 +73,15 @@ const trimPath = ({level, path}) => {
 
 const Account = ({location}) => {
   const {worlds} = useContext(SystemContext)
-  const {token, account, getAccountInfo} = useContext(AccountContext)
-
+  const {token, account, fetchAccountInfo} = useContext(AccountContext)
   const [buttonState, setButtonState] = useState('')
   // const [timestamp, setTimestamp] = useState('')
   const handleRefresh = useCallback(async () => {
     setButtonState('loading')
-    await getAccountInfo()
+    await fetchAccountInfo()
     // setTimestamp(getTimeStamp())
     setButtonState('')
-  }, [getAccountInfo])
+  }, [fetchAccountInfo])
 
   return (
     <div className='Account'>

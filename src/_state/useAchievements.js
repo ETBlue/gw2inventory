@@ -3,18 +3,23 @@ import {useState, useEffect} from 'react'
 import useAPI from '../_api/useAPI'
 
 import getDictionary from '../_func/getDictionary'
-import getIdGroup from '../_func/getIdGroup'
 
-const useAchievements = ({account, token}) => {
+const useAchievements = (token) => {
+  // setup account achievements data
+
   const [accountAchievements, setAccountAchievements] = useState([])
+
+  // setup account achievements api
 
   const accountAchievementList = useAPI({
     endpoint: 'account/achievements',
     token
   })
 
+  // refresh account achievements on token change
+
   useEffect(() => {
-    if (!token || !account) {
+    if (!token) {
       return
     }
     accountAchievementList.call({
@@ -22,33 +27,36 @@ const useAchievements = ({account, token}) => {
         setAccountAchievements(data)
       }
     })
-  }, [account])
+  }, [token])
+
+  // setup global achievements data
 
   const [achievements, setAchievements] = useState({})
+
+  // setup global achievements api
+
   const achievementList = useAPI({
     endpoint: '/achievements'
   })
 
+  // refresh global achievements on account achievements change
+
   useEffect(() => {
-    if (!token || !account) {
-      return
+    const idSet = new Set(accountAchievements.map(item => item.id))
+    for (const id in achievements) {
+      idSet.delete(id)
     }
-
-    const getAchievements = async ({ids = [], done, error}) => {
-      const groups = getIdGroup(ids)
-
-      for (const group of groups) {
-        await achievementList.call({
-          query: {ids: group.join(',')},
-          done: (data) => {
-            setAchievements(prev => {
-              return {...prev, ...getDictionary(data)}
-            })
-          }
-        })
-      }
+    if (idSet.size > 0) {
+      const idMissing = Array.from(idSet)
+      achievementList.call({
+        ids: idMissing,
+        done: (data) => {
+          setAchievements(prev => {
+            return {...prev, ...getDictionary(data)}
+          })
+        }
+      })
     }
-    getAchievements({ids: accountAchievements.map(item => item.id)})
   }, [accountAchievements])
 
   return {accountAchievements, achievements}

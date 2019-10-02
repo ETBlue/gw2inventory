@@ -11,10 +11,10 @@ import useLuck from '../_state/useLuck'
 const AccountContext = React.createContext()
 
 const AccountContextProvider = (props) => {
-  const {account, token, adoptToken, getAccountInfo} = useAccountData()
+  const {account, token, setToken, fetchAccountInfo} = useAccountData()
   const {guilds} = useGuilds(account && account.guilds)
   const {history} = useHistory({account, token})
-  const {accountAchievements, achievements} = useAchievements({account, token})
+  const {accountAchievements, achievements} = useAchievements(token)
   const {accountHomeNodes} = useHomeNodes(token)
   const {luck, magicFind} = useLuck(token)
 
@@ -36,8 +36,8 @@ const AccountContextProvider = (props) => {
       luck,
       magicFind,
       token,
-      adoptToken,
-      getAccountInfo
+      setToken,
+      fetchAccountInfo
     }}>
       {props.children}
     </AccountContext.Provider>
