@@ -14,7 +14,7 @@ const AccountContextProvider = (props) => {
   const {account, token, setToken, fetchAccountInfo} = useAccountData()
   const {guilds} = useGuilds(account && account.guilds)
   const {history} = useHistory({account, token})
-  const {accountAchievements, achievements} = useAchievements(token)
+  const {accountAchievements, achievements, accountTitles, titles} = useAchievements(token)
   const {accountHomeNodes} = useHomeNodes(token)
   const {luck, magicFind} = useLuck(token)
 
@@ -32,6 +32,8 @@ const AccountContextProvider = (props) => {
       guilds,
       accountAchievements,
       achievements,
+      accountTitles,
+      titles,
       accountHomeNodes,
       luck,
       magicFind,

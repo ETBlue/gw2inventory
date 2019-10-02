@@ -37,5 +37,26 @@
         text-transform: capitalize;
       }
     }
+
+    .ui.header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .ui.dropdown {
+        font-size: 1rem;
+        font-weight: normal;
+        background: none;
+        border: none;
+        margin: -.78571429em 0;
+
+        .menu {
+          background: hsla(0,0%,100%, 1);
+          overflow-y: scroll;
+          top: calc(100% - 0.15em)!important;
+        }
+      }
+    }
+
   }
 }

@@ -32,7 +32,7 @@ const Overview = () => {
   }
 
   return (
-    <div className='ui two colume stackable grid'>
+    <div className='ui two column stackable grid'>
       <div className='eight wide column'>
         <h3 className='ui pink dividing header'>
           Birth

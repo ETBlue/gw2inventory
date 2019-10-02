@@ -9,6 +9,7 @@ import {SystemContext} from '../_context/SystemContext'
 import {DATE_FORMAT} from '../SETTINGS'
 
 import Overview from './Overview'
+import Achievement from './Achievement'
 import './Account.scss'
 
 const ACCOUNT_MENU = [
@@ -26,12 +27,6 @@ const ACCOUNT_MENU = [
     name: 'Fashion'
   }
 ]
-
-const Achievement = () => {
-  return (
-    <p>lalala</p>
-  )
-}
 
 const Mastery = () => {
   return (
@@ -74,14 +69,15 @@ const trimPath = ({level, path}) => {
 const Account = ({location}) => {
   const {worlds} = useContext(SystemContext)
   const {token, account, fetchAccountInfo} = useContext(AccountContext)
+
   const [buttonState, setButtonState] = useState('')
   // const [timestamp, setTimestamp] = useState('')
-  const handleRefresh = useCallback(async () => {
+  const handleRefresh = async () => {
     setButtonState('loading')
     await fetchAccountInfo()
     // setTimestamp(getTimeStamp())
     setButtonState('')
-  }, [fetchAccountInfo])
+  }
 
   return (
     <div className='Account'>

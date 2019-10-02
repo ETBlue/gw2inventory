@@ -39,8 +39,8 @@ const useStaticData = () => {
 
   // achievements
 
-  const [achievementCategories, setAchievementCategories] = useState({})
-  const [achievementGroups, setAchievementGroups] = useState({})
+  const [achievementCategories, setAchievementCategories] = useState([])
+  const [achievementGroups, setAchievementGroups] = useState([])
 
   const acCategoryList = useAPI({
     endpoint: '/achievements/categories'
@@ -53,13 +53,13 @@ const useStaticData = () => {
     acCategoryList.call({
       query: {ids: 'all'},
       done: (data) => {
-        setAchievementCategories(getDictionary(data))
+        setAchievementCategories(data)
       }
     })
     acGroupList.call({
       query: {ids: 'all'},
       done: (data) => {
-        setAchievementGroups(getDictionary(data))
+        setAchievementGroups(data)
       }
     })
   }, [])
