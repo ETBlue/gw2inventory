@@ -64,11 +64,29 @@ const useStaticData = () => {
     })
   }, [])
 
+  // masteries
+
+  const [masteries, setMasteries] = useState([])
+
+  const masteryList = useAPI({
+    endpoint: '/masteries'
+  })
+
+  useEffect(() => {
+    masteryList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setMasteries(data)
+      }
+    })
+  }, [])
+
   return {
     worlds,
     files,
     achievementCategories,
-    achievementGroups
+    achievementGroups,
+    masteries
   }
 }
 

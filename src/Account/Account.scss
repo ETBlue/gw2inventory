@@ -1,4 +1,4 @@
-.Account {
+#Account {
   flex-grow: 1;
   flex-shrink: 1;
   background-image: linear-gradient(
@@ -32,28 +32,58 @@
   [name='content'] {
     padding: 2rem 0;
 
-    [name='node'] {
-      .content::first-letter {
-        text-transform: capitalize;
+    #overview {
+      [name='node'] {
+        .content::first-letter {
+          text-transform: capitalize;
+        }
       }
     }
 
-    .ui.header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    #achievement {
+      .ui.header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
-      .ui.dropdown {
-        font-size: 1rem;
-        font-weight: normal;
-        background: none;
-        border: none;
-        margin: -.78571429em 0;
+        .ui.dropdown {
+          font-size: 1rem;
+          font-weight: normal;
+          background: none;
+          border: none;
+          margin: -.78571429em 0;
 
-        .menu {
-          background: hsla(0,0%,100%, 1);
-          overflow-y: scroll;
-          top: calc(100% - 0.15em)!important;
+          .menu {
+            background: hsla(0,0%,100%, 1);
+            overflow-y: scroll;
+            top: calc(100% - 0.15em)!important;
+          }
+        }
+      }
+    }
+
+    #mastery {
+      .ui.header {
+        .small {
+          font-size: 1rem;
+          font-weight: normal;
+          margin-left: 0.5rem;
+        }
+      }
+
+      .ui.items .item {
+        .ui.image {
+          height: 100%;
+          border-radius: 0.3rem;
+          border: 0.2rem hsla(0,0%,0%,0.25) solid;
+
+          img {
+            border-radius: 0.2rem;
+          }
+
+          &.done {
+            border-color: #21ba45;
+          }
         }
       }
     }

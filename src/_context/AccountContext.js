@@ -7,6 +7,7 @@ import useGuilds from '../_state/useGuilds'
 import useAchievements from '../_state/useAchievements'
 import useHomeNodes from '../_state/useHomeNodes'
 import useLuck from '../_state/useLuck'
+import useMastery from '../_state/useMastery'
 
 const AccountContext = React.createContext()
 
@@ -17,6 +18,7 @@ const AccountContextProvider = (props) => {
   const {accountAchievements, achievements, accountTitles, titles} = useAchievements(token)
   const {accountHomeNodes} = useHomeNodes(token)
   const {luck, magicFind} = useLuck(token)
+  const {accountMasteries} = useMastery(token)
 
   const {items, fetchItems} = useItems()
 
@@ -37,6 +39,7 @@ const AccountContextProvider = (props) => {
       accountHomeNodes,
       luck,
       magicFind,
+      accountMasteries,
       token,
       setToken,
       fetchAccountInfo

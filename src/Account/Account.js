@@ -1,15 +1,13 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react'
-import {Link, NavLink, Route, Switch, withRouter, Redirect} from 'react-router-dom'
-import queryString from 'query-string'
-import moment from 'moment'
+import React, {useContext, useState} from 'react'
+import {NavLink, Route, Switch, withRouter, Redirect} from 'react-router-dom'
 
 import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
 
-import {DATE_FORMAT} from '../SETTINGS'
-
 import Overview from './Overview'
 import Achievement from './Achievement'
+import Mastery from './Mastery'
+
 import './Account.scss'
 
 const ACCOUNT_MENU = [
@@ -27,12 +25,6 @@ const ACCOUNT_MENU = [
     name: 'Fashion'
   }
 ]
-
-const Mastery = () => {
-  return (
-    <p>lalala</p>
-  )
-}
 
 const Fashion = () => {
   return (
@@ -80,7 +72,7 @@ const Account = ({location}) => {
   }
 
   return (
-    <div className='Account'>
+    <div id='Account'>
       <header name='header'>
         <div name='refresh'>
           <span onClick={handleRefresh}

@@ -1,10 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react'
-import moment from 'moment'
 
 import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
-
-import {DATE_FORMAT} from '../SETTINGS'
 
 const Achievement = () => {
   const {achievementCategories, achievementGroups} = useContext(SystemContext)
@@ -37,7 +34,7 @@ const Achievement = () => {
   }
 
   return (
-    <div className='ui two column stackable grid'>
+    <div id='achievement' className='ui two column stackable grid'>
       <div className='column'>
         <h3 className='ui pink dividing header'>
           Titles
