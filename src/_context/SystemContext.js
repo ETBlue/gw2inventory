@@ -7,7 +7,14 @@ const SystemContext = React.createContext()
 const SystemContextProvider = (props) => {
   // static data
 
-  const {worlds, files, achievementCategories, achievementGroups, masteries} = useStaticData()
+  const {
+    worlds,
+    files,
+    achievementCategories,
+    achievementGroups,
+    masteries,
+    outfits,
+  } = useStaticData()
 
   return (
     <SystemContext.Provider value={{
@@ -15,7 +22,8 @@ const SystemContextProvider = (props) => {
       files,
       achievementCategories,
       achievementGroups,
-      masteries
+      masteries,
+      outfits,
     }}>
       {props.children}
     </SystemContext.Provider>

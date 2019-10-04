@@ -10,7 +10,7 @@ const Mastery = () => {
   const [selected, setSelected] = useState(1)
 
   const handleClick = e => {
-    const id = e.target.dataset.id
+    const id = e.currentTarget.dataset.id
     setSelected(parseInt(id, 10))
   }
 
@@ -20,7 +20,7 @@ const Mastery = () => {
   const current = accountMasteries.find(m => m.id === selected)
 
   return (
-    <div id='mastery' className='ui two column stackable grid'>
+    <div id='Mastery' className='ui two column stackable grid'>
       <div className='four wide column'>
         <div className='ui secondary pointing vertical fluid menu'>
           {masteries.length > 0 && masteries.map(group => (

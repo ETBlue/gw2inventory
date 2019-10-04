@@ -7,6 +7,7 @@ import {SystemContext} from '../_context/SystemContext'
 import Overview from './Overview'
 import Achievement from './Achievement'
 import Mastery from './Mastery'
+import Fashion from './Fashion'
 
 import './Account.scss'
 
@@ -25,12 +26,6 @@ const ACCOUNT_MENU = [
     name: 'Fashion'
   }
 ]
-
-const Fashion = () => {
-  return (
-    <p>lalala</p>
-  )
-}
 
 const ACCOUNT_ROUTES = [
   {

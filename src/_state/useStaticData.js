@@ -81,12 +81,30 @@ const useStaticData = () => {
     })
   }, [])
 
+  // outfits
+
+  const [outfits, setOutfits] = useState([])
+
+  const outfitList = useAPI({
+    endpoint: '/outfits'
+  })
+
+  useEffect(() => {
+    outfitList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setOutfits(getDictionary(data))
+      }
+    })
+  }, [])
+
   return {
     worlds,
     files,
     achievementCategories,
     achievementGroups,
-    masteries
+    masteries,
+    outfits,
   }
 }
 

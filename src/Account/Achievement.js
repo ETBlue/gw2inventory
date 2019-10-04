@@ -14,7 +14,7 @@ const Achievement = () => {
   }, [accountAchievements])
 
   const handleGroupSelect = e => {
-    const groupId = e.target.dataset.id
+    const groupId = e.currentTarget.dataset.id
     if (groupId) {
       const selectedGroup = achievementGroups.find(grp => grp.id === groupId)
       let selectedAchs = []
@@ -25,7 +25,7 @@ const Achievement = () => {
       const newAccountAchievements = accountAchievements.filter(ach => selectedAchs.includes(ach.id))
       setSelectedAchievements(newAccountAchievements)
 
-      const groupName = e.target.dataset.name
+      const groupName = e.currentTarget.dataset.name
       setSelectedAchievementsTitle(groupName)
     } else {
       setSelectedAchievements(accountAchievements)
@@ -34,7 +34,7 @@ const Achievement = () => {
   }
 
   return (
-    <div id='achievement' className='ui two column stackable grid'>
+    <div id='Achievement' className='ui two column stackable grid'>
       <div className='column'>
         <h3 className='ui pink dividing header'>
           Titles

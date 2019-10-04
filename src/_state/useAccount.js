@@ -3,7 +3,7 @@ import {useState, useEffect, useCallback} from 'react'
 import {APP_NAME} from '../SETTINGS'
 import useAPI from '../_api/useAPI'
 
-const useAccountData = () => {
+const useAccount = () => {
   // setup account data
 
   const [token, setToken] = useState(undefined)
@@ -42,4 +42,4 @@ const useAccountData = () => {
   }
 }
 
-export default useAccountData
+export default useAccount

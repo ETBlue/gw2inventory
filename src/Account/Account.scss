@@ -32,7 +32,7 @@
   [name='content'] {
     padding: 2rem 0;
 
-    #overview {
+    #Overview {
       [name='node'] {
         .content::first-letter {
           text-transform: capitalize;
@@ -40,7 +40,7 @@
       }
     }
 
-    #achievement {
+    #Achievement {
       .ui.header {
         display: flex;
         justify-content: space-between;
@@ -62,7 +62,7 @@
       }
     }
 
-    #mastery {
+    #Mastery {
       .ui.header {
         .small {
           font-size: 1rem;
@@ -88,5 +88,21 @@
       }
     }
 
+    #Fashion {
+      .ui.menu .item::first-letter {
+        text-transform: capitalize;
+      }
+
+      .ui.locked.list .item {
+        .image {
+          opacity: 0.6;
+        }
+
+        .header {
+          color: #767676;
+        }
+      }
+
+    }
   }
 }
