@@ -1,3 +1,12 @@
+:root {
+  --primary-color: #e03997;
+  --green: #21ba45;
+  --locked-border-color: hsla(0,0%,0%,0.25);
+  --locked-font-color: #767676;
+  --icon-border-width: 3px;
+  --icon-border-radius: 0.2rem;
+}
+
 .App {
   min-height: 100vh;
   display: flex;

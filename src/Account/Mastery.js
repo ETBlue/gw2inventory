@@ -49,7 +49,7 @@ const Mastery = () => {
           <div className='ui relaxed divided items'>
             {mastery.levels && mastery.levels.map((level, index) => (
               <div key={level.name} className='item'>
-                <div className={`ui tiny rounded ${current && index <= current.level && 'done'} image`}>
+                <div className={`ui tiny rounded ${current && index <= current.level ? 'unlocked' : 'locked'} image`}>
                   {current && index <= current.level && (
                     <span className='ui left corner mini green label'>
                       <i className='icon check' />
