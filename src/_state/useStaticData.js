@@ -83,7 +83,7 @@ const useStaticData = () => {
 
   // outfits
 
-  const [outfits, setOutfits] = useState([])
+  const [outfits, setOutfits] = useState({})
 
   const outfitList = useAPI({
     endpoint: '/outfits'

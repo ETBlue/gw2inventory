@@ -8,10 +8,11 @@ import {SystemContext} from '../_context/SystemContext'
 import {Account} from '../Account'
 import './App.scss'
 
-const TOP_MENU = [
+const MENU = [
   {
     id: 'account',
-    name: 'Account'
+    name: 'Account',
+    component: Account
   }, {
     id: 'character',
     name: 'Characters'
@@ -24,12 +25,6 @@ const TOP_MENU = [
   }
 ]
 
-const TOP_ROUTES = [
-  {
-    path: 'account',
-    component: Account
-  }
-]
 const App = ({location}) => {
   // retrieve access token from url
 
@@ -57,7 +52,7 @@ const App = ({location}) => {
             <img src='favicon.png' />
           </span>
         </Link>
-        {TOP_MENU.map(item => (
+        {MENU.map(item => (
           <NavLink key={item.id} className='item'
             to={`/${item.id}?source=${token}`}
             isActive={(match, location) => location.pathname.includes(`/${item.id}`)} >
@@ -77,9 +72,10 @@ const App = ({location}) => {
         </div>
       </nav>
       <Switch>
-        {TOP_ROUTES.map(route => (
-          <Route key={route.path} path={`/${route.path}`} component={route.component} />
+        {MENU.map(item => (
+          <Route key={item.id} path={`/${item.id}`} component={item.component} />
         ))}
+        <Route path='/' component={Home} />
       </Switch>
       <footer>
       </footer>

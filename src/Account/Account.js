@@ -4,6 +4,8 @@ import {NavLink, Route, Switch, withRouter, Redirect} from 'react-router-dom'
 import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
 
+import trimPath from '../_func/trimPath'
+
 import Overview from './Overview'
 import Achievement from './Achievement'
 import Mastery from './Mastery'
@@ -11,42 +13,25 @@ import Fashion from './Fashion'
 
 import './Account.scss'
 
-const ACCOUNT_MENU = [
+const MENU = [
   {
     id: 'overview',
-    name: 'Overview'
-  }, {
-    id: 'achievement',
-    name: 'Achievements'
-  }, {
-    id: 'mastery',
-    name: 'Masteries'
-  }, {
-    id: 'fashion',
-    name: 'Fashion'
-  }
-]
-
-const ACCOUNT_ROUTES = [
-  {
-    path: 'overview',
+    name: 'Overview',
     component: Overview
   }, {
-    path: 'achievement',
+    id: 'achievement',
+    name: 'Achievements',
     component: Achievement
   }, {
-    path: 'mastery',
+    id: 'mastery',
+    name: 'Masteries',
     component: Mastery
   }, {
-    path: 'fashion',
+    id: 'fashion',
+    name: 'Fashion',
     component: Fashion
   }
 ]
-
-const trimPath = ({level, path}) => {
-  const segments = path.split('/').filter(item => item.length !== 0)
-  return `${segments.slice(0, level).join('/')}`
-}
 
 // const getTimeStamp = () => {
 //   const now = new moment()
@@ -57,6 +42,8 @@ const Account = ({location}) => {
   const {worlds} = useContext(SystemContext)
   const {token, account, fetchAccountInfo} = useContext(AccountContext)
 
+  // let user refresh data manually
+
   const [buttonState, setButtonState] = useState('')
   // const [timestamp, setTimestamp] = useState('')
   const handleRefresh = async () => {
@@ -65,6 +52,10 @@ const Account = ({location}) => {
     // setTimestamp(getTimeStamp())
     setButtonState('')
   }
+
+  // render
+
+  const higherLevelPath = trimPath({path: location.pathname, level: 1})
 
   return (
     <div id='Account'>
@@ -87,10 +78,10 @@ const Account = ({location}) => {
         </h1>
         <hr className='ui hidden fitted divider' />
         <nav className='ui secondary compact menu'>
-          {ACCOUNT_MENU.map(item => (
+          {MENU.map(item => (
             <NavLink key={item.id} className='item'
-              to={`/${trimPath({path: location.pathname, level: 1})}/${item.id}?source=${token}`}
-              isActive={(match, location) => location.pathname.includes(`/${trimPath({path: location.pathname, level: 1})}/${item.id}`)} >
+              to={`${higherLevelPath}/${item.id}?source=${token}`}
+              isActive={(match, location) => location.pathname.includes(`${higherLevelPath}/${item.id}`)} >
               {item.name}
             </NavLink>
           ))}
@@ -100,10 +91,10 @@ const Account = ({location}) => {
         <div className='ui container'>
           {account && (
             <Switch>
-              {ACCOUNT_ROUTES.map(item => (
-                <Route key={item.path} path={`/${trimPath({path: location.pathname, level: 1})}/${item.path}`} component={item.component} />
+              {MENU.map(item => (
+                <Route key={item.id} path={`${higherLevelPath}/${item.id}`} component={item.component} />
               ))}
-              <Route render={() => <Redirect to={`/${trimPath({path: location.pathname, level: 1})}/${ACCOUNT_ROUTES[0].path}?source=${token}`} />} />
+              <Route render={() => <Redirect to={`${higherLevelPath}/${MENU[0].id}?source=${token}`} />} />
             </Switch>
           )}
         </div>

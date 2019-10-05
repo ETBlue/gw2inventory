@@ -77,6 +77,10 @@
           border-radius: 0.3rem;
           border: 0.2rem hsla(0,0%,0%,0.25) solid;
 
+          .corner.label {
+            font-size: 0.5rem;
+          }
+
           img {
             border-radius: 0.2rem;
           }
@@ -93,14 +97,46 @@
         text-transform: capitalize;
       }
 
-      .ui.locked.list .item {
-        .image {
-          opacity: 0.6;
+      .list {
+
+        .item {
+          display: flex;
+          margin-bottom: 0.5rem;
+          align-items: center;
+
+          .image {
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: auto;
+            margin: 0.15rem;
+            margin-right: 1.15rem;
+            border-radius: 0.2rem;
+            box-shadow: 0 0 0 0.15rem #21ba45;
+
+            img {
+              border-radius: 0.2rem;
+            }
+
+            .corner.label {
+              font-size: 0.4rem;
+            }
+          }
+
+          .content {
+            flex-grow: 1;
+            flex-shrink: 1;
+          }
         }
 
-        .header {
+        &.locked {
           color: #767676;
+
+          .image {
+            opacity: 0.5;
+            box-shadow: 0 0 0 0.15rem hsla(0,0%,0%,0.25);
+          }
         }
+
       }
 
     }
