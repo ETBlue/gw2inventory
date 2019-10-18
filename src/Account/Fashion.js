@@ -6,8 +6,8 @@ import {AccountContext} from '../_context/AccountContext'
 import trimPath from '../_func/trimPath'
 
 import Outfit from './Fashion/Outfit'
+import Glider from './Fashion/Glider'
 
-const Glider = () => <p>...</p>
 const Mount = () => <p>...</p>
 const Mini = () => <p>...</p>
 const MailCarrier = () => <p>...</p>

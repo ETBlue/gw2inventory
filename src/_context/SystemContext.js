@@ -14,6 +14,7 @@ const SystemContextProvider = (props) => {
     achievementGroups,
     masteries,
     outfits,
+    gliders,
   } = useStaticData()
 
   return (
@@ -24,6 +25,7 @@ const SystemContextProvider = (props) => {
       achievementGroups,
       masteries,
       outfits,
+      gliders,
     }}>
       {props.children}
     </SystemContext.Provider>

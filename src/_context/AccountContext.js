@@ -9,6 +9,7 @@ import useHomeNodes from '../_state/useHomeNodes'
 import useLuck from '../_state/useLuck'
 import useMastery from '../_state/useMastery'
 import useOutfit from '../_state/useOutfit'
+import useGlider from '../_state/useGlider'
 
 const AccountContext = React.createContext()
 
@@ -21,6 +22,7 @@ const AccountContextProvider = (props) => {
   const {luck, magicFind} = useLuck(token)
   const {accountMasteries} = useMastery(token)
   const {accountOutfits} = useOutfit(token)
+  const {accountGliders} = useGlider(token)
 
   const {items, fetchItems} = useItems()
 
@@ -48,7 +50,8 @@ const AccountContextProvider = (props) => {
       accountTitles,
       accountHomeNodes,
       accountMasteries,
-      accountOutfits
+      accountOutfits,
+      accountGliders
 
     }}>
       {props.children}

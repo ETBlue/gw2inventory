@@ -98,6 +98,23 @@ const useStaticData = () => {
     })
   }, [])
 
+  // gliders
+
+  const [gliders, setGliders] = useState({})
+
+  const gliderList = useAPI({
+    endpoint: '/gliders'
+  })
+
+  useEffect(() => {
+    gliderList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setGliders(getDictionary(data))
+      }
+    })
+  }, [])
+
   return {
     worlds,
     files,
