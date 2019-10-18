@@ -74,7 +74,8 @@
       .ui.items .item {
 
         .ui.image {
-          height: 100%;
+          width: 7rem;
+          height: 7rem;
           border-radius: var(--icon-border-radius);
           box-shadow: 0 0 0 var(--icon-border-width) var(--green);
           margin: var(--icon-border-width);
@@ -84,6 +85,8 @@
           }
 
           img {
+            width: 7rem;
+            height: 7rem;
             border-radius: var(--icon-border-radius);
           }
 
@@ -109,13 +112,16 @@
           .image {
             flex-grow: 0;
             flex-shrink: 0;
-            width: auto;
+            width: 5rem;
+            height: 5rem;
             margin: var(--icon-border-width);
             margin-right: calc(1rem + var(--icon-border-width));
             border-radius: var(--icon-border-radius);
             box-shadow: 0 0 0 var(--icon-border-width) var(--green);
 
             img {
+              width: 5rem;
+              height: 5rem;
               border-radius: var(--icon-border-radius);
             }
 

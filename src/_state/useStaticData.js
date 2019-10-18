@@ -115,6 +115,58 @@ const useStaticData = () => {
     })
   }, [])
 
+  // minis
+
+  const [minis, setMinis] = useState({})
+
+  const miniList = useAPI({
+    endpoint: '/minis'
+  })
+
+  useEffect(() => {
+    miniList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setMinis(getDictionary(data))
+      }
+    })
+  }, [])
+
+  // mailcarriers
+
+  const [mailcarriers, setMailcarriers] = useState({})
+
+  const mailCarrierList = useAPI({
+    endpoint: '/mailcarriers'
+  })
+
+  useEffect(() => {
+    mailCarrierList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setMailcarriers(getDictionary(data))
+      }
+    })
+  }, [])
+
+  // finishers
+  // novelties
+
+  const [novelties, setNovelty] = useState({})
+
+  const noveltyList = useAPI({
+    endpoint: '/novelties'
+  })
+
+  useEffect(() => {
+    noveltyList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setNovelty(getDictionary(data))
+      }
+    })
+  }, [])
+
   return {
     worlds,
     files,
@@ -122,6 +174,10 @@ const useStaticData = () => {
     achievementGroups,
     masteries,
     outfits,
+    gliders,
+    minis,
+    mailcarriers,
+    novelties
   }
 }
 
