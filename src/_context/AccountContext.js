@@ -27,6 +27,7 @@ const AccountContextProvider = (props) => {
     accountMountSkins,
     accountMinis,
     accountMailcarriers,
+    accountFinishers,
     accountNovelties
   } = useFashion(token)
 
@@ -62,6 +63,7 @@ const AccountContextProvider = (props) => {
       accountMountSkins,
       accountMinis,
       accountMailcarriers,
+      accountFinishers,
       accountNovelties
 
     }}>

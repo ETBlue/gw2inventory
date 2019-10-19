@@ -5,6 +5,7 @@ import {AccountContext} from '../_context/AccountContext'
 import {SystemContext} from '../_context/SystemContext'
 
 import trimPath from '../_func/trimPath'
+import getDictionary from '../_func/getDictionary'
 
 const MENU = [
   {
@@ -87,6 +88,16 @@ const Novelty = ({accountNovelties, novelties}) => novelties.map(type => (
   </React.Fragment>
 ))
 
+const Finisher = ({accountFinishers, finishers}) => {
+  const props = {
+    array: accountFinishers.map(item => item.id),
+    dictionary: finishers,
+    finisherDictionary: getDictionary(accountFinishers)
+  }
+
+  return <Content {...props} />
+}
+
 const ITEM_PER_PAGE = 25
 
 const Content = ({array, dictionary}) => {
@@ -168,6 +179,7 @@ const Fashion = ({location}) => {
     mountTypes,
     minis,
     mailcarriers,
+    finishers,
     novelties
   } = useContext(SystemContext)
 
@@ -178,6 +190,7 @@ const Fashion = ({location}) => {
     accountMountSkins,
     accountMinis,
     accountMailcarriers,
+    accountFinishers,
     accountNovelties
   } = useContext(AccountContext)
 
@@ -205,6 +218,10 @@ const Fashion = ({location}) => {
       array: accountMailcarriers,
       dictionary: mailcarriers
     },
+    finisher: {
+      accountFinishers,
+      finishers
+    },
     novelty: {
       accountNovelties,
       novelties
@@ -231,6 +248,7 @@ const Fashion = ({location}) => {
           {account && (
             <Switch>
               <Route path={`${higherLevelPath}/mount`} render={() => <Mount {...props.mount} />} />
+              <Route path={`${higherLevelPath}/finisher`} render={() => <Finisher {...props.finisher} />} />
               <Route path={`${higherLevelPath}/novelty`} render={() => <Novelty {...props.novelty} />} />
               {MENU.map(item => (
                 <Route key={item.id} path={`${higherLevelPath}/${item.id}`} render={() => <Content {...props[item.id]} />} />

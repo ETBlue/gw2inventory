@@ -134,6 +134,30 @@ const useFashion = (token) => {
     fetchMailcarriers()
   }, [token])
 
+  // finishers
+
+  const [accountFinishers, setAccountFinishers] = useState([])
+
+  const accountFinisherList = useAPI({
+    endpoint: 'account/finishers',
+    token
+  })
+
+  const fetchFinishers = async () => {
+    await accountFinisherList.call({
+      done: (data) => {
+        setAccountFinishers(data)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+    fetchFinishers()
+  }, [token])
+
   // novelties
 
   const [accountNovelties, setAccountNovelties] = useState([])
@@ -165,6 +189,7 @@ const useFashion = (token) => {
     accountMountSkins,
     accountMinis,
     accountMailcarriers,
+    accountFinishers,
     accountNovelties
   }
 }

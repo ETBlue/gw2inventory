@@ -18,6 +18,7 @@ const SystemContextProvider = (props) => {
     mountTypes,
     minis,
     mailcarriers,
+    finishers,
     novelties
   } = useStaticData()
 
@@ -33,6 +34,7 @@ const SystemContextProvider = (props) => {
       mountTypes,
       minis,
       mailcarriers,
+      finishers,
       novelties
     }}>
       {props.children}

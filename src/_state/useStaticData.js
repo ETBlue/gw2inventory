@@ -184,6 +184,22 @@ const useStaticData = () => {
   }, [])
 
   // finishers
+
+  const [finishers, setFinishers] = useState({})
+
+  const finisherList = useAPI({
+    endpoint: '/finishers'
+  })
+
+  useEffect(() => {
+    finisherList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setFinishers(getDictionary(data))
+      }
+    })
+  }, [])
+
   // novelties
 
   const [novelties, setNovelty] = useState([])
@@ -238,6 +254,7 @@ const useStaticData = () => {
     mountTypes,
     minis,
     mailcarriers,
+    finishers,
     novelties
   }
 }
