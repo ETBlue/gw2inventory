@@ -1,3 +1,17 @@
+:root {
+  --primary-color: #e03997;
+  --green: #21ba45;
+  --white: #ddeeff;
+  --light-grey: #aabbcc;
+  --grey: #778899;
+  --deep-grey: #445566;
+  --black: #112233;
+  --locked-border-color: #767676;
+  --locked-font-color: #767676;
+  --icon-border-width: 3px;
+  --icon-border-radius: 0.2rem;
+}
+
 html, body {
   font-size: 16px;
 }
@@ -17,7 +31,8 @@ code {
     monospace;
 }
 
-.ui.basic.pink.label {
+.ui.basic.label,
+.ui.horizontal.basic.label {
   background: none!important;
 }
 

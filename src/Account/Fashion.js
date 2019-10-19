@@ -100,7 +100,48 @@ const Finisher = ({accountFinishers, finishers}) => {
 
 const ITEM_PER_PAGE = 25
 
-const Content = ({array, dictionary}) => {
+const ItemUnlocked = ({icon, name, finisherInfo}) => (
+  <div className='unlocked item'>
+    <div className='ui tiny rounded image'>
+      <span className='ui left corner mini green label'>
+        {!finisherInfo || finisherInfo.permanent ? (
+          <i className='icon check' />
+        ) : (
+          <span className='text'>
+            {finisherInfo.quantity}
+          </span>
+        )}
+      </span>
+      <img src={icon} />
+    </div>
+    <div className='content'>
+      {!finisherInfo || finisherInfo.permanent ? (
+        <i className='icon green check' />
+      ) : (
+        <span className='ui green horizontal basic label'>
+          {finisherInfo.quantity}
+        </span>
+      )}
+      {name}
+    </div>
+  </div>
+)
+
+const ItemLocked = ({icon, name}) => (
+  <div className='locked item'>
+    <div className='ui tiny rounded image'>
+      <span className='ui left corner mini grey label'>
+        <i className='icon black lock' />
+      </span>
+      <img src={icon} />
+    </div>
+    <div className='content'>
+      {name}
+    </div>
+  </div>
+)
+
+const Content = ({array, dictionary, finisherDictionary = {}}) => {
   const {unlocked, locked} = getList({
     array,
     dictionary
@@ -122,19 +163,7 @@ const Content = ({array, dictionary}) => {
             Unlocked
           </h3>
           <div className='unlocked list'>
-            {unlocked.slice(0, displayed).map(id => dictionary[id] && (
-              <div key={id} className='item'>
-                <div className='ui tiny rounded image'>
-                  <span className='ui left corner mini green label'>
-                    <i className='icon check' />
-                  </span>
-                  <img src={dictionary[id].icon} />
-                </div>
-                <div className='content'>
-                  {dictionary[id].name}
-                </div>
-              </div>
-            ))}
+            {unlocked.slice(0, displayed).map(id => dictionary[id] && <ItemUnlocked key={id} {...dictionary[id]} finisherInfo={finisherDictionary[id]} />)}
           </div>
         </div>
         <div className='column'>
@@ -142,17 +171,7 @@ const Content = ({array, dictionary}) => {
             Locked
           </h3>
           <div className='locked list'>
-            {locked.slice(0, displayed).map(id => dictionary[id] && (
-              <div key={id} className='item'>
-                <div className='ui tiny rounded image'>
-                  <img src={dictionary[id].icon} />
-                </div>
-                <div className='content'>
-                  <i className='icon grey lock' />
-                  {dictionary[id].name}
-                </div>
-              </div>
-            ))}
+            {locked.slice(0, displayed).map(id => dictionary[id] && <ItemLocked key={id} {...dictionary[id]} />)}
           </div>
         </div>
       </div>
