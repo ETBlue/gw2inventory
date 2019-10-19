@@ -55,6 +55,24 @@ const getList = ({array, dictionary}) => {
   return {sorted, locked}
 }
 
+const Mount = ({accountMountTypes, accountMountSkins, mountTypes}) => mountTypes.map(type => (
+  <React.Fragment>
+    <h2 className='ui pink inverted block header'>
+      {accountMountTypes.includes(type.id) ? (
+        <i className='icon green check' />
+      ) : (
+        <i className='icon grey lock' />
+      )}
+      <span className='content'>
+        {type.name}
+      </span>
+    </h2>
+    <Content
+      array={type.skins.filter(id => accountMountSkins.includes(id))}
+      dictionary={type.dictionary} />
+  </React.Fragment>
+))
+
 const Content = ({array, dictionary}) => {
   const {sorted, locked} = getList({
     array,
@@ -111,6 +129,7 @@ const Fashion = ({location}) => {
   const {
     outfits,
     gliders,
+    mountTypes,
     minis,
     mailcarriers,
     novelties
@@ -119,6 +138,8 @@ const Fashion = ({location}) => {
   const {
     accountOutfits,
     accountGliders,
+    accountMountTypes,
+    accountMountSkins,
     accountMinis,
     accountMailcarriers,
     accountNovelties
@@ -134,6 +155,11 @@ const Fashion = ({location}) => {
     glider: {
       array: accountGliders,
       dictionary: gliders
+    },
+    mount: {
+      accountMountTypes,
+      accountMountSkins,
+      mountTypes
     },
     mini: {
       array: accountMinis,
@@ -168,6 +194,7 @@ const Fashion = ({location}) => {
         <div className='twelve wide column'>
           {account && (
             <Switch>
+              <Route path={`${higherLevelPath}/mount`} render={() => <Mount {...props.mount} />} />
               {MENU.map(item => (
                 <Route key={item.id} path={`${higherLevelPath}/${item.id}`} render={() => <Content {...props[item.id]} />} />
               ))}

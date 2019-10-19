@@ -23,6 +23,8 @@ const AccountContextProvider = (props) => {
   const {
     accountOutfits,
     accountGliders,
+    accountMountTypes,
+    accountMountSkins,
     accountMinis,
     accountMailcarriers,
     accountNovelties
@@ -56,6 +58,8 @@ const AccountContextProvider = (props) => {
       accountMasteries,
       accountOutfits,
       accountGliders,
+      accountMountTypes,
+      accountMountSkins,
       accountMinis,
       accountMailcarriers,
       accountNovelties

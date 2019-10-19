@@ -51,6 +51,41 @@ const useFashion = (token) => {
     fetchGliders()
   }, [token])
 
+  // mounts
+
+  const [accountMountTypes, setAccountMountTypes] = useState([])
+  const [accountMountSkins, setAccountMountSkins] = useState([])
+
+  const accountMountTypeList = useAPI({
+    endpoint: 'account/mounts/types',
+    token
+  })
+
+  const accountMountSkinList = useAPI({
+    endpoint: 'account/mounts/skins',
+    token
+  })
+
+  const fetchMounts = async () => {
+    await accountMountTypeList.call({
+      done: (data) => {
+        setAccountMountTypes(data)
+      }
+    })
+    await accountMountSkinList.call({
+      done: (data) => {
+        setAccountMountSkins(data)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+    fetchMounts()
+  }, [token])
+
   // minis
 
   const [accountMinis, setAccountMinis] = useState([])
@@ -126,7 +161,8 @@ const useFashion = (token) => {
   return {
     accountOutfits,
     accountGliders,
-    accountMounts,
+    accountMountTypes,
+    accountMountSkins,
     accountMinis,
     accountMailcarriers,
     accountNovelties

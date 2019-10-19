@@ -115,6 +115,40 @@ const useStaticData = () => {
     })
   }, [])
 
+  // mounts
+
+  const [mountTypes, setMountTypes] = useState([])
+
+  const mountTypeList = useAPI({
+    endpoint: '/mounts/types'
+  })
+  const mountSkinList = useAPI({
+    endpoint: '/mounts/skins'
+  })
+
+  const fetchMount = async () => {
+    let skins
+    await mountSkinList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        skins = getDictionary(data)
+      }
+    })
+    await mountTypeList.call({
+      query: {ids: 'all'},
+      done: (data) => {
+        setMountTypes(data.map(type => {
+          type.dictionary = getDictionary(type.skins.map(id => skins[id]))
+          return type
+        }))
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchMount()
+  }, [])
+
   // minis
 
   const [minis, setMinis] = useState({})
@@ -152,7 +186,7 @@ const useStaticData = () => {
   // finishers
   // novelties
 
-  const [novelties, setNovelty] = useState({})
+  const [novelties, setNovelty] = useState([])
 
   const noveltyList = useAPI({
     endpoint: '/novelties'
@@ -162,7 +196,33 @@ const useStaticData = () => {
     noveltyList.call({
       query: {ids: 'all'},
       done: (data) => {
-        setNovelty(getDictionary(data))
+        const types = {}
+        for (const item of data) {
+          if (!types[item.slot]) {
+            types[item.slot] = []
+          }
+          types[item.slot].push(item)
+        }
+
+        const result = Object.keys(types)
+          .sort((a, b) => {
+            if (a > b) {
+              return 1
+            } else if (a < b) {
+              return -1
+            } else {
+              return 0
+            }
+          })
+          .map(type => {
+            return {
+              id: type,
+              items: types[type].map(item => item.id),
+              dictionary: getDictionary(types[type])
+            }
+          })
+
+        setNovelty(result)
       }
     })
   }, [])
@@ -175,6 +235,7 @@ const useStaticData = () => {
     masteries,
     outfits,
     gliders,
+    mountTypes,
     minis,
     mailcarriers,
     novelties

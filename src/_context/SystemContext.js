@@ -15,6 +15,7 @@ const SystemContextProvider = (props) => {
     masteries,
     outfits,
     gliders,
+    mountTypes,
     minis,
     mailcarriers,
     novelties
@@ -29,6 +30,7 @@ const SystemContextProvider = (props) => {
       masteries,
       outfits,
       gliders,
+      mountTypes,
       minis,
       mailcarriers,
       novelties

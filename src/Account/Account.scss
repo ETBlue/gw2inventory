@@ -98,6 +98,12 @@
     }
 
     #Fashion {
+      .ui.block.header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       .ui.menu .item::first-letter {
         text-transform: capitalize;
       }
