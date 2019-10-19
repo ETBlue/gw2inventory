@@ -33,6 +33,9 @@ const MENU = [
 
 const sortByName = ({array, dictionary}) => {
   return array.sort((a, b) => {
+    if (!dictionary[a] || !dictionary[b]) {
+      return 0
+    }
     if (dictionary[a].name > dictionary[b].name) {
       return 1
     } else if (dictionary[a].name < dictionary[b].name) {
@@ -69,6 +72,17 @@ const Mount = ({accountMountTypes, accountMountSkins, mountTypes}) => mountTypes
     </h2>
     <Content
       array={type.skins.filter(id => accountMountSkins.includes(id))}
+      dictionary={type.dictionary} />
+  </React.Fragment>
+))
+
+const Novelty = ({accountNovelties, novelties}) => novelties.map(type => (
+  <React.Fragment>
+    <h2 className='ui pink inverted block header'>
+      {type.id}
+    </h2>
+    <Content
+      array={type.items.filter(id => accountNovelties.includes(id))}
       dictionary={type.dictionary} />
   </React.Fragment>
 ))
@@ -192,8 +206,8 @@ const Fashion = ({location}) => {
       dictionary: mailcarriers
     },
     novelty: {
-      array: accountNovelties,
-      dictionary: novelties
+      accountNovelties,
+      novelties
     }
   }
 
@@ -217,6 +231,7 @@ const Fashion = ({location}) => {
           {account && (
             <Switch>
               <Route path={`${higherLevelPath}/mount`} render={() => <Mount {...props.mount} />} />
+              <Route path={`${higherLevelPath}/novelty`} render={() => <Novelty {...props.novelty} />} />
               {MENU.map(item => (
                 <Route key={item.id} path={`${higherLevelPath}/${item.id}`} render={() => <Content {...props[item.id]} />} />
               ))}
