@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useState} from 'react'
 import {NavLink, Route, Switch, Redirect} from 'react-router-dom'
 
 import {AccountContext} from '../_context/AccountContext'
@@ -44,15 +44,15 @@ const sortByName = ({array, dictionary}) => {
 }
 
 const getList = ({array, dictionary}) => {
-  const sorted = sortByName({array, dictionary})
+  const unlocked = sortByName({array, dictionary})
   const all = sortByName({array: Object.keys(dictionary).map(key => dictionary[key].id), dictionary})
   const locked = []
   for (const id of all) {
-    if (!sorted.includes(id)) {
+    if (!unlocked.includes(id)) {
       locked.push(id)
     }
   }
-  return {sorted, locked}
+  return {unlocked, locked}
 }
 
 const Mount = ({accountMountTypes, accountMountSkins, mountTypes}) => mountTypes.map(type => (
@@ -73,53 +73,75 @@ const Mount = ({accountMountTypes, accountMountSkins, mountTypes}) => mountTypes
   </React.Fragment>
 ))
 
+const ITEM_PER_PAGE = 25
+
 const Content = ({array, dictionary}) => {
-  const {sorted, locked} = getList({
+  const {unlocked, locked} = getList({
     array,
     dictionary
   })
 
+  const [displayed, setDisplayed] = useState(ITEM_PER_PAGE)
+
+  const handleClick = () => {
+    setDisplayed(prev => prev + ITEM_PER_PAGE)
+  }
+
+  const isSplitted = unlocked.length > displayed || locked.length > displayed
+
   return (
-    <div className='ui two column stackable grid'>
-      <div className='column'>
-        <h3 className='ui pink dividing header'>
-          Unlocked
-        </h3>
-        <div className='unlocked list'>
-          {sorted.map(id => (
-            <div key={id} className='item'>
-              <div className='ui tiny rounded image'>
-                <span className='ui left corner mini green label'>
-                  <i className='icon check' />
-                </span>
-                <img src={dictionary[id].icon} />
+    <React.Fragment>
+      <div className='ui two column stackable grid'>
+        <div className='column'>
+          <h3 className='ui pink dividing header'>
+            Unlocked
+          </h3>
+          <div className='unlocked list'>
+            {unlocked.slice(0, displayed).map(id => dictionary[id] && (
+              <div key={id} className='item'>
+                <div className='ui tiny rounded image'>
+                  <span className='ui left corner mini green label'>
+                    <i className='icon check' />
+                  </span>
+                  <img src={dictionary[id].icon} />
+                </div>
+                <div className='content'>
+                  {dictionary[id].name}
+                </div>
               </div>
-              <div className='content'>
-                {dictionary[id].name}
+            ))}
+          </div>
+        </div>
+        <div className='column'>
+          <h3 className='ui pink dividing header'>
+            Locked
+          </h3>
+          <div className='locked list'>
+            {locked.slice(0, displayed).map(id => dictionary[id] && (
+              <div key={id} className='item'>
+                <div className='ui tiny rounded image'>
+                  <img src={dictionary[id].icon} />
+                </div>
+                <div className='content'>
+                  <i className='icon grey lock' />
+                  {dictionary[id].name}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-      <div className='column'>
-        <h3 className='ui pink dividing header'>
-          Locked
-        </h3>
-        <div className='locked list'>
-          {locked.map(id => (
-            <div key={id} className='item'>
-              <div className='ui tiny rounded image'>
-                <img src={dictionary[id].icon} />
-              </div>
-              <div className='content'>
-                <i className='icon grey lock' />
-                {dictionary[id].name}
-              </div>
-            </div>
-          ))}
+      {isSplitted && (
+        <div className='ui horizontal pink divider'>
+          <div
+            onClick={handleClick}
+            className='ui center aligned basic button'>
+            <i className='icon down chevron' />
+            Show more than {displayed} items...
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </React.Fragment>
   )
 }
 

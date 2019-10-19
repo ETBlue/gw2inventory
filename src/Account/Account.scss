@@ -104,6 +104,12 @@
         align-items: center;
       }
 
+      .ui.horizontal.divider {
+        .ui.button {
+          margin-right: 0;
+        }
+      }
+
       .ui.menu .item::first-letter {
         text-transform: capitalize;
       }
