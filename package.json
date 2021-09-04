@@ -40,6 +40,12 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": false,
+    "trailingComma": "all"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
