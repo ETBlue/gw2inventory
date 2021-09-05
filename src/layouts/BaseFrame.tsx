@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 
 import { APP_NAME, BASE_URL } from "config"
 import TokenContext from "contexts/TokenContext"
+import Header from "blocks/Header"
 
 import css from "./styles/BaseFrame.module.css"
 
@@ -16,23 +17,8 @@ const BaseFrame = (props: Props) => {
 
   return (
     <div className={css.base}>
-      <div className={css.head}>
-        <Link className={css.home} to="/">
-          <img
-            className={css.logo}
-            alt="logo"
-            src={`${BASE_URL}/favicon.png`}
-          />
-          {APP_NAME}
-        </Link>
-        <div></div>
-        <div className={css.action}>
-          {currentToken ? currentToken?.account : "Submit your token"}
-        </div>
-      </div>
-      <div className={css.main}>
-        <div>{children}</div>
-      </div>
+      <Header />
+      <div className={css.main}>{children}</div>
     </div>
   )
 }

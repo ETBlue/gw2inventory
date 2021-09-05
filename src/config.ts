@@ -1,5 +1,7 @@
 export const APP_NAME = "Guild Wars 2 Inventory"
 
+export const API_URL = "https://api.guildwars2.com/v2"
+
 export const BASE_URL = "/gw2inventory"
 
 const LOCAL_STORAGE_KEY_PREFIX = "gw2i"

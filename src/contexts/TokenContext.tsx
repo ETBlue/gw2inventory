@@ -1,19 +1,19 @@
-import React, { useState, createContext, Provider, Children } from "react"
+import React, { useState, createContext } from "react"
 
 import { LOCAL_STORAGE_KEYS } from "config"
 
 export interface UsedToken {
-  account: string
+  name: string
   token: string
   description: string
 }
 
 const TokenContext = createContext({
   usedTokens: [],
-  addUsedToken: () => {},
-  removeUsedToken: () => {},
-  currentToken: { account: "", token: "", description: "" },
-  setCurrentToken: () => {},
+  addUsedToken: (token: UsedToken) => {},
+  removeUsedToken: (token: UsedToken) => {},
+  currentToken: null,
+  setCurrentToken: (token: UsedToken) => {},
 })
 
 function TokenProvider(props: { children: React.ReactNode }) {
@@ -30,6 +30,9 @@ function TokenProvider(props: { children: React.ReactNode }) {
 
   const addUsedToken = (newToken: UsedToken) => {
     if (usedTokens.find((item) => item.token === newToken.token)) {
+      return
+    }
+    if (!newToken.token) {
       return
     }
     const newUsedTokens = [newToken, ...usedTokens]
@@ -82,10 +85,10 @@ const readV1StoredTokens = () => {
   if (v1Storage) {
     try {
       const v1Data: { [key: string]: string } = JSON.parse(v1Storage)
-      const v1UsedTokens = Object.keys(v1Data).map((account: string) => {
+      const v1UsedTokens = Object.keys(v1Data).map((name: string) => {
         return {
-          account,
-          token: v1Data[account],
+          name,
+          token: v1Data[name],
           description: "",
         }
       })
@@ -100,7 +103,9 @@ const readV1StoredTokens = () => {
 const getUsedTokens = () => {
   const storedTokens: UsedToken[] = readStoredTokens()
   const v1StoredTokens: UsedToken[] = readV1StoredTokens()
-  const usedTokens: UsedToken[] = [...storedTokens, ...v1StoredTokens]
+  const usedTokens: UsedToken[] = [...storedTokens, ...v1StoredTokens].filter(
+    (item) => item.token,
+  )
   if (v1StoredTokens.length > 0) {
     localStorage.setItem(LOCAL_STORAGE_KEYS.tokens, JSON.stringify(usedTokens))
     localStorage.removeItem(LOCAL_STORAGE_KEYS.legacy)
