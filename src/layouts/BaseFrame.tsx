@@ -1,25 +1,24 @@
-import React, { useContext } from "react"
-import { Link } from "react-router-dom"
+import React from "react"
 
-import { APP_NAME, BASE_URL } from "config"
-import TokenContext from "contexts/TokenContext"
 import Header from "blocks/Header"
 
-import css from "./styles/BaseFrame.module.css"
+import { Box, Grid } from "@chakra-ui/react"
 
 interface Props {
   children?: React.ReactNode
 }
 
-const BaseFrame = (props: Props) => {
+function BaseFrame(props: Props) {
   const { children } = props
-  const { currentToken } = useContext(TokenContext)
 
   return (
-    <div className={css.base}>
+    <Grid templateRows="auto 3.5rem 1fr" height="100vh" width="100vw">
+      <div />
       <Header />
-      <div className={css.main}>{children}</div>
-    </div>
+      <Box background="hsla(50, 30%, 98%, 1)" padding="2rem">
+        {children}
+      </Box>
+    </Grid>
   )
 }
 

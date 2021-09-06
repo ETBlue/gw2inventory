@@ -1,68 +1,110 @@
 import React, { useContext } from "react"
-import { Link } from "react-router-dom"
-import { useQuery } from "react-query"
-import { Menu, MenuButton, MenuList, MenuItem, Button } from "@chakra-ui/react"
+import { Link, NavLink } from "react-router-dom"
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+  SimpleGrid,
+  Flex,
+  Image,
+} from "@chakra-ui/react"
 import { FaCog, FaPlus, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
-import { queryFunction } from "helpers/api"
 import TokenContext, { UsedToken } from "contexts/TokenContext"
 
-import css from "./styles/Header.module.css"
+const MENU_ITEMS = [
+  { to: "/account", text: "Account" },
+  { to: "/characters", text: "Characters" },
+  { to: "/items", text: "Items" },
+  { to: "/unlocks", text: "Unlocks" },
+  { to: "/trades", text: "Trades" },
+  { to: "/wallet", text: "Wallet" },
+]
 
-interface Props {
-  children?: React.ReactNode
-}
-
-const Header = (props: Props) => {
-  const { children } = props
+function Header() {
   const { usedTokens, currentToken, setCurrentToken } = useContext(TokenContext)
-  const { data, isFetching } = useQuery(
-    ["account", currentToken?.token || ""],
-    queryFunction,
-    { enabled: !!currentToken?.token },
-  )
-  console.log(data)
 
   return (
-    <div className={css.header}>
-      <Link className={css.home} to="/">
-        <img className={css.logo} alt="logo" src={`${BASE_URL}/favicon.png`} />
+    <SimpleGrid
+      templateColumns="auto 1fr auto"
+      gap="1rem"
+      padding="0 1rem"
+      alignContent="stretch"
+      alignItems="stretch"
+      borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+      fontFamily="Rosario"
+    >
+      <Flex
+        as={Link}
+        alignItems="center"
+        borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+        to="/"
+      >
+        <Image
+          marginRight="1rem"
+          height="3.5rem"
+          marginBottom="-2px"
+          alt="logo"
+          src={`${BASE_URL}/favicon.png`}
+        />
         {APP_NAME}
-      </Link>
-      <div>{children}</div>
-      <div className={css.action}>
-        <Menu>
-          <MenuButton
-            as={Button}
+      </Flex>
+      <Flex as="nav" justifyContent="center">
+        {MENU_ITEMS.map((item) => (
+          <Button
+            as={NavLink}
+            to={item.to}
             variant="ghost"
+            fontWeight="normal"
             borderRadius="0"
-            loadingText="Loading..."
-            isLoading={isFetching}
-            className={css.trigger}
-            rightIcon={<MdExpandMore />}
+            height="3.5rem"
+            borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+            _hover={{ background: "hsla(326, 15%, 55%, 0.1)" }}
+            activeStyle={{
+              background: "hsla(326, 73%, 55%, 1)",
+              color: "#f9f9f9",
+              cursor: "initial",
+            }}
           >
-            {currentToken?.name || "Select a token"}
-          </MenuButton>
-          <MenuList borderRadius="0" className={css.list}>
-            <MenuItem icon={<FaPlus />}>Add token...</MenuItem>
-            {usedTokens.map((item: UsedToken) => (
-              <MenuItem
-                key={item.token}
-                icon={<FaUser />}
-                onClick={() => {
-                  setCurrentToken(item)
-                }}
-              >
-                {item.name}
-              </MenuItem>
-            ))}
-            <MenuItem icon={<FaCog />}>Manage tokens...</MenuItem>
-          </MenuList>
-        </Menu>
-      </div>
-    </div>
+            {item.text}
+          </Button>
+        ))}
+      </Flex>
+      <Menu>
+        <MenuButton
+          as={Button}
+          variant="ghost"
+          fontWeight="normal"
+          borderRadius="0"
+          height="100%"
+          paddin="1rem"
+          marginRight="-0.5rem"
+          borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+          rightIcon={<MdExpandMore />}
+        >
+          {currentToken?.name || "Select a token"}
+        </MenuButton>
+        <MenuList borderRadius="0" position="relative" top="-0.75rem">
+          <MenuItem icon={<FaPlus />}>Add token...</MenuItem>
+          {usedTokens.map((item: UsedToken) => (
+            <MenuItem
+              key={item.token}
+              icon={<FaUser />}
+              onClick={() => {
+                setCurrentToken(item)
+              }}
+            >
+              {item.name}
+            </MenuItem>
+          ))}
+          <MenuItem icon={<FaCog />}>Manage tokens...</MenuItem>
+        </MenuList>
+      </Menu>
+    </SimpleGrid>
   )
 }
 
