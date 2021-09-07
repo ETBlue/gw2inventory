@@ -5,6 +5,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 
 import BaseFrame from "layouts/BaseFrame"
 import { TokenProvider } from "contexts/TokenContext"
+import Account from "pages/Account"
 
 import "./App.css"
 
@@ -12,11 +13,13 @@ const queryClient = new QueryClient()
 
 const Content = () => {
   return (
-    <Switch>
-      <Route path="*">
-        <BaseFrame>test</BaseFrame>
-      </Route>
-    </Switch>
+    <BaseFrame>
+      <Switch>
+        <Route path="/account">
+          <Account />
+        </Route>
+      </Switch>
+    </BaseFrame>
   )
 }
 

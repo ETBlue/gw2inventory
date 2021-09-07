@@ -56,6 +56,7 @@ function Header() {
       <Flex as="nav" justifyContent="center">
         {MENU_ITEMS.map((item) => (
           <Button
+            key={item.to}
             as={NavLink}
             to={item.to}
             variant="ghost"
