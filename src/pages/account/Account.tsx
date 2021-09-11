@@ -3,12 +3,12 @@ import { NavLink, Route, Switch } from "react-router-dom"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
 import TokenContext from "contexts/TokenContext"
-import Overview from "./account/Overview"
-import Achievements from "./account/Achievements"
-import Masteries from "./account/Masteries"
-import Home from "./account/Home"
-import Recipes from "./account/Recipes"
-import Legendaries from "./account/Legendaries"
+import Overview from "./Overview"
+import Achievements from "./Achievements"
+import Masteries from "./Masteries"
+import Home from "./Home"
+import Recipes from "./Recipes"
+import Legendaries from "./Legendaries"
 
 const MENU_ITEMS = [
   { to: "/account", text: "Overview", component: Overview },
