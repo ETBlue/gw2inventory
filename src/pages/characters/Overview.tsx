@@ -1,21 +1,21 @@
 import React, { Dispatch } from "react"
 import { format, formatDistanceStrict } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
-import { CgArrowDown } from "react-icons/cg"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
-import { Character } from "./Characters"
+import { Character, Sort } from "./Characters"
 import css from "./styles/Character.module.css"
 
 interface Props {
   characters: Character[]
   token: string
-  sortBy: string
-  setSortBy: Dispatch<string>
+  sort: Sort
+  setSort: Dispatch<string>
 }
 
 function Overview(props: Props) {
-  const { characters, sortBy, setSortBy } = props
+  const { characters, sort, setSort } = props
 
   return (
     <Table>
@@ -25,12 +25,21 @@ function Overview(props: Props) {
             <Th
               key={title}
               onClick={() => {
-                setSortBy(title)
+                setSort(title)
               }}
-              className={sortBy === title ? css.active : ""}
+              className={sort.by === title ? css.active : ""}
               style={{ cursor: "pointer", position: "relative" }}
             >
-              {title} {sortBy === title ? <CgArrowDown /> : ""}
+              {title}{" "}
+              {sort.by === title ? (
+                sort.isAsc ? (
+                  <CgArrowDown />
+                ) : (
+                  <CgArrowUp />
+                )
+              ) : (
+                ""
+              )}
             </Th>
           ))}
         </Tr>

@@ -21,6 +21,11 @@ const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
 ]
 
+export interface Sort {
+  by: string
+  isAsc?: boolean
+}
+
 function Characters() {
   const { currentToken } = useContext(TokenContext)
 
@@ -40,9 +45,13 @@ function Characters() {
     "All",
   )
 
-  const [sortBy, setSortBy] = useReducer((prev: string, next: string) => {
-    return next
-  }, "name")
+  const [sort, setSort] = useReducer(
+    (prev: Sort, next: string) => {
+      if (prev.by === next) return { ...prev, isAsc: !prev.isAsc }
+      return { by: next, isAsc: true }
+    },
+    { by: "name", isAsc: true },
+  )
 
   const allCharacters = data || []
 
@@ -51,7 +60,13 @@ function Characters() {
       (character) =>
         character.profession === activeProfession || activeProfession === "All",
     )
-    .sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
+    .sort((a, b) => {
+      if (a[sort.by] > b[sort.by] && sort.isAsc) return 1
+      if (a[sort.by] < b[sort.by] && !sort.isAsc) return 1
+      if (a[sort.by] > b[sort.by] && !sort.isAsc) return -1
+      if (a[sort.by] < b[sort.by] && sort.isAsc) return -1
+      return 0
+    })
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
@@ -102,8 +117,8 @@ function Characters() {
                     <Component
                       characters={characters}
                       token={currentToken.token}
-                      sortBy={sortBy}
-                      setSortBy={setSortBy}
+                      sort={sort}
+                      setSort={setSort}
                     />
                   </Route>
                 )
@@ -120,14 +135,14 @@ export default Characters
 const PROFESSIONS = [
   "All",
   "Elementalist",
-  "Engineer",
-  "Guardian",
-  "Mesmer",
   "Necromancer",
+  "Mesmer",
   "Ranger",
-  "Revenant",
   "Thief",
+  "Engineer",
   "Warrior",
+  "Guardian",
+  "Revenant",
 ]
 
 export interface Character {
