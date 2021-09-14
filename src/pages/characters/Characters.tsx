@@ -1,5 +1,6 @@
-import React, { useReducer, useContext } from "react"
+import React, { useReducer, useContext, useState } from "react"
 import { NavLink, Route, Switch } from "react-router-dom"
+import { MdSearch } from "react-icons/md"
 import { useQuery } from "react-query"
 import {
   Tabs,
@@ -10,6 +11,10 @@ import {
   Button,
   Tag,
   Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Spacer,
 } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
@@ -37,6 +42,8 @@ function Characters() {
   //const isFetching = false
   //const data = sample
 
+  const [search, setSearch] = useState("")
+
   const [activeProfession, setActiveProfession] = useReducer(
     (prev: string, next: string) => {
       if (prev === next) return "All"
@@ -60,6 +67,11 @@ function Characters() {
       (character) =>
         character.profession === activeProfession || activeProfession === "All",
     )
+    .filter((character) =>
+      !!search
+        ? JSON.stringify(character).match(new RegExp(search, "i"))
+        : true,
+    )
     .sort((a, b) => {
       if (a[sort.by] > b[sort.by] && sort.isAsc) return 1
       if (a[sort.by] < b[sort.by] && !sort.isAsc) return 1
@@ -76,6 +88,19 @@ function Characters() {
             {item.text}
           </Tab>
         ))}
+        <Spacer />
+        <InputGroup width="20ch">
+          <InputLeftElement>
+            <MdSearch opacity="0.5" />
+          </InputLeftElement>
+          <Input
+            variant="unstyled"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.currentTarget.value || "")
+            }}
+          />
+        </InputGroup>
       </TabList>
       {isFetching ? (
         <Center>
