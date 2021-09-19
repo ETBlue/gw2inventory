@@ -192,8 +192,8 @@ export interface Character {
   title?: number // The currently selected title for the character. References /v2/titles.
   backstory: string[] // An array of strings representing backstory answer IDs pertaining to the questions answered during character creation. References /v2/backstory/answers.
   crafting: Crafting[] // An array containing an entry for each crafting discipline the character has unlocked
-  equipment: EquipmentItem[]
-  bags: Bag[] // Contains one object structure per bag in the character's inventory
+  equipment: CharacterEquipmentItem[]
+  bags: CharacterBag[] // Contains one object structure per bag in the character's inventory
   skills: {
     pve: Skills // contains the information on each slotted utility for PvE
     pvp: Skills // contains the information on each slotted utility for PvP
@@ -226,7 +226,13 @@ interface Crafting {
   active: boolean // Describes if the given discipline is currently active or not on the character.
 }
 
-interface Item {
+interface CharacterBag {
+  id: number // The bag's item id which can be resolved against /v2/items
+  size: number // The amount of slots available with this bag.
+  inventory: CharacterBagItem[] // Contains one object structure per item, object is null if no item is in the given bag slot.
+}
+
+interface CharacterItem {
   id: number // The item id which can be resolved against /v2/items
   infusions?: number[] // returns an array of infusion item ids which can be resolved against /v2/items
   upgrades?: number[] // returns an array of upgrade component item ids which can be resolved against /v2/items
@@ -236,7 +242,11 @@ interface Item {
   bound_to?: string // Name of the character the item is bound to.
 }
 
-interface EquipmentItem extends Item {
+interface CharacterBagItem extends CharacterItem {
+  count: number // Amount of item in the stack. Minium of 1, maximum of 250.
+}
+
+interface CharacterEquipmentItem extends CharacterItem {
   slot:
     | "HelmAquatic"
     | "Backpack"
@@ -279,16 +289,6 @@ interface Attributes {
   ConditionDuration?: number // Shows the amount of Condition Duration given
   Healing?: number // Shows the amount of Healing Power given
   BoonDuration?: number // Shows the amount of Boon Duration given
-}
-
-interface Bag {
-  id: number // The bag's item id which can be resolved against /v2/items
-  size: number // The amount of slots available with this bag.
-  inventory: BagItem[] // Contains one object structure per item, object is null if no item is in the given bag slot.
-}
-
-interface BagItem extends Item {
-  count: number // Amount of item in the stack. Minium of 1, maximum of 250.
 }
 
 interface Skills {
