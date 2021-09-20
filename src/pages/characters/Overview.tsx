@@ -6,7 +6,8 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
-import { Character } from "./Characters"
+
+import { Character } from "./types"
 import css from "./styles/Character.module.css"
 
 interface Props {
