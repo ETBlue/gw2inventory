@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import { Link, NavLink, Route, Switch, useHistory } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
 import { useQuery } from "react-query"
@@ -21,8 +21,10 @@ import { queryFunction } from "helpers/api"
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
 import TokenContext from "contexts/TokenContext"
+import ItemContext from "contexts/ItemContext"
 
 import Overview from "./Overview"
+import { CharacterBag, CharacterBagItemInList } from "./types"
 
 const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
@@ -30,6 +32,7 @@ const MENU_ITEMS = [
 
 function Characters() {
   const { currentToken } = useContext(TokenContext)
+  const { addCharacterItems } = useContext(ItemContext)
   const history = useHistory()
 
   const { data: allCharacters, isFetching } = useQuery(
@@ -39,6 +42,26 @@ function Characters() {
   )
   //const isFetching = false
   //const data = sample
+
+  useEffect(() => {
+    let characterItems: CharacterBagItemInList[] = []
+
+    for (const character of allCharacters) {
+      const bagItems = character.bags.reduce(
+        (prev: CharacterBagItemInList[], currentBag: CharacterBag) => {
+          const currentBagItems = currentBag.inventory.map((item) => {
+            if (item) {
+              return { ...item, location: character.name }
+            }
+          })
+          return [...prev, ...currentBagItems.filter((item) => !!item)]
+        },
+        [],
+      )
+      characterItems = [...characterItems, ...bagItems]
+    }
+    addCharacterItems(characterItems)
+  }, [allCharacters.length])
 
   const {
     queryString,

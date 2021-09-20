@@ -54,7 +54,7 @@ interface Crafting {
   active: boolean // Describes if the given discipline is currently active or not on the character.
 }
 
-interface CharacterBag {
+export interface CharacterBag {
   id: number // The bag's item id which can be resolved against /v2/items
   size: number // The amount of slots available with this bag.
   inventory: CharacterBagItem[] // Contains one object structure per item, object is null if no item is in the given bag slot.
@@ -72,6 +72,10 @@ interface CharacterItem {
 
 interface CharacterBagItem extends CharacterItem {
   count: number // Amount of item in the stack. Minium of 1, maximum of 250.
+}
+
+export interface CharacterBagItemInList extends CharacterBagItem {
+  location: string
 }
 
 interface CharacterEquipmentItem extends CharacterItem {
