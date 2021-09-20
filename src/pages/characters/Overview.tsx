@@ -1,45 +1,53 @@
-import React, { Dispatch } from "react"
+import React from "react"
+import { Link } from "react-router-dom"
 import { format, formatDistanceStrict } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
-import { Character, Sort } from "./Characters"
+import { getQueryString } from "helpers/url"
+import { Character } from "./Characters"
 import css from "./styles/Character.module.css"
 
 interface Props {
   characters: Character[]
   token: string
-  sort: Sort
-  setSort: Dispatch<string>
+  activeSort: string
+  activeOrder: string
+  queryString: string
 }
 
 function Overview(props: Props) {
-  const { characters, sort, setSort } = props
-
+  const { characters, activeSort, activeOrder, queryString } = props
   return (
-    <Table>
+    <Table className={css.table}>
       <Thead>
         <Tr>
           {COLUMNS.map((title) => (
             <Th
               key={title}
-              onClick={() => {
-                setSort(title)
-              }}
-              className={sort.by === title ? css.active : ""}
-              style={{ cursor: "pointer", position: "relative" }}
+              as={Link}
+              to={`/characters?${
+                activeSort === title
+                  ? getQueryString(
+                      "order",
+                      activeOrder === "asc" ? "dsc" : "",
+                      queryString,
+                    )
+                  : getQueryString("sort", title, queryString)
+              }`}
+              className={`${css.title} ${
+                activeSort === title ? css.active : ""
+              }`}
             >
               {title}{" "}
-              {sort.by === title ? (
-                sort.isAsc ? (
+              {activeSort === title ? (
+                activeOrder === "asc" ? (
                   <CgArrowDown />
                 ) : (
                   <CgArrowUp />
                 )
-              ) : (
-                ""
-              )}
+              ) : null}
             </Th>
           ))}
         </Tr>

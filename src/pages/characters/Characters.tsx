@@ -1,5 +1,5 @@
-import React, { useReducer, useContext, useState } from "react"
-import { NavLink, Route, Switch } from "react-router-dom"
+import React, { useContext } from "react"
+import { Link, NavLink, Route, Switch, useHistory } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
 import { useQuery } from "react-query"
 import {
@@ -18,23 +18,21 @@ import {
 } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
+import { getQueryString } from "helpers/url"
 import TokenContext from "contexts/TokenContext"
 
 import Overview from "./Overview"
+import { useSearchParams } from "hooks/url"
 
 const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
 ]
 
-export interface Sort {
-  by: string
-  isAsc?: boolean
-}
-
 function Characters() {
   const { currentToken } = useContext(TokenContext)
+  const history = useHistory()
 
-  const { data, isFetching } = useQuery(
+  const { data: allCharacters, isFetching } = useQuery(
     ["characters", currentToken?.token, "ids=all"],
     queryFunction,
     { cacheTime: Infinity, enabled: !!currentToken?.token },
@@ -42,41 +40,31 @@ function Characters() {
   //const isFetching = false
   //const data = sample
 
-  const [search, setSearch] = useState("")
-
-  const [activeProfession, setActiveProfession] = useReducer(
-    (prev: string, next: string) => {
-      if (prev === next) return "All"
-      return next
-    },
-    "All",
-  )
-
-  const [sort, setSort] = useReducer(
-    (prev: Sort, next: string) => {
-      if (prev.by === next) return { ...prev, isAsc: !prev.isAsc }
-      return { by: next, isAsc: true }
-    },
-    { by: "name", isAsc: true },
-  )
-
-  const allCharacters = data || []
+  const {
+    queryString,
+    profession: activeProfession,
+    keyword,
+    sort,
+    order,
+  } = useSearchParams()
+  const activeSort = sort || "name"
+  const activeOrder = order || "asc"
 
   const characters = allCharacters
-    .filter(
+    ?.filter(
       (character) =>
-        character.profession === activeProfession || activeProfession === "All",
+        character.profession === activeProfession || !activeProfession,
     )
     .filter((character) =>
-      !!search
-        ? JSON.stringify(character).match(new RegExp(search, "i"))
+      !!keyword
+        ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
     )
     .sort((a, b) => {
-      if (a[sort.by] > b[sort.by] && sort.isAsc) return 1
-      if (a[sort.by] < b[sort.by] && !sort.isAsc) return 1
-      if (a[sort.by] > b[sort.by] && !sort.isAsc) return -1
-      if (a[sort.by] < b[sort.by] && sort.isAsc) return -1
+      if (a[activeSort] > b[activeSort] && activeOrder === "asc") return 1
+      if (a[activeSort] < b[activeSort] && activeOrder === "dsc") return 1
+      if (a[activeSort] > b[activeSort] && activeOrder === "dsc") return -1
+      if (a[activeSort] < b[activeSort] && activeOrder === "asc") return -1
       return 0
     })
 
@@ -95,9 +83,14 @@ function Characters() {
           </InputLeftElement>
           <Input
             variant="unstyled"
-            value={search}
+            value={keyword || ""}
             onChange={(e) => {
-              setSearch(e.currentTarget.value || "")
+              const to = `/characters?${getQueryString(
+                "keyword",
+                e.currentTarget.value,
+                queryString,
+              )}`
+              history.push(to)
             }}
           />
         </InputGroup>
@@ -113,17 +106,39 @@ function Characters() {
             margin="1rem auto"
             columns={PROFESSIONS.length}
           >
+            <Button
+              as={Link}
+              variant="ghost"
+              fontWeight="normal"
+              isActive={!activeProfession}
+              to={`/characters?${getQueryString(
+                "profession",
+                "",
+                queryString,
+              )}`}
+            >
+              All
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {allCharacters?.length}
+              </Tag>
+            </Button>{" "}
             {PROFESSIONS.map((profession) => (
               <Button
+                key={profession}
+                as={Link}
                 variant="ghost"
                 fontWeight="normal"
                 isActive={activeProfession === profession}
-                onClick={() => setActiveProfession(profession)}
+                to={`/characters?${getQueryString(
+                  "profession",
+                  profession,
+                  queryString,
+                )}`}
               >
                 {profession}{" "}
-                <Tag size="sm" margin="0 0 -0.1em 0.25em">
+                <Tag size="sm" margin="0 0 -0.1em 0.5em">
                   {
-                    allCharacters.filter(
+                    allCharacters?.filter(
                       (character) =>
                         character.profession === profession ||
                         profession === "All",
@@ -135,6 +150,7 @@ function Characters() {
           </Flex>
           <Switch>
             {currentToken &&
+              allCharacters &&
               MENU_ITEMS.map((item) => {
                 const Component = item.component
                 return (
@@ -142,8 +158,9 @@ function Characters() {
                     <Component
                       characters={characters}
                       token={currentToken.token}
-                      sort={sort}
-                      setSort={setSort}
+                      activeSort={activeSort}
+                      activeOrder={activeOrder}
+                      queryString={queryString}
                     />
                   </Route>
                 )
@@ -158,7 +175,6 @@ function Characters() {
 export default Characters
 
 const PROFESSIONS = [
-  "All",
   "Elementalist",
   "Necromancer",
   "Mesmer",
