@@ -1,3 +1,14 @@
+.table td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.table .title,
+.table td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .title {
   cursor: pointer;
   position: relative;
@@ -10,12 +21,9 @@
   top: calc(50% - 0.5em);
 }
 
-.iconHeader {
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
-}
 .iconCell {
-  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 .icon {
   height: 3.5rem;
