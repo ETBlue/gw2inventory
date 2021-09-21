@@ -7,5 +7,7 @@ export const useSearchParams = () => {
   const order = searchParams.get("order")
   const profession = searchParams.get("profession")
   const keyword = searchParams.get("keyword")
-  return { queryString, sort, order, profession, keyword }
+  const type = searchParams.get("type")
+
+  return { queryString, sort, order, profession, keyword, type }
 }
