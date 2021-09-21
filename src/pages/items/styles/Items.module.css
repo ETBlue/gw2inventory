@@ -92,10 +92,7 @@
   white-space: nowrap;
 }
 
-.description,
-.chatLink,
-.restrictions,
-.boundTo {
+.secondary {
   font-size: 0.875rem;
   opacity: 0.75;
 }

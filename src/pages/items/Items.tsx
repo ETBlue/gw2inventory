@@ -30,6 +30,7 @@ import {
   Tag,
   Flex,
   Button,
+  Code,
 } from "@chakra-ui/react"
 
 import ItemContext from "contexts/ItemContext"
@@ -138,18 +139,6 @@ function Items() {
                 margin="1rem auto"
                 columns={menuItem.showOnly.length}
               >
-                <Button
-                  as={Link}
-                  variant="ghost"
-                  fontWeight="normal"
-                  isActive={!activeType}
-                  to={`${pathname}?${getQueryString("type", "", queryString)}`}
-                >
-                  All
-                  <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                    {getTypedItemLength(menuItem.showOnly)}
-                  </Tag>
-                </Button>
                 {menuItem.showOnly.map((type) => (
                   <Button
                     key={type}
@@ -176,7 +165,7 @@ function Items() {
         <Table className={css.table}>
           <Thead>
             <Tr>
-              {["rarity", "name", "chat_link", "level", "location"].map(
+              {["rarity", "name", "type", "level", "location", "chat_link"].map(
                 (title) => (
                   <Th
                     key={title}
@@ -217,7 +206,7 @@ function Items() {
                       {item ? (
                         <Image
                           src={item.icon}
-                          alt={`icon of ${item.name}`}
+                          alt={item.rarity}
                           className={`${css.icon} ${
                             css[item.rarity.toLowerCase()]
                           }`}
@@ -239,22 +228,26 @@ function Items() {
                           >
                             {item.name}
                           </Heading>
-                          <p className={css.description}>{item.description}</p>
+                          <p className={`${css.description} ${css.secondary}`}>
+                            {item.description}
+                          </p>
                         </>
                       ) : (
-                        "(item not supported in gw2 api)"
+                        <>
+                          Item not exists in Guild Wars 2 API. ID:{" "}
+                          <Code>{characterItem.id}</Code>
+                        </>
                       )}
                     </Td>
                     <Td>
-                      {item && (
-                        <code className={css.chatLink}>{item.chat_link}</code>
-                      )}
+                      {item?.type}
+                      <div className={css.secondary}>{item?.details?.type}</div>
                     </Td>
                     <Td>
                       {item && (
                         <>
                           {item.level}
-                          <div className={css.restrictions}>
+                          <div className={css.secondary}>
                             {item && item.restrictions.join(",")}
                           </div>
                         </>
@@ -268,9 +261,14 @@ function Items() {
                         </Tag>
                       )}
                       {characterItem.bound_to && (
-                        <div className={css.boundTo}>
+                        <div className={css.secondary}>
                           bound to {characterItem.bound_to}
                         </div>
+                      )}
+                    </Td>
+                    <Td>
+                      {item && (
+                        <Code className={css.secondary}>{item.chat_link}</Code>
                       )}
                     </Td>
                   </Tr>

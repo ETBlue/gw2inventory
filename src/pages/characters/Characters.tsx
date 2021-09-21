@@ -161,7 +161,7 @@ function Characters() {
             >
               All
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {allCharacters?.length}
+                {allCharacters?.length || "0"}
               </Tag>
             </Button>{" "}
             {PROFESSIONS.map((profession) => (
@@ -179,13 +179,11 @@ function Characters() {
               >
                 {profession}{" "}
                 <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                  {
-                    allCharacters?.filter(
-                      (character) =>
-                        character.profession === profession ||
-                        profession === "All",
-                    ).length
-                  }
+                  {allCharacters?.filter(
+                    (character) =>
+                      character.profession === profession ||
+                      profession === "All",
+                  ).length || "0"}
                 </Tag>
               </Button>
             ))}
