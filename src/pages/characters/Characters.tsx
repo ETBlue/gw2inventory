@@ -42,11 +42,13 @@ function Characters() {
   )
 
   useEffect(() => {
+    if (!allCharacters) return
     let characterItems: CharacterItemInList[] = []
 
     for (const character of allCharacters) {
       const bagItems = character.bags.reduce(
-        (prev: CharacterItemInList[], bag: CharacterBag) => {
+        (prev: CharacterItemInList[], bag: CharacterBag | null) => {
+          if (!bag) return prev
           const currentBag = {
             ...bag,
             location: character.name,
@@ -75,7 +77,7 @@ function Characters() {
       characterItems = [...characterItems, ...bagItems, ...equippedItems]
     }
     setCharacterItems(characterItems)
-  }, [allCharacters.length])
+  }, [allCharacters?.length])
 
   const {
     queryString,

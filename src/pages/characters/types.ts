@@ -21,7 +21,7 @@ export interface Character {
   backstory: string[] // An array of strings representing backstory answer IDs pertaining to the questions answered during character creation. References /v2/backstory/answers.
   crafting: Crafting[] // An array containing an entry for each crafting discipline the character has unlocked
   equipment: CharacterEquipmentItem[]
-  bags: CharacterBag[] // Contains one object structure per bag in the character's inventory
+  bags: (CharacterBag | null)[] // Contains one object structure per bag in the character's inventory
   skills: {
     pve: Skills // contains the information on each slotted utility for PvE
     pvp: Skills // contains the information on each slotted utility for PvP
