@@ -8,10 +8,10 @@ export interface UsedAccount {
 
 const TokenContext = createContext({
   usedAccounts: [],
-  addUsedAccount: (token: UsedAccount) => {},
-  removeUsedAccount: (token: UsedAccount) => {},
+  addUsedAccount: (account: UsedAccount) => {},
+  removeUsedAccount: (account: UsedAccount) => {},
   currentAccount: null,
-  setCurrentAccount: (token: UsedAccount) => {},
+  setCurrentAccount: (account: UsedAccount | null) => {},
 })
 
 function TokenProvider(props: { children: React.ReactNode }) {
@@ -38,7 +38,7 @@ function TokenProvider(props: { children: React.ReactNode }) {
 
   const removeUsedAccount = (abandonedToken: UsedAccount) => {
     const newUsedAccounts = usedAccounts.filter(
-      (item) => item.token === abandonedToken.token,
+      (item) => item.token !== abandonedToken.token,
     )
     if (newUsedAccounts.length === usedAccounts.length) {
       return

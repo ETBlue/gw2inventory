@@ -7,11 +7,11 @@ import BaseFrame from "layouts/BaseFrame"
 import { TokenProvider } from "contexts/TokenContext"
 import { ItemProvider } from "contexts/ItemContext"
 
-import Account from "pages/account"
 import Characters from "pages/characters"
+import Items from "pages/items"
+import Settings from "pages/settings"
 
 import "./App.css"
-import Items from "pages/items"
 
 const queryClient = new QueryClient()
 
@@ -24,6 +24,9 @@ const Content = () => {
         </Route>
         <Route path="/items/:category?">
           <Items />
+        </Route>
+        <Route path="/settings">
+          <Settings />
         </Route>
         <Route path="/">
           <Redirect to="/characters" />

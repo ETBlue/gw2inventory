@@ -10,7 +10,7 @@ import {
   Flex,
   Image,
 } from "@chakra-ui/react"
-import { FaCog, FaPlus, FaUser } from "react-icons/fa"
+import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
@@ -91,7 +91,6 @@ function Header() {
           {currentAccount?.name || "Select a token"}
         </MenuButton>
         <MenuList borderRadius="0" position="relative" top="-0.75rem">
-          <MenuItem icon={<FaPlus />}>Add token...</MenuItem>
           {usedAccounts.map((item: UsedAccount) => (
             <MenuItem
               key={item.token}
@@ -103,7 +102,9 @@ function Header() {
               {item.name}
             </MenuItem>
           ))}
-          <MenuItem icon={<FaCog />}>Manage tokens...</MenuItem>
+          <MenuItem as={Link} to="/settings" icon={<FaCog />}>
+            Manage tokens...
+          </MenuItem>
         </MenuList>
       </Menu>
     </SimpleGrid>

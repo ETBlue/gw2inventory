@@ -1,7 +1,8 @@
 import React from "react"
 import { useQuery } from "react-query"
-import { queryFunction } from "helpers/api"
 import { Center, Spinner } from "@chakra-ui/react"
+
+import { queryFunction } from "helpers/api"
 
 function Overview(props: { token: string }) {
   const { token } = props
