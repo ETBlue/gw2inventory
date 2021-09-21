@@ -24,12 +24,7 @@ import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 
 import Overview from "./Overview"
-import {
-  CharacterBag,
-  CharacterBagInList,
-  CharacterBagItemInList,
-  CharacterEquipmentItemInList,
-} from "./types"
+import { CharacterBag, CharacterItemInList } from "./types"
 
 const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
@@ -49,23 +44,16 @@ function Characters() {
   //const data = sample
 
   useEffect(() => {
-    let characterItems: (
-      | CharacterBagInList
-      | CharacterBagItemInList
-      | CharacterEquipmentItemInList
-    )[] = []
+    let characterItems: CharacterItemInList[] = []
 
     for (const character of allCharacters) {
       const bagItems = character.bags.reduce(
-        (
-          prev: (
-            | CharacterBagInList
-            | CharacterBagItemInList
-            | CharacterEquipmentItemInList
-          )[],
-          bag: CharacterBag,
-        ) => {
-          const currentBag = { ...bag, location: character.name }
+        (prev: CharacterItemInList[], bag: CharacterBag) => {
+          const currentBag = {
+            ...bag,
+            location: character.name,
+            isEquipped: true,
+          }
           const currentBagItems = bag.inventory.map((item) => {
             if (item) {
               return { ...item, location: character.name }

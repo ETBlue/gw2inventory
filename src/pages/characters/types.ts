@@ -60,8 +60,9 @@ export interface CharacterBag {
   inventory: CharacterBagItem[] // Contains one object structure per item, object is null if no item is in the given bag slot.
 }
 
-export interface CharacterBagInList extends CharacterBag {
+interface CharacterBagInList extends CharacterBag {
   location: string
+  isEquipped: boolean
 }
 
 interface CharacterItem {
@@ -78,7 +79,7 @@ interface CharacterBagItem extends CharacterItem {
   count: number // Amount of item in the stack. Minium of 1, maximum of 250.
 }
 
-export interface CharacterBagItemInList extends CharacterBagItem {
+interface CharacterBagItemInList extends CharacterBagItem {
   location: string
 }
 
@@ -110,10 +111,15 @@ interface CharacterEquipmentItem extends CharacterItem {
   dyes: number[] // Array of selected dyes for the equipment piece. Values default to null if no dye is selected. Colors can be resolved against v2/colors
 }
 
-export interface CharacterEquipmentItemInList extends CharacterEquipmentItem {
+interface CharacterEquipmentItemInList extends CharacterEquipmentItem {
   location: string
   isEquipped: boolean
 }
+
+export type CharacterItemInList =
+  | CharacterBagInList
+  | CharacterBagItemInList
+  | CharacterEquipmentItemInList
 
 interface Stats {
   id: number // The itemstat id, can be resolved against /v2/itemstats.
