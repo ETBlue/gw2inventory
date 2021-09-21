@@ -15,7 +15,7 @@ function BaseFrame(props: Props) {
     <Grid templateRows="auto 3.5rem 1fr" height="100vh">
       <div />
       <Header />
-      <Box background="hsla(50, 30%, 98%, 1)" padding="2rem">
+      <Box background="hsla(50, 30%, 98%, 1)" padding="1rem">
         {children}
       </Box>
     </Grid>
