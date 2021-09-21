@@ -12,7 +12,7 @@ function BaseFrame(props: Props) {
   const { children } = props
 
   return (
-    <Grid templateRows="auto 3.5rem 1fr" height="100vh" width="100vw">
+    <Grid templateRows="auto 3.5rem 1fr" height="100vh">
       <div />
       <Header />
       <Box background="hsla(50, 30%, 98%, 1)" padding="2rem">
