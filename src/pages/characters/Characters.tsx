@@ -28,6 +28,7 @@ import {
   CharacterBag,
   CharacterBagInList,
   CharacterBagItemInList,
+  CharacterEquipmentItemInList,
 } from "./types"
 
 const MENU_ITEMS = [
@@ -48,12 +49,20 @@ function Characters() {
   //const data = sample
 
   useEffect(() => {
-    let characterItems: (CharacterBagItemInList | CharacterBagInList)[] = []
+    let characterItems: (
+      | CharacterBagInList
+      | CharacterBagItemInList
+      | CharacterEquipmentItemInList
+    )[] = []
 
     for (const character of allCharacters) {
       const bagItems = character.bags.reduce(
         (
-          prev: (CharacterBagItemInList | CharacterBagInList)[],
+          prev: (
+            | CharacterBagInList
+            | CharacterBagItemInList
+            | CharacterEquipmentItemInList
+          )[],
           bag: CharacterBag,
         ) => {
           const currentBag = { ...bag, location: character.name }
@@ -70,7 +79,14 @@ function Characters() {
         },
         [],
       )
-      characterItems = [...characterItems, ...bagItems]
+      const equippedItems = character.equipment.map((item) => {
+        return {
+          ...item,
+          location: character.name,
+          isEquipped: true,
+        }
+      })
+      characterItems = [...characterItems, ...bagItems, ...equippedItems]
     }
     setCharacterItems(characterItems)
   }, [allCharacters.length])

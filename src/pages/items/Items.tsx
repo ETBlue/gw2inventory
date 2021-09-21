@@ -19,6 +19,7 @@ import {
   Th,
   Image,
   Heading,
+  Tag,
 } from "@chakra-ui/react"
 
 import ItemContext from "contexts/ItemContext"
@@ -150,7 +151,12 @@ function Items() {
                   )}
                 </Td>
                 <Td>
-                  {characterItem.location}
+                  {characterItem.location}{" "}
+                  {characterItem.isEquipped && (
+                    <Tag size="sm" fontWeight="normal">
+                      Equipped
+                    </Tag>
+                  )}
                   {characterItem.bound_to && (
                     <div className={css.boundTo}>
                       bound to {characterItem.bound_to}

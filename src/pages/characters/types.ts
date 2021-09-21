@@ -60,6 +60,10 @@ export interface CharacterBag {
   inventory: CharacterBagItem[] // Contains one object structure per item, object is null if no item is in the given bag slot.
 }
 
+export interface CharacterBagInList extends CharacterBag {
+  location: string
+}
+
 interface CharacterItem {
   id: number // The item id which can be resolved against /v2/items
   infusions?: number[] // returns an array of infusion item ids which can be resolved against /v2/items
@@ -75,10 +79,6 @@ interface CharacterBagItem extends CharacterItem {
 }
 
 export interface CharacterBagItemInList extends CharacterBagItem {
-  location: string
-}
-
-export interface CharacterBagInList extends CharacterBag {
   location: string
 }
 
@@ -108,6 +108,11 @@ interface CharacterEquipmentItem extends CharacterItem {
     | "Pick" // The equipment slot in which the item is slotted. Possible values:
   charges?: number // The amount of charges remaining on the item.
   dyes: number[] // Array of selected dyes for the equipment piece. Values default to null if no dye is selected. Colors can be resolved against v2/colors
+}
+
+export interface CharacterEquipmentItemInList extends CharacterEquipmentItem {
+  location: string
+  isEquipped: boolean
 }
 
 interface Stats {

@@ -6,6 +6,7 @@ import { Item } from "pages/items/types"
 import {
   CharacterBagInList,
   CharacterBagItemInList,
+  CharacterEquipmentItemInList,
 } from "pages/characters/types"
 import { useState } from "react"
 
@@ -13,7 +14,11 @@ const ItemContext = createContext({
   items: {},
   characterItems: [],
   setCharacterItems: (
-    val: (CharacterBagItemInList | CharacterBagInList)[],
+    val: (
+      | CharacterBagInList
+      | CharacterBagItemInList
+      | CharacterEquipmentItemInList
+    )[],
   ) => {},
 })
 
@@ -49,7 +54,11 @@ function ItemProvider(props: { children: React.ReactNode }) {
   }
 
   const [characterItems, setCharacterItems] = useState<
-    (CharacterBagItemInList | CharacterBagInList)[]
+    (
+      | CharacterBagInList
+      | CharacterBagItemInList
+      | CharacterEquipmentItemInList
+    )[]
   >([])
 
   useEffect(() => {
