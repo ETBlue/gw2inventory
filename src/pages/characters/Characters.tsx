@@ -31,17 +31,15 @@ const MENU_ITEMS = [
 ]
 
 function Characters() {
-  const { currentToken } = useContext(TokenContext)
+  const { currentAccount } = useContext(TokenContext)
   const { setCharacterItems } = useContext(ItemContext)
   const history = useHistory()
 
   const { data: allCharacters, isFetching } = useQuery(
-    ["characters", currentToken?.token, "ids=all"],
+    ["characters", currentAccount?.token, "ids=all"],
     queryFunction,
     { cacheTime: Infinity, enabled: !!currentToken?.token },
   )
-  //const isFetching = false
-  //const data = sample
 
   useEffect(() => {
     let characterItems: CharacterItemInList[] = []
@@ -188,7 +186,7 @@ function Characters() {
             ))}
           </Flex>
           <Switch>
-            {currentToken &&
+            {currentAccount &&
               allCharacters &&
               MENU_ITEMS.map((item) => {
                 const Component = item.component
@@ -196,7 +194,7 @@ function Characters() {
                   <Route key={item.to} path={item.to}>
                     <Component
                       characters={characters}
-                      token={currentToken.token}
+                      token={currentAccount.token}
                       activeSort={activeSort}
                       activeOrder={activeOrder}
                       queryString={queryString}

@@ -24,7 +24,7 @@ const MENU_ITEMS = [
 ]
 
 function Account() {
-  const { currentToken } = useContext(TokenContext)
+  const { currentAccount } = useContext(TokenContext)
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
@@ -36,12 +36,12 @@ function Account() {
         ))}
       </TabList>
       <Switch>
-        {currentToken &&
+        {currentAccount &&
           MENU_ITEMS.map((item) => {
             const Component = item.component
             return (
               <Route key={item.to} path={item.to}>
-                <Component token={currentToken.token} />
+                <Component token={currentAccount.token} />
               </Route>
             )
           })}

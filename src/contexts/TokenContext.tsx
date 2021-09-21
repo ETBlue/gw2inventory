@@ -1,62 +1,59 @@
 import React, { useState, createContext } from "react"
 
-import { LOCAL_STORAGE_KEYS } from "config"
-
-export interface UsedToken {
+export interface UsedAccount {
   name: string
   token: string
-  description: string
+  description?: string
 }
 
 const TokenContext = createContext({
-  usedTokens: [],
-  addUsedToken: (token: UsedToken) => {},
-  removeUsedToken: (token: UsedToken) => {},
-  currentToken: null,
-  setCurrentToken: (token: UsedToken) => {},
+  usedAccounts: [],
+  addUsedAccount: (token: UsedAccount) => {},
+  removeUsedAccount: (token: UsedAccount) => {},
+  currentAccount: null,
+  setCurrentAccount: (token: UsedAccount) => {},
 })
 
 function TokenProvider(props: { children: React.ReactNode }) {
-  const [usedTokens, setUsedTokens] = useState<UsedToken[]>(getUsedTokens())
-  const [currentToken, setCurrentToken] = useState<UsedToken | null>(null)
+  const [usedAccounts, setUsedAccounts] = useState<UsedAccount[]>(
+    getUsedAccounts(),
+  )
+  const [currentAccount, setCurrentAccount] = useState<UsedAccount | null>(null)
 
-  const updateUsedTokens = (newUsedTokens: UsedToken[]) => {
-    localStorage.setItem(
-      LOCAL_STORAGE_KEYS.tokens,
-      JSON.stringify(newUsedTokens),
-    )
-    setUsedTokens(newUsedTokens)
+  const updateUsedAccounts = (newUsedAccounts: UsedAccount[]) => {
+    localStorage.setItem("gw2iTokens", JSON.stringify(newUsedAccounts))
+    setUsedAccounts(newUsedAccounts)
   }
 
-  const addUsedToken = (newToken: UsedToken) => {
-    if (usedTokens.find((item) => item.token === newToken.token)) {
+  const addUsedAccount = (newToken: UsedAccount) => {
+    if (usedAccounts.find((item) => item.token === newToken.token)) {
       return
     }
     if (!newToken.token) {
       return
     }
-    const newUsedTokens = [newToken, ...usedTokens]
-    updateUsedTokens(newUsedTokens)
+    const newUsedAccounts = [newToken, ...usedAccounts]
+    updateUsedAccounts(newUsedAccounts)
   }
 
-  const removeUsedToken = (abandonedToken: UsedToken) => {
-    const newUsedTokens = usedTokens.filter(
+  const removeUsedAccount = (abandonedToken: UsedAccount) => {
+    const newUsedAccounts = usedAccounts.filter(
       (item) => item.token === abandonedToken.token,
     )
-    if (newUsedTokens.length === usedTokens.length) {
+    if (newUsedAccounts.length === usedAccounts.length) {
       return
     }
-    updateUsedTokens(newUsedTokens)
+    updateUsedAccounts(newUsedAccounts)
   }
 
   return (
     <TokenContext.Provider
       value={{
-        usedTokens,
-        addUsedToken,
-        removeUsedToken,
-        currentToken,
-        setCurrentToken,
+        usedAccounts,
+        addUsedAccount,
+        removeUsedAccount,
+        currentAccount,
+        setCurrentAccount,
       }}
     >
       {props.children}
@@ -67,8 +64,22 @@ function TokenProvider(props: { children: React.ReactNode }) {
 export default TokenContext
 export { TokenProvider }
 
+const getUsedAccounts = () => {
+  const storedTokens: UsedAccount[] = readStoredTokens()
+  const v1StoredTokens: UsedAccount[] = readV1StoredTokens()
+  const usedAccounts: UsedAccount[] = [
+    ...storedTokens,
+    ...v1StoredTokens,
+  ].filter((item) => item.token)
+  if (v1StoredTokens.length > 0) {
+    localStorage.setItem("gw2iTokens", JSON.stringify(usedAccounts))
+    localStorage.removeItem("gw2i")
+  }
+  return usedAccounts
+}
+
 const readStoredTokens = () => {
-  const storage = localStorage.getItem(LOCAL_STORAGE_KEYS.tokens)
+  const storage = localStorage.getItem("gw2iTokens")
   if (storage) {
     try {
       const data = JSON.parse(storage)
@@ -81,34 +92,21 @@ const readStoredTokens = () => {
 }
 
 const readV1StoredTokens = () => {
-  const v1Storage = localStorage.getItem(LOCAL_STORAGE_KEYS.legacy)
+  const v1Storage = localStorage.getItem("gw2i")
   if (v1Storage) {
     try {
       const v1Data: { [key: string]: string } = JSON.parse(v1Storage)
-      const v1UsedTokens = Object.keys(v1Data).map((name: string) => {
+      const v1UsedAccounts = Object.keys(v1Data).map((name: string) => {
         return {
           name,
           token: v1Data[name],
           description: "",
         }
       })
-      return v1UsedTokens
+      return v1UsedAccounts
     } catch (err) {
       console.log(err)
     }
   }
   return []
-}
-
-const getUsedTokens = () => {
-  const storedTokens: UsedToken[] = readStoredTokens()
-  const v1StoredTokens: UsedToken[] = readV1StoredTokens()
-  const usedTokens: UsedToken[] = [...storedTokens, ...v1StoredTokens].filter(
-    (item) => item.token,
-  )
-  if (v1StoredTokens.length > 0) {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.tokens, JSON.stringify(usedTokens))
-    localStorage.removeItem(LOCAL_STORAGE_KEYS.legacy)
-  }
-  return usedTokens
 }

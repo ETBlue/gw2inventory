@@ -14,7 +14,7 @@ import { FaCog, FaPlus, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
-import TokenContext, { UsedToken } from "contexts/TokenContext"
+import TokenContext, { UsedAccount } from "contexts/TokenContext"
 
 const MENU_ITEMS = [
   { to: "/account", text: "Account" },
@@ -26,7 +26,8 @@ const MENU_ITEMS = [
 ]
 
 function Header() {
-  const { usedTokens, currentToken, setCurrentToken } = useContext(TokenContext)
+  const { usedAccounts, currentAccount, setCurrentAccount } =
+    useContext(TokenContext)
 
   return (
     <SimpleGrid
@@ -87,16 +88,16 @@ function Header() {
           borderBottom="2px hsla(326, 73%, 55%, 1) solid"
           rightIcon={<MdExpandMore />}
         >
-          {currentToken?.name || "Select a token"}
+          {currentAccount?.name || "Select a token"}
         </MenuButton>
         <MenuList borderRadius="0" position="relative" top="-0.75rem">
           <MenuItem icon={<FaPlus />}>Add token...</MenuItem>
-          {usedTokens.map((item: UsedToken) => (
+          {usedAccounts.map((item: UsedAccount) => (
             <MenuItem
               key={item.token}
               icon={<FaUser />}
               onClick={() => {
-                setCurrentToken(item)
+                setCurrentAccount(item)
               }}
             >
               {item.name}
