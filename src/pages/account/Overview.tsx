@@ -6,11 +6,14 @@ import { Center, Spinner } from "@chakra-ui/react"
 function Overview(props: { token: string }) {
   const { token } = props
 
-  const { data, isFetching } = useQuery(["account", token], queryFunction)
+  const { data, isFetching } = useQuery(["account", token], queryFunction, {
+    staleTime: Infinity,
+  })
 
   const { data: luck, isFetching: isLuckFetching } = useQuery(
     ["account/luck", token],
     queryFunction,
+    { staleTime: Infinity },
   )
 
   if (isFetching || isLuckFetching)

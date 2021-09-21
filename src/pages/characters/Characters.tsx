@@ -38,7 +38,10 @@ function Characters() {
   const { data: allCharacters, isFetching } = useQuery(
     ["characters", currentAccount?.token, "ids=all"],
     queryFunction,
-    { cacheTime: Infinity, enabled: !!currentToken?.token },
+    {
+      staleTime: Infinity,
+      enabled: !!currentAccount?.token,
+    },
   )
 
   useEffect(() => {
