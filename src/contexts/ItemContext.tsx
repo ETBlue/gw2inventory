@@ -3,11 +3,18 @@ import { chunk } from "lodash"
 
 import { API_URL } from "config"
 import { Item } from "pages/items/types"
-import { CharacterBagItemInList } from "pages/characters/types"
+import {
+  CharacterBagInList,
+  CharacterBagItemInList,
+} from "pages/characters/types"
+import { useState } from "react"
 
 const ItemContext = createContext({
   items: {},
-  addCharacterItems: () => {},
+  characterItems: [],
+  setCharacterItems: (
+    val: (CharacterBagItemInList | CharacterBagInList)[],
+  ) => {},
 })
 
 interface Items {
@@ -41,20 +48,16 @@ function ItemProvider(props: { children: React.ReactNode }) {
     addItems(newItems)
   }
 
-  const [characterItems, addCharacterItems] = useReducer(
-    (prev: CharacterBagItemInList[], next: CharacterBagItemInList[]) => {
-      return [...prev, ...next]
-    },
-    [],
-  )
+  const [characterItems, setCharacterItems] = useState<
+    (CharacterBagItemInList | CharacterBagInList)[]
+  >([])
 
   useEffect(() => {
     fetchItems(characterItems.map((item) => item.id?.toString()))
   }, [characterItems.length])
 
-  console.log(characterItems)
   return (
-    <ItemContext.Provider value={{ items, addCharacterItems }}>
+    <ItemContext.Provider value={{ items, characterItems, setCharacterItems }}>
       {props.children}
     </ItemContext.Provider>
   )

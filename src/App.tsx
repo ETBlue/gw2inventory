@@ -25,7 +25,7 @@ const Content = () => {
         <Route path="/characters">
           <Characters />
         </Route>
-        <Route path="/items">
+        <Route path="/items/:category?">
           <Items />
         </Route>
       </Switch>

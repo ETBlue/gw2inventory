@@ -1,3 +1,14 @@
+404 entries in https://api.guildwars2.com/v2/items
+
+- 24120
+- 24151
+- 81662
+- 24427
+- 82367
+- 24434
+- 87149
+- 81324
+
 This project was bootstrapped with
 [Create React App](https://github.com/facebook/create-react-app).
 

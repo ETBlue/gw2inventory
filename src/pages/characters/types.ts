@@ -78,6 +78,10 @@ export interface CharacterBagItemInList extends CharacterBagItem {
   location: string
 }
 
+export interface CharacterBagInList extends CharacterBag {
+  location: string
+}
+
 interface CharacterEquipmentItem extends CharacterItem {
   slot:
     | "HelmAquatic"

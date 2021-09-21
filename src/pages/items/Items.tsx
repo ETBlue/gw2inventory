@@ -1,6 +1,8 @@
 import React, { useContext } from "react"
-import { NavLink, Switch, useHistory } from "react-router-dom"
+import { Link, NavLink, useHistory, useLocation } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
+import { BsQuestionOctagonFill } from "react-icons/bs"
 import {
   Tabs,
   TabList,
@@ -9,17 +11,26 @@ import {
   InputGroup,
   InputLeftElement,
   Spacer,
+  Td,
+  Tr,
+  Table,
+  Thead,
+  Tbody,
+  Th,
+  Image,
+  Heading,
 } from "@chakra-ui/react"
 
 import ItemContext from "contexts/ItemContext"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
-import { Item } from "./types"
+import css from "./styles/Items.module.css"
 
 function Items() {
-  const { items } = useContext(ItemContext)
+  const { items, characterItems } = useContext(ItemContext)
   const history = useHistory()
+  const { pathname } = useLocation()
 
   const { queryString, keyword, sort, order } = useSearchParams()
   const activeSort = sort || "location"
@@ -42,7 +53,7 @@ function Items() {
             variant="unstyled"
             value={keyword || ""}
             onChange={(e) => {
-              const to = `/items?${getQueryString(
+              const to = `${pathname}?${getQueryString(
                 "keyword",
                 e.currentTarget.value,
                 queryString,
@@ -52,9 +63,105 @@ function Items() {
           />
         </InputGroup>
       </TabList>
-      <div>
-        <Switch></Switch>
-      </div>
+      <Table className={css.table}>
+        <Thead>
+          <Tr>
+            {["rarity", "name", "chat_link", "level", "location"].map(
+              (title) => (
+                <Th
+                  key={title}
+                  as={Link}
+                  to={`${pathname}?${
+                    activeSort === title
+                      ? getQueryString(
+                          "order",
+                          activeOrder === "asc" ? "dsc" : "",
+                          queryString,
+                        )
+                      : getQueryString("sort", title, queryString)
+                  }`}
+                  className={`${css.title} ${
+                    activeSort === title ? css.active : ""
+                  } ${title === "rarity" ? css.iconHeader : ""}`}
+                >
+                  {title}{" "}
+                  {activeSort === title ? (
+                    activeOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )
+                  ) : null}
+                </Th>
+              ),
+            )}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {characterItems.map((characterItem, index) => {
+            const item = items[characterItem.id]
+            return (
+              <Tr key={index}>
+                <Td className={css.iconCell}>
+                  {item ? (
+                    <Image
+                      src={item.icon}
+                      alt={`icon of ${item.name}`}
+                      className={`${css.icon} ${
+                        css[item.rarity.toLowerCase()]
+                      }`}
+                      border="5px yellow solid"
+                    />
+                  ) : (
+                    <BsQuestionOctagonFill size="3.5rem" />
+                  )}
+                </Td>
+                <Td className={css.nameCell}>
+                  {item ? (
+                    <>
+                      <Heading
+                        as="h4"
+                        size="sm"
+                        className={`${css.name} ${
+                          css[item?.rarity.toLowerCase()]
+                        }`}
+                      >
+                        {item.name}
+                      </Heading>
+                      <p className={css.description}>{item.description}</p>
+                    </>
+                  ) : (
+                    "(item not supported in gw2 api)"
+                  )}
+                </Td>
+                <Td>
+                  {item && (
+                    <code className={css.chatLink}>{item.chat_link}</code>
+                  )}
+                </Td>
+                <Td>
+                  {item && (
+                    <>
+                      {item.level}
+                      <div className={css.restrictions}>
+                        {item && item.restrictions.join(",")}
+                      </div>
+                    </>
+                  )}
+                </Td>
+                <Td>
+                  {characterItem.location}
+                  {characterItem.bound_to && (
+                    <div className={css.boundTo}>
+                      bound to {characterItem.bound_to}
+                    </div>
+                  )}
+                </Td>
+              </Tr>
+            )
+          })}
+        </Tbody>
+      </Table>
     </Tabs>
   )
 }

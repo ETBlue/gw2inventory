@@ -8,7 +8,7 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 import { getQueryString } from "helpers/url"
 
 import { Character } from "./types"
-import css from "./styles/Character.module.css"
+import css from "./styles/Characters.module.css"
 
 interface Props {
   characters: Character[]

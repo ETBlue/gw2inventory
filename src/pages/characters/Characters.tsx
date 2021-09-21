@@ -24,7 +24,11 @@ import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 
 import Overview from "./Overview"
-import { CharacterBag, CharacterBagItemInList } from "./types"
+import {
+  CharacterBag,
+  CharacterBagInList,
+  CharacterBagItemInList,
+} from "./types"
 
 const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
@@ -32,7 +36,7 @@ const MENU_ITEMS = [
 
 function Characters() {
   const { currentToken } = useContext(TokenContext)
-  const { addCharacterItems } = useContext(ItemContext)
+  const { setCharacterItems } = useContext(ItemContext)
   const history = useHistory()
 
   const { data: allCharacters, isFetching } = useQuery(
@@ -44,23 +48,31 @@ function Characters() {
   //const data = sample
 
   useEffect(() => {
-    let characterItems: CharacterBagItemInList[] = []
+    let characterItems: (CharacterBagItemInList | CharacterBagInList)[] = []
 
     for (const character of allCharacters) {
       const bagItems = character.bags.reduce(
-        (prev: CharacterBagItemInList[], currentBag: CharacterBag) => {
-          const currentBagItems = currentBag.inventory.map((item) => {
+        (
+          prev: (CharacterBagItemInList | CharacterBagInList)[],
+          bag: CharacterBag,
+        ) => {
+          const currentBag = { ...bag, location: character.name }
+          const currentBagItems = bag.inventory.map((item) => {
             if (item) {
               return { ...item, location: character.name }
             }
           })
-          return [...prev, ...currentBagItems.filter((item) => !!item)]
+          return [
+            ...prev,
+            currentBag,
+            ...currentBagItems.filter((item) => !!item),
+          ]
         },
         [],
       )
       characterItems = [...characterItems, ...bagItems]
     }
-    addCharacterItems(characterItems)
+    setCharacterItems(characterItems)
   }, [allCharacters.length])
 
   const {
