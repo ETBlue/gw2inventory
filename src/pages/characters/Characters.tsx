@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react"
 import { Link, NavLink, Route, Switch, useHistory } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
-import { useQuery } from "react-query"
 import {
   Tabs,
   TabList,
@@ -17,14 +16,14 @@ import {
   Spacer,
 } from "@chakra-ui/react"
 
-import { queryFunction } from "helpers/api"
+import TokenContext from "contexts/TokenContext"
+import CharacterContext from "contexts/CharacterContext"
+
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
-import TokenContext from "contexts/TokenContext"
-import ItemContext from "contexts/ItemContext"
+import { Character } from "pages/characters/types"
 
 import Overview from "./Overview"
-import { CharacterBag, CharacterItemInList } from "./types"
 
 const MENU_ITEMS = [
   { to: "/characters", text: "Overview", component: Overview },
@@ -32,55 +31,8 @@ const MENU_ITEMS = [
 
 function Characters() {
   const { currentAccount } = useContext(TokenContext)
-  const { setCharacterItems } = useContext(ItemContext)
+  const { characters, isFetching } = useContext(CharacterContext)
   const history = useHistory()
-
-  const { data: allCharacters, isFetching } = useQuery(
-    ["characters", currentAccount?.token, "ids=all"],
-    queryFunction,
-    {
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    },
-  )
-
-  useEffect(() => {
-    if (!allCharacters) return
-    let characterItems: CharacterItemInList[] = []
-
-    for (const character of allCharacters) {
-      const bagItems = character.bags.reduce(
-        (prev: CharacterItemInList[], bag: CharacterBag | null) => {
-          if (!bag) return prev
-          const currentBag = {
-            ...bag,
-            location: character.name,
-            isEquipped: true,
-          }
-          const currentBagItems = bag.inventory.map((item) => {
-            if (item) {
-              return { ...item, location: character.name }
-            }
-          })
-          return [
-            ...prev,
-            currentBag,
-            ...currentBagItems.filter((item) => !!item),
-          ]
-        },
-        [],
-      )
-      const equippedItems = character.equipment.map((item) => {
-        return {
-          ...item,
-          location: character.name,
-          isEquipped: true,
-        }
-      })
-      characterItems = [...characterItems, ...bagItems, ...equippedItems]
-    }
-    setCharacterItems(characterItems)
-  }, [allCharacters?.length])
 
   const {
     queryString,
@@ -92,12 +44,12 @@ function Characters() {
   const activeSort = sort || "name"
   const activeOrder = order || "asc"
 
-  const characters = allCharacters
+  const visibleCharacters = characters
     ?.filter(
-      (character) =>
+      (character: Character) =>
         character.profession === activeProfession || !activeProfession,
     )
-    .filter((character) =>
+    .filter((character: Character) =>
       !!keyword
         ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
@@ -161,7 +113,7 @@ function Characters() {
             >
               All
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {allCharacters?.length || "0"}
+                {characters?.length || "0"}
               </Tag>
             </Button>{" "}
             {PROFESSIONS.map((profession) => (
@@ -179,8 +131,8 @@ function Characters() {
               >
                 {profession}{" "}
                 <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                  {allCharacters?.filter(
-                    (character) =>
+                  {characters?.filter(
+                    (character: Character) =>
                       character.profession === profession ||
                       profession === "All",
                   ).length || "0"}
@@ -190,13 +142,13 @@ function Characters() {
           </Flex>
           <Switch>
             {currentAccount &&
-              allCharacters &&
+              characters &&
               MENU_ITEMS.map((item) => {
                 const Component = item.component
                 return (
                   <Route key={item.to} path={item.to}>
                     <Component
-                      characters={characters}
+                      characters={visibleCharacters}
                       token={currentAccount.token}
                       activeSort={activeSort}
                       activeOrder={activeOrder}

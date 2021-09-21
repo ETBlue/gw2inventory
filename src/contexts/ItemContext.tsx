@@ -10,6 +10,7 @@ const ItemContext = createContext({
   items: {},
   characterItems: [],
   setCharacterItems: (val: CharacterItemInList[]) => {},
+  isFetching: false,
 })
 
 interface Items {
@@ -27,7 +28,10 @@ function ItemProvider(props: { children: React.ReactNode }) {
     {},
   )
 
+  const [isFetching, setIsFetching] = useState<boolean>(false)
+
   const fetchItems = async (newIds: string[]) => {
+    setIsFetching(true)
     const existingIdSet = new Set(Object.keys(items))
     const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
     const chunks = chunk(idsToFetch, 200)
@@ -40,6 +44,7 @@ function ItemProvider(props: { children: React.ReactNode }) {
         newItems = [...newItems, ...data]
       }
     }
+    setIsFetching(false)
     addItems(newItems)
   }
 
@@ -52,7 +57,9 @@ function ItemProvider(props: { children: React.ReactNode }) {
   }, [characterItems.length])
 
   return (
-    <ItemContext.Provider value={{ items, characterItems, setCharacterItems }}>
+    <ItemContext.Provider
+      value={{ items, characterItems, setCharacterItems, isFetching }}
+    >
       {props.children}
     </ItemContext.Provider>
   )

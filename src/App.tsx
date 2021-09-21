@@ -3,10 +3,11 @@ import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ChakraProvider } from "@chakra-ui/react"
 
-import BaseFrame from "layouts/BaseFrame"
 import { TokenProvider } from "contexts/TokenContext"
 import { ItemProvider } from "contexts/ItemContext"
+import { CharacterProvider } from "contexts/CharacterContext"
 
+import BaseFrame from "layouts/BaseFrame"
 import Characters from "pages/characters"
 import Items from "pages/items"
 import Settings from "pages/settings"
@@ -42,9 +43,11 @@ export const App = () => {
       <QueryClientProvider client={queryClient}>
         <TokenProvider>
           <ItemProvider>
-            <Router>
-              <Content />
-            </Router>
+            <CharacterProvider>
+              <Router>
+                <Content />
+              </Router>
+            </CharacterProvider>
           </ItemProvider>
         </TokenProvider>
       </QueryClientProvider>

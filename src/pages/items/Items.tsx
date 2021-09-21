@@ -31,9 +31,13 @@ import {
   Flex,
   Button,
   Code,
+  Center,
+  Spinner,
 } from "@chakra-ui/react"
 
 import ItemContext from "contexts/ItemContext"
+import CharacterContext from "contexts/CharacterContext"
+
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { CharacterItemInList } from "pages/characters/types"
@@ -41,7 +45,12 @@ import { CharacterItemInList } from "pages/characters/types"
 import css from "./styles/Items.module.css"
 
 function Items() {
-  const { items, characterItems } = useContext(ItemContext)
+  const {
+    items,
+    characterItems,
+    isFetching: isItemsFetching,
+  } = useContext(ItemContext)
+  const { isFetching: isCharactersFetching } = useContext(CharacterContext)
   const history = useHistory()
   const { pathname } = useLocation()
   const { category } = useParams()
@@ -130,43 +139,54 @@ function Items() {
           />
         </InputGroup>
       </TabList>
-      <div>
-        <Switch>
-          {MENU_ITEMS.map((menuItem) => (
-            <Route key={menuItem.to} path={menuItem.to}>
-              <Flex
-                justifyContent="center"
-                margin="1rem auto"
-                columns={menuItem.showOnly.length}
-              >
-                {menuItem.showOnly.map((type) => (
-                  <Button
-                    key={type}
-                    as={Link}
-                    variant="ghost"
-                    fontWeight="normal"
-                    isActive={type === activeType}
-                    to={`${pathname}?${getQueryString(
-                      "type",
-                      type,
-                      queryString,
-                    )}`}
-                  >
-                    {type}{" "}
-                    <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                      {getTypedItemLength([type])}
-                    </Tag>
-                  </Button>
-                ))}
-              </Flex>
-            </Route>
-          ))}
-        </Switch>
-        <Table className={css.table}>
-          <Thead>
-            <Tr>
-              {["rarity", "name", "type", "level", "location", "chat_link"].map(
-                (title) => (
+      {isItemsFetching || isCharactersFetching ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : (
+        <div>
+          <Switch>
+            {MENU_ITEMS.map((menuItem) => (
+              <Route key={menuItem.to} path={menuItem.to}>
+                <Flex
+                  justifyContent="center"
+                  margin="1rem auto"
+                  columns={menuItem.showOnly.length}
+                >
+                  {menuItem.showOnly.map((type) => (
+                    <Button
+                      key={type}
+                      as={Link}
+                      variant="ghost"
+                      fontWeight="normal"
+                      isActive={type === activeType}
+                      to={`${pathname}?${getQueryString(
+                        "type",
+                        type,
+                        queryString,
+                      )}`}
+                    >
+                      {type}{" "}
+                      <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                        {getTypedItemLength([type])}
+                      </Tag>
+                    </Button>
+                  ))}
+                </Flex>
+              </Route>
+            ))}
+          </Switch>
+          <Table className={css.table}>
+            <Thead>
+              <Tr>
+                {[
+                  "rarity",
+                  "name",
+                  "type",
+                  "level",
+                  "location",
+                  "chat_link",
+                ].map((title) => (
                   <Th
                     key={title}
                     as={Link}
@@ -192,92 +212,98 @@ function Items() {
                       )
                     ) : null}
                   </Th>
-                ),
-              )}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {visibleItems.map(
-              (characterItem: CharacterItemInList, index: number) => {
-                const item = items[characterItem.id]
-                return (
-                  <Tr key={index}>
-                    <Td className={css.iconCell}>
-                      {item ? (
-                        <Image
-                          src={item.icon}
-                          alt={item.rarity}
-                          className={`${css.icon} ${
-                            css[item.rarity.toLowerCase()]
-                          }`}
-                          border="5px yellow solid"
-                        />
-                      ) : (
-                        <BsQuestionOctagonFill size="3.5rem" />
-                      )}
-                    </Td>
-                    <Td className={css.nameCell}>
-                      {item ? (
-                        <>
-                          <Heading
-                            as="h4"
-                            size="sm"
-                            className={`${css.name} ${
-                              css[item?.rarity.toLowerCase()]
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>
+              {visibleItems.map(
+                (characterItem: CharacterItemInList, index: number) => {
+                  const item = items[characterItem.id]
+                  return (
+                    <Tr key={index}>
+                      <Td className={css.iconCell}>
+                        {item ? (
+                          <Image
+                            src={item.icon}
+                            alt={item.rarity}
+                            className={`${css.icon} ${
+                              css[item.rarity.toLowerCase()]
                             }`}
-                          >
-                            {item.name}
-                          </Heading>
-                          <p className={`${css.description} ${css.secondary}`}>
-                            {item.description}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          Item not exists in Guild Wars 2 API. ID:{" "}
-                          <Code>{characterItem.id}</Code>
-                        </>
-                      )}
-                    </Td>
-                    <Td>
-                      {item?.type}
-                      <div className={css.secondary}>{item?.details?.type}</div>
-                    </Td>
-                    <Td>
-                      {item && (
-                        <>
-                          {item.level}
-                          <div className={css.secondary}>
-                            {item && item.restrictions.join(",")}
-                          </div>
-                        </>
-                      )}
-                    </Td>
-                    <Td>
-                      {characterItem.location}{" "}
-                      {characterItem.isEquipped && (
-                        <Tag size="sm" fontWeight="normal">
-                          Equipped
-                        </Tag>
-                      )}
-                      {characterItem.bound_to && (
+                            border="5px yellow solid"
+                          />
+                        ) : (
+                          <BsQuestionOctagonFill size="3.5rem" />
+                        )}
+                      </Td>
+                      <Td className={css.nameCell}>
+                        {item ? (
+                          <>
+                            <Heading
+                              as="h4"
+                              size="sm"
+                              className={`${css.name} ${
+                                css[item?.rarity.toLowerCase()]
+                              }`}
+                            >
+                              {item.name}
+                            </Heading>
+                            <p
+                              className={`${css.description} ${css.secondary}`}
+                            >
+                              {item.description}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            Item not exists in Guild Wars 2 API. ID:{" "}
+                            <Code>{characterItem.id}</Code>
+                          </>
+                        )}
+                      </Td>
+                      <Td>
+                        {item?.type}
                         <div className={css.secondary}>
-                          bound to {characterItem.bound_to}
+                          {item?.details?.type}
                         </div>
-                      )}
-                    </Td>
-                    <Td>
-                      {item && (
-                        <Code className={css.secondary}>{item.chat_link}</Code>
-                      )}
-                    </Td>
-                  </Tr>
-                )
-              },
-            )}
-          </Tbody>
-        </Table>
-      </div>
+                      </Td>
+                      <Td>
+                        {item && (
+                          <>
+                            {item.level}
+                            <div className={css.secondary}>
+                              {item && item.restrictions.join(",")}
+                            </div>
+                          </>
+                        )}
+                      </Td>
+                      <Td>
+                        {characterItem.location}{" "}
+                        {characterItem.isEquipped && (
+                          <Tag size="sm" fontWeight="normal">
+                            Equipped
+                          </Tag>
+                        )}
+                        {characterItem.bound_to && (
+                          <div className={css.secondary}>
+                            bound to {characterItem.bound_to}
+                          </div>
+                        )}
+                      </Td>
+                      <Td>
+                        {item && (
+                          <Code className={css.secondary}>
+                            {item.chat_link}
+                          </Code>
+                        )}
+                      </Td>
+                    </Tr>
+                  )
+                },
+              )}
+            </Tbody>
+          </Table>
+        </div>
+      )}
     </Tabs>
   )
 }
