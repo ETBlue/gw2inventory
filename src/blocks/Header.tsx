@@ -17,12 +17,12 @@ import { APP_NAME, BASE_URL } from "config"
 import TokenContext, { UsedAccount } from "contexts/TokenContext"
 
 const MENU_ITEMS = [
-  { to: "/account", text: "Account" },
+  // { to: "/account", text: "Account" },
   { to: "/characters", text: "Characters" },
   { to: "/items", text: "Items" },
-  { to: "/unlocks", text: "Unlocks" },
-  { to: "/trades", text: "Trades" },
-  { to: "/wallet", text: "Wallet" },
+  // { to: "/unlocks", text: "Unlocks" },
+  // { to: "/trades", text: "Trades" },
+  // { to: "/wallet", text: "Wallet" },
 ]
 
 function Header() {
