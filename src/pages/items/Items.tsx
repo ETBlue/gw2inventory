@@ -311,13 +311,13 @@ function Items() {
                           </>
                         )}
                       </Td>
-                      <Td width="12rem">
+                      <Td maxWidth="12rem">
                         {item?.type}
                         <div className={css.secondary}>
                           {item?.details?.type}
                         </div>
                       </Td>
-                      <Td width="6rem">
+                      <Td maxWidth="6rem">
                         {item && (
                           <>
                             {item.level}
@@ -327,7 +327,7 @@ function Items() {
                           </>
                         )}
                       </Td>
-                      <Td>
+                      <Td minWidth="12rem">
                         {characterItem.location}{" "}
                         {characterItem.isEquipped && (
                           <Badge size="sm" fontWeight="normal">
@@ -340,8 +340,8 @@ function Items() {
                           </div>
                         )}
                       </Td>
-                      <Td width="6rem">{characterItem?.count}</Td>
-                      <Td width="10rem">
+                      <Td maxWidth="6rem">{characterItem?.count}</Td>
+                      <Td maxWidth="10rem">
                         {item && (
                           <Code className={css.secondary}>
                             {item.chat_link}
