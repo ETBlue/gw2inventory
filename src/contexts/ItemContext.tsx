@@ -1,10 +1,10 @@
 import React, { useEffect, useReducer, createContext } from "react"
 import { chunk } from "lodash"
 
-import { API_URL } from "config"
 import { Item } from "pages/items/types"
 import { CharacterItemInList } from "pages/characters/types"
 import { useState } from "react"
+import { fetchGW2 } from "helpers/api"
 
 const ItemContext = createContext({
   items: {},
@@ -38,9 +38,8 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
     let newItems: Item[] = []
     for (const chunk of chunks) {
-      const res = await fetch(`${API_URL}/items?ids=${chunk.join(",")}`)
-      if (res.ok) {
-        const data = await res.json()
+      const data = await fetchGW2("items", `ids=${chunk.join(",")}`)
+      if (data) {
         newItems = [...newItems, ...data]
       }
     }
