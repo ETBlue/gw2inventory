@@ -88,7 +88,13 @@
   color: var(--color-gw2-legendary);
 }
 .description {
+  margin-top: 0.2em;
   line-height: 1.2em;
+  line-clamp: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
 }
 
 .secondary {
