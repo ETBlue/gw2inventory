@@ -188,6 +188,7 @@ function Items() {
                   "type",
                   "level",
                   "location",
+                  "count",
                   "chat_link",
                 ].map((title) => (
                   <Th
@@ -257,6 +258,13 @@ function Items() {
                                 {item.description}
                               </p>
                             )}
+                            {item.details?.description && (
+                              <p
+                                className={`${css.description} ${css.secondary}`}
+                              >
+                                {item.details.description}
+                              </p>
+                            )}
                             {item.details?.infix_upgrade && (
                               <p
                                 className={`${css.description} ${css.secondary}`}
@@ -303,13 +311,13 @@ function Items() {
                           </>
                         )}
                       </Td>
-                      <Td>
+                      <Td width="12rem">
                         {item?.type}
                         <div className={css.secondary}>
                           {item?.details?.type}
                         </div>
                       </Td>
-                      <Td>
+                      <Td width="6rem">
                         {item && (
                           <>
                             {item.level}
@@ -332,7 +340,8 @@ function Items() {
                           </div>
                         )}
                       </Td>
-                      <Td>
+                      <Td width="6rem">{characterItem?.count}</Td>
+                      <Td width="10rem">
                         {item && (
                           <Code className={css.secondary}>
                             {item.chat_link}
