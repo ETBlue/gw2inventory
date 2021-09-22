@@ -301,7 +301,7 @@ type InfusionSlotFlag =
   | "Enrichment" // Item has an enrichment slot.
   | "Infusion" // Item has an infusion slot.
 
-interface InfixUpgradeAttributes {
+export interface InfixUpgradeAttributes {
   attribute: // Attribute this bonus applies to. Possible values:
   | "AgonyResistance" // Agony Resistance
     | "BoonDuration" // Concentration

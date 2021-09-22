@@ -33,6 +33,8 @@ import {
   Code,
   Center,
   Spinner,
+  Badge,
+  Box,
 } from "@chakra-ui/react"
 
 import ItemContext from "contexts/ItemContext"
@@ -42,6 +44,7 @@ import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { CharacterItemInList } from "pages/characters/types"
 
+import { InfixUpgradeAttributes } from "./types"
 import css from "./styles/Items.module.css"
 
 function Items() {
@@ -247,11 +250,51 @@ function Items() {
                             >
                               {item.name}
                             </Heading>
-                            <p
-                              className={`${css.description} ${css.secondary}`}
-                            >
-                              {item.description}
-                            </p>
+                            {item.description && (
+                              <p
+                                className={`${css.description} ${css.secondary}`}
+                              >
+                                {item.description}
+                              </p>
+                            )}
+                            {item.details?.infix_upgrade && (
+                              <p
+                                className={`${css.description} ${css.secondary}`}
+                              >
+                                {item.details.infix_upgrade.attributes.map(
+                                  (attr: InfixUpgradeAttributes) => (
+                                    <Box
+                                      key={attr.attribute}
+                                      marginRight="0.5rem"
+                                      display="inline-block"
+                                    >
+                                      <Tag size="sm">{attr.attribute}</Tag>{" "}
+                                      {attr.modifier}
+                                    </Box>
+                                  ),
+                                )}
+                              </p>
+                            )}
+                            {characterItem.stats && (
+                              <p
+                                className={`${css.description} ${css.secondary}`}
+                              >
+                                {Object.keys(
+                                  characterItem.stats.attributes,
+                                ).map((attr) => (
+                                  <Box
+                                    key={attr}
+                                    marginRight="0.5rem"
+                                    display="inline-block"
+                                  >
+                                    <Tag variant="outline" size="sm">
+                                      {attr}
+                                    </Tag>{" "}
+                                    {characterItem.stats.attributes[attr]}
+                                  </Box>
+                                ))}
+                              </p>
+                            )}
                           </>
                         ) : (
                           <>
@@ -279,9 +322,9 @@ function Items() {
                       <Td>
                         {characterItem.location}{" "}
                         {characterItem.isEquipped && (
-                          <Tag size="sm" fontWeight="normal">
+                          <Badge size="sm" fontWeight="normal">
                             Equipped
-                          </Tag>
+                          </Badge>
                         )}
                         {characterItem.bound_to && (
                           <div className={css.secondary}>
