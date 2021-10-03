@@ -1,10 +1,9 @@
-import { CharacterItemInList } from "pages/characters/types"
-import React, { useContext } from "react"
+import React from "react"
 import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
-import { InfixUpgradeAttributes } from "./types"
-import { Item as ItemDef } from "./types"
+import { CharacterItemInList } from "pages/characters/types"
+import { InfixUpgradeAttributes, Item as ItemDef } from "./types"
 
 import css from "./styles/Item.module.css"
 
@@ -53,11 +52,7 @@ function Item(props: Props) {
               <p className={`${css.description} ${css.secondary}`}>
                 {item.details.infix_upgrade.attributes.map(
                   (attr: InfixUpgradeAttributes) => (
-                    <Box
-                      key={attr.attribute}
-                      marginRight="0.5rem"
-                      display="inline-block"
-                    >
+                    <Box as="span" key={attr.attribute} marginRight="0.5rem">
                       <Tag size="sm">{attr.attribute}</Tag> {attr.modifier}
                     </Box>
                   ),
@@ -67,7 +62,7 @@ function Item(props: Props) {
             {characterItem.stats && (
               <p className={`${css.description} ${css.secondary}`}>
                 {Object.keys(characterItem.stats.attributes).map((attr) => (
-                  <Box key={attr} marginRight="0.5rem" display="inline-block">
+                  <Box key={attr} marginRight="0.5rem" as="span">
                     <Tag variant="outline" size="sm">
                       {attr}
                     </Tag>{" "}

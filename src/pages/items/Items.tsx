@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react"
 import {
-  Link,
   NavLink,
   Switch,
   Route,
@@ -22,8 +21,6 @@ import {
   Thead,
   Tbody,
   Tag,
-  Flex,
-  Button,
   Center,
   Spinner,
 } from "@chakra-ui/react"
@@ -34,11 +31,13 @@ import CharacterContext from "contexts/CharacterContext"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { CharacterItemInList } from "pages/characters/types"
-
 import Pagination from "components/Pagination"
+
+import SubMenuItem from "./SubMenuItem"
+import HeaderItem from "./HeaderItem"
 import { Item as ItemDef } from "./types"
-import ItemHeader from "./ItemHeader"
 import Item from "./Item"
+import { getTypedItemLength } from "./helpers/count"
 import css from "./styles/Items.module.css"
 
 function Items() {
@@ -63,13 +62,6 @@ function Items() {
   const activeOrder = order || "asc"
 
   const allItems = characterItems
-  const getTypedItemLength = (types: string[]) => {
-    const typedItems = allItems.filter((characterItem: CharacterItemInList) => {
-      const itemRaw: ItemDef = items[characterItem.id]
-      return types.includes(itemRaw?.type)
-    })
-    return typedItems.length
-  }
   const visibleItems = allItems
     .filter((characterItem: CharacterItemInList) => {
       const itemRaw: ItemDef = items[characterItem.id]
@@ -116,7 +108,7 @@ function Items() {
           <Tab key={item.to} as={NavLink} to={item.to}>
             {item.text}
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getTypedItemLength(item.showOnly)}
+              {getTypedItemLength(item.showOnly, characterItems, items)}
             </Tag>
           </Tab>
         ))}
@@ -148,31 +140,12 @@ function Items() {
           <Switch>
             {MENU_ITEMS.map((menuItem) => (
               <Route key={menuItem.to} path={menuItem.to}>
-                <Flex
-                  justifyContent="center"
-                  margin="1rem auto"
-                  columns={menuItem.showOnly.length}
-                >
-                  {menuItem.showOnly.map((type) => (
-                    <Button
-                      key={type}
-                      as={Link}
-                      variant="ghost"
-                      fontWeight="normal"
-                      isActive={type === activeType}
-                      to={`${pathname}?${getQueryString(
-                        "type",
-                        type,
-                        queryString,
-                      )}`}
-                    >
-                      {type}{" "}
-                      <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                        {getTypedItemLength([type])}
-                      </Tag>
-                    </Button>
-                  ))}
-                </Flex>
+                <SubMenuItem
+                  showOnly={menuItem.showOnly}
+                  activeType={activeType}
+                  characterItems={characterItems}
+                  items={items}
+                />
               </Route>
             ))}
           </Switch>
@@ -183,7 +156,7 @@ function Items() {
           />
           <Table className={css.table}>
             <Thead>
-              <ItemHeader activeSort={activeSort} activeOrder={activeOrder} />
+              <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
             </Thead>
             <Tbody>
               {pages[pageIndex]?.map(
@@ -208,7 +181,13 @@ function Items() {
 
 export default Items
 
-const MENU_ITEMS = [
+export interface MenuItem {
+  to: string
+  text: string
+  showOnly: string[]
+}
+
+const MENU_ITEMS: MenuItem[] = [
   {
     to: "/items/equipable",
     text: "Equipable",

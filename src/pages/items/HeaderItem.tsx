@@ -6,14 +6,14 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
-import css from "./styles/ItemHeader.module.css"
+import css from "./styles/HeaderItem.module.css"
 
 interface Props {
   activeSort: string
   activeOrder: string
 }
 
-function ItemHeader(props: Props) {
+function HeaderItem(props: Props) {
   const { activeSort, activeOrder } = props
   const { pathname } = useLocation()
   const { queryString } = useSearchParams()
@@ -57,4 +57,4 @@ function ItemHeader(props: Props) {
   )
 }
 
-export default ItemHeader
+export default HeaderItem
