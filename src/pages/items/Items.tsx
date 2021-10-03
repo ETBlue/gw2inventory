@@ -10,14 +10,7 @@ import {
 } from "react-router-dom"
 import { chunk } from "lodash"
 import { MdSearch } from "react-icons/md"
-import {
-  CgArrowDown,
-  CgArrowUp,
-  CgChevronDoubleLeft,
-  CgChevronDoubleRight,
-  CgChevronLeft,
-  CgChevronRight,
-} from "react-icons/cg"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import {
   Tabs,
   TabList,
@@ -36,8 +29,6 @@ import {
   Button,
   Center,
   Spinner,
-  ButtonGroup,
-  IconButton,
 } from "@chakra-ui/react"
 
 import { ITEM_COUNT_PER_PAGE } from "config"
@@ -47,6 +38,7 @@ import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { CharacterItemInList } from "pages/characters/types"
 
+import Pagination from "components/Pagination"
 import { Item as ItemDef } from "./types"
 import Item from "./Item"
 import css from "./styles/Items.module.css"
@@ -75,14 +67,14 @@ function Items() {
   const allItems = characterItems
   const getTypedItemLength = (types: string[]) => {
     const typedItems = allItems.filter((characterItem: CharacterItemInList) => {
-      const itemRaw = items[characterItem.id]
+      const itemRaw: ItemDef = items[characterItem.id]
       return types.includes(itemRaw?.type)
     })
     return typedItems.length
   }
   const visibleItems = allItems
     .filter((characterItem: CharacterItemInList) => {
-      const itemRaw = items[characterItem.id]
+      const itemRaw: ItemDef = items[characterItem.id]
       if (activeType) {
         return activeType === itemRaw?.type
       }
@@ -96,7 +88,7 @@ function Items() {
     })
     .filter((characterItem: CharacterItemInList) => {
       if (!keyword) return true
-      const itemRaw = items[characterItem.id]
+      const itemRaw: ItemDef = items[characterItem.id]
       const item = { ...characterItem, ...itemRaw }
       return JSON.stringify(item).match(new RegExp(keyword, "i"))
     })
@@ -186,61 +178,11 @@ function Items() {
               </Route>
             ))}
           </Switch>
-          <Flex
-            as={ButtonGroup}
-            isAttached
-            variant="ghost"
-            marginTop="1rem"
-            borderBottomWidth="1px"
-            justifyContent="center"
-          >
-            <IconButton
-              aria-label="first page"
-              onClick={() => {
-                setPageIndex(0)
-              }}
-            >
-              <CgChevronDoubleLeft />
-            </IconButton>
-            <IconButton
-              aria-label="previous page"
-              onClick={() => {
-                setPageIndex(pageIndex - 1 || 0)
-              }}
-            >
-              <CgChevronLeft />
-            </IconButton>
-            {pages.map((chunk, index) => (
-              <Button
-                key={index}
-                fontWeight="normal"
-                isActive={index === pageIndex}
-                onClick={() => {
-                  setPageIndex(index)
-                }}
-              >
-                {index + 1}
-              </Button>
-            ))}
-            <IconButton
-              aria-label="next page"
-              onClick={() => {
-                setPageIndex(
-                  pageIndex < pages.length - 1 ? pageIndex + 1 : pages.length,
-                )
-              }}
-            >
-              <CgChevronRight />
-            </IconButton>
-            <IconButton
-              aria-label="last page"
-              onClick={() => {
-                setPageIndex(pages.length - 1)
-              }}
-            >
-              <CgChevronDoubleRight />
-            </IconButton>{" "}
-          </Flex>
+          <Pagination
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            pages={pages}
+          />
           <Table className={css.table}>
             <Thead>
               <Tr>
