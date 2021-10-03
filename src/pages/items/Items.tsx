@@ -8,9 +8,14 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom"
+import { chunk } from "lodash"
 import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { BsQuestionOctagonFill } from "react-icons/bs"
+  CgChevronDoubleLeft,
+  CgChevronDoubleRight,
+  CgChevronLeft,
+  CgChevronRight,
 import {
   Tabs,
   TabList,
@@ -35,8 +40,11 @@ import {
   Spinner,
   Badge,
   Box,
+  ButtonGroup,
+  IconButton,
 } from "@chakra-ui/react"
 
+import { ITEM_COUNT_PER_PAGE } from "config"
 import ItemContext from "contexts/ItemContext"
 import CharacterContext from "contexts/CharacterContext"
 
@@ -105,6 +113,9 @@ function Items() {
       if (a[activeSort] < b[activeSort] && activeOrder === "asc") return -1
       return 0
     })
+
+  const pages = chunk(visibleItems, ITEM_COUNT_PER_PAGE)
+  const [pageIndex, setPageIndex] = useState<number>(0)
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
@@ -179,6 +190,61 @@ function Items() {
               </Route>
             ))}
           </Switch>
+          <Flex
+            as={ButtonGroup}
+            isAttached
+            variant="ghost"
+            marginTop="1rem"
+            borderBottomWidth="1px"
+            justifyContent="center"
+          >
+            <IconButton
+              aria-label="first page"
+              onClick={() => {
+                setPageIndex(0)
+              }}
+            >
+              <CgChevronDoubleLeft />
+            </IconButton>
+            <IconButton
+              aria-label="previous page"
+              onClick={() => {
+                setPageIndex(pageIndex - 1 || 0)
+              }}
+            >
+              <CgChevronLeft />
+            </IconButton>
+            {pages.map((chunk, index) => (
+              <Button
+                key={index}
+                fontWeight="normal"
+                isActive={index === pageIndex}
+                onClick={() => {
+                  setPageIndex(index)
+                }}
+              >
+                {index + 1}
+              </Button>
+            ))}
+            <IconButton
+              aria-label="next page"
+              onClick={() => {
+                setPageIndex(
+                  pageIndex < pages.length - 1 ? pageIndex + 1 : pages.length,
+                )
+              }}
+            >
+              <CgChevronRight />
+            </IconButton>
+            <IconButton
+              aria-label="last page"
+              onClick={() => {
+                setPageIndex(pages.length - 1)
+              }}
+            >
+              <CgChevronDoubleRight />
+            </IconButton>{" "}
+          </Flex>
           <Table className={css.table}>
             <Thead>
               <Tr>
@@ -220,7 +286,7 @@ function Items() {
               </Tr>
             </Thead>
             <Tbody>
-              {visibleItems.map(
+              {pages[pageIndex]?.map(
                 (characterItem: CharacterItemInList, index: number) => {
                   const item = items[characterItem.id]
                   return (
