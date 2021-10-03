@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useState, useContext } from "react"
 import {
   Link,
   NavLink,
@@ -10,12 +10,14 @@ import {
 } from "react-router-dom"
 import { chunk } from "lodash"
 import { MdSearch } from "react-icons/md"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { BsQuestionOctagonFill } from "react-icons/bs"
+import {
+  CgArrowDown,
+  CgArrowUp,
   CgChevronDoubleLeft,
   CgChevronDoubleRight,
   CgChevronLeft,
   CgChevronRight,
+} from "react-icons/cg"
 import {
   Tabs,
   TabList,
@@ -24,22 +26,16 @@ import {
   InputGroup,
   InputLeftElement,
   Spacer,
-  Td,
   Tr,
   Table,
   Thead,
   Tbody,
   Th,
-  Image,
-  Heading,
   Tag,
   Flex,
   Button,
-  Code,
   Center,
   Spinner,
-  Badge,
-  Box,
   ButtonGroup,
   IconButton,
 } from "@chakra-ui/react"
@@ -47,12 +43,12 @@ import {
 import { ITEM_COUNT_PER_PAGE } from "config"
 import ItemContext from "contexts/ItemContext"
 import CharacterContext from "contexts/CharacterContext"
-
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { CharacterItemInList } from "pages/characters/types"
 
-import { InfixUpgradeAttributes } from "./types"
+import { Item as ItemDef } from "./types"
+import Item from "./Item"
 import css from "./styles/Items.module.css"
 
 function Items() {
@@ -288,133 +284,13 @@ function Items() {
             <Tbody>
               {pages[pageIndex]?.map(
                 (characterItem: CharacterItemInList, index: number) => {
-                  const item = items[characterItem.id]
+                  const item: ItemDef = items[characterItem.id]
                   return (
-                    <Tr key={index}>
-                      <Td className={css.iconCell}>
-                        {item ? (
-                          <Image
-                            src={item.icon}
-                            alt={item.rarity}
-                            className={`${css.icon} ${
-                              css[item.rarity.toLowerCase()]
-                            }`}
-                            border="5px yellow solid"
-                          />
-                        ) : (
-                          <BsQuestionOctagonFill size="3.5rem" />
-                        )}
-                      </Td>
-                      <Td className={css.nameCell}>
-                        {item ? (
-                          <>
-                            <Heading
-                              as="h4"
-                              size="sm"
-                              className={`${css.name} ${
-                                css[item?.rarity.toLowerCase()]
-                              }`}
-                            >
-                              {item.name}
-                            </Heading>
-                            {item.description && (
-                              <p
-                                className={`${css.description} ${css.secondary}`}
-                              >
-                                {item.description}
-                              </p>
-                            )}
-                            {item.details?.description && (
-                              <p
-                                className={`${css.description} ${css.secondary}`}
-                              >
-                                {item.details.description}
-                              </p>
-                            )}
-                            {item.details?.infix_upgrade && (
-                              <p
-                                className={`${css.description} ${css.secondary}`}
-                              >
-                                {item.details.infix_upgrade.attributes.map(
-                                  (attr: InfixUpgradeAttributes) => (
-                                    <Box
-                                      key={attr.attribute}
-                                      marginRight="0.5rem"
-                                      display="inline-block"
-                                    >
-                                      <Tag size="sm">{attr.attribute}</Tag>{" "}
-                                      {attr.modifier}
-                                    </Box>
-                                  ),
-                                )}
-                              </p>
-                            )}
-                            {characterItem.stats && (
-                              <p
-                                className={`${css.description} ${css.secondary}`}
-                              >
-                                {Object.keys(
-                                  characterItem.stats.attributes,
-                                ).map((attr) => (
-                                  <Box
-                                    key={attr}
-                                    marginRight="0.5rem"
-                                    display="inline-block"
-                                  >
-                                    <Tag variant="outline" size="sm">
-                                      {attr}
-                                    </Tag>{" "}
-                                    {characterItem.stats.attributes[attr]}
-                                  </Box>
-                                ))}
-                              </p>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            Item not exists in Guild Wars 2 API. ID:{" "}
-                            <Code>{characterItem.id}</Code>
-                          </>
-                        )}
-                      </Td>
-                      <Td maxWidth="12rem">
-                        {item?.type}
-                        <div className={css.secondary}>
-                          {item?.details?.type}
-                        </div>
-                      </Td>
-                      <Td maxWidth="6rem">
-                        {item && (
-                          <>
-                            {item.level}
-                            <div className={css.secondary}>
-                              {item && item.restrictions.join(",")}
-                            </div>
-                          </>
-                        )}
-                      </Td>
-                      <Td minWidth="12rem">
-                        {characterItem.location}{" "}
-                        {characterItem.isEquipped && (
-                          <Badge size="sm" fontWeight="normal">
-                            Equipped
-                          </Badge>
-                        )}
-                        {characterItem.bound_to && (
-                          <div className={css.secondary}>
-                            bound to {characterItem.bound_to}
-                          </div>
-                        )}
-                      </Td>
-                      <Td maxWidth="6rem">{characterItem?.count}</Td>
-                      <Td maxWidth="10rem">
-                        {item && (
-                          <Code className={css.secondary}>
-                            {item.chat_link}
-                          </Code>
-                        )}
-                      </Td>
-                    </Tr>
+                    <Item
+                      key={index}
+                      item={item}
+                      characterItem={characterItem}
+                    />
                   )
                 },
               )}
