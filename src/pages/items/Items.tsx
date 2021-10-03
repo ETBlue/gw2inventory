@@ -10,7 +10,6 @@ import {
 } from "react-router-dom"
 import { chunk } from "lodash"
 import { MdSearch } from "react-icons/md"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import {
   Tabs,
   TabList,
@@ -19,11 +18,9 @@ import {
   InputGroup,
   InputLeftElement,
   Spacer,
-  Tr,
   Table,
   Thead,
   Tbody,
-  Th,
   Tag,
   Flex,
   Button,
@@ -40,6 +37,7 @@ import { CharacterItemInList } from "pages/characters/types"
 
 import Pagination from "components/Pagination"
 import { Item as ItemDef } from "./types"
+import ItemHeader from "./ItemHeader"
 import Item from "./Item"
 import css from "./styles/Items.module.css"
 
@@ -185,43 +183,7 @@ function Items() {
           />
           <Table className={css.table}>
             <Thead>
-              <Tr>
-                {[
-                  "rarity",
-                  "name",
-                  "type",
-                  "level",
-                  "location",
-                  "count",
-                  "chat_link",
-                ].map((title) => (
-                  <Th
-                    key={title}
-                    as={Link}
-                    to={`${pathname}?${
-                      activeSort === title
-                        ? getQueryString(
-                            "order",
-                            activeOrder === "asc" ? "dsc" : "",
-                            queryString,
-                          )
-                        : getQueryString("sort", title, queryString)
-                    }`}
-                    className={`${css.title} ${
-                      activeSort === title ? css.active : ""
-                    } ${title === "rarity" ? css.iconHeader : ""}`}
-                  >
-                    {title}{" "}
-                    {activeSort === title ? (
-                      activeOrder === "asc" ? (
-                        <CgArrowDown />
-                      ) : (
-                        <CgArrowUp />
-                      )
-                    ) : null}
-                  </Th>
-                ))}
-              </Tr>
+              <ItemHeader activeSort={activeSort} activeOrder={activeOrder} />
             </Thead>
             <Tbody>
               {pages[pageIndex]?.map(

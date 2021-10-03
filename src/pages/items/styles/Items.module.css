@@ -3,20 +3,8 @@
   padding-bottom: 0.5rem;
 }
 
-.table .title,
+.table th,
 .table td {
   padding-left: 1rem;
   padding-right: 1rem;
-}
-
-.title {
-  cursor: pointer;
-  position: relative;
-  display: table-cell;
-}
-
-.title.active svg {
-  position: absolute;
-  right: 1rem;
-  top: calc(50% - 0.5em);
 }
