@@ -1,9 +1,10 @@
+import { Items } from "contexts/ItemContext"
 import { Item, UserItemInList } from "pages/items/types"
 
 export const getTypedItemLength = (
   types: string[],
   userItems: UserItemInList[],
-  items: Item[],
+  items: Items,
 ): number => {
   if (!userItems || !items) return 0
 

@@ -11,7 +11,7 @@ import {
 } from "pages/account/types"
 
 interface Values {
-  items: { [key: number]: Item }
+  items: Items
   characterItems: CharacterItemInList[]
   inventoryItems: InventoryItemInList[]
   bankItems: BankItemInList[]
@@ -35,10 +35,6 @@ const ItemContext = createContext<Values>({
   setMaterialItems: (val: MaterialItemInList[]) => {},
   isFetching: false,
 })
-
-interface Items {
-  [key: number]: Item
-}
 
 function ItemProvider(props: { children: React.ReactNode }) {
   const [items, addItems] = useReducer(
@@ -118,3 +114,7 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
 export default ItemContext
 export { ItemProvider }
+
+export interface Items {
+  [key: number]: Item
+}
