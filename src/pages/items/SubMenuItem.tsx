@@ -4,7 +4,7 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { Items } from "contexts/ItemContext"
+import { Items, Materials } from "contexts/ItemContext"
 
 import { MenuItem } from "./Items"
 import { UserItemInList } from "./types"
@@ -15,10 +15,11 @@ interface Props {
   showOnly: MenuItem["showOnly"]
   userItems: UserItemInList[]
   items: Items
+  materials: Materials
 }
 
-function ItemHeader(props: Props) {
-  const { activeType, showOnly, userItems, items } = props
+function SubMenuItem(props: Props) {
+  const { activeType, showOnly, userItems, items, materials } = props
   const { pathname } = useLocation()
   const { queryString } = useSearchParams()
 
@@ -35,7 +36,7 @@ function ItemHeader(props: Props) {
         >
           {type}{" "}
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
-            {getTypedItemLength([type], userItems, items)}
+            {getTypedItemLength([type], userItems, items, materials)}
           </Tag>
         </Button>
       ))}
@@ -43,4 +44,4 @@ function ItemHeader(props: Props) {
   )
 }
 
-export default ItemHeader
+export default SubMenuItem

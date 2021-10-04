@@ -8,10 +8,11 @@ import css from "./styles/Item.module.css"
 interface Props {
   item: ItemDef
   userItem: UserItemInList
+  materialCategory?: string
 }
 
 function Item(props: Props) {
-  const { item, userItem } = props
+  const { item, userItem, materialCategory } = props
   return (
     <Tr>
       <Td className={css.iconCell}>
@@ -78,7 +79,12 @@ function Item(props: Props) {
       </Td>
       <Td maxWidth="12rem">
         {item?.type}
-        <div className={css.secondary}>{item?.details?.type}</div>
+        {item?.details?.type && (
+          <div className={css.secondary}>{item?.details?.type}</div>
+        )}
+        {materialCategory && (
+          <div className={css.secondary}>{materialCategory}</div>
+        )}
       </Td>
       <Td maxWidth="6rem">
         {item && (

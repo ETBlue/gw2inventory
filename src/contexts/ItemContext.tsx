@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useReducer, createContext } from "react"
-import { chunk } from "lodash"
+import { useQuery } from "react-query"
+import { chunk, sortBy } from "lodash"
 
-import { fetchGW2 } from "helpers/api"
-import { Item } from "pages/items/types"
+import { fetchGW2, queryFunction } from "helpers/api"
+import { Item, Material } from "pages/items/types"
 import { CharacterItemInList } from "pages/characters/types"
 import {
   BankItemInList,
@@ -12,6 +13,8 @@ import {
 
 interface Values {
   items: Items
+  materials: Materials
+  materialCategories: string[]
   characterItems: CharacterItemInList[]
   inventoryItems: InventoryItemInList[]
   bankItems: BankItemInList[]
@@ -25,6 +28,8 @@ interface Values {
 
 const ItemContext = createContext<Values>({
   items: {},
+  materials: {},
+  materialCategories: [],
   characterItems: [],
   inventoryItems: [],
   bankItems: [],
@@ -37,6 +42,8 @@ const ItemContext = createContext<Values>({
 })
 
 function ItemProvider(props: { children: React.ReactNode }) {
+  // handle items
+
   const [items, addItems] = useReducer(
     (currentItems: Items, newItems: Item[]) => {
       for (const item of newItems) {
@@ -47,10 +54,10 @@ function ItemProvider(props: { children: React.ReactNode }) {
     {},
   )
 
-  const [isFetching, setIsFetching] = useState<boolean>(false)
+  const [isItemsFetching, setIsItemsFetching] = useState<boolean>(false)
 
   const fetchItems = async (newIds: number[]) => {
-    setIsFetching(true)
+    setIsItemsFetching(true)
     const existingIdSet = new Set(
       Object.keys(items).map((key) => parseInt(key)),
     )
@@ -64,38 +71,58 @@ function ItemProvider(props: { children: React.ReactNode }) {
         newItems = [...newItems, ...data]
       }
     }
-    setIsFetching(false)
+    setIsItemsFetching(false)
     addItems(newItems)
   }
 
   const [characterItems, setCharacterItems] = useState<CharacterItemInList[]>(
     [],
   )
-  useEffect(() => {
-    fetchItems(characterItems.map((item) => item.id))
-  }, [characterItems.length])
-
   const [inventoryItems, setInventoryItems] = useState<InventoryItemInList[]>(
     [],
   )
+  const [bankItems, setBankItems] = useState<BankItemInList[]>([])
+  const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
+
+  useEffect(() => {
+    fetchItems(characterItems.map((item) => item.id))
+  }, [characterItems.length])
   useEffect(() => {
     fetchItems(inventoryItems.map((item) => item.id))
   }, [inventoryItems.length])
-
-  const [bankItems, setBankItems] = useState<BankItemInList[]>([])
   useEffect(() => {
     fetchItems(bankItems.map((item) => item.id))
   }, [bankItems.length])
-
-  const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
   useEffect(() => {
     fetchItems(materialItems.map((item) => item.id))
   }, [materialItems.length])
+
+  // handle materials (category)
+
+  const { data: materialsData, isFetching: isMaterialFetching } = useQuery(
+    ["materials", , "ids=all"],
+    queryFunction,
+    {
+      staleTime: Infinity,
+    },
+  )
+  const materialCategories = sortBy(materialsData, ["order"]).map(
+    (item) => materialCategoryAliases[item.name],
+  )
+  const materials =
+    materialsData?.reduce((prev: Materials, curr: Material) => {
+      for (const item of curr.items) {
+        prev[item] = materialCategoryAliases[curr.name]
+      }
+      return prev
+    }, {}) || []
 
   return (
     <ItemContext.Provider
       value={{
         items,
+        materials,
+        materialCategories,
         characterItems,
         inventoryItems,
         bankItems,
@@ -104,7 +131,7 @@ function ItemProvider(props: { children: React.ReactNode }) {
         setInventoryItems,
         setBankItems,
         setMaterialItems,
-        isFetching,
+        isFetching: isItemsFetching || isMaterialFetching,
       }}
     >
       {props.children}
@@ -117,4 +144,23 @@ export { ItemProvider }
 
 export interface Items {
   [key: number]: Item
+}
+export interface Materials {
+  [key: number]: string
+}
+
+interface MaterialCategoryAliases {
+  [key: string]: string
+}
+
+const materialCategoryAliases: MaterialCategoryAliases = {
+  "Cooking Materials": "Cooking",
+  "Basic Crafting Materials": "Basic",
+  "Intermediate Crafting Materials": "Intermediate",
+  "Gemstones and Jewels": "Gemstones",
+  "Advanced Crafting Materials": "Advanced",
+  "Festive Materials": "Festive",
+  "Ascended Materials": "Ascended",
+  "Cooking Ingredients": "Ingredients",
+  "Scribing Materials": "Scribing",
 }

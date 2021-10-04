@@ -43,6 +43,8 @@ import css from "./styles/Items.module.css"
 function Items() {
   const {
     items,
+    materials,
+    materialCategories,
     characterItems,
     inventoryItems,
     bankItems,
@@ -75,13 +77,18 @@ function Items() {
     .filter((userItem: UserItemInList) => {
       const itemRaw: ItemDef = items[userItem.id]
       if (activeType) {
-        return activeType === itemRaw?.type
+        if (!itemRaw) return false
+        if (itemRaw.type === "CraftingMaterial") {
+          return activeType === materials[itemRaw.id]
+        }
+        return activeType === itemRaw.type
       }
       if (category) {
+        if (!itemRaw) return false
         const activeTypes =
           MENU_ITEMS.find((menuItem) => menuItem.to === pathname)?.showOnly ||
           []
-        return activeTypes.includes(itemRaw?.type)
+        return activeTypes.includes(itemRaw.type)
       }
       return true
     })
@@ -94,11 +101,11 @@ function Items() {
     .sort((_a: UserItemInList, _b: UserItemInList) => {
       const a = { ..._a, ...items[_a.id] }
       const b = { ..._b, ...items[_b.id] }
-      if (a[activeSort] > b[activeSort] && activeOrder === "asc") return 1
-      if (a[activeSort] < b[activeSort] && activeOrder === "dsc") return 1
-      if (a[activeSort] > b[activeSort] && activeOrder === "dsc") return -1
-      if (a[activeSort] < b[activeSort] && activeOrder === "asc") return -1
-      return 0
+      const number =
+        activeSort === "rarity"
+          ? compareRarity(a.rarity, b.rarity)
+          : compare(a[activeSort], b[activeSort])
+      return activeOrder === "asc" ? number : number * -1
     })
 
   const pages = chunk(visibleItems, ITEM_COUNT_PER_PAGE)
@@ -122,7 +129,14 @@ function Items() {
           <Tab key={item.to} as={NavLink} to={item.to}>
             {item.text}
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getTypedItemLength(item.showOnly, allItems, items)}
+              {getTypedItemLength(
+                item.to === "/items/material"
+                  ? materialCategories
+                  : item.showOnly,
+                allItems,
+                items,
+                materials,
+              )}
             </Tag>
           </Tab>
         ))}
@@ -155,10 +169,15 @@ function Items() {
             {MENU_ITEMS.map((menuItem) => (
               <Route key={menuItem.to} path={menuItem.to}>
                 <SubMenuItem
-                  showOnly={menuItem.showOnly}
+                  showOnly={
+                    menuItem.to === "/items/material"
+                      ? materialCategories
+                      : menuItem.showOnly
+                  }
                   activeType={activeType}
                   userItems={allItems}
                   items={items}
+                  materials={materials}
                 />
               </Route>
             ))}
@@ -176,7 +195,15 @@ function Items() {
               {pages[pageIndex]?.map(
                 (userItem: UserItemInList, index: number) => {
                   const item: ItemDef = items[userItem.id]
-                  return <Item key={index} item={item} userItem={userItem} />
+                  const materialCategory = materials[userItem.id]
+                  return (
+                    <Item
+                      key={index}
+                      item={item}
+                      userItem={userItem}
+                      materialCategory={materialCategory}
+                    />
+                  )
                 },
               )}
             </Tbody>
@@ -246,3 +273,24 @@ export type Sort =
   | "chat_link"
 
 export type Order = "asc" | "dsc"
+
+const RARITY_MAP: { [key: string]: number } = {
+  Junk: 0,
+  Basic: 1,
+  Fine: 2,
+  Masterwork: 3,
+  Rare: 4,
+  Exotic: 5,
+  Ascended: 6,
+  Legendary: 7,
+}
+const compareRarity = (_a: string, _b: string) => {
+  const a = RARITY_MAP[_a]
+  const b = RARITY_MAP[_b]
+  return compare(a, b)
+}
+const compare = (a: string | number, b: string | number) => {
+  if (a > b) return 1
+  if (a < b) return -1
+  return 0
+}
