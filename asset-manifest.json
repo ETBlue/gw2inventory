@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/gw2inventory/static/css/main.6c41f9eb.chunk.css",
-    "main.js": "/gw2inventory/static/js/main.d933eb55.chunk.js",
-    "main.js.map": "/gw2inventory/static/js/main.d933eb55.chunk.js.map",
+    "main.js": "/gw2inventory/static/js/main.6b8d5655.chunk.js",
+    "main.js.map": "/gw2inventory/static/js/main.6b8d5655.chunk.js.map",
     "runtime-main.js": "/gw2inventory/static/js/runtime-main.821f237c.js",
     "runtime-main.js.map": "/gw2inventory/static/js/runtime-main.821f237c.js.map",
-    "static/js/2.36d30034.chunk.js": "/gw2inventory/static/js/2.36d30034.chunk.js",
-    "static/js/2.36d30034.chunk.js.map": "/gw2inventory/static/js/2.36d30034.chunk.js.map",
+    "static/js/2.fa6d39cb.chunk.js": "/gw2inventory/static/js/2.fa6d39cb.chunk.js",
+    "static/js/2.fa6d39cb.chunk.js.map": "/gw2inventory/static/js/2.fa6d39cb.chunk.js.map",
     "static/js/3.8e389364.chunk.js": "/gw2inventory/static/js/3.8e389364.chunk.js",
     "static/js/3.8e389364.chunk.js.map": "/gw2inventory/static/js/3.8e389364.chunk.js.map",
     "index.html": "/gw2inventory/index.html",
     "static/css/main.6c41f9eb.chunk.css.map": "/gw2inventory/static/css/main.6c41f9eb.chunk.css.map",
-    "static/js/2.36d30034.chunk.js.LICENSE.txt": "/gw2inventory/static/js/2.36d30034.chunk.js.LICENSE.txt"
+    "static/js/2.fa6d39cb.chunk.js.LICENSE.txt": "/gw2inventory/static/js/2.fa6d39cb.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.821f237c.js",
-    "static/js/2.36d30034.chunk.js",
+    "static/js/2.fa6d39cb.chunk.js",
     "static/css/main.6c41f9eb.chunk.css",
-    "static/js/main.d933eb55.chunk.js"
+    "static/js/main.6b8d5655.chunk.js"
   ]
 }
