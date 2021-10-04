@@ -4,7 +4,11 @@ import { useQuery } from "react-query"
 import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
-import { CharacterBag, CharacterItemInList } from "pages/characters/types"
+import {
+  CharacterBag,
+  CharacterBagItem,
+  CharacterItemInList,
+} from "pages/characters/types"
 
 const CharacterContext = createContext({
   characters: undefined,
@@ -37,16 +41,15 @@ function CharacterProvider(props: { children: React.ReactNode }) {
             location: character.name,
             isEquipped: true,
           }
-          const currentBagItems = bag.inventory.map((item) => {
-            if (item) {
-              return { ...item, location: character.name }
-            }
-          })
-          return [
-            ...prev,
-            currentBag,
-            ...currentBagItems.filter((item) => !!item),
-          ]
+          const currentBagItems = bag.inventory.reduce(
+            (prev: CharacterItemInList[], item: CharacterBagItem) => {
+              if (!item) return prev
+              const currentItem = { ...item, location: character.name }
+              return [...prev, currentItem]
+            },
+            [],
+          )
+          return [...prev, currentBag, ...currentBagItems]
         },
         [],
       )

@@ -1,12 +1,14 @@
 import React, { useState, createContext } from "react"
 
-export interface UsedAccount {
-  name: string
-  token: string
-  description?: string
+interface Values {
+  usedAccounts: UsedAccount[]
+  addUsedAccount(account: UsedAccount): void
+  removeUsedAccount(account: UsedAccount): void
+  currentAccount: UsedAccount | null
+  setCurrentAccount(account: UsedAccount | null): void
 }
 
-const TokenContext = createContext({
+const TokenContext = createContext<Values>({
   usedAccounts: [],
   addUsedAccount: (account: UsedAccount) => {},
   removeUsedAccount: (account: UsedAccount) => {},
@@ -109,4 +111,10 @@ const readV1StoredTokens = () => {
     }
   }
   return []
+}
+
+export interface UsedAccount {
+  name: string
+  token: string
+  description?: string
 }
