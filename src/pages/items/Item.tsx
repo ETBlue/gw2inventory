@@ -2,18 +2,16 @@ import React from "react"
 import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
-import { CharacterItemInList } from "pages/characters/types"
-import { InfixUpgradeAttributes, Item as ItemDef } from "./types"
-
+import { InfixUpgradeAttribute, Item as ItemDef, UserItemInList } from "./types"
 import css from "./styles/Item.module.css"
 
 interface Props {
   item: ItemDef
-  characterItem: CharacterItemInList
+  userItem: UserItemInList
 }
 
 function Item(props: Props) {
-  const { item, characterItem } = props
+  const { item, userItem } = props
   return (
     <Tr>
       <Td className={css.iconCell}>
@@ -51,7 +49,7 @@ function Item(props: Props) {
             {item.details?.infix_upgrade && (
               <p className={`${css.description} ${css.secondary}`}>
                 {item.details.infix_upgrade.attributes.map(
-                  (attr: InfixUpgradeAttributes) => (
+                  (attr: InfixUpgradeAttribute) => (
                     <Box as="span" key={attr.attribute} marginRight="0.5rem">
                       <Tag size="sm">{attr.attribute}</Tag> {attr.modifier}
                     </Box>
@@ -59,14 +57,14 @@ function Item(props: Props) {
                 )}
               </p>
             )}
-            {characterItem.stats && (
+            {userItem.stats && (
               <p className={`${css.description} ${css.secondary}`}>
-                {Object.keys(characterItem.stats.attributes).map((attr) => (
+                {Object.keys(userItem.stats.attributes).map((attr) => (
                   <Box key={attr} marginRight="0.5rem" as="span">
                     <Tag variant="outline" size="sm">
                       {attr}
                     </Tag>{" "}
-                    {characterItem.stats.attributes[attr]}
+                    {userItem.stats.attributes[attr]}
                   </Box>
                 ))}
               </p>
@@ -74,8 +72,7 @@ function Item(props: Props) {
           </>
         ) : (
           <>
-            Item not exists in Guild Wars 2 API. ID:{" "}
-            <Code>{characterItem.id}</Code>
+            Item not exists in Guild Wars 2 API. ID: <Code>{userItem.id}</Code>
           </>
         )}
       </Td>
@@ -94,17 +91,17 @@ function Item(props: Props) {
         )}
       </Td>
       <Td minWidth="12rem">
-        {characterItem.location}{" "}
-        {characterItem.isEquipped && (
+        {userItem.location}{" "}
+        {userItem.isEquipped && (
           <Badge size="sm" fontWeight="normal">
             Equipped
           </Badge>
         )}
-        {characterItem.bound_to && (
-          <div className={css.secondary}>bound to {characterItem.bound_to}</div>
+        {userItem.bound_to && (
+          <div className={css.secondary}>bound to {userItem.bound_to}</div>
         )}
       </Td>
-      <Td maxWidth="6rem">{characterItem?.count}</Td>
+      <Td maxWidth="6rem">{userItem?.count}</Td>
       <Td maxWidth="10rem">
         {item && <Code className={css.secondary}>{item.chat_link}</Code>}
       </Td>

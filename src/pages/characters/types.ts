@@ -75,7 +75,7 @@ interface CharacterItem {
   bound_to?: string // Name of the character the item is bound to.
 }
 
-interface CharacterBagItem extends CharacterItem {
+export interface CharacterBagItem extends CharacterItem {
   count: number // Amount of item in the stack. Minium of 1, maximum of 250.
 }
 
@@ -83,7 +83,7 @@ interface CharacterBagItemInList extends CharacterBagItem {
   location: string
 }
 
-interface CharacterEquipmentItem extends CharacterItem {
+export interface CharacterEquipmentItem extends CharacterItem {
   slot:
     | "HelmAquatic"
     | "Backpack"
@@ -121,12 +121,13 @@ export type CharacterItemInList =
   | CharacterBagItemInList
   | CharacterEquipmentItemInList
 
-interface Stats {
+export interface Stats {
   id: number // The itemstat id, can be resolved against /v2/itemstats.
   attributes: Attributes // Contains a summary of the stats on the item.
 }
 
 interface Attributes {
+  AgonyResistance?: number // missed key in the api doc
   Power?: number // Shows the amount of power given
   Precision?: number // Shows the amount of Precision given
   Toughness?: number // Shows the amount of Toughness given

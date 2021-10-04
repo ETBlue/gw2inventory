@@ -1,5 +1,12 @@
 // item
 
+import {
+  BankItemInList,
+  InventoryItemInList,
+  MaterialItemInList,
+} from "pages/account/types"
+import { CharacterItemInList } from "pages/characters/types"
+
 export interface Item {
   id: number // The item id.
   chat_link: string // The chat link.
@@ -174,7 +181,7 @@ interface InfustionSlot {
 interface InfixUpgrade {
   // The infix upgrade is an object with the following properties:
   id: number // The itemstat id that can be resolved against /v2/itemstats.
-  attributes: InfixUpgradeAttributes[] // List of attribute bonuses. Each object contains the following properties:
+  attributes: InfixUpgradeAttribute[] // List of attribute bonuses. Each object contains the following properties:
   buff?: InfixUpgradeBuff // Object containing an additional effect. This is used for Boon Duration, Condition Duration, or additional attribute bonuses for ascended trinkets or back items. It has the following properties:
 }
 
@@ -301,18 +308,8 @@ type InfusionSlotFlag =
   | "Enrichment" // Item has an enrichment slot.
   | "Infusion" // Item has an infusion slot.
 
-export interface InfixUpgradeAttributes {
-  attribute: // Attribute this bonus applies to. Possible values:
-  | "AgonyResistance" // Agony Resistance
-    | "BoonDuration" // Concentration
-    | "ConditionDamage" // Condition Damage
-    | "ConditionDuration" // Expertise
-    | "CritDamage" // Ferocity
-    | "Healing" // Healing Power
-    | "Power" // Power
-    | "Precision" // Precision
-    | "Toughness" // Toughness
-    | "Vitality" // Vitality
+export interface InfixUpgradeAttribute {
+  attribute: Attribute
   modifier: number // The modifier value.
 }
 
@@ -320,3 +317,21 @@ interface InfixUpgradeBuff {
   skill_id: number // The skill id of the effect.
   description?: string // The effect's description.
 }
+
+export type Attribute =  // Attribute this bonus applies to. Possible values:
+  | "AgonyResistance" // Agony Resistance
+  | "BoonDuration" // Concentration
+  | "ConditionDamage" // Condition Damage
+  | "ConditionDuration" // Expertise
+  | "CritDamage" // Ferocity
+  | "Healing" // Healing Power
+  | "Power" // Power
+  | "Precision" // Precision
+  | "Toughness" // Toughness
+  | "Vitality" // Vitality
+
+export type UserItemInList =
+  | CharacterItemInList
+  | InventoryItemInList
+  | BankItemInList
+  | MaterialItemInList

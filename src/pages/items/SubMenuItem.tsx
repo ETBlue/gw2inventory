@@ -4,21 +4,20 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { CharacterItemInList } from "pages/characters/types"
 
 import { MenuItem } from "./Items"
+import { Item, UserItemInList } from "./types"
 import { getTypedItemLength } from "./helpers/count"
-import { Item } from "./types"
 
 interface Props {
   activeType: string | null
   showOnly: MenuItem["showOnly"]
-  characterItems: CharacterItemInList[]
+  userItems: UserItemInList[]
   items: Item[]
 }
 
 function ItemHeader(props: Props) {
-  const { activeType, showOnly, characterItems, items } = props
+  const { activeType, showOnly, userItems, items } = props
   const { pathname } = useLocation()
   const { queryString } = useSearchParams()
 
@@ -35,7 +34,7 @@ function ItemHeader(props: Props) {
         >
           {type}{" "}
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
-            {getTypedItemLength([type], characterItems, items)}
+            {getTypedItemLength([type], userItems, items)}
           </Tag>
         </Button>
       ))}

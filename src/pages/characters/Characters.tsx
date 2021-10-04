@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react"
+import React, { useContext } from "react"
 import { Link, NavLink, Route, Switch, useHistory } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
 import {

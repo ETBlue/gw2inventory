@@ -5,8 +5,8 @@ import { ChakraProvider } from "@chakra-ui/react"
 
 import { TokenProvider } from "contexts/TokenContext"
 import { ItemProvider } from "contexts/ItemContext"
+import { AccountProvider } from "contexts/AccountContext"
 import { CharacterProvider } from "contexts/CharacterContext"
-
 import BaseFrame from "layouts/BaseFrame"
 import Characters from "pages/characters"
 import Items from "pages/items"
@@ -43,11 +43,13 @@ export const App = () => {
       <QueryClientProvider client={queryClient}>
         <TokenProvider>
           <ItemProvider>
-            <CharacterProvider>
-              <Router>
-                <Content />
-              </Router>
-            </CharacterProvider>
+            <AccountProvider>
+              <CharacterProvider>
+                <Router>
+                  <Content />
+                </Router>
+              </CharacterProvider>
+            </AccountProvider>
           </ItemProvider>
         </TokenProvider>
       </QueryClientProvider>

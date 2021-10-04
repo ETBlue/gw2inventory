@@ -27,15 +27,15 @@ import {
 
 import { ITEM_COUNT_PER_PAGE } from "config"
 import ItemContext from "contexts/ItemContext"
+import AccountContext from "contexts/AccountContext"
 import CharacterContext from "contexts/CharacterContext"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { CharacterItemInList } from "pages/characters/types"
 import Pagination from "components/Pagination"
 
 import SubMenuItem from "./SubMenuItem"
 import HeaderItem from "./HeaderItem"
-import { Item as ItemDef } from "./types"
+import { Item as ItemDef, UserItemInList } from "./types"
 import Item from "./Item"
 import { getTypedItemLength } from "./helpers/count"
 import css from "./styles/Items.module.css"
@@ -44,9 +44,13 @@ function Items() {
   const {
     items,
     characterItems,
+    inventoryItems,
+    bankItems,
+    materialItems,
     isFetching: isItemsFetching,
   } = useContext(ItemContext)
   const { isFetching: isCharactersFetching } = useContext(CharacterContext)
+  const { isFetching: isAccountFetching } = useContext(AccountContext)
   const history = useHistory()
   const { pathname } = useLocation()
   const { category } = useParams()
@@ -61,10 +65,15 @@ function Items() {
   const activeSort = sort || "location"
   const activeOrder = order || "asc"
 
-  const allItems = characterItems
+  const allItems = [
+    ...characterItems,
+    ...inventoryItems,
+    ...bankItems,
+    ...materialItems,
+  ]
   const visibleItems = allItems
-    .filter((characterItem: CharacterItemInList) => {
-      const itemRaw: ItemDef = items[characterItem.id]
+    .filter((userItem: UserItemInList) => {
+      const itemRaw: ItemDef = items[userItem.id]
       if (activeType) {
         return activeType === itemRaw?.type
       }
@@ -76,13 +85,13 @@ function Items() {
       }
       return true
     })
-    .filter((characterItem: CharacterItemInList) => {
+    .filter((userItem: UserItemInList) => {
       if (!keyword) return true
-      const itemRaw: ItemDef = items[characterItem.id]
-      const item = { ...characterItem, ...itemRaw }
+      const itemRaw: ItemDef = items[userItem.id]
+      const item = { ...userItem, ...itemRaw }
       return JSON.stringify(item).match(new RegExp(keyword, "i"))
     })
-    .sort((_a: CharacterItemInList, _b: CharacterItemInList) => {
+    .sort((_a: UserItemInList, _b: UserItemInList) => {
       const a = { ..._a, ...items[_a.id] }
       const b = { ..._b, ...items[_b.id] }
       if (a[activeSort] > b[activeSort] && activeOrder === "asc") return 1
@@ -108,7 +117,7 @@ function Items() {
           <Tab key={item.to} as={NavLink} to={item.to}>
             {item.text}
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getTypedItemLength(item.showOnly, characterItems, items)}
+              {getTypedItemLength(item.showOnly, allItems, items)}
             </Tag>
           </Tab>
         ))}
@@ -131,7 +140,7 @@ function Items() {
           />
         </InputGroup>
       </TabList>
-      {isItemsFetching || isCharactersFetching ? (
+      {isItemsFetching || isCharactersFetching || isAccountFetching ? (
         <Center>
           <Spinner />
         </Center>
@@ -143,7 +152,7 @@ function Items() {
                 <SubMenuItem
                   showOnly={menuItem.showOnly}
                   activeType={activeType}
-                  characterItems={characterItems}
+                  userItems={allItems}
                   items={items}
                 />
               </Route>
@@ -160,15 +169,9 @@ function Items() {
             </Thead>
             <Tbody>
               {pages[pageIndex]?.map(
-                (characterItem: CharacterItemInList, index: number) => {
-                  const item: ItemDef = items[characterItem.id]
-                  return (
-                    <Item
-                      key={index}
-                      item={item}
-                      characterItem={characterItem}
-                    />
-                  )
+                (userItem: UserItemInList, index: number) => {
+                  const item: ItemDef = items[userItem.id]
+                  return <Item key={index} item={item} userItem={userItem} />
                 },
               )}
             </Tbody>
