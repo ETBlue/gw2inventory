@@ -11,3 +11,4 @@ export const LOCAL_STORAGE_KEYS = {
   tokens: "gw2iTokens",
 }
 
+export const ITEM_COUNT_PER_PAGE = 100
