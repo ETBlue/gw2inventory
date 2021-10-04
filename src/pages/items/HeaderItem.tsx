@@ -6,11 +6,12 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
+import { Order, Sort, TABLE_HEADERS } from "./Items"
 import css from "./styles/HeaderItem.module.css"
 
 interface Props {
-  activeSort: string
-  activeOrder: string
+  activeSort: Sort
+  activeOrder: Order
 }
 
 function HeaderItem(props: Props) {
@@ -20,15 +21,7 @@ function HeaderItem(props: Props) {
 
   return (
     <Tr>
-      {[
-        "rarity",
-        "name",
-        "type",
-        "level",
-        "location",
-        "count",
-        "chat_link",
-      ].map((title) => (
+      {TABLE_HEADERS.map((title) => (
         <Th
           key={title}
           as={Link}

@@ -4,16 +4,17 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
+import { Items } from "contexts/ItemContext"
 
 import { MenuItem } from "./Items"
-import { Item, UserItemInList } from "./types"
+import { UserItemInList } from "./types"
 import { getTypedItemLength } from "./helpers/count"
 
 interface Props {
   activeType: string | null
   showOnly: MenuItem["showOnly"]
   userItems: UserItemInList[]
-  items: Item[]
+  items: Items
 }
 
 function ItemHeader(props: Props) {

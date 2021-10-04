@@ -62,8 +62,8 @@ function Items() {
     order,
     type: activeType,
   } = useSearchParams()
-  const activeSort = sort || "location"
-  const activeOrder = order || "asc"
+  const activeSort: Sort = sort || "location"
+  const activeOrder: Order = order || "asc"
 
   const allItems = [
     ...characterItems,
@@ -225,3 +225,24 @@ const MENU_ITEMS: MenuItem[] = [
   { to: "/items/material", text: "Material", showOnly: ["CraftingMaterial"] },
   { to: "/items/trophy", text: "Trophy", showOnly: ["Trophy"] },
 ]
+
+export const TABLE_HEADERS = [
+  "rarity",
+  "name",
+  "type",
+  "level",
+  "location",
+  "count",
+  "chat_link",
+]
+
+export type Sort =
+  | "rarity"
+  | "name"
+  | "type"
+  | "level"
+  | "location"
+  | "count"
+  | "chat_link"
+
+export type Order = "asc" | "dsc"

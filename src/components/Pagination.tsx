@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
   CgChevronDoubleLeft,
   CgChevronDoubleRight,
@@ -7,13 +7,12 @@ import {
 } from "react-icons/cg"
 import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
-import { CharacterItemInList } from "pages/characters/types"
-import { useEffect } from "react"
+import { UserItemInList } from "pages/items/types"
 
 interface Props {
   pageIndex: number
   setPageIndex(index: number): void
-  pages: CharacterItemInList[][]
+  pages: UserItemInList[][]
 }
 
 function Pagination(props: Props) {
