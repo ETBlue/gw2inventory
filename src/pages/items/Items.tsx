@@ -7,7 +7,7 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom"
-import { chunk } from "lodash"
+import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
@@ -105,9 +105,14 @@ function Items() {
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   return (
-    <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
+    <Tabs
+      display="grid"
+      gridTemplateRows="auto 1fr"
+      height="100%"
+      index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
+    >
       <TabList>
-        <Tab key="/items" as={NavLink} to="/items">
+        <Tab key="/items" as={NavLink} exact to="/items">
           All
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
             {allItems?.length}
