@@ -109,13 +109,10 @@ function ItemProvider(props: { children: React.ReactNode }) {
   const materialCategories = sortBy(materialsData, ["order"]).map(
     (item) => materialCategoryAliases[item.name],
   )
-  const materials =
-    materialsData?.reduce((prev: Materials, curr: Material) => {
-      for (const item of curr.items) {
-        prev[item] = materialCategoryAliases[curr.name]
-      }
-      return prev
-    }, {}) || []
+  const materials = materialsData?.reduce((prev: Materials, curr: Material) => {
+    prev[curr.id] = materialCategoryAliases[curr.name]
+    return prev
+  }, {})
 
   return (
     <ItemContext.Provider

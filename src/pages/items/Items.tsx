@@ -37,7 +37,11 @@ import SubMenuItem from "./SubMenuItem"
 import HeaderItem from "./HeaderItem"
 import { Item as ItemDef, UserItemInList } from "./types"
 import Item from "./Item"
-import { getTypedItemLength } from "./helpers/count"
+import {
+  getTypedItemLength,
+  isItemInCategory,
+  isItemInTypes,
+} from "./helpers/count"
 import css from "./styles/Items.module.css"
 
 function Items() {
@@ -75,22 +79,27 @@ function Items() {
   ]
   const visibleItems = allItems
     .filter((userItem: UserItemInList) => {
-      const itemRaw: ItemDef = items[userItem.id]
       if (activeType) {
-        if (!itemRaw) return false
-        if (itemRaw.type === "CraftingMaterial") {
-          return activeType === materials[itemRaw.id]
-        }
-        return activeType === itemRaw.type
+        return isItemInTypes({
+          types:
+            activeType === "CraftingMaterial"
+              ? materialCategories
+              : [activeType],
+          userItem,
+          items,
+          materials,
+          pathname,
+        })
+      } else if (category) {
+        return isItemInCategory({
+          userItem,
+          category,
+          items,
+          pathname,
+        })
+      } else {
+        return true
       }
-      if (category) {
-        if (!itemRaw) return false
-        const activeTypes =
-          MENU_ITEMS.find((menuItem) => menuItem.to === pathname)?.showOnly ||
-          []
-        return activeTypes.includes(itemRaw.type)
-      }
-      return true
     })
     .filter((userItem: UserItemInList) => {
       if (!keyword) return true
@@ -129,14 +138,16 @@ function Items() {
           <Tab key={item.to} as={NavLink} to={item.to}>
             {item.text}
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getTypedItemLength(
-                item.to === "/items/material"
-                  ? materialCategories
-                  : item.showOnly,
-                allItems,
+              {getTypedItemLength({
+                types:
+                  item.to === "/items/material"
+                    ? materialCategories
+                    : item.showOnly,
+                userItems: allItems,
                 items,
                 materials,
-              )}
+                pathname: item.to,
+              })}
             </Tag>
           </Tab>
         ))}
@@ -178,6 +189,7 @@ function Items() {
                   userItems={allItems}
                   items={items}
                   materials={materials}
+                  isMaterial={menuItem.to === "/items/material"}
                 />
               </Route>
             ))}
@@ -195,7 +207,7 @@ function Items() {
               {pages[pageIndex]?.map(
                 (userItem: UserItemInList, index: number) => {
                   const item: ItemDef = items[userItem.id]
-                  const materialCategory = materials[userItem.id]
+                  const materialCategory = materials[userItem.category]
                   return (
                     <Item
                       key={index}
@@ -222,7 +234,7 @@ export interface MenuItem {
   showOnly: string[]
 }
 
-const MENU_ITEMS: MenuItem[] = [
+export const MENU_ITEMS: MenuItem[] = [
   {
     to: "/items/equipable",
     text: "Equipable",

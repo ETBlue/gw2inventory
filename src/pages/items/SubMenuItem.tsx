@@ -36,7 +36,13 @@ function SubMenuItem(props: Props) {
         >
           {type}{" "}
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
-            {getTypedItemLength([type], userItems, items, materials)}
+            {getTypedItemLength({
+              types: [type],
+              userItems,
+              items,
+              materials,
+              pathname,
+            })}
           </Tag>
         </Button>
       ))}
