@@ -4,6 +4,7 @@
 }
 
 .table th,
+.table tr > a,
 .table td {
   padding-left: 1rem;
   padding-right: 1rem;

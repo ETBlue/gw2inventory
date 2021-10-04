@@ -6,6 +6,6 @@
 
 .title.active svg {
   position: absolute;
-  right: 1rem;
+  right: 0rem;
   top: calc(50% - 0.5em);
 }
