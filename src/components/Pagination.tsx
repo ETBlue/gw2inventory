@@ -8,15 +8,43 @@ import {
 import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
 import { CharacterItemInList } from "pages/characters/types"
+import { useEffect } from "react"
 
 interface Props {
   pageIndex: number
-  setPageIndex: (index: number) => void
+  setPageIndex(index: number): void
   pages: CharacterItemInList[][]
 }
 
 function Pagination(props: Props) {
   const { pageIndex, setPageIndex, pages } = props
+  const lastPageIndex = pages.length > 0 ? pages.length - 1 : 0
+  const goFirst = () => {
+    if (pageIndex === 0) return
+    setPageIndex(0)
+  }
+  const goPrev = () => {
+    if (pageIndex === 0) return
+    setPageIndex(pageIndex - 1)
+  }
+  const goNext = () => {
+    if (!pages.length) return
+    if (pageIndex === lastPageIndex) return
+    setPageIndex(pageIndex + 1)
+  }
+  const goLast = () => {
+    if (!pages.length) return
+    setPageIndex(lastPageIndex)
+  }
+  useEffect(() => {
+    if (pageIndex > lastPageIndex) {
+      setPageIndex(lastPageIndex)
+    }
+    if (pageIndex < 0) {
+      console.log(pageIndex)
+    }
+  }, [pageIndex, setPageIndex, pages.length])
+
   return (
     <Flex
       as={ButtonGroup}
@@ -26,50 +54,36 @@ function Pagination(props: Props) {
       borderBottomWidth="1px"
       justifyContent="center"
     >
-      <IconButton
-        aria-label="first page"
-        onClick={() => {
-          setPageIndex(0)
-        }}
-      >
+      <IconButton aria-label="first page" onClick={goFirst}>
         <CgChevronDoubleLeft />
       </IconButton>
-      <IconButton
-        aria-label="previous page"
-        onClick={() => {
-          setPageIndex(pageIndex - 1 || 0)
-        }}
-      >
+      <IconButton aria-label="previous page" onClick={goPrev}>
         <CgChevronLeft />
       </IconButton>
-      {pages.map((chunk, index: number) => (
-        <Button
-          key={index}
-          fontWeight="normal"
-          isActive={index === pageIndex}
-          onClick={() => {
-            setPageIndex(index)
-          }}
-        >
-          {index + 1}
-        </Button>
-      ))}
-      <IconButton
-        aria-label="next page"
-        onClick={() => {
-          setPageIndex(
-            pageIndex < pages.length - 1 ? pageIndex + 1 : pages.length,
-          )
-        }}
-      >
+      {pages.map((chunk, index: number) => {
+        const isOutofScope = index > pageIndex + 10 || index < pageIndex - 10
+        const isOnEdge = index === pageIndex + 10 || index === pageIndex - 10
+        return (
+          <Button
+            key={index}
+            fontWeight="normal"
+            isActive={index === pageIndex}
+            padding={isOutofScope ? 0 : ""}
+            fontSize={isOutofScope ? 0 : ""}
+            minWidth={isOutofScope ? 0 : ""}
+            transition="padding 0.25s ease-out, min-width 0.25s ease-out"
+            onClick={() => {
+              setPageIndex(index)
+            }}
+          >
+            {isOnEdge ? "..." : index + 1}
+          </Button>
+        )
+      })}
+      <IconButton aria-label="next page" onClick={goNext}>
         <CgChevronRight />
       </IconButton>
-      <IconButton
-        aria-label="last page"
-        onClick={() => {
-          setPageIndex(pages.length - 1)
-        }}
-      >
+      <IconButton aria-label="last page" onClick={goLast}>
         <CgChevronDoubleRight />
       </IconButton>
     </Flex>
