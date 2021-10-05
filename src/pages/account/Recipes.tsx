@@ -2,8 +2,6 @@ import React from "react"
 import { useQuery } from "react-query"
 import { queryFunction } from "helpers/api"
 
-type Recipe = number // each value being the ID of a recipe that can be resolved against /v2/recipes.
-
 function Recipes(props: { token: string }) {
   const { token } = props
 

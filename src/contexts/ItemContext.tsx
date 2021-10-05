@@ -4,7 +4,7 @@ import { chunk, sortBy } from "lodash"
 
 import { fetchGW2, queryFunction } from "helpers/api"
 import { Item, Material } from "pages/items/types"
-import { CharacterItemInList } from "pages/characters/types"
+import { CharacterItemInList } from "./types/CharacterContext"
 import {
   BankItemInList,
   InventoryItemInList,

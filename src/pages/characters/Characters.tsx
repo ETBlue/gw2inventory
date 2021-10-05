@@ -17,17 +17,13 @@ import {
 } from "@chakra-ui/react"
 
 import TokenContext from "contexts/TokenContext"
-import CharacterContext from "contexts/CharacterContext"
-
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
-import { Character } from "pages/characters/types"
+import CharacterContext from "contexts/CharacterContext"
+import { Character } from "contexts/types/Character"
 
+import { MENU_ITEMS, PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"
-
-const MENU_ITEMS = [
-  { to: "/characters", text: "Overview", component: Overview },
-]
 
 function Characters() {
   const { currentAccount } = useContext(TokenContext)
@@ -55,11 +51,8 @@ function Characters() {
         : true,
     )
     .sort((a, b) => {
-      if (a[activeSort] > b[activeSort] && activeOrder === "asc") return 1
-      if (a[activeSort] < b[activeSort] && activeOrder === "dsc") return 1
-      if (a[activeSort] > b[activeSort] && activeOrder === "dsc") return -1
-      if (a[activeSort] < b[activeSort] && activeOrder === "asc") return -1
-      return 0
+      const number = compare(a[activeSort], b[activeSort])
+      return activeOrder === "asc" ? number : number * -1
     })
 
   return (
@@ -144,12 +137,10 @@ function Characters() {
             {currentAccount &&
               characters &&
               MENU_ITEMS.map((item) => {
-                const Component = item.component
                 return (
                   <Route key={item.to} path={item.to}>
-                    <Component
+                    <Overview
                       characters={visibleCharacters}
-                      token={currentAccount.token}
                       activeSort={activeSort}
                       activeOrder={activeOrder}
                       queryString={queryString}
@@ -165,15 +156,3 @@ function Characters() {
 }
 
 export default Characters
-
-const PROFESSIONS = [
-  "Elementalist",
-  "Necromancer",
-  "Mesmer",
-  "Ranger",
-  "Thief",
-  "Engineer",
-  "Warrior",
-  "Guardian",
-  "Revenant",
-]

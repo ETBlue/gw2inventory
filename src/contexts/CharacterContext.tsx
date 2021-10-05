@@ -4,14 +4,16 @@ import { useQuery } from "react-query"
 import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
+
 import {
   CharacterBag,
   CharacterBagItem,
-  CharacterItemInList,
-} from "pages/characters/types"
+  CharacterEquipmentItem,
+} from "./types/Character"
+import { CharacterItemInList, Values } from "./types/CharacterContext"
 
-const CharacterContext = createContext({
-  characters: undefined,
+const CharacterContext = createContext<Values>({
+  characters: [],
   isFetching: false,
 })
 
@@ -53,13 +55,15 @@ function CharacterProvider(props: { children: React.ReactNode }) {
         },
         [],
       )
-      const equippedItems = character.equipment.map((item) => {
-        return {
-          ...item,
-          location: character.name,
-          isEquipped: true,
-        }
-      })
+      const equippedItems = character.equipment.map(
+        (item: CharacterEquipmentItem) => {
+          return {
+            ...item,
+            location: character.name,
+            isEquipped: true,
+          }
+        },
+      )
       characterItems = [...characterItems, ...bagItems, ...equippedItems]
     }
     setCharacterItems(characterItems)

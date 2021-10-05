@@ -7,12 +7,12 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
 
-import { Character } from "./types"
+import { Character } from "contexts/types/Character"
+import { COLUMNS } from "./consts/Overview"
 import css from "./styles/Characters.module.css"
 
 interface Props {
   characters: Character[]
-  token: string
   activeSort: string
   activeOrder: string
   queryString: string
@@ -79,17 +79,6 @@ function Overview(props: Props) {
 }
 
 export default Overview
-
-const COLUMNS = [
-  "name",
-  "gender",
-  "race",
-  "profession",
-  "level",
-  "age",
-  "created",
-  "deaths",
-]
 
 function Gender(props: { gender: string }) {
   const { gender } = props
