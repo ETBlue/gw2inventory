@@ -6,7 +6,8 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
-import { Order, Sort, TABLE_HEADERS } from "./Items"
+import { Order, Sort } from "./types/Items"
+import { TABLE_HEADERS } from "./consts/Items"
 import css from "./styles/HeaderItem.module.css"
 
 interface Props {

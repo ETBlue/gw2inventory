@@ -21,6 +21,7 @@ import { useSearchParams } from "hooks/url"
 import TokenContext from "contexts/TokenContext"
 import CharacterContext from "contexts/CharacterContext"
 import { Character } from "contexts/types/Character"
+import { compare } from "pages/items/helpers/compare"
 
 import { MENU_ITEMS, PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"

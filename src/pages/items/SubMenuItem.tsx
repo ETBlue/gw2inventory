@@ -4,10 +4,10 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { Items, Materials } from "contexts/ItemContext"
+import { Items, Materials } from "contexts/types/ItemContext"
+import { UserItemInList } from "contexts/types/ItemContext"
 
-import { MenuItem } from "./Items"
-import { UserItemInList } from "./types"
+import { MenuItem } from "./types/Items"
 import { getTypedItemLength } from "./helpers/count"
 
 interface Props {
@@ -25,7 +25,7 @@ function SubMenuItem(props: Props) {
 
   return (
     <Flex justifyContent="center" margin="1rem auto" columns={showOnly.length}>
-      {showOnly.map((type) => (
+      {showOnly.map((type: string) => (
         <Button
           key={type}
           as={Link}

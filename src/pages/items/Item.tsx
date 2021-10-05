@@ -2,7 +2,9 @@ import React from "react"
 import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
-import { InfixUpgradeAttribute, Item as ItemDef, UserItemInList } from "./types"
+import { InfixUpgradeAttribute, Item as ItemDef } from "contexts/types/Item"
+import { UserItemInList } from "contexts/types/ItemContext"
+
 import css from "./styles/Item.module.css"
 
 interface Props {

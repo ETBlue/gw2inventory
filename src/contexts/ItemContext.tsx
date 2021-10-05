@@ -3,27 +3,20 @@ import { useQuery } from "react-query"
 import { chunk, sortBy } from "lodash"
 
 import { fetchGW2, queryFunction } from "helpers/api"
-import { Item, Material } from "pages/items/types"
+
+import { Item } from "./types/Item"
+import { Material } from "./types/Material"
 import { CharacterItemInList } from "./types/CharacterContext"
+import {
+  Items,
+  materialCategoryAliases,
+  Materials,
+  Values,
+} from "./types/ItemContext"
 import {
   BankItemInList,
   InventoryItemInList,
   MaterialItemInList,
-
-interface Values {
-  items: Items
-  materials: Materials
-  materialCategories: string[]
-  characterItems: CharacterItemInList[]
-  inventoryItems: InventoryItemInList[]
-  bankItems: BankItemInList[]
-  materialItems: MaterialItemInList[]
-  setCharacterItems(val: CharacterItemInList[]): void
-  setInventoryItems(val: InventoryItemInList[]): void
-  setBankItems(val: BankItemInList[]): void
-  setMaterialItems(val: MaterialItemInList[]): void
-  isFetching: boolean
-}
 } from "./types/AccountContext"
 
 const ItemContext = createContext<Values>({

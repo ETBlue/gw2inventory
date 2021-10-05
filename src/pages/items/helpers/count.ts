@@ -1,6 +1,6 @@
-import { Items, Materials } from "contexts/ItemContext"
-import { Item, UserItemInList } from "pages/items/types"
-import { MENU_ITEMS } from "pages/items/Items"
+import { Items, Materials, UserItemInList } from "contexts/types/ItemContext"
+import { Item } from "contexts/types/Item"
+import { MENU_ITEMS } from "pages/items/consts/Items"
 
 interface LengthParams {
   types: string[]

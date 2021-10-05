@@ -1,12 +1,3 @@
-// item
-
-import {
-  BankItemInList,
-  InventoryItemInList,
-  MaterialItemInList,
-} from "pages/account/types"
-import { CharacterItemInList } from "pages/characters/types"
-
 export interface Item {
   id: number // The item id.
   chat_link: string // The chat link.
@@ -329,16 +320,3 @@ export type Attribute =  // Attribute this bonus applies to. Possible values:
   | "Precision" // Precision
   | "Toughness" // Toughness
   | "Vitality" // Vitality
-
-export type UserItemInList =
-  | CharacterItemInList
-  | InventoryItemInList
-  | BankItemInList
-  | MaterialItemInList
-
-export interface Material {
-  id: number // The category id.
-  name: string // The category name.
-  items: number[] // The ids of the items in this category.
-  order: number // The order in which the category appears in the material storage.
-}

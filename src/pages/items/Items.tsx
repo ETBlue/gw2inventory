@@ -26,22 +26,26 @@ import {
 } from "@chakra-ui/react"
 
 import { ITEM_COUNT_PER_PAGE } from "config"
+import { useSearchParams } from "hooks/url"
+import { getQueryString } from "helpers/url"
 import ItemContext from "contexts/ItemContext"
 import AccountContext from "contexts/AccountContext"
 import CharacterContext from "contexts/CharacterContext"
-import { useSearchParams } from "hooks/url"
-import { getQueryString } from "helpers/url"
+import { Item as ItemDef } from "contexts/types/Item"
+import { UserItemInList } from "contexts/types/ItemContext"
 import Pagination from "components/Pagination"
 
 import SubMenuItem from "./SubMenuItem"
 import HeaderItem from "./HeaderItem"
-import { Item as ItemDef, UserItemInList } from "./types"
 import Item from "./Item"
 import {
   getTypedItemLength,
   isItemInCategory,
   isItemInTypes,
 } from "./helpers/count"
+import { compare, compareRarity } from "./helpers/compare"
+import { MENU_ITEMS } from "./consts/Items"
+import { Sort, Order } from "./types/Items"
 import css from "./styles/Items.module.css"
 
 function Items() {
@@ -189,7 +193,6 @@ function Items() {
                   userItems={allItems}
                   items={items}
                   materials={materials}
-                  isMaterial={menuItem.to === "/items/material"}
                 />
               </Route>
             ))}
@@ -227,82 +230,3 @@ function Items() {
 }
 
 export default Items
-
-export interface MenuItem {
-  to: string
-  text: string
-  showOnly: string[]
-}
-
-export const MENU_ITEMS: MenuItem[] = [
-  {
-    to: "/items/equipable",
-    text: "Equipable",
-    showOnly: [
-      "Armor",
-      "Weapon",
-      "Back",
-      "Trinket",
-      "Gathering",
-      "UpgradeComponent",
-      "Bag",
-    ],
-  },
-  {
-    to: "/items/consumable",
-    text: "Consumable",
-    showOnly: [
-      "Consumable",
-      "Container",
-      "Gizmo",
-      "Key",
-      "MiniPet",
-      "Tool",
-      "Trait",
-    ],
-  },
-  { to: "/items/material", text: "Material", showOnly: ["CraftingMaterial"] },
-  { to: "/items/trophy", text: "Trophy", showOnly: ["Trophy"] },
-]
-
-export const TABLE_HEADERS = [
-  "rarity",
-  "name",
-  "type",
-  "level",
-  "location",
-  "count",
-  "chat_link",
-]
-
-export type Sort =
-  | "rarity"
-  | "name"
-  | "type"
-  | "level"
-  | "location"
-  | "count"
-  | "chat_link"
-
-export type Order = "asc" | "dsc"
-
-const RARITY_MAP: { [key: string]: number } = {
-  Junk: 0,
-  Basic: 1,
-  Fine: 2,
-  Masterwork: 3,
-  Rare: 4,
-  Exotic: 5,
-  Ascended: 6,
-  Legendary: 7,
-}
-const compareRarity = (_a: string, _b: string) => {
-  const a = RARITY_MAP[_a]
-  const b = RARITY_MAP[_b]
-  return compare(a, b)
-}
-const compare = (a: string | number, b: string | number) => {
-  if (a > b) return 1
-  if (a < b) return -1
-  return 0
-}
