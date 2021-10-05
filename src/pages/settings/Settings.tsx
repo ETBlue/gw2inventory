@@ -4,7 +4,8 @@ import { FaSave, FaTrashAlt } from "react-icons/fa"
 import { Box, Button, Code, Grid, Heading, Input } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
-import TokenContext, { UsedAccount } from "contexts/TokenContext"
+import TokenContext from "contexts/TokenContext"
+import { UsedAccount } from "contexts/types/TokenContext"
 import ItemContext from "contexts/ItemContext"
 
 function Settings() {

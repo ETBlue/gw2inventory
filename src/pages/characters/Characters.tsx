@@ -16,9 +16,9 @@ import {
   Spacer,
 } from "@chakra-ui/react"
 
-import TokenContext from "contexts/TokenContext"
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
+import TokenContext from "contexts/TokenContext"
 import CharacterContext from "contexts/CharacterContext"
 import { Character } from "contexts/types/Character"
 

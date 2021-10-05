@@ -1,12 +1,7 @@
 import React, { useState, createContext } from "react"
 
-interface Values {
-  usedAccounts: UsedAccount[]
-  addUsedAccount(account: UsedAccount): void
-  removeUsedAccount(account: UsedAccount): void
-  currentAccount: UsedAccount | null
-  setCurrentAccount(account: UsedAccount | null): void
-}
+import { Values, UsedAccount } from "./types/TokenContext"
+import { getUsedAccounts } from "./helpers/TokenContext"
 
 const TokenContext = createContext<Values>({
   usedAccounts: [],
@@ -65,56 +60,3 @@ function TokenProvider(props: { children: React.ReactNode }) {
 
 export default TokenContext
 export { TokenProvider }
-
-const getUsedAccounts = () => {
-  const storedTokens: UsedAccount[] = readStoredTokens()
-  const v1StoredTokens: UsedAccount[] = readV1StoredTokens()
-  const usedAccounts: UsedAccount[] = [
-    ...storedTokens,
-    ...v1StoredTokens,
-  ].filter((item) => item.token)
-  if (v1StoredTokens.length > 0) {
-    localStorage.setItem("gw2iTokens", JSON.stringify(usedAccounts))
-    localStorage.removeItem("gw2i")
-  }
-  return usedAccounts
-}
-
-const readStoredTokens = () => {
-  const storage = localStorage.getItem("gw2iTokens")
-  if (storage) {
-    try {
-      const data = JSON.parse(storage)
-      return data
-    } catch (err) {
-      console.log(err)
-    }
-  }
-  return []
-}
-
-const readV1StoredTokens = () => {
-  const v1Storage = localStorage.getItem("gw2i")
-  if (v1Storage) {
-    try {
-      const v1Data: { [key: string]: string } = JSON.parse(v1Storage)
-      const v1UsedAccounts = Object.keys(v1Data).map((name: string) => {
-        return {
-          name,
-          token: v1Data[name],
-          description: "",
-        }
-      })
-      return v1UsedAccounts
-    } catch (err) {
-      console.log(err)
-    }
-  }
-  return []
-}
-
-export interface UsedAccount {
-  name: string
-  token: string
-  description?: string
-}
