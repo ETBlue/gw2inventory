@@ -4,18 +4,14 @@ import { useQuery } from "react-query"
 import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
+
+import { InventoryItem, BankItem, MaterialItem } from "./types/Account"
 import {
   InventoryItemInList,
   BankItemInList,
   MaterialItemInList,
-  InventoryItem,
-  BankItem,
-  MaterialItem,
-} from "pages/account/types"
-
-interface Values {
-  isFetching: boolean
-}
+  Values,
+} from "./types/AccountContext"
 
 const AccountContext = createContext<Values>({
   isFetching: false,

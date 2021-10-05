@@ -9,7 +9,6 @@ import {
   BankItemInList,
   InventoryItemInList,
   MaterialItemInList,
-} from "pages/account/types"
 
 interface Values {
   items: Items
@@ -25,6 +24,7 @@ interface Values {
   setMaterialItems(val: MaterialItemInList[]): void
   isFetching: boolean
 }
+} from "./types/AccountContext"
 
 const ItemContext = createContext<Values>({
   items: {},
@@ -138,26 +138,3 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
 export default ItemContext
 export { ItemProvider }
-
-export interface Items {
-  [key: number]: Item
-}
-export interface Materials {
-  [key: number]: string
-}
-
-interface MaterialCategoryAliases {
-  [key: string]: string
-}
-
-const materialCategoryAliases: MaterialCategoryAliases = {
-  "Cooking Materials": "Cooking",
-  "Basic Crafting Materials": "Basic",
-  "Intermediate Crafting Materials": "Intermediate",
-  "Gemstones and Jewels": "Gemstones",
-  "Advanced Crafting Materials": "Advanced",
-  "Festive Materials": "Festive",
-  "Ascended Materials": "Ascended",
-  "Cooking Ingredients": "Ingredients",
-  "Scribing Materials": "Scribing",
-}

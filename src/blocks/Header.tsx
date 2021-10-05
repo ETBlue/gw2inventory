@@ -14,7 +14,8 @@ import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
-import TokenContext, { UsedAccount } from "contexts/TokenContext"
+import TokenContext from "contexts/TokenContext"
+import { UsedAccount } from "contexts/types/TokenContext"
 
 const MENU_ITEMS = [
   // { to: "/account", text: "Account" },
