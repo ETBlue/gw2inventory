@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react"
 import { useQuery } from "react-query"
-import { FaSave, FaTrashAlt } from "react-icons/fa"
-import { Box, Button, Code, Grid, Heading, Input } from "@chakra-ui/react"
+import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
+import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
 import TokenContext from "contexts/TokenContext"
@@ -95,6 +95,20 @@ function Settings() {
         <Button variant="ghost" isLoading={isFetching} onClick={handleSubmit}>
           <FaSave />
         </Button>
+        <div />
+        <Box fontSize="0.875rem" color="gray.600">
+          Don't have an API key? Get one for your account from{" "}
+          <Link
+            href="https://account.arena.net/applications"
+            isExternal
+            color="pink.500"
+          >
+            Arena.net API Key Management{" "}
+            <FaExternalLinkAlt
+              style={{ display: "inline", verticalAlign: "text-top" }}
+            />
+          </Link>
+        </Box>
       </Grid>
     </Box>
   )
