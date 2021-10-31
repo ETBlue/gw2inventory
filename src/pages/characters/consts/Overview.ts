@@ -4,7 +4,6 @@ export const COLUMNS = [
   "race",
   "profession",
   "level",
-  "age",
+  "crafting",
   "created",
-  "deaths",
 ]

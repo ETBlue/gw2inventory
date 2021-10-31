@@ -41,7 +41,7 @@ export interface Character {
   recipes: number[] // The endpoint returns an array, each value being the ID of a recipe that can be resolved against /v2/recipes.
 }
 
-interface Crafting {
+export interface Crafting {
   discipline:
     | "Armorsmith"
     | "Artificer"

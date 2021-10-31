@@ -14,3 +14,7 @@
 body {
   background: hsla(50, 30%, 98%, 1);
 }
+
+td svg {
+  display: inline-block;
+}

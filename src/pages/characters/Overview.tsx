@@ -3,11 +3,22 @@ import { Link } from "react-router-dom"
 import { format, formatDistanceStrict } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
+import { FaCheck, FaMinus } from "react-icons/fa"
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  List,
+  ListItem,
+  ListIcon,
+} from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
 
-import { Character } from "contexts/types/Character"
+import { Character, Crafting } from "contexts/types/Character"
 import { COLUMNS } from "./consts/Overview"
 import css from "./styles/Characters.module.css"
 
@@ -66,6 +77,15 @@ function Overview(props: Props) {
                   <Gender gender={character.gender} />
                 ) : column === "created" ? (
                   format(new Date(character.created), "yyyy-MM-dd")
+                ) : column === "crafting" ? (
+                  <List>
+                    {character.crafting.map((crafting: Crafting) => (
+                      <ListItem key={crafting.discipline}>
+                        <ListIcon as={crafting.active ? FaCheck : FaMinus} />
+                        {crafting.discipline} {crafting.rating}
+                      </ListItem>
+                    ))}
+                  </List>
                 ) : (
                   character[column]
                 )}

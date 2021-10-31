@@ -51,7 +51,7 @@ function Characters() {
         ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
     )
-    .sort((a, b) => {
+    .sort((a: Character, b: Character) => {
       const number = compare(a[activeSort], b[activeSort])
       return activeOrder === "asc" ? number : number * -1
     })
