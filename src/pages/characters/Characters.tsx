@@ -21,9 +21,8 @@ import { useSearchParams } from "hooks/url"
 import TokenContext from "contexts/TokenContext"
 import CharacterContext from "contexts/CharacterContext"
 import { Character } from "contexts/types/Character"
-import { compare } from "pages/items/helpers/compare"
 
-import { MENU_ITEMS, PROFESSIONS } from "./consts/Characters"
+import { PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"
 
 function Characters() {
@@ -35,11 +34,7 @@ function Characters() {
     queryString,
     profession: activeProfession,
     keyword,
-    sort,
-    order,
   } = useSearchParams()
-  const activeSort = sort || "name"
-  const activeOrder = order || "asc"
 
   const visibleCharacters = characters
     ?.filter(
@@ -51,19 +46,13 @@ function Characters() {
         ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
     )
-    .sort((a: Character, b: Character) => {
-      const number = compare(a[activeSort], b[activeSort])
-      return activeOrder === "asc" ? number : number * -1
-    })
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
       <TabList>
-        {MENU_ITEMS.map((item) => (
-          <Tab key={item.to} as={NavLink} to={item.to}>
-            {item.text}
-          </Tab>
-        ))}
+        <Tab as={NavLink} to="/characters" exact>
+          Overview
+        </Tab>
         <Spacer />
         <InputGroup width="20ch">
           <InputLeftElement>
@@ -135,20 +124,13 @@ function Characters() {
             ))}
           </Flex>
           <Switch>
-            {currentAccount &&
-              characters &&
-              MENU_ITEMS.map((item) => {
-                return (
-                  <Route key={item.to} path={item.to}>
-                    <Overview
-                      characters={visibleCharacters}
-                      activeSort={activeSort}
-                      activeOrder={activeOrder}
-                      queryString={queryString}
-                    />
-                  </Route>
-                )
-              })}
+            {currentAccount && characters && (
+              <>
+                <Route exact path="/characters">
+                  <Overview characters={visibleCharacters} />
+                </Route>
+              </>
+            )}
           </Switch>
         </div>
       )}

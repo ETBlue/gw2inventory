@@ -1,5 +1,3 @@
-export const MENU_ITEMS = [{ to: "/characters", text: "Overview" }]
-
 export const PROFESSIONS = [
   "Elementalist",
   "Necromancer",

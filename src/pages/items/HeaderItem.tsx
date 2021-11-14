@@ -33,7 +33,7 @@ function HeaderItem(props: Props) {
                   activeOrder === "asc" ? "dsc" : "",
                   queryString,
                 )
-              : getQueryString("sort", title, queryString)
+              : getQueryString("sortBy", title, queryString)
           }`}
           className={`${css.title} ${activeSort === title ? css.active : ""}`}
         >

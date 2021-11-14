@@ -3,11 +3,11 @@ import { useLocation } from "react-router-dom"
 export const useSearchParams = () => {
   const { search: queryString } = useLocation()
   const searchParams = new URLSearchParams(queryString)
-  const sort = searchParams.get("sort")
-  const order = searchParams.get("order")
-  const profession = searchParams.get("profession")
-  const keyword = searchParams.get("keyword")
-  const type = searchParams.get("type")
+  const sortBy: string | null = searchParams.get("sortBy")
+  const order: "asc" | "dsc" | string | null = searchParams.get("order")
+  const profession: string | null = searchParams.get("profession")
+  const keyword: string | null = searchParams.get("keyword")
+  const type: string | null = searchParams.get("type")
 
-  return { queryString, sort, order, profession, keyword, type }
+  return { queryString, sortBy, order, profession, keyword, type }
 }

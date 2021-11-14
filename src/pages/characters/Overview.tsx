@@ -1,111 +1,102 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import { format, formatDistanceStrict } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { FaCheck, FaMinus } from "react-icons/fa"
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  List,
-  ListItem,
-  ListIcon,
-} from "@chakra-ui/react"
-
-import { getQueryString } from "helpers/url"
+import { List, ListItem, ListIcon } from "@chakra-ui/react"
 
 import { Character, Crafting } from "contexts/types/Character"
-import { COLUMNS } from "./consts/Overview"
-import css from "./styles/Characters.module.css"
+import SortableTable, { Column } from "components/SortableTable"
 
 interface Props {
   characters: Character[]
-  activeSort: string
-  activeOrder: string
-  queryString: string
 }
 
 function Overview(props: Props) {
-  const { characters, activeSort, activeOrder, queryString } = props
+  const { characters } = props
+
   return (
-    <Table className={css.table}>
-      <Thead>
-        <Tr>
-          {COLUMNS.map((title) => (
-            <Th
-              key={title}
-              as={Link}
-              to={`/characters?${
-                activeSort === title
-                  ? getQueryString(
-                      "order",
-                      activeOrder === "asc" ? "dsc" : "",
-                      queryString,
-                    )
-                  : getQueryString("sort", title, queryString)
-              }`}
-              className={`${css.title} ${
-                activeSort === title ? css.active : ""
-              }`}
-            >
-              {title}{" "}
-              {activeSort === title ? (
-                activeOrder === "asc" ? (
-                  <CgArrowDown />
-                ) : (
-                  <CgArrowUp />
-                )
-              ) : null}
-            </Th>
-          ))}
-        </Tr>
-      </Thead>
-      <Tbody>
-        {characters.map((character) => (
-          <Tr key={character.name}>
-            {COLUMNS.map((column) => (
-              <Td key={column}>
-                {column === "age" ? (
-                  formatDistanceStrict(0, character.age * 1000, {
-                    unit: "hour",
-                  })
-                ) : column === "gender" ? (
-                  <Gender gender={character.gender} />
-                ) : column === "created" ? (
-                  format(new Date(character.created), "yyyy-MM-dd")
-                ) : column === "crafting" ? (
-                  <List>
-                    {character.crafting.map((crafting: Crafting) => (
-                      <ListItem key={crafting.discipline}>
-                        <ListIcon as={crafting.active ? FaCheck : FaMinus} />
-                        {crafting.discipline} {crafting.rating}
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : (
-                  character[column]
-                )}
-              </Td>
-            ))}
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <SortableTable
+      columns={COLUMNS}
+      rows={characters}
+      defaultSortBy="name"
+      defaultOrder="asc"
+    />
   )
 }
 
 export default Overview
 
-function Gender(props: { gender: string }) {
-  const { gender } = props
-  if (gender === "Female") {
-    return <GiFemale />
-  } else {
-    return <GiMale />
-  }
-}
-
+const COLUMNS: Column[] = [
+  {
+    key: "name",
+    title: "name",
+    render(row: Character) {
+      return row.name
+    },
+  },
+  {
+    key: "gender",
+    title: "gender",
+    render(row: Character) {
+      return row.gender === "Female" ? <GiFemale /> : <GiMale />
+    },
+  },
+  {
+    key: "race",
+    title: "race",
+    render(row: Character) {
+      return row.race
+    },
+  },
+  {
+    key: "profession",
+    title: "profession",
+    render(row: Character) {
+      return row.profession
+    },
+  },
+  {
+    key: "level",
+    title: "level",
+    render(row: Character) {
+      return `${row.level}`
+    },
+  },
+  {
+    key: "crafting",
+    title: "crafting",
+    render(row: Character) {
+      return (
+        <List>
+          {row.crafting.map((crafting: Crafting) => (
+            <ListItem key={crafting.discipline}>
+              <ListIcon as={crafting.active ? FaCheck : FaMinus} />
+              {crafting.discipline} {crafting.rating}
+            </ListItem>
+          ))}
+        </List>
+      )
+    },
+  },
+  {
+    key: "created",
+    title: "created",
+    render(row: Character) {
+      return format(new Date(row.created), "yyyy-MM-dd")
+    },
+  },
+  // {
+  //   key: "age",
+  //   title: "age",
+  //   render(row: Character) {
+  //     return formatDistanceStrict(0, row.age * 1000, { unit: "hour" })
+  //   },
+  // },
+  // {
+  //   key: "deaths",
+  //   title: "deaths",
+  //   render(row: Character) {
+  //     return `${row.deaths}`
+  //   },
+  // },
+]
