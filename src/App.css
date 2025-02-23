@@ -1,4 +1,15 @@
 :root {
+  --color-app-primary: #e03997;
+  --color-app-green: #21ba45;
+  --color-app-white: #ddeeff;
+  --color-app-light-grey: #aabbcc;
+  --color-app-grey: #778899;
+  --color-app-deep-grey: #445566;
+  --color-app-black: #112233;
+  --color-app-locked-border: #767676;
+  --color-app-locked-font: #767676;
+  --font-family-app-styled: Rosario;
+
   --color-gw2-junk: #aaaaaa;
   --color-gw2-basic: #000000;
   --color-gw2-basic: #333;

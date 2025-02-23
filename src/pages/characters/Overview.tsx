@@ -100,3 +100,7 @@ const COLUMNS: Column[] = [
   //   },
   // },
 ]
+//backstory: string[] // An array of strings representing backstory answer IDs pertaining to the questions answered during character creation. References /v2/backstory/answers.
+//equipment_pvp: PvP // Contains information on character's pvp equipment setup.
+//flags: "Beta"[] // Returns character flags. Possible values: Beta - Beta character for testing period of add-ons
+//recipes: number[] // The endpoi

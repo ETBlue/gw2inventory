@@ -13,6 +13,7 @@ import Items from "pages/items"
 import Settings from "pages/settings"
 
 import "./App.css"
+import { SkillProvider } from "contexts/SkillContext"
 
 const queryClient = new QueryClient()
 
@@ -43,13 +44,15 @@ export const App = () => {
       <QueryClientProvider client={queryClient}>
         <TokenProvider>
           <ItemProvider>
-            <AccountProvider>
-              <CharacterProvider>
-                <Router>
-                  <Content />
-                </Router>
-              </CharacterProvider>
-            </AccountProvider>
+            <SkillProvider>
+              <AccountProvider>
+                <CharacterProvider>
+                  <Router>
+                    <Content />
+                  </Router>
+                </CharacterProvider>
+              </AccountProvider>
+            </SkillProvider>
           </ItemProvider>
         </TokenProvider>
       </QueryClientProvider>

@@ -24,6 +24,7 @@ import { Character } from "contexts/types/Character"
 
 import { PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"
+import Skills from "./Skills"
 
 function Characters() {
   const { currentAccount } = useContext(TokenContext)
@@ -52,6 +53,9 @@ function Characters() {
       <TabList>
         <Tab as={NavLink} to="/characters" exact>
           Overview
+        </Tab>
+        <Tab as={NavLink} to="/characters/pve">
+          PvE
         </Tab>
         <Spacer />
         <InputGroup width="20ch">
@@ -128,6 +132,9 @@ function Characters() {
               <>
                 <Route exact path="/characters">
                   <Overview characters={visibleCharacters} />
+                </Route>
+                <Route path="/characters/pve">
+                  <Skills characters={visibleCharacters} />
                 </Route>
               </>
             )}

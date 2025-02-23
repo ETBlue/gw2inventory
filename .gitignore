@@ -24,3 +24,6 @@ yarn-error.log*
 
 # old version
 /v1
+
+# sample files
+*.json
