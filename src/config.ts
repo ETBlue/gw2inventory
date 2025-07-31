@@ -12,3 +12,5 @@ export const LOCAL_STORAGE_KEYS = {
 }
 
 export const ITEM_COUNT_PER_PAGE = 100
+
+export const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"

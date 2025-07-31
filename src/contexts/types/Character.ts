@@ -104,14 +104,14 @@ export interface CharacterEquipmentItem extends CharacterItem {
   dyes: number[] // Array of selected dyes for the equipment piece. Values default to null if no dye is selected. Colors can be resolved against v2/colors
 }
 
-interface Skills {
+export interface Skills {
   heal: number // contains the skill id for the heal skill, resolvable against /v2/skills.
   utilities: number[] // each integer corresponds to a skill id for the equipped utilities, resolvable against /v2/skills.
   elite: number // contains the skill id for the elite skill, resolvable against /v2/skills.
   legends?: string[] // (Revenant only) - each string corresponds to a Revenant legend, resolvable against /v2/legends.
 }
 
-interface Spec {
+export interface Spec {
   id: number // Specialization id, can be resolved against /v2/specializations.
   traits: number[] // returns ids for each selected trait, can be resolved against /v2/traits.
 }
