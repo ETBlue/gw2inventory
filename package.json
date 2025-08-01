@@ -3,6 +3,7 @@
   "homepage": "https://etblue.github.io/gw2inventory",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@chakra-ui/react": "^2.10.9",
     "@emotion/react": "^11.14.0",
