@@ -32,9 +32,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          CI: false
-          PUBLIC_URL: /gw2inventory
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

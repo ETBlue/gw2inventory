@@ -1,21 +1,21 @@
 import React from "react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { queryFunction } from "helpers/api"
 
 function Home(props: { token: string }) {
   const { token } = props
 
-  const { data: catsData, isFetching: catsFetching } = useQuery(
-    ["account/home/cats", token],
-    queryFunction,
-  )
+  const { data: catsData, isFetching: catsFetching } = useQuery({
+    queryKey: ["account/home/cats", token],
+    queryFn: queryFunction,
+  })
 
   console.log(catsData)
 
-  const { data: nodesData, isFetching: nodesFetching } = useQuery(
-    ["account/home/nodes", token],
-    queryFunction,
-  )
+  const { data: nodesData, isFetching: nodesFetching } = useQuery({
+    queryKey: ["account/home/nodes", token],
+    queryFn: queryFunction,
+  })
 
   return <div></div>
 }

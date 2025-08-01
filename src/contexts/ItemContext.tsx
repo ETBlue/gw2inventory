@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, createContext } from "react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { chunk, sortBy } from "lodash"
 
 import { fetchGW2, queryFunction } from "helpers/api"
@@ -92,13 +92,11 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
   // handle materials (category)
 
-  const { data: materialsData, isFetching: isMaterialFetching } = useQuery(
-    ["materials", , "ids=all"],
-    queryFunction,
-    {
-      staleTime: Infinity,
-    },
-  )
+  const { data: materialsData, isFetching: isMaterialFetching } = useQuery({
+    queryKey: ["materials", , "ids=all"],
+    queryFn: queryFunction,
+    staleTime: Infinity,
+  })
   const materialCategories = sortBy(materialsData, ["order"]).map(
     (item) => materialCategoryAliases[item.name],
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, createContext } from "react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 
 import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
@@ -22,30 +22,24 @@ function AccountProvider(props: { children: React.ReactNode }) {
   const { setInventoryItems, setBankItems, setMaterialItems } =
     useContext(ItemContext)
 
-  const { data: inventory, isFetching: isInventoryFetching } = useQuery(
-    ["account/inventory", currentAccount?.token],
-    queryFunction,
-    {
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    },
-  )
-  const { data: bank, isFetching: isBankFetching } = useQuery(
-    ["account/bank", currentAccount?.token],
-    queryFunction,
-    {
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    },
-  )
-  const { data: materials, isFetching: isMaterialsFetching } = useQuery(
-    ["account/materials", currentAccount?.token],
-    queryFunction,
-    {
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    },
-  )
+  const { data: inventory, isFetching: isInventoryFetching } = useQuery({
+    queryKey: ["account/inventory", currentAccount?.token],
+    queryFn: queryFunction,
+    staleTime: Infinity,
+    enabled: !!currentAccount?.token,
+  })
+  const { data: bank, isFetching: isBankFetching } = useQuery({
+    queryKey: ["account/bank", currentAccount?.token],
+    queryFn: queryFunction,
+    staleTime: Infinity,
+    enabled: !!currentAccount?.token,
+  })
+  const { data: materials, isFetching: isMaterialsFetching } = useQuery({
+    queryKey: ["account/materials", currentAccount?.token],
+    queryFn: queryFunction,
+    staleTime: Infinity,
+    enabled: !!currentAccount?.token,
+  })
 
   useEffect(() => {
     if (!inventory) return
