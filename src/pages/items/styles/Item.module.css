@@ -1,0 +1,80 @@
+.iconCell {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  width: 6rem;
+}
+.icon {
+  height: 3.5rem;
+  box-sizing: content-box;
+  border-width: 0 0.5rem 0 0 !important;
+  border-style: solid;
+}
+.icon.junk {
+  border-color: var(--color-gw2-junk);
+}
+.icon.basic {
+  border-color: var(--color-gw2-basic);
+}
+.icon.fine {
+  border-color: var(--color-gw2-fine);
+}
+.icon.masterwork {
+  border-color: var(--color-gw2-masterwork);
+}
+.icon.rare {
+  border-color: var(--color-gw2-rare);
+}
+.icon.exotic {
+  border-color: var(--color-gw2-exotic);
+}
+.icon.ascended {
+  border-color: var(--color-gw2-ascended);
+}
+.icon.legendary {
+  border-color: var(--color-gw2-legendary);
+}
+
+.nameCell {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.name {
+}
+.name.junk {
+  color: var(--color-gw2-junk);
+}
+.name.basic {
+  color: var(--color-gw2-basic);
+}
+.name.fine {
+  color: var(--color-gw2-fine);
+}
+.name.masterwork {
+  color: var(--color-gw2-masterwork);
+}
+.name.rare {
+  color: var(--color-gw2-rare);
+}
+.name.exotic {
+  color: var(--color-gw2-exotic);
+}
+.name.ascended {
+  color: var(--color-gw2-ascended);
+}
+.name.legendary {
+  color: var(--color-gw2-legendary);
+}
+.description {
+  margin-top: 0.2em;
+  line-height: 1.2em;
+  line-clamp: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.secondary {
+  font-size: 0.875rem;
+  opacity: 0.75;
+}

@@ -1,0 +1,20 @@
+:root {
+  --color-gw2-junk: #aaaaaa;
+  --color-gw2-basic: #000000;
+  --color-gw2-basic: #333;
+  --color-gw2-fine: #62a4da;
+  --color-gw2-masterwork: #1a9306;
+  --color-gw2-rare: #fcd00b;
+  --color-gw2-rare: #ecc94b;
+  --color-gw2-exotic: #ffa405;
+  --color-gw2-ascended: #fb3e8d;
+  --color-gw2-legendary: #4c139d;
+}
+
+body {
+  background: hsla(50, 30%, 98%, 1);
+}
+
+td svg {
+  display: inline-block;
+}
