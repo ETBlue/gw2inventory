@@ -1,4 +1,4 @@
-import { QueryFunctionContext } from "react-query"
+import { QueryFunctionContext } from "@tanstack/react-query"
 
 import { API_URL, API_LANG } from "config"
 

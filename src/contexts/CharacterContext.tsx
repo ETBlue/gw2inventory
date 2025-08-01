@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, createContext } from "react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 
 import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
@@ -21,14 +21,12 @@ function CharacterProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useContext(TokenContext)
   const { setCharacterItems } = useContext(ItemContext)
 
-  const { data: characters, isFetching } = useQuery(
-    ["characters", currentAccount?.token, "ids=all"],
-    queryFunction,
-    {
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    },
-  )
+  const { data: characters, isFetching } = useQuery({
+    queryKey: ["characters", currentAccount?.token, "ids=all"],
+    queryFn: queryFunction,
+    staleTime: Infinity,
+    enabled: !!currentAccount?.token,
+  })
 
   useEffect(() => {
     if (!characters) return

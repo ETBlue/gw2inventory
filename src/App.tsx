@@ -1,6 +1,6 @@
 import React from "react"
 import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
 
 import { TokenProvider } from "contexts/TokenContext"
