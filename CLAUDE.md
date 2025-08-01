@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Guild Wars 2 inventory management web application built with React and TypeScript. It interfaces with the Guild Wars 2 API to fetch and display character and item data.
+This is a Guild Wars 2 inventory management web application built with React and TypeScript, bundled with Vite. It interfaces with the Guild Wars 2 API to fetch and display character and item data.
 
 ## Development Commands
 
@@ -13,16 +13,13 @@ This is a Guild Wars 2 inventory management web application built with React and
 npm install
 
 # Start development server
-npm start
+npm run dev
 
 # Build for production
 npm run build
 
-# Run tests
-npm test
-
-# Deploy to GitHub Pages
-npm run deploy
+# Preview production build
+npm run preview
 ```
 
 ## Architecture
