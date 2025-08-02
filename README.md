@@ -1,5 +1,92 @@
-404 entries in https://api.guildwars2.com/v2/items
+# GW2 Inventory
 
+A Guild Wars 2 inventory management web application built with React, TypeScript, and Vite.
+
+## Features
+
+- View and manage character inventories
+- Track items across all characters
+- Filter items by category
+- Search functionality
+- API token management
+
+## Prerequisites
+
+- Node.js (v18 or higher recommended)
+- npm
+
+## Getting Started
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/etblue/gw2inventory.git
+cd gw2inventory
+
+# Install dependencies
+npm install
+```
+
+### Development
+
+```bash
+# Start the development server
+npm run dev
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000).
+
+### Building for Production
+
+```bash
+# Create production build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+The build output will be in the `build` directory.
+
+### Type Checking
+
+```bash
+# Run TypeScript type checking
+npm run typecheck
+```
+
+## Configuration
+
+### API Token
+
+To use this application, you'll need a Guild Wars 2 API token:
+
+1. Go to [https://account.arena.net/applications](https://account.arena.net/applications)
+2. Create a new API key with the necessary permissions
+3. Add the token in the application's Settings page
+
+## Deployment
+
+This application is deployed to GitHub Pages at [https://etblue.github.io/gw2inventory](https://etblue.github.io/gw2inventory)
+
+### Technologies Used
+
+- React 19
+- TypeScript 5
+- Vite 7
+- Chakra UI v2
+- React Router v7
+- Tanstack React Query (formerly React Query)
+- Emotion (styling)
+- Framer Motion (animations)
+- Lodash
+- date-fns
+- React Icons
+
+## Known Issues
+
+The following item IDs return 404 from the GW2 API:
 - 24120
 - 24151
 - 81662
@@ -9,62 +96,10 @@
 - 87149
 - 81324
 
-This project was bootstrapped with
-[Create React App](https://github.com/facebook/create-react-app).
+## Contributing
 
-## Available Scripts
+Feel free to submit issues and pull requests.
 
-In the project directory, you can run:
+## License
 
-### `npm start`
-
-Runs the app in the development mode.<br /> Open
-[http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br /> You will also see any lint errors
-in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br /> See the section
-about
-[running tests](https://facebook.github.io/create-react-app/docs/running-tests)
-for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br /> It correctly bundles
-React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br /> Your app is
-ready to be deployed!
-
-See the section about
-[deployment](https://facebook.github.io/create-react-app/docs/deployment) for
-more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can
-`eject` at any time. This command will remove the single build dependency from
-your project.
-
-Instead, it will copy all the configuration files and the transitive
-dependencies (webpack, Babel, ESLint, etc) right into your project so you have
-full control over them. All of the commands except `eject` will still work, but
-they will point to the copied scripts so you can tweak them. At this point
-you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for
-small and middle deployments, and you shouldn’t feel obligated to use this
-feature. However we understand that this tool wouldn’t be useful if you couldn’t
-customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the
-[Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
