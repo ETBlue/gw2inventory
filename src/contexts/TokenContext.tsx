@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react"
+import { useState, createContext } from "react"
 
 import { Values, UsedAccount } from "./types/TokenContext"
 import { getUsedAccounts } from "./helpers/TokenContext"

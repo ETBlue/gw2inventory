@@ -1,4 +1,3 @@
-import React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Center, Spinner } from "@chakra-ui/react"
 

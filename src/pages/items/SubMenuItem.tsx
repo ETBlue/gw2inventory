@@ -1,4 +1,3 @@
-import React from "react"
 import { Link, useLocation } from "react-router"
 import { Tag, Flex, Button } from "@chakra-ui/react"
 

@@ -1,4 +1,3 @@
-import React from "react"
 import { format, formatDistanceStrict } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { FaCheck, FaMinus } from "react-icons/fa"

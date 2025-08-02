@@ -1,5 +1,3 @@
-import React from "react"
-
 import Header from "blocks/Header"
 
 import { Box, Grid } from "@chakra-ui/react"

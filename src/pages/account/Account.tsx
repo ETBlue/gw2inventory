@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import { useContext } from "react"
 import { NavLink, Route, Routes } from "react-router"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
