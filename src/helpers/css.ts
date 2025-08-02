@@ -1,6 +1,6 @@
-type CSSModule = { [key: string]: string };
-type BindCssModule = (css: CSSModule, baseClassName: string) => ClassNames;
-type ClassNames = (className?: string) => string;
+type CSSModule = { [key: string]: string }
+type BindCssModule = (css: CSSModule, baseClassName: string) => ClassNames
+type ClassNames = (className?: string) => string
 
 export const bindCssModule: BindCssModule = (css, baseClassName) => {
   const classNames = (className = "") => {
@@ -8,10 +8,10 @@ export const bindCssModule: BindCssModule = (css, baseClassName) => {
       .split(" ")
       .concat(baseClassName)
       .map((className) => {
-        return css[className] ?? className;
-      });
+        return css[className] ?? className
+      })
 
-    return mappedClassNames.join(" ");
-  };
-  return classNames;
-};
+    return mappedClassNames.join(" ")
+  }
+  return classNames
+}

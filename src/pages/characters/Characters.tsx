@@ -125,7 +125,10 @@ function Characters() {
           </Flex>
           <Routes>
             {currentAccount && characters && (
-              <Route path="/" element={<Overview characters={visibleCharacters} />} />
+              <Route
+                path="/"
+                element={<Overview characters={visibleCharacters} />}
+              />
             )}
           </Routes>
         </div>

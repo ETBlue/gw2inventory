@@ -67,7 +67,7 @@ function Header() {
             height="3.5rem"
             borderBottom="2px hsla(326, 73%, 55%, 1) solid"
             _hover={{ background: "hsla(326, 15%, 55%, 0.1)" }}
-            style={({ isActive }) => 
+            style={({ isActive }) =>
               isActive
                 ? {
                     background: "hsla(326, 73%, 55%, 1)",

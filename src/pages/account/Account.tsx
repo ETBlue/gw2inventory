@@ -22,7 +22,11 @@ function Account() {
           MENU_ITEMS.map((item) => {
             const Component = item.component
             return (
-              <Route key={item.to} path={item.to} element={<Component token={currentAccount.token} />} />
+              <Route
+                key={item.to}
+                path={item.to}
+                element={<Component token={currentAccount.token} />}
+              />
             )
           })}
       </Routes>

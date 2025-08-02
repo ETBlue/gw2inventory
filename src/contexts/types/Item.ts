@@ -309,14 +309,15 @@ interface InfixUpgradeBuff {
   description?: string // The effect's description.
 }
 
-export type Attribute =  // Attribute this bonus applies to. Possible values:
-  | "AgonyResistance" // Agony Resistance
-  | "BoonDuration" // Concentration
-  | "ConditionDamage" // Condition Damage
-  | "ConditionDuration" // Expertise
-  | "CritDamage" // Ferocity
-  | "Healing" // Healing Power
-  | "Power" // Power
-  | "Precision" // Precision
-  | "Toughness" // Toughness
-  | "Vitality" // Vitality
+export type Attribute = // Attribute this bonus applies to. Possible values:
+
+    | "AgonyResistance" // Agony Resistance
+    | "BoonDuration" // Concentration
+    | "ConditionDamage" // Condition Damage
+    | "ConditionDuration" // Expertise
+    | "CritDamage" // Ferocity
+    | "Healing" // Healing Power
+    | "Power" // Power
+    | "Precision" // Precision
+    | "Toughness" // Toughness
+    | "Vitality" // Vitality

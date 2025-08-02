@@ -25,7 +25,9 @@ npm run preview
 ## Architecture
 
 ### State Management
+
 The application uses React Context API with multiple contexts:
+
 - `TokenContext` - Manages API tokens stored in localStorage
 - `ItemContext` - Handles item data and categories
 - `AccountContext` - Manages account information
@@ -33,12 +35,14 @@ The application uses React Context API with multiple contexts:
 - `SkillContext` - Manages skill data
 
 ### Key API Integration
+
 - Base API: `https://api.guildwars2.com/v2`
 - Requires API token for authenticated endpoints
 - Language parameter: `lang=en`
 - Note: Some items return 404 which is expected behavior
 
 ### Routing Structure
+
 - Uses HashRouter for GitHub Pages compatibility
 - Main routes:
   - `/` → redirects to `/characters`
@@ -47,6 +51,7 @@ The application uses React Context API with multiple contexts:
   - `/settings` - Token configuration
 
 ### Code Organization
+
 - `/src/contexts/` - State management contexts
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
@@ -54,6 +59,7 @@ The application uses React Context API with multiple contexts:
 - `/src/hooks/` - Custom React hooks
 
 ### Important Patterns
+
 - Absolute imports configured from `src/` directory
 - Chakra UI for component styling
 - React Query for data fetching
@@ -61,6 +67,7 @@ The application uses React Context API with multiple contexts:
 - date-fns for date formatting
 
 ### Code Style
+
 - Prettier configured:
   - Tab width: 2
   - No semicolons

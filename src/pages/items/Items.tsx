@@ -182,19 +182,23 @@ function Items() {
         <div>
           <Routes>
             {MENU_ITEMS.map((menuItem) => (
-              <Route key={menuItem.to} path={menuItem.to} element={
-                <SubMenuItem
-                  showOnly={
-                    menuItem.to === "/items/material"
-                      ? materialCategories
-                      : menuItem.showOnly
-                  }
-                  activeType={activeType}
-                  userItems={allItems}
-                  items={items}
-                  materials={materials}
-                />
-              } />
+              <Route
+                key={menuItem.to}
+                path={menuItem.to}
+                element={
+                  <SubMenuItem
+                    showOnly={
+                      menuItem.to === "/items/material"
+                        ? materialCategories
+                        : menuItem.showOnly
+                    }
+                    activeType={activeType}
+                    userItems={allItems}
+                    items={items}
+                    materials={materials}
+                  />
+                }
+              />
             ))}
           </Routes>
           <Pagination
