@@ -1,0 +1,18 @@
+# Build output
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Config files
+vite.config.ts
+*.config.js
+*.config.cjs
+
+# Temporary
+*.tmp
+*.temp
