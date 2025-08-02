@@ -1,0 +1,33 @@
+# Build output
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Lock files (often auto-generated)
+package-lock.json
+pnpm-lock.yaml
+
+# Coverage
+coverage/
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
