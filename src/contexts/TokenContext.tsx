@@ -12,9 +12,8 @@ const TokenContext = createContext<Values>({
 })
 
 function TokenProvider(props: { children: React.ReactNode }) {
-  const [usedAccounts, setUsedAccounts] = useState<UsedAccount[]>(
-    getUsedAccounts(),
-  )
+  const [usedAccounts, setUsedAccounts] =
+    useState<UsedAccount[]>(getUsedAccounts())
   const [currentAccount, setCurrentAccount] = useState<UsedAccount | null>(null)
 
   const updateUsedAccounts = (newUsedAccounts: UsedAccount[]) => {
