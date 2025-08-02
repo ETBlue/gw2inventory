@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@gw2api/types": "^0.0.34",
     "@types/lodash": "^4.17.20",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

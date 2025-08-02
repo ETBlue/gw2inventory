@@ -1,5 +1,7 @@
+// Custom types that extend the official GW2 API types for CharacterContext
+
+import type { Character } from "@gw2api/types/data/character"
 import {
-  Character,
   CharacterBag,
   CharacterBagItem,
   CharacterEquipmentItem,

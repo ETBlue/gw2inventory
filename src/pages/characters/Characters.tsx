@@ -20,7 +20,7 @@ import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
 import TokenContext from "contexts/TokenContext"
 import CharacterContext from "contexts/CharacterContext"
-import { Character } from "contexts/types/Character"
+import type { Character } from "@gw2api/types/data/character"
 
 import { PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"

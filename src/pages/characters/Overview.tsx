@@ -3,7 +3,8 @@ import { GiFemale, GiMale } from "react-icons/gi"
 import { FaCheck, FaMinus } from "react-icons/fa"
 import { List, ListItem, ListIcon } from "@chakra-ui/react"
 
-import { Character, Crafting } from "contexts/types/Character"
+import type { Character } from "@gw2api/types/data/character"
+import type { CraftingDiscipline } from "@gw2api/types/data/recipe"
 import SortableTable, { Column } from "components/SortableTable"
 
 interface Props {
@@ -67,7 +68,7 @@ const COLUMNS: Column[] = [
     render(row: Character) {
       return (
         <List>
-          {row.crafting.map((crafting: Crafting) => (
+          {row.crafting.map((crafting: CraftingDiscipline) => (
             <ListItem key={crafting.discipline}>
               <ListIcon as={crafting.active ? FaCheck : FaMinus} />
               {crafting.discipline} {crafting.rating}

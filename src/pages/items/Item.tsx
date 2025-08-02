@@ -1,13 +1,13 @@
 import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
-import { InfixUpgradeAttribute, Item as ItemDef } from "contexts/types/Item"
+import type { Item } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
 
 import css from "./styles/Item.module.css"
 
 interface Props {
-  item: ItemDef
+  item: Item
   userItem: UserItemInList
   materialCategory?: string
 }

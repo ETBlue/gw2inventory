@@ -1,4 +1,4 @@
-import { Item } from "./Item"
+import type { Item } from "@gw2api/types/data/item"
 import {
   BankItemInList,
   InventoryItemInList,

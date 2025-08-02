@@ -31,7 +31,7 @@ import { getQueryString } from "helpers/url"
 import ItemContext from "contexts/ItemContext"
 import AccountContext from "contexts/AccountContext"
 import CharacterContext from "contexts/CharacterContext"
-import { Item as ItemDef } from "contexts/types/Item"
+import type { Item } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
 import Pagination from "components/Pagination"
 
@@ -107,7 +107,7 @@ function Items() {
     })
     .filter((userItem: UserItemInList) => {
       if (!keyword) return true
-      const itemRaw: ItemDef = items[userItem.id]
+      const itemRaw: Item = items[userItem.id]
       const item = { ...userItem, ...itemRaw }
       return JSON.stringify(item).match(new RegExp(keyword, "i"))
     })
@@ -213,7 +213,7 @@ function Items() {
             <Tbody>
               {pages[pageIndex]?.map(
                 (userItem: UserItemInList, index: number) => {
-                  const item: ItemDef = items[userItem.id]
+                  const item: Item = items[userItem.id]
                   const materialCategory = materials[userItem.category]
                   return (
                     <Item

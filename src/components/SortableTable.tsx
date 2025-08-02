@@ -4,8 +4,8 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
-import { Character } from "contexts/types/Character"
-import { Item } from "contexts/types/Item"
+import type { Character } from "@gw2api/types/data/character"
+import type { Item } from "@gw2api/types/data/item"
 import { compare } from "pages/items/helpers/compare"
 
 import css from "./styles/SortableTable.module.css"

@@ -1,5 +1,5 @@
 import { Items, Materials, UserItemInList } from "contexts/types/ItemContext"
-import { Item } from "contexts/types/Item"
+import type { Item } from "@gw2api/types/data/item"
 import { MENU_ITEMS } from "pages/items/consts/Items"
 
 interface LengthParams {
