@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { NavLink, Route, Routes } from "react-router-dom"
+import { NavLink, Route, Routes } from "react-router"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
 import TokenContext from "contexts/TokenContext"

@@ -6,7 +6,7 @@ import {
   useNavigate,
   useLocation,
   useParams,
-} from "react-router-dom"
+} from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
 import {

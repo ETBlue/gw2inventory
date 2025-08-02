@@ -1,5 +1,5 @@
 import React from "react"
-import { HashRouter as Router, Navigate, Route, Routes } from "react-router-dom"
+import { HashRouter as Router, Navigate, Route, Routes } from "react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
 

@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router-dom"
+import { Link, NavLink, Route, Routes, useNavigate } from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
