@@ -9,7 +9,6 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@tanstack/react-query": "^5.84.1",
-    "@types/lodash": "^4.17.20",
     "date-fns": "^4.1.0",
     "framer-motion": "^4.0.0",
     "lodash": "^4.17.21",
@@ -43,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.20",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
