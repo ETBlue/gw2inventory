@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { NavLink, Route, Switch } from "react-router-dom"
+import { NavLink, Route, Routes } from "react-router-dom"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
 import TokenContext from "contexts/TokenContext"
@@ -17,17 +17,15 @@ function Account() {
           </Tab>
         ))}
       </TabList>
-      <Switch>
+      <Routes>
         {currentAccount &&
           MENU_ITEMS.map((item) => {
             const Component = item.component
             return (
-              <Route key={item.to} path={item.to}>
-                <Component token={currentAccount.token} />
-              </Route>
+              <Route key={item.to} path={item.to} element={<Component token={currentAccount.token} />} />
             )
           })}
-      </Switch>
+      </Routes>
     </Tabs>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Link, NavLink, Route, Switch, useHistory } from "react-router-dom"
+import { Link, NavLink, Route, Routes, useNavigate } from "react-router-dom"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
@@ -28,7 +28,7 @@ import Overview from "./Overview"
 function Characters() {
   const { currentAccount } = useContext(TokenContext)
   const { characters, isFetching } = useContext(CharacterContext)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const {
     queryString,
@@ -67,7 +67,7 @@ function Characters() {
                 e.currentTarget.value,
                 queryString,
               )}`
-              history.push(to)
+              navigate(to)
             }}
           />
         </InputGroup>
@@ -123,15 +123,11 @@ function Characters() {
               </Button>
             ))}
           </Flex>
-          <Switch>
+          <Routes>
             {currentAccount && characters && (
-              <>
-                <Route exact path="/characters">
-                  <Overview characters={visibleCharacters} />
-                </Route>
-              </>
+              <Route path="/" element={<Overview characters={visibleCharacters} />} />
             )}
-          </Switch>
+          </Routes>
         </div>
       )}
     </Tabs>

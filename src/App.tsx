@@ -1,5 +1,5 @@
 import React from "react"
-import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom"
+import { HashRouter as Router, Navigate, Route, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
 
@@ -19,20 +19,12 @@ const queryClient = new QueryClient()
 const Content = () => {
   return (
     <BaseFrame>
-      <Switch>
-        <Route path="/characters">
-          <Characters />
-        </Route>
-        <Route path="/items/:category?">
-          <Items />
-        </Route>
-        <Route path="/settings">
-          <Settings />
-        </Route>
-        <Route path="/">
-          <Redirect to="/characters" />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path="/characters" element={<Characters />} />
+        <Route path="/items/:category?" element={<Items />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/" element={<Navigate to="/characters" replace />} />
+      </Routes>
     </BaseFrame>
   )
 }

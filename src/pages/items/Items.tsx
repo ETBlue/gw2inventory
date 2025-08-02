@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react"
 import {
   NavLink,
-  Switch,
+  Routes,
   Route,
-  useHistory,
+  useNavigate,
   useLocation,
   useParams,
 } from "react-router-dom"
@@ -61,7 +61,7 @@ function Items() {
   } = useContext(ItemContext)
   const { isFetching: isCharactersFetching } = useContext(CharacterContext)
   const { isFetching: isAccountFetching } = useContext(AccountContext)
-  const history = useHistory()
+  const navigate = useNavigate()
   const { pathname } = useLocation()
   const { category } = useParams()
 
@@ -169,7 +169,7 @@ function Items() {
                 e.currentTarget.value,
                 queryString,
               )}`
-              history.push(to)
+              navigate(to)
             }}
           />
         </InputGroup>
@@ -180,9 +180,9 @@ function Items() {
         </Center>
       ) : (
         <div>
-          <Switch>
+          <Routes>
             {MENU_ITEMS.map((menuItem) => (
-              <Route key={menuItem.to} path={menuItem.to}>
+              <Route key={menuItem.to} path={menuItem.to} element={
                 <SubMenuItem
                   showOnly={
                     menuItem.to === "/items/material"
@@ -194,9 +194,9 @@ function Items() {
                   items={items}
                   materials={materials}
                 />
-              </Route>
+              } />
             ))}
-          </Switch>
+          </Routes>
           <Pagination
             pageIndex={pageIndex}
             setPageIndex={setPageIndex}
