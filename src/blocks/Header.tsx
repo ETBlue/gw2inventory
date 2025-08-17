@@ -14,7 +14,7 @@ import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
-import TokenContext from "contexts/TokenContext"
+import { useToken } from "contexts/TokenContext"
 import { UsedAccount } from "contexts/types/TokenContext"
 
 const MENU_ITEMS = [
@@ -27,8 +27,7 @@ const MENU_ITEMS = [
 ]
 
 function Header() {
-  const { usedAccounts, currentAccount, setCurrentAccount } =
-    useContext(TokenContext)
+  const { usedAccounts, currentAccount, setCurrentAccount } = useToken()
 
   return (
     <SimpleGrid

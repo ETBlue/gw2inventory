@@ -1,4 +1,4 @@
-import { useState, createContext } from "react"
+import { useState, createContext, useContext } from "react"
 
 import { Values, UsedAccount } from "./types/TokenContext"
 import { getUsedAccounts } from "./helpers/TokenContext"
@@ -55,6 +55,10 @@ function TokenProvider(props: { children: React.ReactNode }) {
       {props.children}
     </TokenContext.Provider>
   )
+}
+
+export const useToken = () => {
+  return useContext(TokenContext)
 }
 
 export default TokenContext

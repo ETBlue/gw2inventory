@@ -2,11 +2,11 @@ import { useContext } from "react"
 import { NavLink, Route, Routes } from "react-router"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
-import TokenContext from "contexts/TokenContext"
+import { useToken } from "contexts/TokenContext"
 import { MENU_ITEMS } from "./consts/Account"
 
 function Account() {
-  const { currentAccount } = useContext(TokenContext)
+  const { currentAccount } = useToken()
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">

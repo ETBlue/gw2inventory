@@ -1,7 +1,7 @@
 import { useEffect, useContext, createContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 
-import TokenContext from "contexts/TokenContext"
+import { useToken } from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
 
@@ -20,7 +20,7 @@ const AccountContext = createContext<Values>({
 })
 
 function AccountProvider(props: { children: React.ReactNode }) {
-  const { currentAccount } = useContext(TokenContext)
+  const { currentAccount } = useToken()
   const { setInventoryItems, setBankItems, setMaterialItems } =
     useContext(ItemContext)
 

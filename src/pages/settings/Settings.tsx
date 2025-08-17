@@ -4,7 +4,7 @@ import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
 import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
-import TokenContext from "contexts/TokenContext"
+import { useToken } from "contexts/TokenContext"
 import { UsedAccount } from "contexts/types/TokenContext"
 import ItemContext from "contexts/ItemContext"
 
@@ -15,7 +15,7 @@ function Settings() {
     addUsedAccount,
     removeUsedAccount,
     setCurrentAccount,
-  } = useContext(TokenContext)
+  } = useToken()
   const { setCharacterItems } = useContext(ItemContext)
 
   const handleDelete = (account: UsedAccount) => {
