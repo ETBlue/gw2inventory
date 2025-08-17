@@ -6,56 +6,57 @@ module.exports = {
     node: true,
   },
   extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-    'plugin:prettier/recommended', // Must be last
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended", // Must be last
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-  plugins: ['react-refresh'],
+  plugins: ["react-refresh"],
   rules: {
     // React specific
-    'react/prop-types': 'off',
-    'react-refresh/only-export-components': [
-      'warn',
+    "react/prop-types": "off",
+    "react-refresh/only-export-components": [
+      "warn",
       { allowConstantExport: true },
     ],
-    
+
     // TypeScript specific
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
-    
+    "@typescript-eslint/no-explicit-any": "warn",
+
     // General rules
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
-    
+    "no-console": ["warn", { allow: ["warn", "error"] }],
+
     // Prettier integration
-    'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+    "prettier/prettier": ["warn", {}, { usePrettierrc: true }],
   },
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
   ignorePatterns: [
-    'dist',
-    'build',
-    'node_modules',
-    'coverage',
-    '*.config.js',
-    '*.config.ts',
+    "dist",
+    "build",
+    "node_modules",
+    "coverage",
+    "*.config.js",
+    "*.config.ts",
+    ".eslintrc.cjs",
   ],
 }

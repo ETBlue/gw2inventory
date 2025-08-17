@@ -1,14 +1,14 @@
-import { useState, createContext, useContext } from "react"
+import { useState, createContext } from "react"
 
 import { Values, UsedAccount } from "./types/TokenContext"
 import { getUsedAccounts } from "./helpers/TokenContext"
 
 const TokenContext = createContext<Values>({
   usedAccounts: [],
-  addUsedAccount: (account: UsedAccount) => {},
-  removeUsedAccount: (account: UsedAccount) => {},
+  addUsedAccount: (_account: UsedAccount) => {},
+  removeUsedAccount: (_account: UsedAccount) => {},
   currentAccount: null,
-  setCurrentAccount: (account: UsedAccount | null) => {},
+  setCurrentAccount: (_account: UsedAccount | null) => {},
 })
 
 function TokenProvider(props: { children: React.ReactNode }) {
@@ -55,10 +55,6 @@ function TokenProvider(props: { children: React.ReactNode }) {
       {props.children}
     </TokenContext.Provider>
   )
-}
-
-export const useToken = () => {
-  return useContext(TokenContext)
 }
 
 export default TokenContext

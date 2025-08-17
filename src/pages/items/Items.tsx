@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState } from "react"
 import {
   NavLink,
   Routes,
@@ -28,8 +28,8 @@ import {
 import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { useItems } from "contexts/ItemContext"
-import { useCharacters } from "contexts/CharacterContext"
+import { useItems } from "hooks/useItems"
+import { useCharacters } from "hooks/useCharacters"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
 import Pagination from "components/Pagination"

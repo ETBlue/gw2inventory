@@ -7,7 +7,7 @@ import {
 } from "react-icons/cg"
 import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
-import { UserItemInList } from "pages/items/types"
+import { UserItemInList } from "contexts/types/ItemContext"
 
 interface Props {
   pageIndex: number

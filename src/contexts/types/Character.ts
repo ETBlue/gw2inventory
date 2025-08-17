@@ -2,7 +2,8 @@
 // For Character types, import directly from "@gw2api/types/data/character"
 
 import type { ItemStack } from "@gw2api/types/data/item"
-import type { Stats } from "./Account"
+
+import { CharacterEquipmentEntry } from "@gw2api/types/data/character"
 
 // Character bag item type with your custom extensions
 export interface CharacterBagItem extends ItemStack {
@@ -21,11 +22,4 @@ export interface CharacterBag {
 }
 
 // Character equipment item
-export interface CharacterEquipmentItem extends ItemStack {
-  slot: string
-  charges?: number
-  dyes?: number[]
-  binding?: "Character" | "Account"
-  bound_to?: string
-  stats?: Stats
-}
+export interface CharacterEquipmentItem extends CharacterEquipmentEntry {}

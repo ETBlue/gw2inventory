@@ -1,7 +1,7 @@
-import { useContext, createContext } from "react"
+import { createContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 
-import { useToken } from "contexts/TokenContext"
+import { useToken } from "hooks/useToken"
 import { queryFunction } from "helpers/api"
 
 import { Values } from "./types/CharacterContext"
@@ -26,10 +26,6 @@ function CharacterProvider(props: { children: React.ReactNode }) {
       {props.children}
     </CharacterContext.Provider>
   )
-}
-
-export const useCharacters = () => {
-  return useContext(CharacterContext)
 }
 
 export default CharacterContext

@@ -1,4 +1,3 @@
-import { useContext } from "react"
 import { Link, NavLink } from "react-router"
 import {
   Menu,
@@ -14,7 +13,7 @@ import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
-import { useToken } from "contexts/TokenContext"
+import { useToken } from "hooks/useToken"
 import { UsedAccount } from "contexts/types/TokenContext"
 
 const MENU_ITEMS = [

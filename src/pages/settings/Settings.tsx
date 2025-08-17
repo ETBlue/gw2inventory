@@ -1,12 +1,12 @@
-import { useState, useContext } from "react"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
 import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 
 import { queryFunction } from "helpers/api"
-import { useToken } from "contexts/TokenContext"
+import { useToken } from "hooks/useToken"
 import { UsedAccount } from "contexts/types/TokenContext"
-import { useItems } from "contexts/ItemContext"
+import { useItems } from "hooks/useItems"
 
 function Settings() {
   const {
@@ -99,7 +99,7 @@ function Settings() {
         </Button>
         <div />
         <Box fontSize="0.875rem" color="gray.600">
-          Don't have an API key? Get one for your account from{" "}
+          Don&apos;t have an API key? Get one for your account from{" "}
           <Link
             href="https://account.arena.net/applications"
             isExternal

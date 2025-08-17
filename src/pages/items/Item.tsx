@@ -50,25 +50,25 @@ function Item(props: Props) {
             )}
             {item.details?.infix_upgrade && (
               <p className={`${css.description} ${css.secondary}`}>
-                {item.details.infix_upgrade.attributes.map(
-                  (attr: InfixUpgradeAttribute) => (
-                    <Box as="span" key={attr.attribute} marginRight="0.5rem">
-                      <Tag size="sm">{attr.attribute}</Tag> {attr.modifier}
+                {item.details.infix_upgrade.attributes.map((attr) => (
+                  <Box as="span" key={attr.attribute} marginRight="0.5rem">
+                    <Tag size="sm">{attr.attribute}</Tag> {attr.modifier}
+                  </Box>
+                ))}
+              </p>
+            )}
+            {"stats" in userItem && userItem.stats?.attributes && (
+              <p className={`${css.description} ${css.secondary}`}>
+                {Object.entries(userItem.stats.attributes).map(
+                  ([attr, value]) => (
+                    <Box key={attr} marginRight="0.5rem" as="span">
+                      <Tag variant="outline" size="sm">
+                        {attr}
+                      </Tag>{" "}
+                      {value}
                     </Box>
                   ),
                 )}
-              </p>
-            )}
-            {userItem.stats && (
-              <p className={`${css.description} ${css.secondary}`}>
-                {Object.keys(userItem.stats.attributes).map((attr) => (
-                  <Box key={attr} marginRight="0.5rem" as="span">
-                    <Tag variant="outline" size="sm">
-                      {attr}
-                    </Tag>{" "}
-                    {userItem.stats.attributes[attr]}
-                  </Box>
-                ))}
               </p>
             )}
           </>
@@ -99,16 +99,16 @@ function Item(props: Props) {
       </Td>
       <Td minWidth="12rem">
         {userItem.location}{" "}
-        {userItem.isEquipped && (
+        {"isEquipped" in userItem && userItem.isEquipped && (
           <Badge size="sm" fontWeight="normal">
             Equipped
           </Badge>
         )}
-        {userItem.bound_to && (
+        {"bound_to" in userItem && userItem.bound_to && (
           <div className={css.secondary}>bound to {userItem.bound_to}</div>
         )}
       </Td>
-      <Td maxWidth="6rem">{userItem?.count}</Td>
+      <Td maxWidth="6rem">{"count" in userItem && userItem.count}</Td>
       <Td maxWidth="10rem">
         {item && <Code className={css.secondary}>{item.chat_link}</Code>}
       </Td>

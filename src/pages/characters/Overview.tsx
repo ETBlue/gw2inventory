@@ -1,4 +1,4 @@
-import { format, formatDistanceStrict } from "date-fns"
+import { format } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { FaCheck, FaMinus } from "react-icons/fa"
 import { List, ListItem, ListIcon } from "@chakra-ui/react"
@@ -68,7 +68,7 @@ const COLUMNS: Column[] = [
     render(row: Character) {
       return (
         <List>
-          {row.crafting.map((crafting: CraftingDiscipline) => (
+          {row.crafting.map((crafting) => (
             <ListItem key={crafting.discipline}>
               <ListIcon as={crafting.active ? FaCheck : FaMinus} />
               {crafting.discipline} {crafting.rating}

@@ -1,8 +1,7 @@
-import { useContext } from "react"
 import { NavLink, Route, Routes } from "react-router"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
-import { useToken } from "contexts/TokenContext"
+import { useToken } from "hooks/useToken"
 import { MENU_ITEMS } from "./consts/Account"
 
 function Account() {

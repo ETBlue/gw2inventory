@@ -2,7 +2,15 @@ import { QueryFunctionContext } from "@tanstack/react-query"
 
 import { API_URL, API_LANG } from "config"
 
-export const queryFunction = async (context: QueryFunctionContext) => {
+type TQueryKey = readonly [
+  endpoint: string,
+  token?: string,
+  paramsString?: string,
+]
+
+export const queryFunction = async (
+  context: QueryFunctionContext<TQueryKey>,
+) => {
   const { queryKey } = context
   const [endpoint, token = "", paramsString = ""] = queryKey
   if (!endpoint) return

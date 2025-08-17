@@ -1,4 +1,3 @@
-import { useContext } from "react"
 import { Link, NavLink, Route, Routes, useNavigate } from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
@@ -18,8 +17,8 @@ import {
 
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
-import { useToken } from "contexts/TokenContext"
-import { useCharacters } from "contexts/CharacterContext"
+import { useToken } from "hooks/useToken"
+import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
 
 import { PROFESSIONS } from "./consts/Characters"
@@ -42,7 +41,7 @@ function Characters() {
         character.profession === activeProfession || !activeProfession,
     )
     .filter((character: Character) =>
-      !!keyword
+      keyword
         ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
     )
@@ -50,7 +49,7 @@ function Characters() {
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
       <TabList>
-        <Tab as={NavLink} to="/characters" exact>
+        <Tab as={NavLink} to="/characters">
           Overview
         </Tab>
         <Spacer />
@@ -78,11 +77,7 @@ function Characters() {
         </Center>
       ) : (
         <div>
-          <Flex
-            justifyContent="center"
-            margin="1rem auto"
-            columns={PROFESSIONS.length}
-          >
+          <Flex justifyContent="center" margin="1rem auto">
             <Button
               as={Link}
               variant="ghost"
