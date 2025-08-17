@@ -1,10 +1,10 @@
 # Code Review - GW2 Inventory Management
 
 ## Progress Summary
-- **Issues Resolved:** 5 of 11
+- **Issues Resolved:** 6 of 11
 - **Issues Clarified:** 1 (Security context clarified)
 - **High Severity Resolved:** 1 of 2 (1 reclassified)
-- **Medium Severity Resolved:** 3 of 7
+- **Medium Severity Resolved:** 4 of 7
 - **Low Severity Resolved:** 1 of 2
 - **Last Updated:** 2025-08-17
 
@@ -13,7 +13,8 @@
 - ✅ **Resolved:** Code Duplication in ItemContext (commit a51b999)
 - ✅ **Resolved:** Magic Numbers and Hardcoded Values (commit ec782e0)
 - ✅ **Resolved:** Component Coupling (commit 51da4cd)
-- ✅ **Resolved:** Large Complex Component (current)
+- ✅ **Resolved:** Large Complex Component (commit 0fc9cca)
+- ✅ **Resolved:** Performance Issues (current)
 - ⚠️ **Clarified:** API Token Storage - Acceptable for frontend-only third-party app
 
 ## Executive Summary
@@ -236,22 +237,58 @@ duration: ERROR_CONFIG.TOAST_DURATION
 - Type safety with `as const` assertions
 - Consistent theming across components
 
-### 7. Performance Issues
+### 7. ~~Performance Issues~~ ✅ RESOLVED
 **Location:** `src/pages/items/Items.tsx` (lines 82-120)
 
-**Issues:**
-- Expensive filtering and sorting operations on every render
-- No memoization of computed values
-- Large arrays processed repeatedly
+**Status:** ✅ Fixed
 
-**Recommendation:**
+**What was fixed:**
+- Added comprehensive memoization using React's useMemo hook for expensive computations
+- Memoized array concatenation, filtering, sorting, and pagination operations
+- Properly specified dependency arrays to ensure optimal cache invalidation
+
+**Performance improvements:**
+- `allItems` - Memoized array concatenation with dependencies on source arrays
+- `visibleItems` - Memoized the entire filtering and sorting pipeline with all relevant dependencies
+- `pages` - Memoized chunking operation for pagination
+
+**Before:**
 ```typescript
-const filteredAndSortedItems = useMemo(() => {
-  return userItems
-    .filter(/* filtering logic */)
-    .sort(/* sorting logic */)
-}, [userItems, filterCriteria, sortCriteria])
+// Expensive operations running on every render
+const allItems = [...characterItems, ...inventoryItems, ...bankItems, ...materialItems]
+const visibleItems = allItems
+  .filter(/* complex filtering logic */)
+  .filter(/* keyword search with JSON.stringify */)
+  .sort(/* complex sorting with object creation */)
+const pages = chunk(visibleItems, ITEM_COUNT_PER_PAGE)
 ```
+
+**After:**
+```typescript
+// Memoized computations with proper dependencies
+const allItems = useMemo(
+  () => [...characterItems, ...inventoryItems, ...bankItems, ...materialItems],
+  [characterItems, inventoryItems, bankItems, materialItems]
+)
+
+const visibleItems = useMemo(() => {
+  return allItems
+    .filter(/* filtering logic */)
+    .filter(/* keyword search */)
+    .sort(/* sorting logic */)
+}, [allItems, activeType, materialCategories, items, materials, pathname, category, keyword, activeSort, activeOrder])
+
+const pages = useMemo(
+  () => chunk(visibleItems, ITEM_COUNT_PER_PAGE),
+  [visibleItems]
+)
+```
+
+**Benefits:**
+- **Performance:** Expensive computations only run when dependencies actually change
+- **Memory efficiency:** Reduced object creation and array processing on unnecessary renders
+- **User experience:** Smoother interactions, especially with large item collections
+- **Maintainability:** Clear dependency tracking makes optimization intent explicit
 
 ## Low Severity Issues
 
@@ -364,7 +401,7 @@ const handleDelete = (account) => {
 ### Current State
 - **Maintainability:** ~~6/10~~ → **9/10** ✅ - Eliminated code duplication, magic numbers, coupling, and large complex components
 - **Type Safety:** 5/10 - Many implicit types and any usage
-- **Performance:** 6/10 - Unnecessary re-renders and computations
+- **Performance:** ~~6/10~~ → **8/10** ✅ - Implemented comprehensive memoization for expensive computations
 - **Security:** ~~4/10~~ → **7/10** ⚠️ - localStorage is acceptable for this use case (frontend-only app)
 - **Error Handling:** ~~3/10~~ → **8/10** ✅ - Comprehensive error handling implemented
 

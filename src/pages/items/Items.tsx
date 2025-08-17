@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import {
   NavLink,
   Routes,
@@ -73,53 +73,73 @@ function Items() {
   const activeSort: Sort = sortBy || "location"
   const activeOrder: Order = order || "asc"
 
-  const allItems = [
-    ...characterItems,
-    ...inventoryItems,
-    ...bankItems,
-    ...materialItems,
-  ]
-  const visibleItems = allItems
-    .filter((userItem: UserItemInList) => {
-      if (activeType) {
-        return isItemInTypes({
-          types:
-            activeType === "CraftingMaterial"
-              ? materialCategories
-              : [activeType],
-          userItem,
-          items,
-          materials,
-          pathname,
-        })
-      } else if (category) {
-        return isItemInCategory({
-          userItem,
-          category,
-          items,
-          pathname,
-        })
-      } else {
-        return true
-      }
-    })
-    .filter((userItem: UserItemInList) => {
-      if (!keyword) return true
-      const itemRaw: ItemTypeDef = items[userItem.id]
-      const item = { ...userItem, ...itemRaw }
-      return JSON.stringify(item).match(new RegExp(keyword, "i"))
-    })
-    .sort((_a: UserItemInList, _b: UserItemInList) => {
-      const a = { ..._a, ...items[_a.id] }
-      const b = { ..._b, ...items[_b.id] }
-      const number =
-        activeSort === "rarity"
-          ? compareRarity(a.rarity, b.rarity)
-          : compare(a[activeSort], b[activeSort])
-      return activeOrder === "asc" ? number : number * -1
-    })
+  const allItems = useMemo(
+    () => [
+      ...characterItems,
+      ...inventoryItems,
+      ...bankItems,
+      ...materialItems,
+    ],
+    [characterItems, inventoryItems, bankItems, materialItems],
+  )
 
-  const pages = chunk(visibleItems, ITEM_COUNT_PER_PAGE)
+  const visibleItems = useMemo(() => {
+    return allItems
+      .filter((userItem: UserItemInList) => {
+        if (activeType) {
+          return isItemInTypes({
+            types:
+              activeType === "CraftingMaterial"
+                ? materialCategories
+                : [activeType],
+            userItem,
+            items,
+            materials,
+            pathname,
+          })
+        } else if (category) {
+          return isItemInCategory({
+            userItem,
+            category,
+            items,
+            pathname,
+          })
+        } else {
+          return true
+        }
+      })
+      .filter((userItem: UserItemInList) => {
+        if (!keyword) return true
+        const itemRaw: ItemTypeDef = items[userItem.id]
+        const item = { ...userItem, ...itemRaw }
+        return JSON.stringify(item).match(new RegExp(keyword, "i"))
+      })
+      .sort((_a: UserItemInList, _b: UserItemInList) => {
+        const a = { ..._a, ...items[_a.id] }
+        const b = { ..._b, ...items[_b.id] }
+        const number =
+          activeSort === "rarity"
+            ? compareRarity(a.rarity, b.rarity)
+            : compare(a[activeSort], b[activeSort])
+        return activeOrder === "asc" ? number : number * -1
+      })
+  }, [
+    allItems,
+    activeType,
+    materialCategories,
+    items,
+    materials,
+    pathname,
+    category,
+    keyword,
+    activeSort,
+    activeOrder,
+  ])
+
+  const pages = useMemo(
+    () => chunk(visibleItems, ITEM_COUNT_PER_PAGE),
+    [visibleItems],
+  )
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   return (
