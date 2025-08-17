@@ -11,6 +11,7 @@ import { chunk, sortBy } from "lodash"
 import { fetchGW2, queryFunction } from "helpers/api"
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
+import { useItemFetching } from "hooks/useItemFetching"
 
 import type { Item } from "@gw2api/types/data/item"
 import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
@@ -210,18 +211,18 @@ function ItemProvider(props: { children: React.ReactNode }) {
     setCharacterItems(characterItems)
   }, [characters])
 
-  useEffect(() => {
-    fetchItems(characterItems.map((item) => item.id))
-  }, [characterItems, fetchItems])
-  useEffect(() => {
-    fetchItems(inventoryItems.map((item) => item.id))
-  }, [inventoryItems, fetchItems])
-  useEffect(() => {
-    fetchItems(bankItems.map((item) => item.id))
-  }, [bankItems, fetchItems])
-  useEffect(() => {
-    fetchItems(materialItems.map((item) => item.id))
-  }, [materialItems, fetchItems])
+  // Use custom hook to eliminate code duplication for item fetching
+  // Each source is fetched independently to maintain separate timing
+  useItemFetching(characterItems, fetchItems)
+  useItemFetching(inventoryItems, fetchItems)
+  useItemFetching(bankItems, fetchItems)
+  useItemFetching(materialItems, fetchItems)
+  
+  // Alternative batched approach (more efficient but changes timing):
+  // useBatchItemFetching(
+  //   { characterItems, inventoryItems, bankItems, materialItems },
+  //   fetchItems
+  // )
 
   // handle materials (category)
 

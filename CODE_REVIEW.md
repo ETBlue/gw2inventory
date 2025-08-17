@@ -1,13 +1,15 @@
 # Code Review - GW2 Inventory Management
 
 ## Progress Summary
-- **Issues Resolved:** 1 of 11
+- **Issues Resolved:** 2 of 11
 - **Issues Clarified:** 1 (Security context clarified)
 - **High Severity Resolved:** 1 of 2 (1 reclassified)
+- **Medium Severity Resolved:** 1 of 7
 - **Last Updated:** 2025-08-17
 
 ### Recently Updated
 - ✅ **Resolved:** Poor Error Handling in API Layer (commit 64903b5)
+- ✅ **Resolved:** Code Duplication in ItemContext (current)
 - ⚠️ **Clarified:** API Token Storage - Acceptable for frontend-only third-party app
 
 ## Executive Summary
@@ -95,32 +97,40 @@ This document outlines code smells and potential improvements identified in the 
   - `useCharacterItems` - Character-specific logic
   - `useMaterialCategories` - Material categorization
 
-### 5. Code Duplication
-**Location:** `src/contexts/ItemContext.tsx` (lines 203-211)
+### 5. ~~Code Duplication~~ ✅ RESOLVED
+**Location:** `src/contexts/ItemContext.tsx` (lines 214-219)
 
-**Duplicated Pattern:**
+**Status:** ✅ Fixed
+
+**What was fixed:**
+- Created reusable `useItemFetching` hook to eliminate repeated useEffect patterns
+- Replaced 4 identical useEffect calls with clean hook calls
+- Added alternative `useBatchItemFetching` hook for more efficient batched fetching
+- Maintained existing functionality while reducing code duplication
+
+**Before:**
 ```typescript
 useEffect(() => {
   fetchItems(characterItems.map((item) => item.id))
 }, [characterItems, fetchItems])
-
 useEffect(() => {
   fetchItems(inventoryItems.map((item) => item.id))
 }, [inventoryItems, fetchItems])
 // Repeated 4 times with different item arrays
 ```
 
-**Recommendation:**
+**After:**
 ```typescript
-// Extract to reusable hook
-const useItemFetching = (items: ItemType[], fetchItems: Function) => {
-  useEffect(() => {
-    if (items.length > 0) {
-      fetchItems(items.map(item => item.id))
-    }
-  }, [items, fetchItems])
-}
+useItemFetching(characterItems, fetchItems)
+useItemFetching(inventoryItems, fetchItems)
+useItemFetching(bankItems, fetchItems)
+useItemFetching(materialItems, fetchItems)
 ```
+
+**Files added/modified:**
+- `src/hooks/useItemFetching.ts` - Reusable hook for item fetching patterns
+- `src/hooks/useBatchItemFetching.ts` - Optional optimized batching approach
+- `src/contexts/ItemContext.tsx` - Updated to use the new hooks
 
 ### 6. Magic Numbers and Hardcoded Values
 **Locations:**
@@ -224,7 +234,7 @@ const filteredAndSortedItems = useMemo(() => {
 ## Code Quality Metrics
 
 ### Current State
-- **Maintainability:** 6/10 - Large components and mixed concerns
+- **Maintainability:** ~~6/10~~ → **7/10** ✅ - Eliminated code duplication, still has large components
 - **Type Safety:** 5/10 - Many implicit types and any usage
 - **Performance:** 6/10 - Unnecessary re-renders and computations
 - **Security:** ~~4/10~~ → **7/10** ⚠️ - localStorage is acceptable for this use case (frontend-only app)
