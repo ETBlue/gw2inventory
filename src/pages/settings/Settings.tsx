@@ -6,7 +6,6 @@ import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 import { queryFunction } from "helpers/api"
 import { useToken } from "hooks/useToken"
 import { UsedAccount } from "contexts/types/TokenContext"
-import { useItems } from "hooks/useItems"
 
 function Settings() {
   const {
@@ -16,13 +15,12 @@ function Settings() {
     removeUsedAccount,
     setCurrentAccount,
   } = useToken()
-  const { setCharacterItems } = useItems()
 
   const handleDelete = (account: UsedAccount) => {
     removeUsedAccount(account)
+    // ItemContext will automatically reset when currentAccount changes
     if (currentAccount?.token === account.token) {
       setCurrentAccount(null)
-      setCharacterItems([])
     }
   }
 

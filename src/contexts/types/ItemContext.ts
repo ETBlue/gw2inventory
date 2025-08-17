@@ -14,9 +14,13 @@ export interface Values {
   inventoryItems: InventoryItemInList[]
   bankItems: BankItemInList[]
   materialItems: MaterialItemInList[]
+  /** @internal - Use useItemsInternal() hook for access to these setters */
   setCharacterItems(val: CharacterItemInList[]): void
+  /** @internal - Use useItemsInternal() hook for access to these setters */
   setInventoryItems(val: InventoryItemInList[]): void
+  /** @internal - Use useItemsInternal() hook for access to these setters */
   setBankItems(val: BankItemInList[]): void
+  /** @internal - Use useItemsInternal() hook for access to these setters */
   setMaterialItems(val: MaterialItemInList[]): void
   isFetching: boolean
 }

@@ -117,6 +117,15 @@ function ItemProvider(props: { children: React.ReactNode }) {
   const [bankItems, setBankItems] = useState<BankItemInList[]>([])
   const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
 
+  // Reset all items when the current account token changes
+  // This ensures data consistency and prevents data leakage between accounts
+  useEffect(() => {
+    setCharacterItems([])
+    setInventoryItems([])
+    setBankItems([])
+    setMaterialItems([])
+  }, [currentAccount?.token])
+
   // handle account queries
   const { data: inventory, isFetching: isInventoryFetching } = useQuery({
     queryKey: ["account/inventory", currentAccount?.token],

@@ -1,16 +1,18 @@
 # Code Review - GW2 Inventory Management
 
 ## Progress Summary
-- **Issues Resolved:** 3 of 11
+- **Issues Resolved:** 4 of 11
 - **Issues Clarified:** 1 (Security context clarified)
 - **High Severity Resolved:** 1 of 2 (1 reclassified)
 - **Medium Severity Resolved:** 2 of 7
+- **Low Severity Resolved:** 1 of 2
 - **Last Updated:** 2025-08-17
 
 ### Recently Updated
 - ✅ **Resolved:** Poor Error Handling in API Layer (commit 64903b5)
 - ✅ **Resolved:** Code Duplication in ItemContext (commit a51b999)
-- ✅ **Resolved:** Magic Numbers and Hardcoded Values (current)
+- ✅ **Resolved:** Magic Numbers and Hardcoded Values (commit ec782e0)
+- ✅ **Resolved:** Component Coupling (current)
 - ⚠️ **Clarified:** API Token Storage - Acceptable for frontend-only third-party app
 
 ## Executive Summary
@@ -226,12 +228,61 @@ const filteredAndSortedItems = useMemo(() => {
 />
 ```
 
-### 10. Component Coupling
-**Location:** `src/pages/settings/Settings.tsx` line 19
+### 10. ~~Component Coupling~~ ✅ RESOLVED
+**Location:** `src/pages/settings/Settings.tsx` (line 19)
 
-**Issue:** Direct manipulation of ItemContext state from Settings component
+**Status:** ✅ Fixed
 
-**Recommendation:** Use proper event handlers or callbacks to maintain separation of concerns
+**What was fixed:**
+- Removed direct manipulation of ItemContext state from Settings component
+- Implemented reactive pattern where ItemContext automatically resets when account changes
+- Created proper separation of concerns between TokenContext and ItemContext
+- Added public vs internal APIs for better encapsulation
+
+**Before (Tight Coupling):**
+```typescript
+// Settings component directly manipulating ItemContext
+const { setCharacterItems } = useItems()
+const handleDelete = (account) => {
+  removeUsedAccount(account)
+  if (currentAccount?.token === account.token) {
+    setCurrentAccount(null)
+    setCharacterItems([]) // ❌ Direct manipulation
+  }
+}
+```
+
+**After (Reactive Decoupling):**
+```typescript
+// ItemContext automatically reacts to token changes
+useEffect(() => {
+  setCharacterItems([])
+  setInventoryItems([])
+  setBankItems([])
+  setMaterialItems([])
+}, [currentAccount?.token])
+
+// Settings only manages tokens
+const handleDelete = (account) => {
+  removeUsedAccount(account)
+  if (currentAccount?.token === account.token) {
+    setCurrentAccount(null) // ✅ ItemContext auto-resets
+  }
+}
+```
+
+**Architecture improvements:**
+- **Public API** (`useItems`): Only exposes read-only data, no state setters
+- **Internal API** (`useItemsInternal`): Full access for context-related components
+- **Reactive pattern**: ItemContext automatically responds to TokenContext changes
+- **Documentation**: Added `src/docs/ARCHITECTURE.md` with separation guidelines
+
+**Benefits:**
+- Reduced tight coupling between unrelated contexts
+- Automatic data consistency when accounts change
+- Clearer separation of responsibilities
+- Easier testing and maintenance
+- Prevention of future coupling issues
 
 ### 11. Minor Code Issues
 - **Typo:** `src/blocks/Header.tsx` line 89: `paddin="1rem"` should be `padding="1rem"`
@@ -260,7 +311,7 @@ const filteredAndSortedItems = useMemo(() => {
 ## Code Quality Metrics
 
 ### Current State
-- **Maintainability:** ~~6/10~~ → **8/10** ✅ - Eliminated code duplication and magic numbers, still has large components
+- **Maintainability:** ~~6/10~~ → **8.5/10** ✅ - Eliminated code duplication, magic numbers, and coupling; still has large components
 - **Type Safety:** 5/10 - Many implicit types and any usage
 - **Performance:** 6/10 - Unnecessary re-renders and computations
 - **Security:** ~~4/10~~ → **7/10** ⚠️ - localStorage is acceptable for this use case (frontend-only app)
