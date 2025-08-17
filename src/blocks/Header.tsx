@@ -87,7 +87,7 @@ function Header() {
           fontWeight="normal"
           borderRadius="0"
           height={LAYOUT.HEADER_HEIGHT}
-          paddin="1rem"
+          padding="1rem"
           marginRight="-0.5rem"
           borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
           rightIcon={<MdExpandMore />}
