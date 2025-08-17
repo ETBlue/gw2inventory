@@ -81,13 +81,26 @@ function ItemProvider(props: { children: React.ReactNode }) {
       const chunks = chunk(idsToFetch, 200)
 
       let newItems: Item[] = []
+      let failedChunks = 0
+      
       for (const chunk of chunks) {
-        const data = await fetchGW2("items", `ids=${chunk.join(",")}`)
-        if (data) {
-          newItems = [...newItems, ...data]
-          addItems(newItems)
+        try {
+          const data = await fetchGW2("items", `ids=${chunk.join(",")}`)
+          if (data) {
+            newItems = [...newItems, ...data]
+            addItems(newItems)
+          }
+        } catch (error) {
+          console.error(`Failed to fetch items chunk:`, error)
+          failedChunks++
+          // Continue fetching other chunks even if one fails
         }
       }
+      
+      if (failedChunks > 0) {
+        console.warn(`Failed to fetch ${failedChunks} out of ${chunks.length} item chunks`)
+      }
+      
       setIsItemsFetching(false)
     },
     [items],

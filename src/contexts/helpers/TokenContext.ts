@@ -21,7 +21,8 @@ export const readStoredTokens = () => {
       const data = JSON.parse(storage)
       return data
     } catch (err) {
-      console.log(err)
+      console.error("Failed to parse stored tokens:", err)
+      // Return empty array if parsing fails to prevent app crash
     }
   }
   return []
@@ -41,7 +42,8 @@ export const readV1StoredTokens = () => {
       })
       return v1UsedAccounts
     } catch (err) {
-      console.log(err)
+      console.error("Failed to parse v1 stored tokens:", err)
+      // Return empty array if parsing fails to prevent app crash
     }
   }
   return []
