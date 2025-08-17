@@ -1,0 +1,263 @@
+** Public API v2 **
+
+Usage:
+
+The API follows the general pattern of enumerating possible values of the
+subsequent path segment, with the fully qualified path yielding a json object
+of the type being enumerated.
+
+For example, /v2/colors will yield:
+  [1, 2, 3, ... ]
+
+which can be used to create the fully qualified path of:
+  /v2/colors/1
+
+The following paths are exposed by this API:
+  /v2/account [a]
+  /v2/account/achievements [a]
+  /v2/account/bank [a]
+  /v2/account/buildstorage [a]
+  /v2/account/dailycrafting [a]
+  /v2/account/dungeons [a]
+  /v2/account/dyes [a]
+  /v2/account/emotes [a]
+  /v2/account/finishers [a]
+  /v2/account/gliders [a]
+  /v2/account/home
+  /v2/account/home/cats [a]
+  /v2/account/home/nodes [a]
+  /v2/account/homestead
+  /v2/account/homestead/decorations [a]
+  /v2/account/homestead/glyphs [a]
+  /v2/account/inventory [a]
+  /v2/account/jadebots [a]
+  /v2/account/legendaryarmory [a]
+  /v2/account/luck [a]
+  /v2/account/mail [d,a]
+  /v2/account/mailcarriers [a]
+  /v2/account/mapchests [a]
+  /v2/account/masteries [a]
+  /v2/account/mastery/points [a]
+  /v2/account/materials [a]
+  /v2/account/minis [a]
+  /v2/account/mounts
+  /v2/account/mounts/skins [a]
+  /v2/account/mounts/types [a]
+  /v2/account/novelties [a]
+  /v2/account/outfits [a]
+  /v2/account/progression [a]
+  /v2/account/pvp/heroes [a]
+  /v2/account/raids [a]
+  /v2/account/recipes [a]
+  /v2/account/skiffs [a]
+  /v2/account/skins [a]
+  /v2/account/titles [a]
+  /v2/account/wallet [a]
+  /v2/account/wizardsvault/daily [a]
+  /v2/account/wizardsvault/listings [a]
+  /v2/account/wizardsvault/special [a]
+  /v2/account/wizardsvault/weekly [a]
+  /v2/account/worldbosses [a]
+  /v2/account/wvw [a]
+  /v2/achievements [l]
+  /v2/achievements/categories [l]
+  /v2/achievements/daily [d]
+  /v2/achievements/daily/tomorrow [d]
+  /v2/achievements/groups [l]
+  /v2/adventures [l,d]
+  /v2/adventures/:id/leaderboards [d]
+  /v2/adventures/:id/leaderboards/:board/:region [d]
+  /v2/backstory/answers [l]
+  /v2/backstory/questions [l]
+  /v2/build
+  /v2/characters [a]
+  /v2/characters/:id/backstory [a]
+  /v2/characters/:id/buildtabs [a]
+  /v2/characters/:id/buildtabs/active [a]
+  /v2/characters/:id/core [a]
+  /v2/characters/:id/crafting [a]
+  /v2/characters/:id/dungeons [d,a]
+  /v2/characters/:id/equipment [a]
+  /v2/characters/:id/equipmenttabs [a]
+  /v2/characters/:id/equipmenttabs/active [a]
+  /v2/characters/:id/heropoints [a]
+  /v2/characters/:id/inventory [a]
+  /v2/characters/:id/quests [a]
+  /v2/characters/:id/recipes [a]
+  /v2/characters/:id/sab [a]
+  /v2/characters/:id/skills [a]
+  /v2/characters/:id/specializations [a]
+  /v2/characters/:id/training [a]
+  /v2/colors [l]
+  /v2/commerce/delivery [a]
+  /v2/commerce/exchange
+  /v2/commerce/listings
+  /v2/commerce/prices
+  /v2/commerce/transactions [a]
+  /v2/continents [l]
+  /v2/createsubtoken [a]
+  /v2/currencies [l]
+  /v2/dailycrafting
+  /v2/dungeons [l]
+  /v2/emblem
+  /v2/emotes
+  /v2/events [l,d]
+  /v2/events-state [d]
+  /v2/files
+  /v2/finishers [l]
+  /v2/gemstore/catalog [l,d]
+  /v2/gliders [l]
+  /v2/guild/:id [a]
+  /v2/guild/:id/log [a]
+  /v2/guild/:id/members [a]
+  /v2/guild/:id/ranks [a]
+  /v2/guild/:id/stash [a]
+  /v2/guild/:id/storage [a]
+  /v2/guild/:id/teams [a]
+  /v2/guild/:id/treasury [a]
+  /v2/guild/:id/upgrades [a]
+  /v2/guild/permissions [l]
+  /v2/guild/search
+  /v2/guild/upgrades [l]
+  /v2/home
+  /v2/home/cats
+  /v2/home/nodes
+  /v2/homestead
+  /v2/homestead
+  /v2/homestead/decorations [l]
+  /v2/homestead/decorations/categories [l]
+  /v2/homestead/decorations/categories/:id [l]
+  /v2/homestead/glyphs
+  /v2/items [l]
+  /v2/itemstats [l]
+  /v2/jadebots [l]
+  /v2/legendaryarmory
+  /v2/legends
+  /v2/logos
+  /v2/mailcarriers [l]
+  /v2/mapchests
+  /v2/maps [l]
+  /v2/masteries [l]
+  /v2/materials [l]
+  /v2/minis [l]
+  /v2/mounts
+  /v2/mounts/skins [l]
+  /v2/mounts/types [l]
+  /v2/novelties [l]
+  /v2/outfits [l]
+  /v2/pets [l]
+  /v2/professions [l]
+  /v2/pvp
+  /v2/pvp/amulets [l]
+  /v2/pvp/games [a]
+  /v2/pvp/heroes [l]
+  /v2/pvp/ranks [l]
+  /v2/pvp/rewardtracks [l,d]
+  /v2/pvp/runes [l,d]
+  /v2/pvp/seasons [l]
+  /v2/pvp/seasons/:id/leaderboards
+  /v2/pvp/seasons/:id/leaderboards/:board/:region
+  /v2/pvp/sigils [l,d]
+  /v2/pvp/standings [a]
+  /v2/pvp/stats [a]
+  /v2/quaggans
+  /v2/quests [l]
+  /v2/races [l]
+  /v2/raids [l]
+  /v2/recipes
+  /v2/recipes/search
+  /v2/skiffs [l]
+  /v2/skills [l]
+  /v2/skins [l]
+  /v2/specializations [l]
+  /v2/stories [l]
+  /v2/stories/seasons [l]
+  /v2/titles [l]
+  /v2/tokeninfo [a]
+  /v2/traits [l]
+  /v2/vendors [l,d]
+  /v2/wizardsvault/listings [l]
+  /v2/wizardsvault/objectives [l]
+  /v2/worldbosses
+  /v2/worlds [l]
+  /v2/wvw/abilities [l]
+  /v2/wvw/guilds
+  /v2/wvw/guilds/:region
+  /v2/wvw/matches
+  /v2/wvw/matches/overview
+  /v2/wvw/matches/scores
+  /v2/wvw/matches/stats
+  /v2/wvw/matches/stats/:id/guilds/:guild_id
+  /v2/wvw/matches/stats/:id/teams/:team/top/kdr
+  /v2/wvw/matches/stats/:id/teams/:team/top/kills
+  /v2/wvw/objectives [l]
+  /v2/wvw/ranks [l]
+  /v2/wvw/rewardtracks [l,d]
+  /v2/wvw/timers
+  /v2/wvw/timers/lockout
+  /v2/wvw/timers/teamAssignment
+  /v2/wvw/upgrades [l]
+
+Key:
+  l : locale aware (via ?lang=<langId>)
+  d : currently disabled
+  a : requires authentication
+
+Locale:
+
+APIs which are locale aware accept the ?lang=<langId> option. For example:
+  /v2/colors/1?lang=fr
+
+Possible locale 'langId' values include:
+  en
+  es
+  de
+  fr
+  zh
+
+Bulk expansion:
+
+Many APIs offer bulk expansion. APIs that offer bulk expansion will provide a list of 
+possible IDs when no parameters are provided. As set of ids can be then be resolved into
+objects via one of four methods. The simplest is by specifying multiple ids via query
+parameter, as in:
+
+  /v2/colors?ids=1,2,3
+
+Individual ids may also be requested via
+
+  /v2/colors/1
+  /v2/colors?id=1
+
+Some endpoints support returning all resources. To do this, one may also specify 'all'
+to expand all ids. For example:
+
+  /v2/colors?ids=all
+
+Not all APIs support the 'all' keyword as it may be too expensive.
+
+Another approach to bulk expansion is through pages.  Use the ?page=<page#>
+parameter to specify the requeste page.  Optionally, you can also provide
+a &page_size=<page size> value to adjust to your preferred page size.
+
+Sample usage is:
+
+  /v2/colors?page=0&page_size=10
+
+Pay attention to response headers which provide additional metadata about
+the underlying collection, pagination info, and links.
+
+Authentication:
+
+APIs which require authentication need to be passed an API key belonging to
+the account to be accessed. The API key must have the appropriate permissions
+associated with it (/v2/tokeninfo can be used to inspect key permissions). Keys
+can be generated on the ArenaNet account site.
+
+Keys can be passed either via query parameter or HTTP header. Our servers do
+not support preflighted CORS requests, so if your application is running
+in the user's browser you'll need to user the query parameter.
+
+To pass via query parameter, include "?access_token=<API key>" in your request.
+
+To pass via HTTP header, include "Authorization: Bearer <API key>".
