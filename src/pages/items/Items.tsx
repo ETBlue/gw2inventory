@@ -30,7 +30,7 @@ import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import ItemContext from "contexts/ItemContext"
 import AccountContext from "contexts/AccountContext"
-import CharacterContext from "contexts/CharacterContext"
+import { useCharacters } from "contexts/CharacterContext"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
 import Pagination from "components/Pagination"
@@ -59,7 +59,7 @@ function Items() {
     materialItems,
     isFetching: isItemsFetching,
   } = useContext(ItemContext)
-  const { isFetching: isCharactersFetching } = useContext(CharacterContext)
+  const { isFetching: isCharactersFetching } = useCharacters()
   const { isFetching: isAccountFetching } = useContext(AccountContext)
   const navigate = useNavigate()
   const { pathname } = useLocation()

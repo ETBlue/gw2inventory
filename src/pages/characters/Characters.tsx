@@ -19,7 +19,7 @@ import {
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
 import { useToken } from "contexts/TokenContext"
-import CharacterContext from "contexts/CharacterContext"
+import { useCharacters } from "contexts/CharacterContext"
 import type { Character } from "@gw2api/types/data/character"
 
 import { PROFESSIONS } from "./consts/Characters"
@@ -27,7 +27,7 @@ import Overview from "./Overview"
 
 function Characters() {
   const { currentAccount } = useToken()
-  const { characters, isFetching } = useContext(CharacterContext)
+  const { characters, isFetching } = useCharacters()
   const navigate = useNavigate()
 
   const {

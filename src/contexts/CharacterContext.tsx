@@ -74,5 +74,9 @@ function CharacterProvider(props: { children: React.ReactNode }) {
   )
 }
 
+export const useCharacters = () => {
+  return useContext(CharacterContext)
+}
+
 export default CharacterContext
 export { CharacterProvider }
