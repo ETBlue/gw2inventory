@@ -32,34 +32,38 @@ export function useAccountItems() {
   }, [currentAccount?.token])
 
   // Fetch shared inventory
-  const { data: inventory, isFetching: isInventoryFetching } = useQuery({
-    queryKey: ["account/inventory", currentAccount?.token],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-    enabled: !!currentAccount,
-  })
+  const { data: inventoryItemsData, isFetching: isInventoryFetching } =
+    useQuery<SharedInventoryItemStack[]>({
+      queryKey: ["account/inventory", currentAccount?.token],
+      queryFn: queryFunction as any,
+      staleTime: Infinity,
+      enabled: !!currentAccount,
+    })
 
   // Fetch bank
-  const { data: bank, isFetching: isBankFetching } = useQuery({
+  const { data: bankItemsData, isFetching: isBankFetching } = useQuery<
+    ItemStack[]
+  >({
     queryKey: ["account/bank", currentAccount?.token],
-    queryFn: queryFunction,
+    queryFn: queryFunction as any,
     staleTime: Infinity,
     enabled: !!currentAccount,
   })
 
   // Fetch materials storage
-  const { data: accountMaterialsData, isFetching: isMaterialsFetching } =
-    useQuery({
-      queryKey: ["account/materials", currentAccount?.token],
-      queryFn: queryFunction,
-      staleTime: Infinity,
-      enabled: !!currentAccount,
-    })
+  const { data: materialItemsData, isFetching: isMaterialsFetching } = useQuery<
+    MaterialStack[]
+  >({
+    queryKey: ["account/materials", currentAccount?.token],
+    queryFn: queryFunction as any,
+    staleTime: Infinity,
+    enabled: !!currentAccount,
+  })
 
   // Process inventory items
   useEffect(() => {
-    if (!inventory) return
-    const inventoryItems: InventoryItemInList[] = inventory.reduce(
+    if (!inventoryItemsData) return
+    const inventoryItems: InventoryItemInList[] = inventoryItemsData.reduce(
       (prev: InventoryItemInList[], curr: SharedInventoryItemStack | null) => {
         if (curr) {
           prev.push({ ...curr, location: "Shared Inventory" })
@@ -69,12 +73,12 @@ export function useAccountItems() {
       [],
     )
     setInventoryItems(inventoryItems)
-  }, [inventory])
+  }, [inventoryItemsData])
 
   // Process bank items
   useEffect(() => {
-    if (!bank) return
-    const bankItems: BankItemInList[] = bank.reduce(
+    if (!bankItemsData) return
+    const bankItems: BankItemInList[] = bankItemsData.reduce(
       (prev: BankItemInList[], curr: ItemStack | null) => {
         if (curr) {
           prev.push({ ...curr, location: "Bank" })
@@ -84,12 +88,12 @@ export function useAccountItems() {
       [],
     )
     setBankItems(bankItems)
-  }, [bank])
+  }, [bankItemsData])
 
   // Process material storage items
   useEffect(() => {
-    if (!accountMaterialsData) return
-    const materialItems: MaterialItemInList[] = accountMaterialsData.reduce(
+    if (!materialItemsData) return
+    const materialItems: MaterialItemInList[] = materialItemsData.reduce(
       (prev: MaterialItemInList[], curr: MaterialStack) => {
         if (curr.count > 0) {
           prev.push({ ...curr, location: "Material Storage" })
@@ -99,7 +103,7 @@ export function useAccountItems() {
       [],
     )
     setMaterialItems(materialItems)
-  }, [accountMaterialsData])
+  }, [materialItemsData])
 
   return {
     inventoryItems,
