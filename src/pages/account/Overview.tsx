@@ -3,35 +3,44 @@ import { Center, Spinner } from "@chakra-ui/react"
 import { useToken } from "hooks/useToken"
 import { Account } from "@gw2api/types/data/account"
 import { queryFunction } from "helpers/api"
+import { format } from "date-fns"
 
 function Overview() {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
 
-  const { data, isFetching } = useQuery({
+  const { data: account, isFetching: isAccountFetching } = useQuery<Account>({
     queryKey: ["account", token],
-    queryFn: queryFunction,
+    queryFn: queryFunction as any,
     staleTime: Infinity,
+    enabled: !!token,
   })
 
   const { data: luck, isFetching: isLuckFetching } = useQuery({
     queryKey: ["account/luck", token],
-    queryFn: queryFunction,
+    queryFn: queryFunction as any,
     staleTime: Infinity,
+    enabled: !!token,
   })
 
-  if (isFetching || isLuckFetching)
+  if (!token) return <Center>No account selected</Center>
+
+  if (isAccountFetching || isLuckFetching)
     return (
       <Center>
         <Spinner />
       </Center>
     )
 
-  if (!data || !luck) return null
+  if (!account || !luck) return null
 
   return (
     <div>
-      <p>{data.name}</p>
+      <p>{account.name}</p>
+      <p>Created: {format(new Date(account.created), "MMMM d, yyyy 'at' h:mm a")}</p>
+      <p>Access: {account.access.map((item) => item).join(", ")}</p>
+      <p>Fractal Level: {account.fractal_level}</p>
+      <p>WvW Rank: {account.wvw_rank}</p>
       <p>{luck[0].value}</p>
     </div>
   )
