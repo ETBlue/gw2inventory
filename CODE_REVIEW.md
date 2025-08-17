@@ -2,11 +2,13 @@
 
 ## Progress Summary
 - **Issues Resolved:** 1 of 11
-- **High Severity Resolved:** 1 of 3
+- **Issues Clarified:** 1 (Security context clarified)
+- **High Severity Resolved:** 1 of 2 (1 reclassified)
 - **Last Updated:** 2025-08-17
 
-### Recently Resolved
-- ✅ **High Severity:** Poor Error Handling in API Layer (commit 64903b5)
+### Recently Updated
+- ✅ **Resolved:** Poor Error Handling in API Layer (commit 64903b5)
+- ⚠️ **Clarified:** API Token Storage - Acceptable for frontend-only third-party app
 
 ## Executive Summary
 This document outlines code smells and potential improvements identified in the Guild Wars 2 inventory management codebase. Issues are categorized by severity (High/Medium/Low) with specific locations and recommendations.
@@ -35,23 +37,30 @@ This document outlines code smells and potential improvements identified in the 
 - `src/contexts/ItemContext.tsx` - Updated to handle errors gracefully
 - `src/contexts/helpers/TokenContext.ts` - Improved error logging
 
-### 2. Security Issue - Exposed API Tokens
+### 2. ~~Security Issue - Exposed API Tokens~~ ⚠️ CONTEXT CLARIFIED
 **Location:** `src/contexts/TokenContext.tsx`, `src/contexts/helpers/TokenContext.ts`
 
-**Issues:**
-- API tokens stored in plain text in localStorage
-- No encryption or secure storage mechanism
-- Tokens exposed in client-side JavaScript
+**Context:** This is a third-party frontend application that uses ArenaNet's official API. Users generate their own API tokens from ArenaNet's website and provide them to this app. The app runs entirely in the browser with no backend server.
 
-**Impact:** Potential security vulnerability if localStorage is compromised
+**Current Implementation:**
+- API tokens stored in localStorage for persistence across sessions
+- Tokens are user-provided and user-managed
+- Direct client-to-ArenaNet API communication
 
-**Recommendation:**
-- Consider using sessionStorage for temporary storage
-- Implement token encryption before storage
-- Add token expiration mechanism
-- Consider server-side proxy for API calls
+**Security Considerations:**
+- localStorage is an acceptable choice for this use case as:
+  - The tokens are user-provided and user-controlled
+  - Users can revoke tokens anytime from ArenaNet's website
+  - No backend server means localStorage is the only persistent storage option
+  - This follows common patterns for third-party GW2 tools
 
-### 3. Type Safety Problems
+**Potential Improvements (Low Priority):**
+- Add a warning to users about token permissions when adding tokens
+- Implement optional token encryption (though offers limited security in a frontend-only app)
+- Add ability to use sessionStorage for temporary sessions
+- Display which API permissions the token has
+
+### 2. Type Safety Problems (Previously #3)
 **Location:** Multiple files
 
 **Issues:**
@@ -61,6 +70,12 @@ This document outlines code smells and potential improvements identified in the 
 - Type assertions without proper validation
 
 **Impact:** Potential runtime errors and reduced code maintainability
+
+**Recommendation:**
+- Add explicit return types to all functions
+- Replace `any` with proper types or `unknown` where type is truly unknown
+- Use type guards for runtime type validation
+- Leverage TypeScript's strict mode fully
 
 ## Medium Severity Issues
 
@@ -212,7 +227,7 @@ const filteredAndSortedItems = useMemo(() => {
 - **Maintainability:** 6/10 - Large components and mixed concerns
 - **Type Safety:** 5/10 - Many implicit types and any usage
 - **Performance:** 6/10 - Unnecessary re-renders and computations
-- **Security:** 4/10 - Exposed tokens in localStorage
+- **Security:** ~~4/10~~ → **7/10** ⚠️ - localStorage is acceptable for this use case (frontend-only app)
 - **Error Handling:** ~~3/10~~ → **8/10** ✅ - Comprehensive error handling implemented
 
 ### Target State
