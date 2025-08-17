@@ -1,19 +1,23 @@
 import Overview from "pages/account/Overview"
+/* 
 import Achievements from "pages/account/Achievements"
 import Masteries from "pages/account/Masteries"
 import Home from "pages/account/Home"
 import Recipes from "pages/account/Recipes"
 import Legendaries from "pages/account/Legendaries"
+*/
 
 export const MENU_ITEMS = [
-  { to: "/account", text: "Overview", component: Overview },
-  { to: "/account/home", text: "Home", component: Home },
+  { to: "", text: "Overview", component: Overview },
+  /* 
+  { to: "home", text: "Home", component: Home },
   {
-    to: "/account/achievements",
+    to: "achievements",
     text: "Achievements",
     component: Achievements,
   },
-  { to: "/account/masteries", text: "Masteries", component: Masteries },
-  { to: "/account/recipes", text: "Recipes", component: Recipes },
-  { to: "/account/legendary", text: "Legendaries", component: Legendaries },
+  { to: "masteries", text: "Masteries", component: Masteries },
+  { to: "recipes", text: "Recipes", component: Recipes },
+  { to: "legendary", text: "Legendaries", component: Legendaries },
+   */
 ]

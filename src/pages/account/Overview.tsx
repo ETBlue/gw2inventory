@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { Center, Spinner } from "@chakra-ui/react"
-
+import { useToken } from "hooks/useToken"
+import { Account } from "@gw2api/types/data/account"
 import { queryFunction } from "helpers/api"
 
-function Overview(props: { token: string }) {
-  const { token } = props
+function Overview() {
+  const { currentAccount } = useToken()
+  const token = currentAccount?.token
 
   const { data, isFetching } = useQuery({
     queryKey: ["account", token],
