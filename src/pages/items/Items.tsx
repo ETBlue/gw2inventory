@@ -29,7 +29,6 @@ import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { useItems } from "contexts/ItemContext"
-import AccountContext from "contexts/AccountContext"
 import { useCharacters } from "contexts/CharacterContext"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
@@ -60,7 +59,6 @@ function Items() {
     isFetching: isItemsFetching,
   } = useItems()
   const { isFetching: isCharactersFetching } = useCharacters()
-  const { isFetching: isAccountFetching } = useContext(AccountContext)
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { category } = useParams()
@@ -174,7 +172,7 @@ function Items() {
           />
         </InputGroup>
       </TabList>
-      {isItemsFetching || isCharactersFetching || isAccountFetching ? (
+      {isItemsFetching || isCharactersFetching ? (
         <Center>
           <Spinner />
         </Center>
