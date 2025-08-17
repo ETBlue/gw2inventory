@@ -6,7 +6,7 @@ import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 import { queryFunction } from "helpers/api"
 import { useToken } from "contexts/TokenContext"
 import { UsedAccount } from "contexts/types/TokenContext"
-import ItemContext from "contexts/ItemContext"
+import { useItems } from "contexts/ItemContext"
 
 function Settings() {
   const {
@@ -16,7 +16,7 @@ function Settings() {
     removeUsedAccount,
     setCurrentAccount,
   } = useToken()
-  const { setCharacterItems } = useContext(ItemContext)
+  const { setCharacterItems } = useItems()
 
   const handleDelete = (account: UsedAccount) => {
     removeUsedAccount(account)

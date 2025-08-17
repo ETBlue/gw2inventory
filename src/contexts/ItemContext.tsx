@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, createContext } from "react"
+import { useState, useEffect, useReducer, createContext, useContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { chunk, sortBy } from "lodash"
 
@@ -125,6 +125,10 @@ function ItemProvider(props: { children: React.ReactNode }) {
       {props.children}
     </ItemContext.Provider>
   )
+}
+
+export const useItems = () => {
+  return useContext(ItemContext)
 }
 
 export default ItemContext

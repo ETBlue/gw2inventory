@@ -2,7 +2,7 @@ import { useEffect, useContext, createContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { useToken } from "contexts/TokenContext"
-import ItemContext from "contexts/ItemContext"
+import { useItems } from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
 
 import {
@@ -19,7 +19,7 @@ const CharacterContext = createContext<Values>({
 
 function CharacterProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useToken()
-  const { setCharacterItems } = useContext(ItemContext)
+  const { setCharacterItems } = useItems()
 
   const { data: characters, isFetching } = useQuery({
     queryKey: ["characters", currentAccount?.token, "ids=all"],

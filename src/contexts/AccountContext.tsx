@@ -2,7 +2,7 @@ import { useEffect, useContext, createContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { useToken } from "contexts/TokenContext"
-import ItemContext from "contexts/ItemContext"
+import { useItems } from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
 
 import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
@@ -21,8 +21,7 @@ const AccountContext = createContext<Values>({
 
 function AccountProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useToken()
-  const { setInventoryItems, setBankItems, setMaterialItems } =
-    useContext(ItemContext)
+  const { setInventoryItems, setBankItems, setMaterialItems } = useItems()
 
   const { data: inventory, isFetching: isInventoryFetching } = useQuery({
     queryKey: ["account/inventory", currentAccount?.token],

@@ -28,7 +28,7 @@ import {
 import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import ItemContext from "contexts/ItemContext"
+import { useItems } from "contexts/ItemContext"
 import AccountContext from "contexts/AccountContext"
 import { useCharacters } from "contexts/CharacterContext"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
@@ -58,7 +58,7 @@ function Items() {
     bankItems,
     materialItems,
     isFetching: isItemsFetching,
-  } = useContext(ItemContext)
+  } = useItems()
   const { isFetching: isCharactersFetching } = useCharacters()
   const { isFetching: isAccountFetching } = useContext(AccountContext)
   const navigate = useNavigate()
