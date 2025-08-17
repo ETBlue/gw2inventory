@@ -26,16 +26,22 @@ npm run preview
 
 ### State Management
 
-The application uses React Context API with multiple contexts that follow strict separation of concerns:
+The application uses a hybrid approach with React Context API for global state and custom hooks for data management:
 
+**Active Contexts:**
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
-- `ItemContext` - Handles item data, categories, and caching with reactive architecture
-- `AccountContext` - Manages account information
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
 
-**Context Architecture Principles:**
-- Reactive patterns where contexts automatically respond to dependency changes
+**Custom Hooks (replacing previous contexts):**
+- `useItemsData` - Manages all item-related data (replaced ItemContext)
+- `useAccountItems` - Handles account-specific items (inventory, bank, materials)
+- `useItemCache` - Manages item caching and deduplication
+- `useMaterialCategories` - Handles material category data
+
+**Architecture Principles:**
+- Prefer custom hooks over React Context when data is used in limited components
+- Reactive patterns where hooks automatically respond to dependency changes
 - Public vs Internal API design for proper encapsulation
 - Automatic data reset when accounts change
 - No direct cross-context manipulation
@@ -59,7 +65,9 @@ The application uses React Context API with multiple contexts that follow strict
 
 ### Code Organization
 
-- `/src/contexts/` - State management contexts with reactive architecture
+- `/src/contexts/` - React Context providers for global state (Token, Character, Skill)
+- `/src/types/` - TypeScript type definitions organized by domain
+  - `items.ts` - All item-related types (Items, Materials, UserItemInList, etc.)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
@@ -68,9 +76,9 @@ The application uses React Context API with multiple contexts that follow strict
 - `/src/docs/` - Architecture documentation and guidelines
 
 **Hook Patterns:**
-- Public hooks (`useItems`, `useToken`, `useCharacters`) expose read-only data
-- Internal hooks (`useItemsInternal`) provide full context access for related components
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`) expose read-only data
 - Focused custom hooks for specific functionality (e.g., `useItemCache`, `useAccountItems`)
+- Direct hook usage preferred over context when data is component-specific
 
 ### Important Patterns
 
@@ -124,6 +132,8 @@ Recent refactoring efforts have significantly improved code quality:
 - Replaced magic numbers with semantic constants
 - Broke down large components into focused, single-responsibility pieces
 - Eliminated tight coupling through reactive architecture
+- Simplified architecture by replacing unnecessary React Contexts with custom hooks
+- Consolidated type definitions in `/src/types/` organized by domain
 
 **Type Safety (9/10):**
 - Comprehensive TypeScript type safety with generics and type guards
