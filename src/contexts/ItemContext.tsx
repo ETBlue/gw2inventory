@@ -1,26 +1,15 @@
 import {
   useState,
   useEffect,
-  useReducer,
   createContext,
-  useCallback,
 } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { chunk, sortBy } from "lodash"
 
-import { fetchGW2, queryFunction } from "helpers/api"
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import { useItemFetching } from "hooks/useItemFetching"
-import { API_CONSTANTS } from "constants"
-
-import type { Item } from "@gw2api/types/data/item"
-import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
-import type { ItemStack } from "@gw2api/types/data/item"
-import type {
-  MaterialCategory,
-  MaterialStack,
-} from "@gw2api/types/data/material"
+import { useItemCache } from "hooks/useItemCache"
+import { useMaterialCategories } from "hooks/useMaterialCategories"
+import { useAccountItems } from "hooks/useAccountItems"
 
 import { CharacterItemInList } from "./types/CharacterContext"
 import {
@@ -59,131 +48,32 @@ function ItemProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useToken()
   const { characters, isFetching: isCharactersFetching } = useCharacters()
 
-  // handle items
-
-  const [items, addItems] = useReducer(
-    (currentItems: Items, newItems: Item[]) => {
-      for (const item of newItems) {
-        currentItems[item.id] = item
-      }
-      return { ...currentItems }
-    },
-    {},
-  )
-
-  const [isItemsFetching, setIsItemsFetching] = useState<boolean>(false)
-
-  const fetchItems = useCallback(
-    async (newIds: number[]) => {
-      setIsItemsFetching(true)
-      const existingIdSet = new Set(
-        Object.keys(items).map((key) => parseInt(key)),
-      )
-      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-
-      let newItems: Item[] = []
-      let failedChunks = 0
-
-      for (const chunk of chunks) {
-        try {
-          const data = await fetchGW2("items", `ids=${chunk.join(",")}`)
-          if (data) {
-            newItems = [...newItems, ...data]
-            addItems(newItems)
-          }
-        } catch (error) {
-          console.error(`Failed to fetch items chunk:`, error)
-          failedChunks++
-          // Continue fetching other chunks even if one fails
-        }
-      }
-
-      if (failedChunks > 0) {
-        console.warn(
-          `Failed to fetch ${failedChunks} out of ${chunks.length} item chunks`,
-        )
-      }
-
-      setIsItemsFetching(false)
-    },
-    [items],
-  )
+  // Use extracted hooks for better separation of concerns
+  const { items, isItemsFetching, fetchItems, clearItems } = useItemCache()
+  const { materialCategories, materials, isMaterialFetching } = useMaterialCategories()
+  const {
+    inventoryItems,
+    bankItems,
+    materialItems,
+    setInventoryItems,
+    setBankItems,
+    setMaterialItems,
+    isInventoryFetching,
+    isBankFetching,
+    isMaterialsFetching,
+  } = useAccountItems()
 
   const [characterItems, setCharacterItems] = useState<CharacterItemInList[]>(
     [],
   )
-  const [inventoryItems, setInventoryItems] = useState<InventoryItemInList[]>(
-    [],
-  )
-  const [bankItems, setBankItems] = useState<BankItemInList[]>([])
-  const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
 
-  // Reset all items when the current account token changes
-  // This ensures data consistency and prevents data leakage between accounts
+  // Reset character items and item cache when the current account token changes
   useEffect(() => {
     setCharacterItems([])
-    setInventoryItems([])
-    setBankItems([])
-    setMaterialItems([])
-  }, [currentAccount?.token])
+    clearItems()
+  }, [currentAccount?.token, clearItems])
 
-  // handle account queries
-  const { data: inventory, isFetching: isInventoryFetching } = useQuery({
-    queryKey: ["account/inventory", currentAccount?.token],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-    enabled: !!currentAccount?.token,
-  })
-  const { data: bank, isFetching: isBankFetching } = useQuery({
-    queryKey: ["account/bank", currentAccount?.token],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-    enabled: !!currentAccount?.token,
-  })
-  const { data: accountMaterialsData, isFetching: isMaterialsFetching } =
-    useQuery({
-      queryKey: ["account/materials", currentAccount?.token],
-      queryFn: queryFunction,
-      staleTime: Infinity,
-      enabled: !!currentAccount?.token,
-    })
-
-  useEffect(() => {
-    if (!inventory) return
-    const inventoryItems: InventoryItemInList[] = inventory.reduce(
-      (prev: InventoryItemInList[], item: SharedInventoryItemStack | null) => {
-        if (!item) return prev
-        return [...prev, { ...item, location: "Shared inventory" }]
-      },
-      [],
-    )
-    setInventoryItems(inventoryItems)
-  }, [inventory])
-
-  useEffect(() => {
-    if (!bank) return
-    const bankItems: BankItemInList[] = bank.reduce(
-      (prev: BankItemInList[], item: ItemStack | null) => {
-        if (!item) return prev
-        return [...prev, { ...item, location: "Bank" }]
-      },
-      [],
-    )
-    setBankItems(bankItems)
-  }, [bank])
-
-  useEffect(() => {
-    if (!accountMaterialsData) return
-    const materialItems: MaterialItemInList[] = accountMaterialsData.reduce(
-      (prev: MaterialItemInList[], item: MaterialStack) => {
-        if (!item) return prev
-        return [...prev, { ...item, location: "Vault" }]
-      },
-      [],
-    )
-    setMaterialItems(materialItems)
-  }, [accountMaterialsData])
+  // Handle character items processing
 
   useEffect(() => {
     if (!characters) return
@@ -236,24 +126,7 @@ function ItemProvider(props: { children: React.ReactNode }) {
   //   fetchItems
   // )
 
-  // handle materials (category)
-
-  const { data: materialCategoriesData, isFetching: isMaterialFetching } =
-    useQuery({
-      queryKey: ["materials", undefined, "ids=all"],
-      queryFn: queryFunction,
-      staleTime: Infinity,
-    })
-  const materialCategories = sortBy(materialCategoriesData, ["order"]).map(
-    (item) => materialCategoryAliases[item.name],
-  )
-  const materials = materialCategoriesData?.reduce(
-    (prev: Materials, curr: MaterialCategory) => {
-      prev[curr.id] = materialCategoryAliases[curr.name]
-      return prev
-    },
-    {},
-  )
+  // Material categories are now handled by useMaterialCategories hook
 
   return (
     <ItemContext.Provider
