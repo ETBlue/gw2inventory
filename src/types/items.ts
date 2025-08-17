@@ -1,9 +1,7 @@
 import type { Item } from "@gw2api/types/data/item"
-import {
-  BankItemInList,
-  InventoryItemInList,
-  MaterialItemInList,
-} from "contexts/types/AccountContext"
+import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
+import type { ItemStack } from "@gw2api/types/data/item"
+import type { MaterialStack } from "@gw2api/types/data/material"
 import { CharacterItemInList } from "contexts/types/CharacterContext"
 
 export interface Items {
@@ -28,6 +26,23 @@ export const materialCategoryAliases: MaterialCategoryAliases = {
   "Ascended Materials": "Ascended",
   "Cooking Ingredients": "Ingredients",
   "Scribing Materials": "Scribing",
+}
+
+// Account item types that extend GW2 API types with location information
+
+// Extend the shared inventory item stack with location
+export interface InventoryItemInList extends SharedInventoryItemStack {
+  location: string
+}
+
+// Extend the bank item stack with location
+export interface BankItemInList extends ItemStack {
+  location: string
+}
+
+// Extend the material stack with location
+export interface MaterialItemInList extends MaterialStack {
+  location: string
 }
 
 export type UserItemInList =

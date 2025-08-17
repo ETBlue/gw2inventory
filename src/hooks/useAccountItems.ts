@@ -9,7 +9,7 @@ import {
   BankItemInList,
   InventoryItemInList,
   MaterialItemInList,
-} from "contexts/types/AccountContext"
+} from "types/items"
 
 /**
  * Hook for managing account-specific items (inventory, bank, materials)
