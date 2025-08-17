@@ -7,7 +7,7 @@ import ItemContext from "contexts/ItemContext"
  */
 export const useItems = () => {
   const context = useContext(ItemContext)
-  
+
   // Return only the public interface, not internal state setters
   return {
     items: context.items,

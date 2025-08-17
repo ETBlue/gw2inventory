@@ -9,26 +9,26 @@
 export const COLORS = {
   /** Primary brand color (pink/magenta theme) */
   PRIMARY: "hsla(326, 73%, 55%, 1)",
-  
+
   /** Primary color with transparency for hover effects */
   PRIMARY_HOVER: "hsla(326, 15%, 55%, 0.1)",
-  
+
   /** Background color for main content areas */
   BACKGROUND: "hsla(50, 30%, 98%, 1)",
-  
+
   /** Text colors */
   TEXT: {
     PRIMARY: "#333",
     SECONDARY: "#666",
     LIGHT: "#999",
   },
-  
+
   /** GW2 rarity colors (from game) */
   GW2_RARITY: {
     BASIC: "#000000",
-    FINE: "#62A4DA", 
+    FINE: "#62A4DA",
     MASTERWORK: "#1a9306",
-    RARE: "#fcd00b", 
+    RARE: "#fcd00b",
     EXOTIC: "#ffa405",
     ASCENDED: "#fb3e8d",
     LEGENDARY: "#4C139D",
@@ -42,7 +42,7 @@ export const COLORS = {
 export const BORDERS = {
   /** Primary border style used throughout the app */
   PRIMARY: `2px ${COLORS.PRIMARY} solid`,
-  
+
   /** Thin border for subtle separations */
   THIN: `1px ${COLORS.TEXT.LIGHT} solid`,
 } as const
@@ -57,7 +57,7 @@ export const COMPONENT_THEME = {
     ACTIVE_BACKGROUND: COLORS.PRIMARY,
     ACTIVE_COLOR: "white",
   },
-  
+
   CONTENT: {
     BACKGROUND: COLORS.BACKGROUND,
     PADDING: "1rem",

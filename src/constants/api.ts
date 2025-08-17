@@ -8,13 +8,13 @@
 export const API_CONSTANTS = {
   /** Maximum number of item IDs to request in a single batch from the GW2 API */
   ITEMS_CHUNK_SIZE: 200,
-  
+
   /** Maximum items per API request (same as chunk size) */
   MAX_ITEMS_PER_REQUEST: 200,
-  
+
   /** Default retry delay in milliseconds for failed API requests */
   DEFAULT_RETRY_DELAY: 1000,
-  
+
   /** Maximum number of retries for failed API requests */
   DEFAULT_MAX_RETRIES: 3,
 } as const
@@ -40,7 +40,7 @@ export const HTTP_STATUS = {
 export const ERROR_CONFIG = {
   /** Duration to show error toasts in milliseconds */
   TOAST_DURATION: 5000,
-  
+
   /** Don't show toasts for these status codes (they're expected) */
   SILENT_ERROR_CODES: [HTTP_STATUS.NOT_FOUND],
 } as const

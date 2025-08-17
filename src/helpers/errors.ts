@@ -55,8 +55,10 @@ export class ServerError extends GW2ApiError {
  * Error messages for common scenarios
  */
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: "Unable to connect to GW2 API. Please check your internet connection.",
-  INVALID_TOKEN: "Invalid or expired API token. Please check your API key in Settings.",
+  NETWORK_ERROR:
+    "Unable to connect to GW2 API. Please check your internet connection.",
+  INVALID_TOKEN:
+    "Invalid or expired API token. Please check your API key in Settings.",
   NOT_FOUND: "The requested resource was not found.",
   RATE_LIMIT: "Too many requests. Please wait a moment and try again.",
   SERVER_ERROR: "GW2 API server error. Please try again later.",

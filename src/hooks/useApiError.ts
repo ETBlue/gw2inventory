@@ -17,7 +17,7 @@ export function useApiError() {
   const handleError = useCallback(
     (error: unknown, context?: string) => {
       const message = getUserFriendlyErrorMessage(error)
-      
+
       // Don't show toast for 404 errors as they're often expected
       if (!isNotFoundError(error)) {
         toast({
@@ -29,11 +29,11 @@ export function useApiError() {
           position: "top-right",
         })
       }
-      
+
       if (error instanceof Error) {
         setLastError(error)
       }
-      
+
       // Log error for debugging
       console.error(`API Error${context ? ` (${context})` : ""}:`, error)
     },

@@ -18,7 +18,11 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
       if (error instanceof RateLimitError) {
         return true
       }
-      if (error.status && error.status >= HTTP_STATUS.UNAUTHORIZED && error.status < HTTP_STATUS.INTERNAL_SERVER_ERROR) {
+      if (
+        error.status &&
+        error.status >= HTTP_STATUS.UNAUTHORIZED &&
+        error.status < HTTP_STATUS.INTERNAL_SERVER_ERROR
+      ) {
         return false
       }
     }
@@ -46,32 +50,32 @@ export async function withRetry<T>(
       return await fn()
     } catch (error) {
       lastError = error
-      
+
       // Check if we should retry
       if (!opts.shouldRetry(error, attempt)) {
         throw error
       }
-      
+
       // If this is the last attempt, throw the error
       if (attempt === opts.maxRetries - 1) {
         throw error
       }
-      
+
       // Calculate delay with exponential backoff
       const delay = opts.exponentialBackoff
         ? opts.retryDelay * Math.pow(2, attempt)
         : opts.retryDelay
-      
+
       console.warn(
         `Attempt ${attempt + 1} failed, retrying in ${delay}ms...`,
         error,
       )
-      
+
       // Wait before retrying
       await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
-  
+
   throw lastError
 }
 
@@ -91,6 +95,6 @@ export async function batchWithRetry<T>(
       return null
     }
   })
-  
+
   return Promise.all(promises)
 }

@@ -33,21 +33,24 @@ export const queryFunction = async (
 
 export const fetchGW2 = async (endpoint: string, queryString?: string) => {
   const url = `${API_URL}/${endpoint}?${queryString}`
-  
+
   try {
     const res = await fetch(url, {
       headers: {
         "Accept-Language": API_LANG,
       },
     })
-    
+
     // Handle successful response
     if (res.ok) {
       try {
         const data = await res.json()
         return data
       } catch (parseError) {
-        console.error(`Failed to parse JSON response from ${endpoint}:`, parseError)
+        console.error(
+          `Failed to parse JSON response from ${endpoint}:`,
+          parseError,
+        )
         throw new GW2ApiError(
           ERROR_MESSAGES.PARSE_ERROR,
           res.status,
@@ -56,7 +59,7 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
         )
       }
     }
-    
+
     // Handle HTTP errors
     const error = createApiError(res.status, res.statusText, endpoint)
     console.error(`API request failed for ${endpoint}:`, {
@@ -64,14 +67,14 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
       statusText: res.statusText,
       endpoint,
     })
-    
+
     // For 404 errors, we might want to return null instead of throwing
     // This is common for items that don't exist in the API
     if (res.status === HTTP_STATUS.NOT_FOUND) {
       console.warn(`Resource not found: ${endpoint}`)
       return null
     }
-    
+
     throw error
   } catch (error) {
     // Handle network errors
@@ -79,12 +82,12 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
       console.error(`Network error for ${endpoint}:`, error)
       throw new NetworkError(ERROR_MESSAGES.NETWORK_ERROR, endpoint)
     }
-    
+
     // Re-throw GW2ApiError instances
     if (error instanceof GW2ApiError) {
       throw error
     }
-    
+
     // Handle unexpected errors
     console.error(`Unexpected error for ${endpoint}:`, error)
     throw new GW2ApiError(
@@ -108,11 +111,14 @@ export const fetchGW2Multiple = async (
     try {
       return await fetchGW2(endpoint, queryString)
     } catch (error) {
-      console.warn(`Failed to fetch ${endpoint}, continuing with others:`, error)
+      console.warn(
+        `Failed to fetch ${endpoint}, continuing with others:`,
+        error,
+      )
       return null
     }
   })
-  
+
   return Promise.all(promises)
 }
 
@@ -124,12 +130,9 @@ export const fetchGW2WithRetry = async (
   queryString?: string,
   maxRetries: number = API_CONSTANTS.DEFAULT_MAX_RETRIES,
 ) => {
-  return withRetry(
-    () => fetchGW2(endpoint, queryString),
-    {
-      maxRetries,
-      retryDelay: API_CONSTANTS.DEFAULT_RETRY_DELAY,
-      exponentialBackoff: true,
-    },
-  )
+  return withRetry(() => fetchGW2(endpoint, queryString), {
+    maxRetries,
+    retryDelay: API_CONSTANTS.DEFAULT_RETRY_DELAY,
+    exponentialBackoff: true,
+  })
 }

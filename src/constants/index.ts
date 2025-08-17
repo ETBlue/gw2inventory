@@ -4,5 +4,5 @@
  */
 
 export * from "./api"
-export * from "./theme" 
+export * from "./theme"
 export * from "./ui"

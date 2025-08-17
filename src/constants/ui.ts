@@ -16,10 +16,10 @@ export const PAGINATION = {
 export const LAYOUT = {
   /** Standard padding for main content areas */
   CONTENT_PADDING: "1rem",
-  
+
   /** Height for header/navigation elements */
   HEADER_HEIGHT: "100%",
-  
+
   /** Border width for UI elements */
   BORDER_WIDTH: "2px",
 } as const
@@ -30,7 +30,7 @@ export const LAYOUT = {
 export const ANIMATION = {
   /** Duration for CSS transitions */
   TRANSITION_DURATION: "0.25s",
-  
+
   /** Easing function for transitions */
   TRANSITION_EASING: "ease-out",
 } as const

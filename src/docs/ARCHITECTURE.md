@@ -7,14 +7,16 @@ This document outlines the proper separation of concerns between different conte
 ### Context Responsibilities
 
 #### TokenContext
+
 - **Purpose**: Manages API tokens and account authentication
-- **Responsibilities**: 
+- **Responsibilities**:
   - Store and manage user tokens
   - Track current active account
   - Provide account switching functionality
 - **What it should NOT do**: Directly manipulate other contexts' data
 
-#### ItemContext  
+#### ItemContext
+
 - **Purpose**: Manages item data fetching and caching
 - **Responsibilities**:
   - Fetch items from GW2 API
@@ -26,6 +28,7 @@ This document outlines the proper separation of concerns between different conte
 ### Proper Communication Patterns
 
 #### ✅ GOOD: Reactive Pattern
+
 ```typescript
 // ItemContext automatically reacts to token changes
 useEffect(() => {
@@ -35,6 +38,7 @@ useEffect(() => {
 ```
 
 #### ❌ BAD: Direct Manipulation
+
 ```typescript
 // Settings component directly manipulating ItemContext
 const { setCharacterItems } = useItems()
@@ -46,6 +50,7 @@ setCharacterItems([]) // This creates tight coupling!
 #### Public vs Internal APIs
 
 **Public API** (for external components):
+
 ```typescript
 export const useItems = () => {
   // Only expose data, not state setters
@@ -58,6 +63,7 @@ export const useItems = () => {
 ```
 
 **Internal API** (for context-related components):
+
 ```typescript
 export const useItemsInternal = () => {
   // Full access including state setters
@@ -74,6 +80,7 @@ When contexts need to communicate, prefer:
 3. **Shared state** - through parent contexts when appropriate
 
 Avoid:
+
 - Direct method calls between unrelated contexts
 - Exposing internal state setters to external components
 - Manual synchronization between contexts
@@ -81,7 +88,7 @@ Avoid:
 ### Benefits of Proper Separation
 
 1. **Reduced Coupling** - Components are more independent
-2. **Easier Testing** - Each context can be tested in isolation  
+2. **Easier Testing** - Each context can be tested in isolation
 3. **Better Maintainability** - Changes in one context don't break others
 4. **Clearer Responsibilities** - Each context has a single, well-defined purpose
 5. **Automatic Data Consistency** - Reactive patterns ensure data stays in sync

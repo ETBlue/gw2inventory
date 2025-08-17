@@ -61,8 +61,12 @@ function Pagination(props: Props) {
         <CgChevronLeft />
       </IconButton>
       {pages.map((chunk, index: number) => {
-        const isOutofScope = index > pageIndex + PAGINATION.VISIBLE_PAGE_RANGE || index < pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
-        const isOnEdge = index === pageIndex + PAGINATION.VISIBLE_PAGE_RANGE || index === pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
+        const isOutofScope =
+          index > pageIndex + PAGINATION.VISIBLE_PAGE_RANGE ||
+          index < pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
+        const isOnEdge =
+          index === pageIndex + PAGINATION.VISIBLE_PAGE_RANGE ||
+          index === pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
         return (
           <Button
             key={index}
