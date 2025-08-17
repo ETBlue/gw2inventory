@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
 
 import { TokenProvider } from "contexts/TokenContext"
-import { ItemProvider } from "contexts/ItemContext"
 import { CharacterProvider } from "contexts/CharacterContext"
 import BaseFrame from "layouts/BaseFrame"
 import Characters from "pages/characters"
@@ -33,11 +32,9 @@ export const App = () => {
       <TokenProvider>
         <QueryClientProvider client={queryClient}>
           <CharacterProvider>
-            <ItemProvider>
-              <Router>
-                <Content />
-              </Router>
-            </ItemProvider>
+            <Router>
+              <Content />
+            </Router>
           </CharacterProvider>
         </QueryClientProvider>
       </TokenProvider>

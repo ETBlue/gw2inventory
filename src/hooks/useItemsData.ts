@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext } from "react"
+import { useState, useEffect } from "react"
 
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
@@ -7,40 +7,18 @@ import { useItemCache } from "hooks/useItemCache"
 import { useMaterialCategories } from "hooks/useMaterialCategories"
 import { useAccountItems } from "hooks/useAccountItems"
 
-import { CharacterItemInList } from "./types/CharacterContext"
+import { CharacterItemInList } from "contexts/types/CharacterContext"
 import {
   CharacterBag,
   CharacterBagItem,
   CharacterEquipmentItem,
-} from "./types/Character"
-import {
-  Items,
-  materialCategoryAliases,
-  Materials,
-  Values,
-} from "./types/ItemContext"
-import {
-  BankItemInList,
-  InventoryItemInList,
-  MaterialItemInList,
-} from "./types/AccountContext"
+} from "contexts/types/Character"
 
-const ItemContext = createContext<Values>({
-  items: {},
-  materials: {},
-  materialCategories: [],
-  characterItems: [],
-  inventoryItems: [],
-  bankItems: [],
-  materialItems: [],
-  setCharacterItems: (_val: CharacterItemInList[]) => {},
-  setInventoryItems: (_val: InventoryItemInList[]) => {},
-  setBankItems: (_val: BankItemInList[]) => {},
-  setMaterialItems: (_val: MaterialItemInList[]) => {},
-  isFetching: false,
-})
-
-function ItemProvider(props: { children: React.ReactNode }) {
+/**
+ * Custom hook that provides all item-related data and functionality
+ * Replaces the previous ItemContext pattern with a simpler hook-based approach
+ */
+export const useItemsData = () => {
   const { currentAccount } = useToken()
   const { characters, isFetching: isCharactersFetching } = useCharacters()
 
@@ -71,7 +49,6 @@ function ItemProvider(props: { children: React.ReactNode }) {
   }, [currentAccount?.token, clearItems])
 
   // Handle character items processing
-
   useEffect(() => {
     if (!characters) return
     let characterItems: CharacterItemInList[] = []
@@ -117,41 +94,26 @@ function ItemProvider(props: { children: React.ReactNode }) {
   useItemFetching(bankItems, fetchItems)
   useItemFetching(materialItems, fetchItems)
 
-  // Alternative batched approach (more efficient but changes timing):
-  // useBatchItemFetching(
-  //   { characterItems, inventoryItems, bankItems, materialItems },
-  //   fetchItems
-  // )
+  const isFetching =
+    isItemsFetching ||
+    isMaterialFetching ||
+    isInventoryFetching ||
+    isBankFetching ||
+    isMaterialsFetching ||
+    isCharactersFetching
 
-  // Material categories are now handled by useMaterialCategories hook
-
-  return (
-    <ItemContext.Provider
-      value={{
-        items,
-        materials,
-        materialCategories,
-        characterItems,
-        inventoryItems,
-        bankItems,
-        materialItems,
-        setCharacterItems,
-        setInventoryItems,
-        setBankItems,
-        setMaterialItems,
-        isFetching:
-          isItemsFetching ||
-          isMaterialFetching ||
-          isInventoryFetching ||
-          isBankFetching ||
-          isMaterialsFetching ||
-          isCharactersFetching,
-      }}
-    >
-      {props.children}
-    </ItemContext.Provider>
-  )
+  return {
+    items,
+    materials,
+    materialCategories,
+    characterItems,
+    inventoryItems,
+    bankItems,
+    materialItems,
+    setCharacterItems,
+    setInventoryItems,
+    setBankItems,
+    setMaterialItems,
+    isFetching,
+  }
 }
-
-export default ItemContext
-export { ItemProvider }

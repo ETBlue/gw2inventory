@@ -28,7 +28,7 @@ import {
 import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { useItems } from "hooks/useItems"
+import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
 import { UserItemInList } from "contexts/types/ItemContext"
@@ -57,7 +57,7 @@ function Items() {
     bankItems,
     materialItems,
     isFetching: isItemsFetching,
-  } = useItems()
+  } = useItemsData()
   const { isFetching: isCharactersFetching } = useCharacters()
   const navigate = useNavigate()
   const { pathname } = useLocation()
