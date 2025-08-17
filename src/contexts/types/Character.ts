@@ -13,7 +13,7 @@ export interface CharacterBagItem extends ItemStack {
   bound_to?: string
 }
 
-// Character bag type 
+// Character bag type
 export interface CharacterBag {
   id: number
   size: number

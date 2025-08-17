@@ -2,9 +2,9 @@
 // For Item types, import directly from "@gw2api/types/data/item"
 
 // Custom attribute type for backward compatibility with existing code
-export type Attribute = 
+export type Attribute =
   | "AgonyResistance"
-  | "BoonDuration" 
+  | "BoonDuration"
   | "ConditionDamage"
   | "ConditionDuration"
   | "CritDamage"
