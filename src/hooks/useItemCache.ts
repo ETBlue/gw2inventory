@@ -27,7 +27,7 @@ export function useItemCache() {
           return state
       }
     },
-    {}
+    {},
   )
 
   const addItems = useCallback((newItems: Item[]) => {
@@ -44,10 +44,10 @@ export function useItemCache() {
 
       setIsItemsFetching(true)
       const existingIdSet = new Set(
-        Object.keys(items).map((key) => parseInt(key))
+        Object.keys(items).map((key) => parseInt(key)),
       )
       const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-      
+
       if (idsToFetch.length === 0) {
         setIsItemsFetching(false)
         return
@@ -76,13 +76,13 @@ export function useItemCache() {
 
       if (failedChunks > 0) {
         console.warn(
-          `Failed to fetch ${failedChunks} out of ${chunks.length} item chunks`
+          `Failed to fetch ${failedChunks} out of ${chunks.length} item chunks`,
         )
       }
 
       setIsItemsFetching(false)
     },
-    [items, addItems]
+    [items, addItems],
   )
 
   return {

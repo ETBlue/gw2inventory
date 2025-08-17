@@ -19,18 +19,19 @@ export function useMaterialCategories() {
   // Process material categories data
   const materialCategories = materialCategoriesData
     ? sortBy(materialCategoriesData, ["order"]).map(
-        (item: MaterialCategory) => materialCategoryAliases[item.name]
+        (item: MaterialCategory) => materialCategoryAliases[item.name],
       )
     : []
 
   // Create materials lookup map for category ID to alias mapping
-  const materials = materialCategoriesData?.reduce(
-    (prev: Record<number, string>, curr: MaterialCategory) => {
-      prev[curr.id] = materialCategoryAliases[curr.name]
-      return prev
-    },
-    {}
-  ) || {}
+  const materials =
+    materialCategoriesData?.reduce(
+      (prev: Record<number, string>, curr: MaterialCategory) => {
+        prev[curr.id] = materialCategoryAliases[curr.name]
+        return prev
+      },
+      {},
+    ) || {}
 
   return {
     materialCategories,

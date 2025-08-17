@@ -18,7 +18,9 @@ import {
 export function useAccountItems() {
   const { currentAccount } = useToken()
 
-  const [inventoryItems, setInventoryItems] = useState<InventoryItemInList[]>([])
+  const [inventoryItems, setInventoryItems] = useState<InventoryItemInList[]>(
+    [],
+  )
   const [bankItems, setBankItems] = useState<BankItemInList[]>([])
   const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
 
@@ -46,12 +48,13 @@ export function useAccountItems() {
   })
 
   // Fetch materials storage
-  const { data: accountMaterialsData, isFetching: isMaterialsFetching } = useQuery({
-    queryKey: ["account/materials", currentAccount?.token],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-    enabled: !!currentAccount,
-  })
+  const { data: accountMaterialsData, isFetching: isMaterialsFetching } =
+    useQuery({
+      queryKey: ["account/materials", currentAccount?.token],
+      queryFn: queryFunction,
+      staleTime: Infinity,
+      enabled: !!currentAccount,
+    })
 
   // Process inventory items
   useEffect(() => {
@@ -63,7 +66,7 @@ export function useAccountItems() {
         }
         return prev
       },
-      []
+      [],
     )
     setInventoryItems(inventoryItems)
   }, [inventory])
@@ -78,7 +81,7 @@ export function useAccountItems() {
         }
         return prev
       },
-      []
+      [],
     )
     setBankItems(bankItems)
   }, [bank])
@@ -93,7 +96,7 @@ export function useAccountItems() {
         }
         return prev
       },
-      []
+      [],
     )
     setMaterialItems(materialItems)
   }, [accountMaterialsData])

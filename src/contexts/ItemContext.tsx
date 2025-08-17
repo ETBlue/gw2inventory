@@ -1,8 +1,4 @@
-import {
-  useState,
-  useEffect,
-  createContext,
-} from "react"
+import { useState, useEffect, createContext } from "react"
 
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
@@ -50,7 +46,8 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
   // Use extracted hooks for better separation of concerns
   const { items, isItemsFetching, fetchItems, clearItems } = useItemCache()
-  const { materialCategories, materials, isMaterialFetching } = useMaterialCategories()
+  const { materialCategories, materials, isMaterialFetching } =
+    useMaterialCategories()
   const {
     inventoryItems,
     bankItems,
