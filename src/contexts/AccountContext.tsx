@@ -5,7 +5,9 @@ import TokenContext from "contexts/TokenContext"
 import ItemContext from "contexts/ItemContext"
 import { queryFunction } from "helpers/api"
 
-import { InventoryItem, BankItem, MaterialItem } from "./types/Account"
+import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
+import type { ItemStack } from "@gw2api/types/data/item"
+import type { MaterialStack } from "@gw2api/types/data/material"
 import {
   InventoryItemInList,
   BankItemInList,
@@ -44,7 +46,7 @@ function AccountProvider(props: { children: React.ReactNode }) {
   useEffect(() => {
     if (!inventory) return
     const inventoryItems: InventoryItemInList[] = inventory.reduce(
-      (prev: InventoryItemInList[], item: InventoryItem) => {
+      (prev: InventoryItemInList[], item: SharedInventoryItemStack | null) => {
         if (!item) return prev
         return [...prev, { ...item, location: "Shared inventory" }]
       },
@@ -56,7 +58,7 @@ function AccountProvider(props: { children: React.ReactNode }) {
   useEffect(() => {
     if (!bank) return
     const bankItems: BankItemInList[] = bank.reduce(
-      (prev: BankItemInList[], item: BankItem) => {
+      (prev: BankItemInList[], item: ItemStack | null) => {
         if (!item) return prev
         return [...prev, { ...item, location: "Bank" }]
       },
@@ -68,7 +70,7 @@ function AccountProvider(props: { children: React.ReactNode }) {
   useEffect(() => {
     if (!materials) return
     const materialItems: MaterialItemInList[] = materials.reduce(
-      (prev: MaterialItemInList[], item: MaterialItem) => {
+      (prev: MaterialItemInList[], item: MaterialStack) => {
         if (!item) return prev
         return [...prev, { ...item, location: "Vault" }]
       },

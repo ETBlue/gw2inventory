@@ -1,23 +1,24 @@
 // Custom types that extend the official GW2 API types for AccountContext
 
-import type {
-  AccountInventory,
-  AccountBank,
-  AccountMaterial,
-} from "@gw2api/types/data/account"
+import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
+import type { ItemStack } from "@gw2api/types/data/item"
+import type { MaterialStack } from "@gw2api/types/data/material"
 
 export interface Values {
   isFetching: boolean
 }
 
-export interface InventoryItemInList extends AccountInventory {
+// Extend the shared inventory item stack with location
+export interface InventoryItemInList extends SharedInventoryItemStack {
   location: string
 }
 
-export interface BankItemInList extends AccountBank {
+// Extend the bank item stack with location
+export interface BankItemInList extends ItemStack {
   location: string
 }
 
-export interface MaterialItemInList extends AccountMaterial {
+// Extend the material stack with location
+export interface MaterialItemInList extends MaterialStack {
   location: string
 }
