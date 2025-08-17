@@ -7,7 +7,7 @@ import {
 } from "react-icons/cg"
 import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
-import { UserItemInList } from "contexts/types/ItemContext"
+import { UserItemInList } from "types/items"
 import { PAGINATION } from "constants"
 
 interface Props {

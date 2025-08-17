@@ -3,8 +3,7 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { Items, Materials } from "contexts/types/ItemContext"
-import { UserItemInList } from "contexts/types/ItemContext"
+import { Items, Materials, UserItemInList } from "types/items"
 
 import { MenuItem } from "./types/Items"
 import { getTypedItemLength } from "./helpers/count"

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { sortBy } from "lodash"
 import type { MaterialCategory } from "@gw2api/types/data/material"
 import { queryFunction } from "helpers/api"
-import { materialCategoryAliases } from "contexts/types/ItemContext"
+import { materialCategoryAliases } from "types/items"
 
 /**
  * Hook for managing material categories from GW2 API

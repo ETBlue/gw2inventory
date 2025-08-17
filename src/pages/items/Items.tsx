@@ -31,7 +31,7 @@ import { getQueryString } from "helpers/url"
 import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
-import { UserItemInList } from "contexts/types/ItemContext"
+import { UserItemInList } from "types/items"
 import Pagination from "components/Pagination"
 
 import SubMenuItem from "./SubMenuItem"

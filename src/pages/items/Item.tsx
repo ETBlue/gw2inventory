@@ -2,7 +2,7 @@ import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
 import type { Item } from "@gw2api/types/data/item"
-import { UserItemInList } from "contexts/types/ItemContext"
+import { UserItemInList } from "types/items"
 
 import css from "./styles/Item.module.css"
 
