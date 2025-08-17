@@ -16,7 +16,9 @@ function Overview() {
     enabled: !!token,
   })
 
-  const { data: luck, isFetching: isLuckFetching } = useQuery({
+  const { data: luck, isFetching: isLuckFetching } = useQuery<
+    { id: string; value: number }[]
+  >({
     queryKey: ["account/luck", token],
     queryFn: queryFunction as any,
     staleTime: Infinity,
@@ -41,7 +43,7 @@ function Overview() {
       <p>Access: {account.access.map((item) => item).join(", ")}</p>
       <p>Fractal Level: {account.fractal_level}</p>
       <p>WvW Rank: {account.wvw_rank}</p>
-      <p>{luck[0].value}</p>
+      <p>Luck: {luck[0].value.toLocaleString()}</p>
     </div>
   )
 }
