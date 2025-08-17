@@ -37,8 +37,13 @@ function SortableTable(props: Props) {
   const activeSort = sortBy || defaultSortBy
   const activeOrder = order || defaultOrder
 
-  const rows = unsortedRows.sort((a: Character, b: Character) => {
-    const number = compare(a[activeSort], b[activeSort])
+  const rows = unsortedRows.sort((a, b) => {
+    // Type-safe property access using keyof operator
+    const aValue =
+      activeSort in a ? (a as Record<string, string | number>)[activeSort] : ""
+    const bValue =
+      activeSort in b ? (b as Record<string, string | number>)[activeSort] : ""
+    const number = compare(aValue, bValue)
     return activeOrder === "asc" ? number : number * -1
   })
 

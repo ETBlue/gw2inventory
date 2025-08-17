@@ -1,6 +1,7 @@
 import { UsedAccount } from "contexts/types/TokenContext"
+import { parseJsonSafely, isUsedAccountArray } from "helpers/typeGuards"
 
-export const getUsedAccounts = () => {
+export const getUsedAccounts = (): UsedAccount[] => {
   const storedTokens: UsedAccount[] = readStoredTokens()
   const v1StoredTokens: UsedAccount[] = readV1StoredTokens()
   const usedAccounts: UsedAccount[] = [
@@ -14,37 +15,45 @@ export const getUsedAccounts = () => {
   return usedAccounts
 }
 
-export const readStoredTokens = () => {
+export const readStoredTokens = (): UsedAccount[] => {
   const storage = localStorage.getItem("gw2iTokens")
   if (storage) {
-    try {
-      const data = JSON.parse(storage)
+    const data = parseJsonSafely(storage, isUsedAccountArray)
+    if (data) {
       return data
-    } catch (err) {
-      console.error("Failed to parse stored tokens:", err)
-      // Return empty array if parsing fails to prevent app crash
     }
+    console.error("Failed to parse stored tokens: invalid format")
   }
   return []
 }
 
-export const readV1StoredTokens = () => {
+export const readV1StoredTokens = (): UsedAccount[] => {
   const v1Storage = localStorage.getItem("gw2i")
   if (v1Storage) {
-    try {
-      const v1Data: { [key: string]: string } = JSON.parse(v1Storage)
-      const v1UsedAccounts = Object.keys(v1Data).map((name: string) => {
-        return {
-          name,
-          token: v1Data[name],
-          description: "",
-        }
-      })
+    const v1Data = parseJsonSafely(
+      v1Storage,
+      (value): value is { [key: string]: string } => {
+        return (
+          typeof value === "object" &&
+          value !== null &&
+          Object.values(value).every((v) => typeof v === "string")
+        )
+      },
+    )
+
+    if (v1Data) {
+      const v1UsedAccounts = Object.keys(v1Data).map(
+        (name: string): UsedAccount => {
+          return {
+            name,
+            token: v1Data[name],
+            description: "",
+          }
+        },
+      )
       return v1UsedAccounts
-    } catch (err) {
-      console.error("Failed to parse v1 stored tokens:", err)
-      // Return empty array if parsing fails to prevent app crash
     }
+    console.error("Failed to parse v1 stored tokens: invalid format")
   }
   return []
 }

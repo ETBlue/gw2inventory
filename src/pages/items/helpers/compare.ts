@@ -8,12 +8,12 @@ const RARITY_MAP: { [key: string]: number } = {
   Ascended: 6,
   Legendary: 7,
 }
-export const compareRarity = (_a: string, _b: string) => {
+export const compareRarity = (_a: string, _b: string): number => {
   const a = RARITY_MAP[_a]
   const b = RARITY_MAP[_b]
   return compare(a, b)
 }
-export const compare = (a: string | number, b: string | number) => {
+export const compare = (a: string | number, b: string | number): number => {
   if (a > b) return 1
   if (a < b) return -1
   return 0

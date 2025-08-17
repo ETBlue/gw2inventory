@@ -16,9 +16,9 @@ type TQueryKey = readonly [
   paramsString?: string,
 ]
 
-export const queryFunction = async (
+export const queryFunction = async <T = unknown>(
   context: QueryFunctionContext<TQueryKey>,
-) => {
+): Promise<T | null | undefined> => {
   const { queryKey } = context
   const [endpoint, token = "", paramsString = ""] = queryKey
   if (!endpoint) return
@@ -31,7 +31,10 @@ export const queryFunction = async (
   return data
 }
 
-export const fetchGW2 = async (endpoint: string, queryString?: string) => {
+export const fetchGW2 = async <T = unknown>(
+  endpoint: string,
+  queryString?: string,
+): Promise<T | null> => {
   const url = `${API_URL}/${endpoint}?${queryString}`
 
   try {
@@ -45,7 +48,7 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
     if (res.ok) {
       try {
         const data = await res.json()
-        return data
+        return data as T
       } catch (parseError) {
         console.error(
           `Failed to parse JSON response from ${endpoint}:`,
@@ -103,13 +106,13 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
  * Fetch multiple resources with error resilience
  * Returns an array where each element is either the data or null if failed
  */
-export const fetchGW2Multiple = async (
+export const fetchGW2Multiple = async <T = unknown>(
   endpoints: string[],
   queryString?: string,
-): Promise<(any | null)[]> => {
+): Promise<(T | null)[]> => {
   const promises = endpoints.map(async (endpoint) => {
     try {
-      return await fetchGW2(endpoint, queryString)
+      return await fetchGW2<T>(endpoint, queryString)
     } catch (error) {
       console.warn(
         `Failed to fetch ${endpoint}, continuing with others:`,
@@ -125,12 +128,12 @@ export const fetchGW2Multiple = async (
 /**
  * Fetch GW2 data with automatic retry on failure
  */
-export const fetchGW2WithRetry = async (
+export const fetchGW2WithRetry = async <T = unknown>(
   endpoint: string,
   queryString?: string,
   maxRetries: number = API_CONSTANTS.DEFAULT_MAX_RETRIES,
-) => {
-  return withRetry(() => fetchGW2(endpoint, queryString), {
+): Promise<T | null> => {
+  return withRetry(() => fetchGW2<T>(endpoint, queryString), {
     maxRetries,
     retryDelay: API_CONSTANTS.DEFAULT_RETRY_DELAY,
     exponentialBackoff: true,

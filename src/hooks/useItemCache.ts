@@ -11,16 +11,22 @@ import { API_CONSTANTS } from "constants"
 export function useItemCache() {
   const [isItemsFetching, setIsItemsFetching] = useState<boolean>(false)
 
+  // Define discriminated union for reducer actions
+  type ItemAction =
+    | { type: "ADD_ITEMS"; items: Item[] }
+    | { type: "CLEAR_ITEMS"; items: [] }
+
   // Use useReducer for items state to handle complex updates efficiently
   const [items, dispatchItems] = useReducer(
-    (state: Record<number, Item>, action: { type: string; items: Item[] }) => {
+    (state: Record<number, Item>, action: ItemAction) => {
       switch (action.type) {
-        case "ADD_ITEMS":
+        case "ADD_ITEMS": {
           const newState = { ...state }
           action.items.forEach((item) => {
             newState[item.id] = item
           })
           return newState
+        }
         case "CLEAR_ITEMS":
           return {}
         default:
@@ -59,7 +65,7 @@ export function useItemCache() {
 
       for (const chunk of chunks) {
         try {
-          const data = await fetchGW2("items", `ids=${chunk.join(",")}`)
+          const data = await fetchGW2<Item[]>("items", `ids=${chunk.join(",")}`)
           if (data) {
             newItems = [...newItems, ...data]
           }
