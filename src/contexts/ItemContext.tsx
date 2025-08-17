@@ -1,9 +1,16 @@
-import { useState, useEffect, useReducer, createContext, useContext } from "react"
+import {
+  useState,
+  useEffect,
+  useReducer,
+  createContext,
+  useContext,
+} from "react"
 import { useQuery } from "@tanstack/react-query"
 import { chunk, sortBy } from "lodash"
 
 import { fetchGW2, queryFunction } from "helpers/api"
 import { useToken } from "contexts/TokenContext"
+import { useCharacters } from "contexts/CharacterContext"
 
 import type { Item } from "@gw2api/types/data/item"
 import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
@@ -11,6 +18,11 @@ import type { ItemStack } from "@gw2api/types/data/item"
 import type { MaterialStack } from "@gw2api/types/data/material"
 import { Material } from "./types/Material"
 import { CharacterItemInList } from "./types/CharacterContext"
+import {
+  CharacterBag,
+  CharacterBagItem,
+  CharacterEquipmentItem,
+} from "./types/Character"
 import {
   Items,
   materialCategoryAliases,
@@ -40,6 +52,7 @@ const ItemContext = createContext<Values>({
 
 function ItemProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useToken()
+  const { characters, isFetching: isCharactersFetching } = useCharacters()
 
   // handle items
 
@@ -96,12 +109,13 @@ function ItemProvider(props: { children: React.ReactNode }) {
     staleTime: Infinity,
     enabled: !!currentAccount?.token,
   })
-  const { data: materials, isFetching: isMaterialsFetching } = useQuery({
-    queryKey: ["account/materials", currentAccount?.token],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-    enabled: !!currentAccount?.token,
-  })
+  const { data: accountMaterialsData, isFetching: isMaterialsFetching } =
+    useQuery({
+      queryKey: ["account/materials", currentAccount?.token],
+      queryFn: queryFunction,
+      staleTime: Infinity,
+      enabled: !!currentAccount?.token,
+    })
 
   useEffect(() => {
     if (!inventory) return
@@ -128,8 +142,8 @@ function ItemProvider(props: { children: React.ReactNode }) {
   }, [bank?.length])
 
   useEffect(() => {
-    if (!materials) return
-    const materialItems: MaterialItemInList[] = materials.reduce(
+    if (!accountMaterialsData) return
+    const materialItems: MaterialItemInList[] = accountMaterialsData.reduce(
       (prev: MaterialItemInList[], item: MaterialStack) => {
         if (!item) return prev
         return [...prev, { ...item, location: "Vault" }]
@@ -137,7 +151,46 @@ function ItemProvider(props: { children: React.ReactNode }) {
       [],
     )
     setMaterialItems(materialItems)
-  }, [materials?.length])
+  }, [accountMaterialsData?.length])
+
+  useEffect(() => {
+    if (!characters) return
+    let characterItems: CharacterItemInList[] = []
+
+    for (const character of characters) {
+      const bagItems = character.bags.reduce(
+        (prev: CharacterItemInList[], bag: CharacterBag | null) => {
+          if (!bag) return prev
+          const currentBag = {
+            ...bag,
+            location: character.name,
+            isEquipped: true,
+          }
+          const currentBagItems = bag.inventory.reduce(
+            (prev: CharacterItemInList[], item: CharacterBagItem) => {
+              if (!item) return prev
+              const currentItem = { ...item, location: character.name }
+              return [...prev, currentItem]
+            },
+            [],
+          )
+          return [...prev, currentBag, ...currentBagItems]
+        },
+        [],
+      )
+      const equippedItems = character.equipment.map(
+        (item: CharacterEquipmentItem) => {
+          return {
+            ...item,
+            location: character.name,
+            isEquipped: true,
+          }
+        },
+      )
+      characterItems = [...characterItems, ...bagItems, ...equippedItems]
+    }
+    setCharacterItems(characterItems)
+  }, [characters?.length])
 
   useEffect(() => {
     fetchItems(characterItems.map((item) => item.id))
@@ -154,18 +207,22 @@ function ItemProvider(props: { children: React.ReactNode }) {
 
   // handle materials (category)
 
-  const { data: materialsData, isFetching: isMaterialFetching } = useQuery({
-    queryKey: ["materials", , "ids=all"],
-    queryFn: queryFunction,
-    staleTime: Infinity,
-  })
-  const materialCategories = sortBy(materialsData, ["order"]).map(
+  const { data: materialCategoriesData, isFetching: isMaterialFetching } =
+    useQuery({
+      queryKey: ["materials", , "ids=all"],
+      queryFn: queryFunction,
+      staleTime: Infinity,
+    })
+  const materialCategories = sortBy(materialCategoriesData, ["order"]).map(
     (item) => materialCategoryAliases[item.name],
   )
-  const materials = materialsData?.reduce((prev: Materials, curr: Material) => {
-    prev[curr.id] = materialCategoryAliases[curr.name]
-    return prev
-  }, {})
+  const materials = materialCategoriesData?.reduce(
+    (prev: Materials, curr: Material) => {
+      prev[curr.id] = materialCategoryAliases[curr.name]
+      return prev
+    },
+    {},
+  )
 
   return (
     <ItemContext.Provider
@@ -181,7 +238,13 @@ function ItemProvider(props: { children: React.ReactNode }) {
         setInventoryItems,
         setBankItems,
         setMaterialItems,
-        isFetching: isItemsFetching || isMaterialFetching || isInventoryFetching || isBankFetching || isMaterialsFetching,
+        isFetching:
+          isItemsFetching ||
+          isMaterialFetching ||
+          isInventoryFetching ||
+          isBankFetching ||
+          isMaterialsFetching ||
+          isCharactersFetching,
       }}
     >
       {props.children}
