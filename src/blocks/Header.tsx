@@ -14,6 +14,7 @@ import { MdExpandMore } from "react-icons/md"
 
 import { APP_NAME, BASE_URL } from "config"
 import { useToken } from "hooks/useToken"
+import { COLORS, COMPONENT_THEME, LAYOUT } from "constants"
 import { UsedAccount } from "contexts/types/TokenContext"
 
 const MENU_ITEMS = [
@@ -35,13 +36,13 @@ function Header() {
       padding="0 1rem"
       alignContent="stretch"
       alignItems="stretch"
-      borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+      borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
       fontFamily="Rosario"
     >
       <Flex
         as={Link}
         alignItems="center"
-        borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+        borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
         to="/"
       >
         <Image
@@ -63,12 +64,12 @@ function Header() {
             fontWeight="normal"
             borderRadius="0"
             height="3.5rem"
-            borderBottom="2px hsla(326, 73%, 55%, 1) solid"
-            _hover={{ background: "hsla(326, 15%, 55%, 0.1)" }}
+            borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
+            _hover={{ background: COLORS.PRIMARY_HOVER }}
             style={({ isActive }) =>
               isActive
                 ? {
-                    background: "hsla(326, 73%, 55%, 1)",
+                    background: COLORS.PRIMARY,
                     color: "#f9f9f9",
                     cursor: "initial",
                   }
@@ -85,10 +86,10 @@ function Header() {
           variant="ghost"
           fontWeight="normal"
           borderRadius="0"
-          height="100%"
+          height={LAYOUT.HEADER_HEIGHT}
           paddin="1rem"
           marginRight="-0.5rem"
-          borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+          borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
           rightIcon={<MdExpandMore />}
         >
           {currentAccount?.name || "Select a token"}

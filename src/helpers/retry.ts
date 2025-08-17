@@ -1,4 +1,5 @@
 import { isNotFoundError, isGW2ApiError, RateLimitError } from "./errors"
+import { API_CONSTANTS, HTTP_STATUS } from "constants"
 
 export interface RetryOptions {
   maxRetries?: number
@@ -8,8 +9,8 @@ export interface RetryOptions {
 }
 
 const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
-  maxRetries: 3,
-  retryDelay: 1000,
+  maxRetries: API_CONSTANTS.DEFAULT_MAX_RETRIES,
+  retryDelay: API_CONSTANTS.DEFAULT_RETRY_DELAY,
   exponentialBackoff: true,
   shouldRetry: (error: unknown) => {
     // Don't retry on client errors (4xx) except rate limits
@@ -17,7 +18,7 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
       if (error instanceof RateLimitError) {
         return true
       }
-      if (error.status && error.status >= 400 && error.status < 500) {
+      if (error.status && error.status >= HTTP_STATUS.UNAUTHORIZED && error.status < HTTP_STATUS.INTERNAL_SERVER_ERROR) {
         return false
       }
     }

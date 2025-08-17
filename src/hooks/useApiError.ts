@@ -5,6 +5,7 @@ import {
   isNotFoundError,
   getUserFriendlyErrorMessage,
 } from "helpers/errors"
+import { ERROR_CONFIG } from "constants"
 
 /**
  * Hook for handling and displaying API errors to users
@@ -23,7 +24,7 @@ export function useApiError() {
           title: context || "API Error",
           description: message,
           status: "error",
-          duration: 5000,
+          duration: ERROR_CONFIG.TOAST_DURATION,
           isClosable: true,
           position: "top-right",
         })

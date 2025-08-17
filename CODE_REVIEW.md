@@ -1,15 +1,16 @@
 # Code Review - GW2 Inventory Management
 
 ## Progress Summary
-- **Issues Resolved:** 2 of 11
+- **Issues Resolved:** 3 of 11
 - **Issues Clarified:** 1 (Security context clarified)
 - **High Severity Resolved:** 1 of 2 (1 reclassified)
-- **Medium Severity Resolved:** 1 of 7
+- **Medium Severity Resolved:** 2 of 7
 - **Last Updated:** 2025-08-17
 
 ### Recently Updated
 - ✅ **Resolved:** Poor Error Handling in API Layer (commit 64903b5)
-- ✅ **Resolved:** Code Duplication in ItemContext (current)
+- ✅ **Resolved:** Code Duplication in ItemContext (commit a51b999)
+- ✅ **Resolved:** Magic Numbers and Hardcoded Values (current)
 - ⚠️ **Clarified:** API Token Storage - Acceptable for frontend-only third-party app
 
 ## Executive Summary
@@ -132,30 +133,55 @@ useItemFetching(materialItems, fetchItems)
 - `src/hooks/useBatchItemFetching.ts` - Optional optimized batching approach
 - `src/contexts/ItemContext.tsx` - Updated to use the new hooks
 
-### 6. Magic Numbers and Hardcoded Values
-**Locations:**
-- `src/contexts/ItemContext.tsx` line 81: `chunk(idsToFetch, 200)`
-- `src/components/Pagination.tsx` lines 63-64: `pageIndex + 10`
-- `src/blocks/Header.tsx`: `hsla(326, 73%, 55%, 1)` color
+### 6. ~~Magic Numbers and Hardcoded Values~~ ✅ RESOLVED
+**Location:** Multiple files
 
-**Recommendation:**
+**Status:** ✅ Fixed
+
+**What was fixed:**
+- Created comprehensive constants files to eliminate magic numbers throughout the codebase
+- Organized constants by domain (API, UI, Theme) for better maintainability
+- Replaced hardcoded values with semantic constants for improved readability
+
+**Constants created:**
+- `src/constants/api.ts` - API configuration, HTTP status codes, error handling
+- `src/constants/ui.ts` - UI behavior constants (pagination, layout, animations)  
+- `src/constants/theme.ts` - Color palette, borders, component themes
+- `src/constants/index.ts` - Central export point for all constants
+
+**Before:**
 ```typescript
-// Create constants file
-export const API_CONSTANTS = {
-  ITEMS_CHUNK_SIZE: 200,
-  MAX_ITEMS_PER_REQUEST: 200
-}
-
-export const PAGINATION = {
-  VISIBLE_PAGE_RANGE: 10
-}
-
-export const THEME = {
-  colors: {
-    primary: 'hsla(326, 73%, 55%, 1)'
-  }
-}
+// Magic numbers scattered throughout
+chunk(idsToFetch, 200)
+index > pageIndex + 10
+borderBottom="2px hsla(326, 73%, 55%, 1) solid"
+duration: 5000
 ```
+
+**After:**
+```typescript
+// Semantic constants with clear meaning
+chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+index > pageIndex + PAGINATION.VISIBLE_PAGE_RANGE
+borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
+duration: ERROR_CONFIG.TOAST_DURATION
+```
+
+**Files updated:**
+- `src/contexts/ItemContext.tsx` - Use API_CONSTANTS.ITEMS_CHUNK_SIZE
+- `src/components/Pagination.tsx` - Use PAGINATION.VISIBLE_PAGE_RANGE
+- `src/blocks/Header.tsx` - Use theme constants for colors and layout
+- `src/helpers/api.ts` - Use HTTP_STATUS constants
+- `src/helpers/errors.ts` - Use HTTP_STATUS constants
+- `src/helpers/retry.ts` - Use API_CONSTANTS for timing
+- `src/hooks/useApiError.ts` - Use ERROR_CONFIG.TOAST_DURATION
+
+**Benefits:**
+- Self-documenting code with semantic constant names
+- Single source of truth for configuration values
+- Easier maintenance when values need to change
+- Type safety with `as const` assertions
+- Consistent theming across components
 
 ### 7. Performance Issues
 **Location:** `src/pages/items/Items.tsx` (lines 82-120)
@@ -234,7 +260,7 @@ const filteredAndSortedItems = useMemo(() => {
 ## Code Quality Metrics
 
 ### Current State
-- **Maintainability:** ~~6/10~~ → **7/10** ✅ - Eliminated code duplication, still has large components
+- **Maintainability:** ~~6/10~~ → **8/10** ✅ - Eliminated code duplication and magic numbers, still has large components
 - **Type Safety:** 5/10 - Many implicit types and any usage
 - **Performance:** 6/10 - Unnecessary re-renders and computations
 - **Security:** ~~4/10~~ → **7/10** ⚠️ - localStorage is acceptable for this use case (frontend-only app)

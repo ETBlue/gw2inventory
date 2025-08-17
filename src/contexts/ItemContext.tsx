@@ -12,6 +12,7 @@ import { fetchGW2, queryFunction } from "helpers/api"
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import { useItemFetching } from "hooks/useItemFetching"
+import { API_CONSTANTS } from "constants"
 
 import type { Item } from "@gw2api/types/data/item"
 import type { SharedInventoryItemStack } from "@gw2api/types/data/account-inventory"
@@ -79,7 +80,7 @@ function ItemProvider(props: { children: React.ReactNode }) {
         Object.keys(items).map((key) => parseInt(key)),
       )
       const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-      const chunks = chunk(idsToFetch, 200)
+      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
 
       let newItems: Item[] = []
       let failedChunks = 0

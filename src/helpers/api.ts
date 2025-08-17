@@ -8,6 +8,7 @@ import {
   ERROR_MESSAGES,
 } from "./errors"
 import { withRetry } from "./retry"
+import { HTTP_STATUS, API_CONSTANTS } from "constants"
 
 type TQueryKey = readonly [
   endpoint: string,
@@ -66,7 +67,7 @@ export const fetchGW2 = async (endpoint: string, queryString?: string) => {
     
     // For 404 errors, we might want to return null instead of throwing
     // This is common for items that don't exist in the API
-    if (res.status === 404) {
+    if (res.status === HTTP_STATUS.NOT_FOUND) {
       console.warn(`Resource not found: ${endpoint}`)
       return null
     }
@@ -121,13 +122,13 @@ export const fetchGW2Multiple = async (
 export const fetchGW2WithRetry = async (
   endpoint: string,
   queryString?: string,
-  maxRetries: number = 3,
+  maxRetries: number = API_CONSTANTS.DEFAULT_MAX_RETRIES,
 ) => {
   return withRetry(
     () => fetchGW2(endpoint, queryString),
     {
       maxRetries,
-      retryDelay: 1000,
+      retryDelay: API_CONSTANTS.DEFAULT_RETRY_DELAY,
       exponentialBackoff: true,
     },
   )

@@ -8,6 +8,7 @@ import {
 import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
 import { UserItemInList } from "contexts/types/ItemContext"
+import { PAGINATION } from "constants"
 
 interface Props {
   pageIndex: number
@@ -60,8 +61,8 @@ function Pagination(props: Props) {
         <CgChevronLeft />
       </IconButton>
       {pages.map((chunk, index: number) => {
-        const isOutofScope = index > pageIndex + 10 || index < pageIndex - 10
-        const isOnEdge = index === pageIndex + 10 || index === pageIndex - 10
+        const isOutofScope = index > pageIndex + PAGINATION.VISIBLE_PAGE_RANGE || index < pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
+        const isOnEdge = index === pageIndex + PAGINATION.VISIBLE_PAGE_RANGE || index === pageIndex - PAGINATION.VISIBLE_PAGE_RANGE
         return (
           <Button
             key={index}

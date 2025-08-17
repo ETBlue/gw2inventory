@@ -2,6 +2,8 @@
  * Custom error classes and error handling utilities for the GW2 API
  */
 
+import { HTTP_STATUS } from "constants"
+
 export class GW2ApiError extends Error {
   constructor(
     message: string,
@@ -23,21 +25,21 @@ export class NetworkError extends GW2ApiError {
 
 export class AuthenticationError extends GW2ApiError {
   constructor(message: string, endpoint?: string) {
-    super(message, 401, "Unauthorized", endpoint)
+    super(message, HTTP_STATUS.UNAUTHORIZED, "Unauthorized", endpoint)
     this.name = "AuthenticationError"
   }
 }
 
 export class NotFoundError extends GW2ApiError {
   constructor(message: string, endpoint?: string) {
-    super(message, 404, "Not Found", endpoint)
+    super(message, HTTP_STATUS.NOT_FOUND, "Not Found", endpoint)
     this.name = "NotFoundError"
   }
 }
 
 export class RateLimitError extends GW2ApiError {
   constructor(message: string, endpoint?: string) {
-    super(message, 429, "Too Many Requests", endpoint)
+    super(message, HTTP_STATUS.TOO_MANY_REQUESTS, "Too Many Requests", endpoint)
     this.name = "RateLimitError"
   }
 }
@@ -71,17 +73,17 @@ export function createApiError(
   endpoint: string,
 ): GW2ApiError {
   switch (status) {
-    case 401:
-    case 403:
+    case HTTP_STATUS.UNAUTHORIZED:
+    case HTTP_STATUS.FORBIDDEN:
       return new AuthenticationError(ERROR_MESSAGES.INVALID_TOKEN, endpoint)
-    case 404:
+    case HTTP_STATUS.NOT_FOUND:
       return new NotFoundError(ERROR_MESSAGES.NOT_FOUND, endpoint)
-    case 429:
+    case HTTP_STATUS.TOO_MANY_REQUESTS:
       return new RateLimitError(ERROR_MESSAGES.RATE_LIMIT, endpoint)
-    case 500:
-    case 502:
-    case 503:
-    case 504:
+    case HTTP_STATUS.INTERNAL_SERVER_ERROR:
+    case HTTP_STATUS.BAD_GATEWAY:
+    case HTTP_STATUS.SERVICE_UNAVAILABLE:
+    case HTTP_STATUS.GATEWAY_TIMEOUT:
       return new ServerError(ERROR_MESSAGES.SERVER_ERROR, status, endpoint)
     default:
       return new GW2ApiError(
