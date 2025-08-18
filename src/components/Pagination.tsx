@@ -10,13 +10,13 @@ import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 import { UserItemInList } from "types/items"
 import { PAGINATION } from "constants"
 
-interface Props {
+interface Props<T = UserItemInList> {
   pageIndex: number
   setPageIndex(index: number): void
-  pages: UserItemInList[][]
+  pages: T[][]
 }
 
-function Pagination(props: Props) {
+function Pagination<T = UserItemInList>(props: Props<T>) {
   const { pageIndex, setPageIndex, pages } = props
   const lastPageIndex = pages.length > 0 ? pages.length - 1 : 0
   const goFirst = () => {
