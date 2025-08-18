@@ -51,6 +51,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useMaterialCategories` - Handles material category data
 - `useTitles` - Fetches account titles and title details
 - `useWallet` - Fetches account wallet and currency details
+- `useSkins` - Fetches account skins with detailed skin information and chunked API requests
 
 **Architecture Principles:**
 - Prefer custom hooks over React Context when data is used in limited components
@@ -78,6 +79,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `/account/*` - Account-related pages:
     - `/account/overview` - Account overview with titles
     - `/account/wallet` - Wallet currencies display
+    - `/account/skins` - Skins management with search, filtering, and sorting
 
 ### Code Organization
 
@@ -86,6 +88,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `items.ts` - All item-related types (Items, Materials, UserItemInList, etc.)
   - `titles.ts` - Title-related types (AccountTitles, Title from @gw2api/types)
   - `wallet.ts` - Wallet and currency types (AccountWallet, Currency from @gw2api/types)
+  - `skins.ts` - Skin-related types (AccountSkins, Skin from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
@@ -95,9 +98,10 @@ The application uses a hybrid approach with React Context API for global state a
 - `/src/test/` - Test configuration and setup files
 
 **Hook Patterns:**
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`) expose read-only data
 - Focused custom hooks for specific functionality (e.g., `useItemCache`, `useAccountItems`)
 - Direct hook usage preferred over context when data is component-specific
+- Generic components support different data types (e.g., Pagination component)
 
 ### Important Patterns
 
@@ -114,6 +118,9 @@ The application uses a hybrid approach with React Context API for global state a
 - Reactive architecture with automatic data synchronization
 - Separation of concerns with public/internal API patterns
 - Constants-based configuration to eliminate magic numbers
+- Advanced search functionality supporting JSON.stringify-based queries across all object properties
+- Rarity-based visual styling using CSS modules with Guild Wars 2 color theming
+- Centralized pagination configuration via ITEM_COUNT_PER_PAGE constant
 
 ### Testing
 
