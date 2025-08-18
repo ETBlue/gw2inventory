@@ -22,7 +22,6 @@ function Item(props: Props) {
             src={item.icon}
             alt={item.rarity}
             className={`${css.icon} ${css[item.rarity.toLowerCase()]}`}
-            border="5px yellow solid"
           />
         ) : (
           <BsQuestionOctagonFill size="3.5rem" />
