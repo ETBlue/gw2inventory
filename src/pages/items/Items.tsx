@@ -150,7 +150,7 @@ function Items() {
       index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
     >
       <TabList>
-        <Tab as={NavLink} exact to="/items">
+        <Tab as={NavLink} to="/items">
           All
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
             {allItems?.length}
