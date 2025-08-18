@@ -10,9 +10,9 @@ import { materialCategoryAliases } from "types/items"
  */
 export function useMaterialCategoriesData() {
   const { data: materialCategoriesData, isFetching: isMaterialFetching } =
-    useQuery({
+    useQuery<MaterialCategory[]>({
       queryKey: ["materials", undefined, "ids=all"],
-      queryFn: queryFunction,
+      queryFn: queryFunction as any,
       staleTime: Infinity,
     })
 
