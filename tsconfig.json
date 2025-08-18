@@ -25,6 +25,9 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "src",
+    "paths": {
+      "~/*": ["./*"]
+    },
     "downlevelIteration": true
   },
   "include": ["src"],

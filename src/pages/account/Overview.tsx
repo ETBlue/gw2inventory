@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { Center, Spinner } from "@chakra-ui/react"
-import { useToken } from "hooks/useToken"
+import { useToken } from "~/hooks/useToken"
 import { Account } from "@gw2api/types/data/account"
-import { queryFunction } from "helpers/api"
+import { queryFunction } from "~/helpers/api"
 import { format } from "date-fns"
 
 function Overview() {
