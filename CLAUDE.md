@@ -49,6 +49,8 @@ The application uses a hybrid approach with React Context API for global state a
 - `useAccountItems` - Handles account-specific items (inventory, bank, materials)
 - `useItemCache` - Manages item caching and deduplication
 - `useMaterialCategories` - Handles material category data
+- `useTitles` - Fetches account titles and title details
+- `useWallet` - Fetches account wallet and currency details
 
 **Architecture Principles:**
 - Prefer custom hooks over React Context when data is used in limited components
@@ -73,12 +75,17 @@ The application uses a hybrid approach with React Context API for global state a
   - `/characters` - Character overview and management
   - `/items/:category?` - Item inventory with optional category filtering
   - `/settings` - Token configuration
+  - `/account/*` - Account-related pages:
+    - `/account/overview` - Account overview with titles
+    - `/account/wallet` - Wallet currencies display
 
 ### Code Organization
 
 - `/src/contexts/` - React Context providers for global state (Token, Character, Skill)
 - `/src/types/` - TypeScript type definitions organized by domain
   - `items.ts` - All item-related types (Items, Materials, UserItemInList, etc.)
+  - `titles.ts` - Title-related types (AccountTitles, Title from @gw2api/types)
+  - `wallet.ts` - Wallet and currency types (AccountWallet, Currency from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
@@ -94,6 +101,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 ### Important Patterns
 
+- Path alias `~` configured to represent `src/` directory for cleaner imports
 - Absolute imports configured from `src/` directory
 - Chakra UI for component styling
 - React Query for data fetching with comprehensive error handling

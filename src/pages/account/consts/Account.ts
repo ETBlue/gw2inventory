@@ -1,4 +1,5 @@
-import Overview from "pages/account/Overview"
+import Overview from "~/pages/account/Overview"
+import Wallet from "~/pages/account/Wallet"
 /* 
 import Achievements from "pages/account/Achievements"
 import Masteries from "pages/account/Masteries"
@@ -9,6 +10,7 @@ import Legendaries from "pages/account/Legendaries"
 
 export const MENU_ITEMS = [
   { to: "", text: "Overview", component: Overview },
+  { to: "wallet", text: "Wallet", component: Wallet },
   /* 
   { to: "home", text: "Home", component: Home },
   {
