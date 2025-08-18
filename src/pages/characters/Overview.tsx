@@ -1,10 +1,9 @@
-import { format } from "date-fns"
+import { format, formatDistance } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { FaCheck, FaMinus } from "react-icons/fa"
 import { List, ListItem, ListIcon } from "@chakra-ui/react"
 
 import type { Character } from "@gw2api/types/data/character"
-import type { CraftingDiscipline } from "@gw2api/types/data/recipe"
 import SortableTable, { Column } from "components/SortableTable"
 
 interface Props {
@@ -85,18 +84,18 @@ const COLUMNS: Column[] = [
       return format(new Date(row.created), "yyyy-MM-dd")
     },
   },
-  // {
-  //   key: "age",
-  //   title: "age",
-  //   render(row: Character) {
-  //     return formatDistanceStrict(0, row.age * 1000, { unit: "hour" })
-  //   },
-  // },
-  // {
-  //   key: "deaths",
-  //   title: "deaths",
-  //   render(row: Character) {
-  //     return `${row.deaths}`
-  //   },
-  // },
+  {
+    key: "age",
+    title: "age",
+    render(row: Character) {
+      return formatDistance(0, row.age * 1000)
+    },
+  },
+  {
+    key: "deaths",
+    title: "deaths",
+    render(row: Character) {
+      return `${row.deaths}`
+    },
+  },
 ]
