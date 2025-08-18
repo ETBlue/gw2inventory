@@ -4,8 +4,8 @@ import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import { useItemFetching } from "hooks/useItemFetching"
 import { useItemCache } from "hooks/useItemCache"
-import { useMaterialCategories } from "hooks/useMaterialCategories"
-import { useAccountItems } from "hooks/useAccountItems"
+import { useMaterialCategoriesData } from "hooks/useMaterialCategoriesData"
+import { useAccountItemsData } from "hooks/useAccountItemsData"
 
 import { CharacterItemInList } from "contexts/types/CharacterContext"
 import {
@@ -25,7 +25,7 @@ export const useItemsData = () => {
   // Use extracted hooks for better separation of concerns
   const { items, isItemsFetching, fetchItems, clearItems } = useItemCache()
   const { materialCategories, materials, isMaterialFetching } =
-    useMaterialCategories()
+    useMaterialCategoriesData()
   const {
     inventoryItems,
     bankItems,
@@ -36,7 +36,7 @@ export const useItemsData = () => {
     isInventoryFetching,
     isBankFetching,
     isMaterialsFetching,
-  } = useAccountItems()
+  } = useAccountItemsData()
 
   const [characterItems, setCharacterItems] = useState<CharacterItemInList[]>(
     [],
