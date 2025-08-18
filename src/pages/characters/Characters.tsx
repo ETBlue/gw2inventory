@@ -48,29 +48,6 @@ function Characters() {
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
-      <TabList>
-        <Tab as={NavLink} to="/characters">
-          Overview
-        </Tab>
-        <Spacer />
-        <InputGroup width="20ch">
-          <InputLeftElement>
-            <MdSearch opacity="0.5" />
-          </InputLeftElement>
-          <Input
-            variant="unstyled"
-            value={keyword || ""}
-            onChange={(e) => {
-              const to = `/characters?${getQueryString(
-                "keyword",
-                e.currentTarget.value,
-                queryString,
-              )}`
-              navigate(to)
-            }}
-          />
-        </InputGroup>
-      </TabList>
       {isFetching ? (
         <Center>
           <Spinner />
@@ -93,7 +70,7 @@ function Characters() {
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {characters?.length || "0"}
               </Tag>
-            </Button>{" "}
+            </Button>
             {PROFESSIONS.map((profession) => (
               <Button
                 key={profession}
@@ -117,6 +94,23 @@ function Characters() {
                 </Tag>
               </Button>
             ))}
+            <InputGroup width="20ch">
+              <InputLeftElement>
+                <MdSearch opacity="0.5" />
+              </InputLeftElement>
+              <Input
+                variant="unstyled"
+                value={keyword || ""}
+                onChange={(e) => {
+                  const to = `/characters?${getQueryString(
+                    "keyword",
+                    e.currentTarget.value,
+                    queryString,
+                  )}`
+                  navigate(to)
+                }}
+              />
+            </InputGroup>
           </Flex>
           <Routes>
             {currentAccount && characters && (
