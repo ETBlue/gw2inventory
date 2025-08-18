@@ -1,15 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { screen, waitFor } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Wallet from "./Wallet"
-import * as walletHook from "~/hooks/useWallet"
+import { useWallet } from "~/hooks/useWallet"
 
 // API reference for `/v2/account/wallet`: https://wiki.guildwars2.com/wiki/API:2/account/wallet
 // API reference for `/v2/currencies`: https://wiki.guildwars2.com/wiki/API:2/currencies
 
 // Mock the wallet hook
 vi.mock("~/hooks/useWallet")
-const mockUseWallet = vi.mocked(walletHook.useWallet)
+
+const mockUseWallet = vi.mocked(useWallet)
 
 describe("Wallet Component", () => {
   beforeEach(() => {
@@ -24,7 +25,7 @@ describe("Wallet Component", () => {
       isFetching: false,
       error: null,
       hasToken: false,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -39,7 +40,7 @@ describe("Wallet Component", () => {
       isFetching: true,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -48,13 +49,13 @@ describe("Wallet Component", () => {
 
   it("shows 'No wallet data available' when wallet is empty", () => {
     mockUseWallet.mockReturnValue({
-      walletData: [],
-      currencies: [],
+      walletData: [] as any,
+      currencies: [] as any,
       walletWithDetails: [],
       isFetching: false,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -135,7 +136,7 @@ describe("Wallet Component", () => {
       isFetching: false,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -232,7 +233,7 @@ describe("Wallet Component", () => {
       isFetching: false,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -270,7 +271,7 @@ describe("Wallet Component", () => {
       isFetching: false,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
@@ -305,7 +306,7 @@ describe("Wallet Component", () => {
       isFetching: false,
       error: null,
       hasToken: true,
-    })
+    } as ReturnType<typeof useWallet>)
 
     render(<Wallet />)
 
