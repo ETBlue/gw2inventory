@@ -21,14 +21,14 @@ export const queryFunction = async <T = unknown>(
 ): Promise<T | null> => {
   const { queryKey } = context
   const [endpoint, token = "", paramsString = ""] = queryKey
-  
+
   // Throw error instead of returning undefined for invalid endpoint
   if (!endpoint) {
     throw new GW2ApiError(
       "Invalid query: endpoint is required",
       undefined,
       undefined,
-      "unknown"
+      "unknown",
     )
   }
 

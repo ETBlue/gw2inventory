@@ -20,6 +20,17 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Testing
+npm test                # Run tests in watch mode
+npm run test:run        # Run tests once
+npm run test:ui         # Open Vitest UI
+npm run test:coverage   # Run tests with coverage
+
+# Code quality
+npm run typecheck       # TypeScript type checking
+npm run lint            # ESLint code analysis
+npm run format          # Format code with Prettier
 ```
 
 ## Architecture
@@ -74,6 +85,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `/src/hooks/` - Custom React hooks for state management and data fetching
 - `/src/constants/` - Application constants (API, UI, theme configurations)
 - `/src/docs/` - Architecture documentation and guidelines
+- `/src/test/` - Test configuration and setup files
 
 **Hook Patterns:**
 - Public hooks (`useItemsData`, `useToken`, `useCharacters`) expose read-only data
@@ -94,6 +106,15 @@ The application uses a hybrid approach with React Context API for global state a
 - Reactive architecture with automatic data synchronization
 - Separation of concerns with public/internal API patterns
 - Constants-based configuration to eliminate magic numbers
+
+### Testing
+
+- **Framework:** Vitest with jsdom environment for React component testing
+- **Testing Libraries:** @testing-library/react for component testing, @testing-library/jest-dom for DOM matchers
+- **Configuration:** `vite.config.ts` includes test configuration with globals enabled
+- **Test Files:** Place test files with `.test.ts` or `.test.tsx` extensions anywhere in `src/`
+- **Coverage:** Available via `npm run test:coverage`
+- **UI:** Interactive test runner available via `npm run test:ui`
 
 ### Code Style
 
