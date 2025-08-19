@@ -1,7 +1,7 @@
 import { NavLink, Route, Routes } from "react-router"
 import { Tabs, TabList, Tab } from "@chakra-ui/react"
 
-import { MENU_ITEMS } from "./consts/Account"
+import { MENU_ITEMS } from "./contants"
 
 function Account() {
   return (

@@ -1,4 +1,4 @@
-import { MenuItem } from "pages/items/types/Items"
+import { MenuItem } from "./types"
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -29,14 +29,4 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   { to: "/items/material", text: "Material", showOnly: ["CraftingMaterial"] },
   { to: "/items/trophy", text: "Trophy", showOnly: ["Trophy"] },
-]
-
-export const TABLE_HEADERS = [
-  "rarity",
-  "name",
-  "type",
-  "level",
-  "location",
-  "count",
-  "chat_link",
 ]

@@ -5,7 +5,7 @@ import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { Items, Materials, UserItemInList } from "types/items"
 
-import { MenuItem } from "./types/Items"
+import { MenuItem } from "./types"
 import { getTypedItemLength } from "./helpers/count"
 
 interface Props {

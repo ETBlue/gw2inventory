@@ -43,10 +43,10 @@ import {
   isItemInTypes,
 } from "./helpers/count"
 import { compare, compareRarity } from "./helpers/compare"
-import { MENU_ITEMS } from "./consts/Items"
-import { Sort, Order } from "./types/Items"
 
+import { Sort, Order } from "./types"
 import sharedTableCss from "~/styles/shared-table.module.css"
+import { MENU_ITEMS } from "./constants"
 
 function Items() {
   const {

@@ -21,8 +21,19 @@ import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
 
-import { PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"
+
+const PROFESSIONS = [
+  "Elementalist",
+  "Necromancer",
+  "Mesmer",
+  "Ranger",
+  "Thief",
+  "Engineer",
+  "Warrior",
+  "Guardian",
+  "Revenant",
+]
 
 function Characters() {
   const { currentAccount } = useToken()

@@ -297,26 +297,3 @@ export default function Skins() {
     </div>
   )
 }
-
-function getRarityColor(rarity: string): string {
-  switch (rarity.toLowerCase()) {
-    case "junk":
-      return "gray"
-    case "basic":
-      return "gray"
-    case "fine":
-      return "blue"
-    case "masterwork":
-      return "green"
-    case "rare":
-      return "yellow"
-    case "exotic":
-      return "orange"
-    case "ascended":
-      return "pink"
-    case "legendary":
-      return "purple"
-    default:
-      return "gray"
-  }
-}

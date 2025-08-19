@@ -5,10 +5,18 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
-import { TABLE_HEADERS } from "./consts/Items"
 import { Order, Sort } from "./types"
 import sharedTableCss from "~/styles/shared-table.module.css"
 
+const TABLE_HEADERS = [
+  "rarity",
+  "name",
+  "type",
+  "level",
+  "location",
+  "count",
+  "chat_link",
+]
 
 interface Props {
   activeSort: Sort

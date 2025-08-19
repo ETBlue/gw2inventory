@@ -1,6 +1,6 @@
 import { Items, Materials, UserItemInList } from "types/items"
 import type { Item } from "@gw2api/types/data/item"
-import { MENU_ITEMS } from "pages/items/consts/Items"
+import { MENU_ITEMS } from "~/pages/items/constants"
 
 interface LengthParams {
   types: string[]
