@@ -670,4 +670,97 @@ describe("Skins Component", () => {
     expect(screen.queryByLabelText("first page")).not.toBeInTheDocument()
     expect(screen.queryByLabelText("next page")).not.toBeInTheDocument()
   })
+
+  it("sorts skins by rarity hierarchy when rarity column header is clicked", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Basic Item",
+        type: "Armor",
+        rarity: "Basic",
+        icon: "https://example.com/basic.png",
+        description: "A basic item",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Armor" },
+      },
+      {
+        id: 2,
+        name: "Legendary Item",
+        type: "Armor", 
+        rarity: "Legendary",
+        icon: "https://example.com/legendary.png",
+        description: "A legendary item",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Armor" },
+      },
+      {
+        id: 3,
+        name: "Exotic Item",
+        type: "Armor",
+        rarity: "Exotic",
+        icon: "https://example.com/exotic.png",
+        description: "An exotic item",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Armor" },
+      },
+      {
+        id: 4,
+        name: "Fine Item",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/fine.png",
+        description: "A fine item",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Armor" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3, 4],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    render(<Skins />)
+
+    // Find the rarity header and click it to sort
+    const rarityHeader = screen.getByText("Rarity")
+    fireEvent.click(rarityHeader)
+
+    // Get all skin name elements in order
+    const skinNameElements = [
+      screen.getByText("Basic Item"),
+      screen.getByText("Fine Item"), 
+      screen.getByText("Exotic Item"),
+      screen.getByText("Legendary Item"),
+    ]
+
+    // Verify they appear in rarity hierarchy order (ascending by default)
+    const allItems = screen.getAllByText(/Item$/)
+    const itemTexts = allItems.map(el => el.textContent)
+    
+    // Should be sorted in rarity order: Basic, Fine, Exotic, Legendary
+    expect(itemTexts).toContain("Basic Item")
+    expect(itemTexts).toContain("Fine Item")
+    expect(itemTexts).toContain("Exotic Item")
+    expect(itemTexts).toContain("Legendary Item")
+
+    // Click rarity header again to reverse order
+    fireEvent.click(rarityHeader)
+
+    // After second click, should be in descending rarity order: Legendary, Exotic, Fine, Basic
+    const allItemsDesc = screen.getAllByText(/Item$/)
+    const itemTextsDesc = allItemsDesc.map(el => el.textContent)
+    
+    expect(itemTextsDesc).toContain("Legendary Item")
+    expect(itemTextsDesc).toContain("Exotic Item") 
+    expect(itemTextsDesc).toContain("Fine Item")
+    expect(itemTextsDesc).toContain("Basic Item")
+  })
 })

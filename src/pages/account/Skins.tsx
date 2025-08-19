@@ -27,13 +27,21 @@ import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
 import { ITEM_COUNT_PER_PAGE } from "~/config"
 import sharedTextCss from "~/styles/shared-text.module.css"
+import { compareRarity } from "~/pages/items/helpers/compare"
 
 type SkinType = "All" | "Armor" | "Weapon" | "Back" | "Gathering"
-type SkinSort = "name" | "type" | "flags" | "restrictions" | "details"
+type SkinSort =
+  | "rarity"
+  | "name"
+  | "type"
+  | "flags"
+  | "restrictions"
+  | "details"
 type SkinOrder = "asc" | "desc"
 
 const SKIN_TYPES: SkinType[] = ["All", "Armor", "Weapon", "Back", "Gathering"]
 const SKIN_TABLE_HEADERS: SkinSort[] = [
+  "rarity",
   "name",
   "type",
   "flags",
@@ -74,6 +82,9 @@ export default function Skins() {
       let bValue: string | number = ""
 
       switch (sortBy) {
+        case "rarity":
+          const rarityComparison = compareRarity(a.rarity, b.rarity)
+          return sortOrder === "asc" ? rarityComparison : rarityComparison * -1
         case "name":
           aValue = a.name.toLowerCase()
           bValue = b.name.toLowerCase()
@@ -229,7 +240,6 @@ export default function Skins() {
       <Table className={css.table}>
         <Thead>
           <Tr>
-            <Th></Th>
             {SKIN_TABLE_HEADERS.map((header) => (
               <Th
                 key={header}
