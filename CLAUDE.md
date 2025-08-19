@@ -92,8 +92,10 @@ The application uses a hybrid approach with React Context API for global state a
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
+- `/src/pages/items/helpers/` - Item-specific helper functions including rarity comparison and sorting utilities
 - `/src/hooks/` - Custom React hooks for state management and data fetching
 - `/src/constants/` - Application constants (API, UI, theme configurations)
+- `/src/styles/` - Shared CSS modules for consistent styling across components
 - `/src/docs/` - Architecture documentation and guidelines
 - `/src/test/` - Test configuration and setup files
 
@@ -120,7 +122,9 @@ The application uses a hybrid approach with React Context API for global state a
 - Constants-based configuration to eliminate magic numbers
 - Advanced search functionality supporting JSON.stringify-based queries across all object properties
 - Rarity-based visual styling using CSS modules with Guild Wars 2 color theming
+- Consistent rarity sorting using shared `compareRarity` function that follows Guild Wars 2 hierarchy (Junk → Basic → Fine → Masterwork → Rare → Exotic → Ascended → Legendary)
 - Centralized pagination configuration via ITEM_COUNT_PER_PAGE constant
+- Shared helper functions for common operations (e.g., `formatAccessText` for text formatting, `compare` utilities for sorting)
 
 ### Testing
 
