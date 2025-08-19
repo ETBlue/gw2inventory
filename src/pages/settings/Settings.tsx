@@ -48,12 +48,7 @@ function Settings() {
 
   return (
     <Box margin="0 auto" padding="1rem" maxWidth="60rem">
-      <Heading
-        size="lg"
-        textAlign="center"
-        fontFamily="Rosario"
-        marginBottom="2rem"
-      >
+      <Heading size="lg" textAlign="center" marginBottom="2rem">
         Manage Tokens in Your Local Storage
       </Heading>
       <Grid templateColumns="auto 1fr auto" gap="1rem" alignItems="center">
