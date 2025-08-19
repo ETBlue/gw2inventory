@@ -18,16 +18,25 @@ type TQueryKey = readonly [
 
 export const queryFunction = async <T = unknown>(
   context: QueryFunctionContext<TQueryKey>,
-): Promise<T | null | undefined> => {
+): Promise<T | null> => {
   const { queryKey } = context
   const [endpoint, token = "", paramsString = ""] = queryKey
-  if (!endpoint) return
+
+  // Throw error instead of returning undefined for invalid endpoint
+  if (!endpoint) {
+    throw new GW2ApiError(
+      "Invalid query: endpoint is required",
+      undefined,
+      undefined,
+      "unknown",
+    )
+  }
 
   const searchParams = new URLSearchParams(paramsString)
   searchParams.append("access_token", token)
   const queryString = searchParams.toString()
 
-  const data = await fetchGW2(endpoint, queryString)
+  const data = await fetchGW2<T>(endpoint, queryString)
   return data
 }
 

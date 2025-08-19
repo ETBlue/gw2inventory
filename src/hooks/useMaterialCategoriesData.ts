@@ -8,11 +8,11 @@ import { materialCategoryAliases } from "types/items"
  * Hook for managing material categories from GW2 API
  * Handles fetching, sorting, and aliasing of material categories
  */
-export function useMaterialCategories() {
+export function useMaterialCategoriesData() {
   const { data: materialCategoriesData, isFetching: isMaterialFetching } =
-    useQuery({
+    useQuery<MaterialCategory[]>({
       queryKey: ["materials", undefined, "ids=all"],
-      queryFn: queryFunction,
+      queryFn: queryFunction as any,
       staleTime: Infinity,
     })
 

@@ -1,9 +1,7 @@
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router"
+import { Link, Route, Routes, useNavigate } from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
-  TabList,
-  Tab,
   Center,
   Spinner,
   Button,
@@ -12,7 +10,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Spacer,
 } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
@@ -21,8 +18,19 @@ import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
 
-import { PROFESSIONS } from "./consts/Characters"
 import Overview from "./Overview"
+
+const PROFESSIONS = [
+  "Elementalist",
+  "Necromancer",
+  "Mesmer",
+  "Ranger",
+  "Thief",
+  "Engineer",
+  "Warrior",
+  "Guardian",
+  "Revenant",
+]
 
 function Characters() {
   const { currentAccount } = useToken()
@@ -48,29 +56,6 @@ function Characters() {
 
   return (
     <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
-      <TabList>
-        <Tab as={NavLink} to="/characters">
-          Overview
-        </Tab>
-        <Spacer />
-        <InputGroup width="20ch">
-          <InputLeftElement>
-            <MdSearch opacity="0.5" />
-          </InputLeftElement>
-          <Input
-            variant="unstyled"
-            value={keyword || ""}
-            onChange={(e) => {
-              const to = `/characters?${getQueryString(
-                "keyword",
-                e.currentTarget.value,
-                queryString,
-              )}`
-              navigate(to)
-            }}
-          />
-        </InputGroup>
-      </TabList>
       {isFetching ? (
         <Center>
           <Spinner />
@@ -93,7 +78,7 @@ function Characters() {
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {characters?.length || "0"}
               </Tag>
-            </Button>{" "}
+            </Button>
             {PROFESSIONS.map((profession) => (
               <Button
                 key={profession}
@@ -117,6 +102,23 @@ function Characters() {
                 </Tag>
               </Button>
             ))}
+            <InputGroup width="20ch">
+              <InputLeftElement>
+                <MdSearch opacity="0.5" />
+              </InputLeftElement>
+              <Input
+                variant="unstyled"
+                value={keyword || ""}
+                onChange={(e) => {
+                  const to = `/characters?${getQueryString(
+                    "keyword",
+                    e.currentTarget.value,
+                    queryString,
+                  )}`
+                  navigate(to)
+                }}
+              />
+            </InputGroup>
           </Flex>
           <Routes>
             {currentAccount && characters && (

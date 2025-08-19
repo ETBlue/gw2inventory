@@ -15,7 +15,7 @@ import {
  * Hook for managing account-specific items (inventory, bank, materials)
  * Handles fetching and processing of account-bound item data
  */
-export function useAccountItems() {
+export function useAccountItemsData() {
   const { currentAccount } = useToken()
 
   const [inventoryItems, setInventoryItems] = useState<InventoryItemInList[]>(

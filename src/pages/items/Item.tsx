@@ -4,8 +4,8 @@ import { BsQuestionOctagonFill } from "react-icons/bs"
 import type { Item } from "@gw2api/types/data/item"
 import { UserItemInList } from "types/items"
 
-import css from "./styles/Item.module.css"
-
+import sharedTableCss from "~/styles/shared-table.module.css"
+import sharedTextCss from "~/styles/shared-text.module.css"
 interface Props {
   item: Item
   userItem: UserItemInList
@@ -16,40 +16,45 @@ function Item(props: Props) {
   const { item, userItem, materialCategory } = props
   return (
     <Tr>
-      <Td className={css.iconCell}>
+      <Td className={sharedTableCss.iconCell}>
         {item ? (
           <Image
             src={item.icon}
             alt={item.rarity}
-            className={`${css.icon} ${css[item.rarity.toLowerCase()]}`}
-            border="5px yellow solid"
+            className={`${sharedTableCss.icon} ${sharedTableCss[item.rarity.toLowerCase()]}`}
           />
         ) : (
           <BsQuestionOctagonFill size="3.5rem" />
         )}
       </Td>
-      <Td className={css.nameCell}>
+      <Td className={sharedTableCss.nameCell}>
         {item ? (
           <>
             <Heading
               as="h4"
               size="sm"
-              className={`${css.name} ${css[item?.rarity.toLowerCase()]}`}
+              className={`${sharedTableCss.name} ${sharedTableCss[item?.rarity.toLowerCase()]}`}
             >
               {item.name}
             </Heading>
             {item.description && (
-              <p className={`${css.description} ${css.secondary}`}>
+              <p
+                className={`${sharedTableCss.description} ${sharedTextCss.secondary}`}
+              >
                 {item.description}
               </p>
             )}
             {item.details?.description && (
-              <p className={`${css.description} ${css.secondary}`}>
+              <p
+                className={`${sharedTableCss.description} ${sharedTextCss.secondary}`}
+              >
                 {item.details.description}
               </p>
             )}
             {item.details?.infix_upgrade && (
-              <p className={`${css.description} ${css.secondary}`}>
+              <p
+                className={`${sharedTableCss.description} ${sharedTextCss.secondary}`}
+              >
                 {item.details.infix_upgrade.attributes.map((attr) => (
                   <Box as="span" key={attr.attribute} marginRight="0.5rem">
                     <Tag size="sm">{attr.attribute}</Tag> {attr.modifier}
@@ -58,7 +63,9 @@ function Item(props: Props) {
               </p>
             )}
             {"stats" in userItem && userItem.stats?.attributes && (
-              <p className={`${css.description} ${css.secondary}`}>
+              <p
+                className={`${sharedTableCss.description} ${sharedTextCss.secondary}`}
+              >
                 {Object.entries(userItem.stats.attributes).map(
                   ([attr, value]) => (
                     <Box key={attr} marginRight="0.5rem" as="span">
@@ -81,17 +88,17 @@ function Item(props: Props) {
       <Td maxWidth="12rem">
         {item?.type}
         {item?.details?.type && (
-          <div className={css.secondary}>{item?.details?.type}</div>
+          <div className={sharedTextCss.secondary}>{item?.details?.type}</div>
         )}
         {materialCategory && (
-          <div className={css.secondary}>{materialCategory}</div>
+          <div className={sharedTextCss.secondary}>{materialCategory}</div>
         )}
       </Td>
       <Td maxWidth="6rem">
         {item && (
           <>
             {item.level}
-            <div className={css.secondary}>
+            <div className={sharedTextCss.secondary}>
               {item && item.restrictions.join(",")}
             </div>
           </>
@@ -105,12 +112,16 @@ function Item(props: Props) {
           </Badge>
         )}
         {"bound_to" in userItem && userItem.bound_to && (
-          <div className={css.secondary}>bound to {userItem.bound_to}</div>
+          <div className={sharedTextCss.secondary}>
+            bound to {userItem.bound_to}
+          </div>
         )}
       </Td>
       <Td maxWidth="6rem">{"count" in userItem && userItem.count}</Td>
       <Td maxWidth="10rem">
-        {item && <Code className={css.secondary}>{item.chat_link}</Code>}
+        {item && (
+          <Code className={sharedTextCss.secondary}>{item.chat_link}</Code>
+        )}
       </Td>
     </Tr>
   )

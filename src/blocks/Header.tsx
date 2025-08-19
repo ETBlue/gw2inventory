@@ -18,7 +18,7 @@ import { COLORS, COMPONENT_THEME, LAYOUT } from "constants"
 import { UsedAccount } from "contexts/types/TokenContext"
 
 const MENU_ITEMS = [
-  // { to: "/account", text: "Account" },
+  { to: "/account", text: "Account" },
   { to: "/characters", text: "Characters" },
   { to: "/items", text: "Items" },
   // { to: "/unlocks", text: "Unlocks" },

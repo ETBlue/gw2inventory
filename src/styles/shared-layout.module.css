@@ -1,0 +1,23 @@
+.dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  max-width: 40rem;
+  align-items: stretch;
+  border-bottom: 1px solid var(--chakra-colors-gray-200);
+
+  dt,
+  dd {
+    border-top: 1px solid var(--chakra-colors-gray-200);
+    padding: 0.25rem 0;
+  }
+
+  dt {
+    text-transform: capitalize;
+    opacity: 0.75;
+    padding-right: 1rem;
+  }
+
+  dd {
+    font-size: 1rem;
+  }
+}

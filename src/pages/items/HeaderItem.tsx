@@ -5,9 +5,18 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
-import { Order, Sort } from "./types/Items"
-import { TABLE_HEADERS } from "./consts/Items"
-import css from "./styles/HeaderItem.module.css"
+import { Order, Sort } from "./types"
+import sharedTableCss from "~/styles/shared-table.module.css"
+
+const TABLE_HEADERS = [
+  "rarity",
+  "name",
+  "type",
+  "level",
+  "location",
+  "count",
+  "chat_link",
+]
 
 interface Props {
   activeSort: Sort
@@ -34,7 +43,7 @@ function HeaderItem(props: Props) {
                 )
               : getQueryString("sortBy", title, queryString)
           }`}
-          className={`${css.title} ${activeSort === title ? css.active : ""}`}
+          className={`${sharedTableCss.title} ${activeSort === title ? sharedTableCss.active : ""}`}
         >
           {title}{" "}
           {activeSort === title ? (

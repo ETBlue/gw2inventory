@@ -10,6 +10,7 @@ import Items from "pages/items"
 import Settings from "pages/settings"
 
 import "./App.css"
+import Account from "pages/account"
 
 const queryClient = new QueryClient()
 
@@ -17,6 +18,7 @@ const Content = () => {
   return (
     <BaseFrame>
       <Routes>
+        <Route path="/account/*" element={<Account />} />
         <Route path="/characters" element={<Characters />} />
         <Route path="/items/:category?" element={<Items />} />
         <Route path="/settings" element={<Settings />} />

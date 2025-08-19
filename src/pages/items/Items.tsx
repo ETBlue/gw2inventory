@@ -43,9 +43,10 @@ import {
   isItemInTypes,
 } from "./helpers/count"
 import { compare, compareRarity } from "./helpers/compare"
-import { MENU_ITEMS } from "./consts/Items"
-import { Sort, Order } from "./types/Items"
-import css from "./styles/Items.module.css"
+
+import { Sort, Order } from "./types"
+import sharedTableCss from "~/styles/shared-table.module.css"
+import { MENU_ITEMS } from "./constants"
 
 function Items() {
   const {
@@ -150,7 +151,7 @@ function Items() {
       index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
     >
       <TabList>
-        <Tab as={NavLink} exact to="/items">
+        <Tab as={NavLink} to="/items">
           All
           <Tag size="sm" margin="0 0 -0.1em 0.5em">
             {allItems?.length}
@@ -224,7 +225,7 @@ function Items() {
             setPageIndex={setPageIndex}
             pages={pages}
           />
-          <Table className={css.table}>
+          <Table className={sharedTableCss.table}>
             <Thead>
               <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
             </Thead>

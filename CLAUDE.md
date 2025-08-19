@@ -20,6 +20,17 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Testing
+npm test                # Run tests in watch mode
+npm run test:run        # Run tests once
+npm run test:ui         # Open Vitest UI
+npm run test:coverage   # Run tests with coverage
+
+# Code quality
+npm run typecheck       # TypeScript type checking
+npm run lint            # ESLint code analysis
+npm run format          # Format code with Prettier
 ```
 
 ## Architecture
@@ -38,6 +49,9 @@ The application uses a hybrid approach with React Context API for global state a
 - `useAccountItems` - Handles account-specific items (inventory, bank, materials)
 - `useItemCache` - Manages item caching and deduplication
 - `useMaterialCategories` - Handles material category data
+- `useTitles` - Fetches account titles and title details
+- `useWallet` - Fetches account wallet and currency details
+- `useSkins` - Fetches account skins with detailed skin information and chunked API requests
 
 **Architecture Principles:**
 - Prefer custom hooks over React Context when data is used in limited components
@@ -62,26 +76,36 @@ The application uses a hybrid approach with React Context API for global state a
   - `/characters` - Character overview and management
   - `/items/:category?` - Item inventory with optional category filtering
   - `/settings` - Token configuration
+  - `/account/*` - Account-related pages:
+    - `/account/overview` - Account overview with titles
+    - `/account/wallet` - Wallet currencies display
+    - `/account/skins` - Skins management with search, filtering, and sorting
 
 ### Code Organization
 
 - `/src/contexts/` - React Context providers for global state (Token, Character, Skill)
 - `/src/types/` - TypeScript type definitions organized by domain
   - `items.ts` - All item-related types (Items, Materials, UserItemInList, etc.)
+  - `titles.ts` - Title-related types (AccountTitles, Title from @gw2api/types)
+  - `wallet.ts` - Wallet and currency types (AccountWallet, Currency from @gw2api/types)
+  - `skins.ts` - Skin-related types (AccountSkins, Skin from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
 - `/src/hooks/` - Custom React hooks for state management and data fetching
 - `/src/constants/` - Application constants (API, UI, theme configurations)
 - `/src/docs/` - Architecture documentation and guidelines
+- `/src/test/` - Test configuration and setup files
 
 **Hook Patterns:**
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`) expose read-only data
 - Focused custom hooks for specific functionality (e.g., `useItemCache`, `useAccountItems`)
 - Direct hook usage preferred over context when data is component-specific
+- Generic components support different data types (e.g., Pagination component)
 
 ### Important Patterns
 
+- Path alias `~` configured to represent `src/` directory for cleaner imports
 - Absolute imports configured from `src/` directory
 - Chakra UI for component styling
 - React Query for data fetching with comprehensive error handling
@@ -94,6 +118,18 @@ The application uses a hybrid approach with React Context API for global state a
 - Reactive architecture with automatic data synchronization
 - Separation of concerns with public/internal API patterns
 - Constants-based configuration to eliminate magic numbers
+- Advanced search functionality supporting JSON.stringify-based queries across all object properties
+- Rarity-based visual styling using CSS modules with Guild Wars 2 color theming
+- Centralized pagination configuration via ITEM_COUNT_PER_PAGE constant
+
+### Testing
+
+- **Framework:** Vitest with jsdom environment for React component testing
+- **Testing Libraries:** @testing-library/react for component testing, @testing-library/jest-dom for DOM matchers
+- **Configuration:** `vite.config.ts` includes test configuration with globals enabled
+- **Test Files:** Place test files with `.test.ts` or `.test.tsx` extensions anywhere in `src/`
+- **Coverage:** Available via `npm run test:coverage`
+- **UI:** Interactive test runner available via `npm run test:ui`
 
 ### Code Style
 
