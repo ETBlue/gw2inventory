@@ -66,15 +66,13 @@ function Header() {
             height="3.5rem"
             borderBottom={COMPONENT_THEME.HEADER.BORDER_BOTTOM}
             _hover={{ background: COLORS.PRIMARY_HOVER }}
-            style={({ isActive }) =>
-              isActive
-                ? {
-                    background: COLORS.PRIMARY,
-                    color: "#f9f9f9",
-                    cursor: "initial",
-                  }
-                : {}
-            }
+            sx={{
+              "&[data-active]": {
+                background: COLORS.PRIMARY,
+                color: "#f9f9f9",
+                cursor: "initial",
+              },
+            }}
           >
             {item.text}
           </Button>

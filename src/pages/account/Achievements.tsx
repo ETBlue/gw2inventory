@@ -6,7 +6,7 @@ function Achievements() {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: ["account/achievements", token],
     queryFn: queryFunction,
   })

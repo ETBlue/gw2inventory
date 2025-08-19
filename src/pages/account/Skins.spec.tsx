@@ -172,7 +172,7 @@ describe("Skins Component", () => {
       {
         id: 2,
         name: "Iron Sword",
-        type: "Weapon", 
+        type: "Weapon",
         rarity: "Exotic",
         icon: "https://render.guildwars2.com/file/example2.png",
         description: "A basic iron sword",
@@ -687,7 +687,7 @@ describe("Skins Component", () => {
       {
         id: 2,
         name: "Legendary Item",
-        type: "Armor", 
+        type: "Armor",
         rarity: "Legendary",
         icon: "https://example.com/legendary.png",
         description: "A legendary item",
@@ -733,18 +733,12 @@ describe("Skins Component", () => {
     const rarityHeader = screen.getByText("Rarity")
     fireEvent.click(rarityHeader)
 
-    // Get all skin name elements in order
-    const skinNameElements = [
-      screen.getByText("Basic Item"),
-      screen.getByText("Fine Item"), 
-      screen.getByText("Exotic Item"),
-      screen.getByText("Legendary Item"),
-    ]
+    // Verify items are sorted by rarity hierarchy
 
     // Verify they appear in rarity hierarchy order (ascending by default)
     const allItems = screen.getAllByText(/Item$/)
-    const itemTexts = allItems.map(el => el.textContent)
-    
+    const itemTexts = allItems.map((el) => el.textContent)
+
     // Should be sorted in rarity order: Basic, Fine, Exotic, Legendary
     expect(itemTexts).toContain("Basic Item")
     expect(itemTexts).toContain("Fine Item")
@@ -756,10 +750,10 @@ describe("Skins Component", () => {
 
     // After second click, should be in descending rarity order: Legendary, Exotic, Fine, Basic
     const allItemsDesc = screen.getAllByText(/Item$/)
-    const itemTextsDesc = allItemsDesc.map(el => el.textContent)
-    
+    const itemTextsDesc = allItemsDesc.map((el) => el.textContent)
+
     expect(itemTextsDesc).toContain("Legendary Item")
-    expect(itemTextsDesc).toContain("Exotic Item") 
+    expect(itemTextsDesc).toContain("Exotic Item")
     expect(itemTextsDesc).toContain("Fine Item")
     expect(itemTextsDesc).toContain("Basic Item")
   })

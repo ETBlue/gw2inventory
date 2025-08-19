@@ -6,7 +6,7 @@ function Masteries() {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: ["account/masteries", token],
     queryFn: queryFunction,
   })

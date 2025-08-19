@@ -152,7 +152,7 @@ describe("Overview Component", () => {
 
     // Check that individual titles are rendered (should be sorted alphabetically)
     expect(screen.getByText("Champion")).toBeInTheDocument()
-    expect(screen.getByText("Kingmaker")).toBeInTheDocument() 
+    expect(screen.getByText("Kingmaker")).toBeInTheDocument()
     expect(screen.getByText("Slayer")).toBeInTheDocument()
 
     // Verify alphabetical order by checking the list structure

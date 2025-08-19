@@ -6,14 +6,14 @@ function Home() {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
 
-  const { data: catsData, isFetching: catsFetching } = useQuery({
+  const { data: catsData } = useQuery({
     queryKey: ["account/home/cats", token],
     queryFn: queryFunction,
   })
 
   console.log(catsData)
 
-  const { data: nodesData, isFetching: nodesFetching } = useQuery({
+  const { data: _nodesData } = useQuery({
     queryKey: ["account/home/nodes", token],
     queryFn: queryFunction,
   })

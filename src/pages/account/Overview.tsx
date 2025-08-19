@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query"
 import {
   Badge,
   Center,
-  CheckboxIcon,
   Divider,
   Heading,
   List,

@@ -17,32 +17,34 @@ export const useWallet = () => {
     isFetching: isWalletFetching,
     error: walletError,
   } = useQuery<AccountWalletData>({
-    queryKey: ["account/wallet", token] as const,
-    queryFn: queryFunction,
+    queryKey: ["account/wallet", token],
+    queryFn: queryFunction as any,
     staleTime: Infinity,
     enabled: !!token,
   })
 
   // Fetch currency details for the wallet currencies
-  const currencyIds = walletData?.map((entry) => entry.id).join(",") || ""
+  const currencyIds = walletData
+    ? (walletData as any).map((entry: any) => entry.id).join(",")
+    : ""
   const {
     data: currencies,
     isFetching: isCurrenciesFetching,
     error: currenciesError,
   } = useQuery<Currency[]>({
-    queryKey: ["currencies", undefined, `ids=${currencyIds}`] as const,
-    queryFn: queryFunction,
+    queryKey: ["currencies", undefined, `ids=${currencyIds}`],
+    queryFn: queryFunction as any,
     staleTime: Infinity,
-    enabled: !!walletData && walletData.length > 0,
+    enabled: !!walletData && (walletData as any).length > 0,
   })
 
   // Combine wallet data with currency details
   const walletWithDetails: WalletData | undefined =
     walletData && currencies
-      ? walletData.map((walletEntry) => ({
+      ? (walletData as any).map((walletEntry: any) => ({
           ...walletEntry,
-          currency: currencies.find(
-            (currency) => currency.id === walletEntry.id,
+          currency: (currencies as any).find(
+            (currency: any) => currency.id === walletEntry.id,
           ),
         }))
       : undefined

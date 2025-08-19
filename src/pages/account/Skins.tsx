@@ -82,9 +82,10 @@ export default function Skins() {
       let bValue: string | number = ""
 
       switch (sortBy) {
-        case "rarity":
+        case "rarity": {
           const rarityComparison = compareRarity(a.rarity, b.rarity)
           return sortOrder === "asc" ? rarityComparison : rarityComparison * -1
+        }
         case "name":
           aValue = a.name.toLowerCase()
           bValue = b.name.toLowerCase()

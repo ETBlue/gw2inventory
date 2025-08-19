@@ -71,8 +71,8 @@ function Items() {
     order,
     type: activeType,
   } = useSearchParams()
-  const activeSort: Sort = sortBy || "location"
-  const activeOrder: Order = order || "asc"
+  const activeSort: Sort = (sortBy as Sort) || "location"
+  const activeOrder: Order = (order as Order) || "asc"
 
   const allItems = useMemo(
     () => [
@@ -121,7 +121,7 @@ function Items() {
         const number =
           activeSort === "rarity"
             ? compareRarity(a.rarity, b.rarity)
-            : compare(a[activeSort], b[activeSort])
+            : compare((a as any)[activeSort], (b as any)[activeSort])
         return activeOrder === "asc" ? number : number * -1
       })
   }, [
@@ -233,7 +233,7 @@ function Items() {
               {pages[pageIndex]?.map(
                 (userItem: UserItemInList, index: number) => {
                   const item: ItemTypeDef = items[userItem.id]
-                  const materialCategory = materials[userItem.category]
+                  const materialCategory = materials[(userItem as any).category]
                   return (
                     <Item
                       key={index}

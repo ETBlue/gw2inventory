@@ -1,0 +1,45 @@
+#!/bin/sh
+
+echo "🔍 Running quality checks before push..."
+
+# Type checking
+echo "⚡ Running TypeScript type check..."
+npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript type check failed"
+  exit 1
+fi
+
+# Linting
+echo "🧹 Running ESLint..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ ESLint check failed"
+  exit 1
+fi
+
+# Format check
+echo "📝 Checking code formatting..."
+npm run format:check
+if [ $? -ne 0 ]; then
+  echo "❌ Code formatting check failed"
+  exit 1
+fi
+
+# Tests
+echo "🧪 Running tests..."
+npm run test:run
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed"
+  exit 1
+fi
+
+# Build check
+echo "🏗️ Running build check..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed"
+  exit 1
+fi
+
+echo "✅ All quality checks passed! Push allowed."

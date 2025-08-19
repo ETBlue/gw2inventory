@@ -22,7 +22,7 @@ function SubMenuItem(props: Props) {
   const { queryString } = useSearchParams()
 
   return (
-    <Flex justifyContent="center" margin="1rem auto" columns={showOnly.length}>
+    <Flex justifyContent="center" margin="1rem auto">
       {showOnly.map((type: string) => (
         <Button
           key={type}

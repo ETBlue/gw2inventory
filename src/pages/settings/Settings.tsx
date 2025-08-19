@@ -37,7 +37,7 @@ function Settings() {
     const { data } = await refetch()
     if (data) {
       const account = {
-        name: data.name,
+        name: (data as any).name,
         token,
       }
       addUsedAccount(account)

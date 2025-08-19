@@ -14,7 +14,7 @@ const CharacterContext = createContext<Values>({
 function CharacterProvider(props: { children: React.ReactNode }) {
   const { currentAccount } = useToken()
 
-  const { data: characters, isFetching } = useQuery({
+  const { data: characters = [], isFetching } = useQuery({
     queryKey: ["characters", currentAccount?.token, "ids=all"],
     queryFn: queryFunction,
     staleTime: Infinity,
@@ -22,7 +22,9 @@ function CharacterProvider(props: { children: React.ReactNode }) {
   })
 
   return (
-    <CharacterContext.Provider value={{ characters, isFetching }}>
+    <CharacterContext.Provider
+      value={{ characters: (characters as any) || [], isFetching }}
+    >
       {props.children}
     </CharacterContext.Provider>
   )

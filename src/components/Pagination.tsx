@@ -60,7 +60,7 @@ function Pagination<T = UserItemInList>(props: Props<T>) {
       <IconButton aria-label="previous page" onClick={goPrev}>
         <CgChevronLeft />
       </IconButton>
-      {pages.map((chunk, index: number) => {
+      {pages.map((_, index: number) => {
         const isOutofScope =
           index > pageIndex + PAGINATION.VISIBLE_PAGE_RANGE ||
           index < pageIndex - PAGINATION.VISIBLE_PAGE_RANGE

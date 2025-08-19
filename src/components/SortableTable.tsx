@@ -1,3 +1,4 @@
+import React from "react"
 import { Link, useLocation } from "react-router"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
@@ -14,8 +15,8 @@ export interface Column {
   key: string
   title: string
   render:
-    | ((data: Character) => JSX.Element | string)
-    | ((data: Item) => JSX.Element | string)
+    | ((data: Character) => React.JSX.Element | string)
+    | ((data: Item) => React.JSX.Element | string)
 }
 
 interface Props {
@@ -39,10 +40,8 @@ function SortableTable(props: Props) {
 
   const rows = unsortedRows.sort((a, b) => {
     // Type-safe property access using keyof operator
-    const aValue =
-      activeSort in a ? (a as Record<string, string | number>)[activeSort] : ""
-    const bValue =
-      activeSort in b ? (b as Record<string, string | number>)[activeSort] : ""
+    const aValue = activeSort in a ? (a as any)[activeSort] : ""
+    const bValue = activeSort in b ? (b as any)[activeSort] : ""
     const number = compare(aValue, bValue)
     return activeOrder === "asc" ? number : number * -1
   })
@@ -84,7 +83,7 @@ function SortableTable(props: Props) {
         {rows.map((row) => (
           <Tr key={row.name}>
             {columns.map((column: Column) => (
-              <Td key={column.key}>{column.render(row)}</Td>
+              <Td key={column.key}>{column.render(row as any)}</Td>
             ))}
           </Tr>
         ))}

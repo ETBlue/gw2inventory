@@ -38,7 +38,7 @@ export const isItemInTypes = (params: TypeParams) => {
   if (!itemRaw) return false
 
   if (pathname === "/items/material") {
-    return types.includes(materials[userItem.category])
+    return types.includes(materials[(userItem as any).category])
   } else {
     return types.includes(itemRaw?.type)
   }
