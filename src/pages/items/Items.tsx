@@ -45,7 +45,8 @@ import {
 import { compare, compareRarity } from "./helpers/compare"
 import { MENU_ITEMS } from "./consts/Items"
 import { Sort, Order } from "./types/Items"
-import css from "./styles/Items.module.css"
+
+import sharedTableCss from "~/styles/shared-table.module.css"
 
 function Items() {
   const {
@@ -224,7 +225,7 @@ function Items() {
             setPageIndex={setPageIndex}
             pages={pages}
           />
-          <Table className={css.table}>
+          <Table className={sharedTableCss.table}>
             <Thead>
               <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
             </Thead>

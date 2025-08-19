@@ -24,8 +24,9 @@ import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSkins } from "~/hooks/useSkins"
 import Pagination from "~/components/Pagination"
-import css from "./styles/Skins.module.css"
+import css from "./Skins.module.css"
 import { ITEM_COUNT_PER_PAGE } from "~/config"
+import sharedTextCss from "~/styles/shared-text.module.css"
 
 type SkinType = "All" | "Armor" | "Weapon" | "Back" | "Gathering"
 type SkinSort = "name" | "type" | "flags" | "restrictions" | "details"
@@ -225,7 +226,7 @@ export default function Skins() {
           pages={pages}
         />
       )}
-      <Table>
+      <Table className={css.table}>
         <Thead>
           <Tr>
             <Th></Th>
@@ -266,7 +267,9 @@ export default function Skins() {
                   {skin.name}
                 </Heading>
                 {skin.description && (
-                  <p className={`${css.description} ${css.secondary}`}>
+                  <p
+                    className={`${css.description} ${sharedTextCss.secondary}`}
+                  >
                     {skin.description}
                   </p>
                 )}

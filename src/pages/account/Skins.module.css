@@ -1,0 +1,7 @@
+/* Import shared table styles */
+@import url("~/styles/shared-table.module.css");
+
+/* Override icon width for skins */
+.icon {
+  max-width: 3.5rem;
+}

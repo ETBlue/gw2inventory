@@ -1,3 +1,17 @@
+/* Shared table styles for item and skin displays with Guild Wars 2 rarity theming */
+
+.table td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.table th,
+.table tr > a,
+.table td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .title {
   cursor: pointer;
   position: relative;
@@ -18,7 +32,6 @@
 
 .icon {
   height: 3.5rem;
-  max-width: 3.5rem;
   box-sizing: content-box;
   border-width: 0 0.5rem 0 0 !important;
   border-style: solid;
@@ -104,9 +117,4 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
-}
-
-.secondary {
-  font-size: 0.875rem;
-  opacity: 0.75;
 }
