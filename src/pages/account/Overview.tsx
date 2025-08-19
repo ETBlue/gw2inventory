@@ -1,11 +1,32 @@
-import { useMemo } from "react"
+import { GiCheckMark } from "react-icons/gi"
+import { Fragment, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Center, Grid, Spinner } from "@chakra-ui/react"
+import {
+  Badge,
+  Center,
+  CheckboxIcon,
+  Divider,
+  Heading,
+  List,
+  ListIcon,
+  ListItem,
+  Spinner,
+} from "@chakra-ui/react"
 import { useToken } from "~/hooks/useToken"
 import { useTitles } from "~/hooks/useTitles"
 import { Account } from "@gw2api/types/data/account"
 import { queryFunction } from "~/helpers/api"
 import { format } from "date-fns"
+import sharedTextCss from "~/styles/shared-text.module.css"
+import sharedLayoutCss from "~/styles/shared-layout.module.css"
+import { FaCrown } from "react-icons/fa"
+
+function formatAccessText(text: string): string {
+  return text
+    .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before uppercase letters
+    .replace(/([a-zA-Z])(\d)/g, "$1 $2") // Add space before numbers
+    .replace(/(\d)([a-zA-Z])/g, "$1 $2") // Add space after numbers
+}
 
 function Overview() {
   const { currentAccount } = useToken()
@@ -47,34 +68,66 @@ function Overview() {
   if (!account || !progression) return null
 
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-      <div>
-        <p>{account.name}</p>
-        <p>
-          Created:{" "}
-          {format(new Date(account.created), "MMMM d, yyyy 'at' h:mm a")}
-        </p>
-        <p>Access: {account.access.map((item) => item).join(", ")}</p>
-        <p>WvW Rank: {account.wvw_rank}</p>
-        <p>Fractal Level: {account.fractal_level}</p>
-        {progression.map((item) => (
-          <p key={item.id}>
-            {item.id.replace(/_/g, " ")}: {item.value.toLocaleString()}
-          </p>
-        ))}
-      </div>
-      <div>
-        <p>Titles ({sortedTitles?.length || 0})</p>
-        <ul>
-          {sortedTitles?.map((title) => (
-            <li key={title.id}>
-              {title.name}
-              {title.ap_required && ` (${title.ap_required} AP)`}
-            </li>
+    <Center flexDirection={"column"} padding="2rem">
+      <Heading size="md" key={account.name} fontFamily="Rosario">
+        {account.name}
+      </Heading>
+      <p className={sharedTextCss.secondary}>
+        Created at{" "}
+        {format(new Date(account.created), "MMMM d, yyyy 'at' h:mm a")}
+      </p>
+      <Divider border={"none"} margin={"0.5rem 0"} />
+      <dl className={sharedLayoutCss.dl}>
+        <dt>Access</dt>
+        <dd>
+          {account.access.map((item) => (
+            <Badge
+              key={item}
+              margin="0 0.5rem 0.25rem 0"
+              padding="0"
+              textTransform={"none"}
+              fontWeight={"normal"}
+              fontFamily={"Rosario"}
+              fontSize={"0.875rem"}
+              display={"inline-flex"}
+              alignItems={"center"}
+              gap={"0.25rem"}
+              background={"none"}
+            >
+              <GiCheckMark style={{ color: "green" }} />
+              {formatAccessText(item)}
+            </Badge>
           ))}
-        </ul>
-      </div>
-    </Grid>
+        </dd>
+        <dt>WvW Rank</dt>
+        <dd>{account.wvw_rank}</dd>
+        <dt>Fractal Level</dt>
+        <dd>{account.fractal_level}</dd>
+        {progression.map((item) => (
+          <Fragment key={item.id}>
+            <dt>{item.id.replace(/_/g, " ")}</dt>
+            <dd>{item.value.toLocaleString()}</dd>
+          </Fragment>
+        ))}
+        <dt>Titles</dt>
+        <dd>{sortedTitles?.length || 0}</dd>
+      </dl>
+      <Divider border={"none"} margin={"0.5rem 0"} />
+      <List>
+        {sortedTitles?.map((title) => (
+          <ListItem key={title.id}>
+            <ListIcon as={FaCrown} color="gold" />
+            {title.name}
+            {title.ap_required && (
+              <span className={sharedTextCss.secondary}>
+                {" "}
+                (${title.ap_required} AP)
+              </span>
+            )}
+          </ListItem>
+        ))}
+      </List>
+    </Center>
   )
 }
 
