@@ -1,9 +1,7 @@
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router"
+import { Link, Route, Routes, useNavigate } from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
-  TabList,
-  Tab,
   Center,
   Spinner,
   Button,
@@ -12,7 +10,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Spacer,
 } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
