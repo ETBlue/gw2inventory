@@ -2,6 +2,8 @@ import { useQueries, useQuery } from "@tanstack/react-query"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import type { Outfit } from "@gw2api/types/data/outfit"
+import { chunkArray } from "~/helpers/chunking"
+import { API_CONSTANTS } from "~/constants/api"
 
 // Account outfits endpoint returns number[]
 type AccountOutfits = number[]
@@ -26,9 +28,9 @@ export const useOutfits = () => {
     enabled: !!token,
   })
 
-  // Chunk account outfit IDs into groups of 200
+  // Chunk account outfit IDs into groups using API_CONSTANTS.ITEMS_CHUNK_SIZE
   const outfitIdChunks = accountOutfitIds
-    ? chunkArray(accountOutfitIds, 200)
+    ? chunkArray(accountOutfitIds, API_CONSTANTS.ITEMS_CHUNK_SIZE)
     : []
 
   // Fetch outfit details for each chunk
@@ -68,15 +70,4 @@ export const useOutfits = () => {
     error,
     hasToken: !!token,
   }
-}
-
-/**
- * Helper function to split an array into chunks of specified size
- */
-function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-  const chunks: T[][] = []
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize))
-  }
-  return chunks
 }

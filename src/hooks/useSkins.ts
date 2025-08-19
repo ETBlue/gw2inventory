@@ -2,10 +2,12 @@ import { useQueries, useQuery } from "@tanstack/react-query"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import { AccountSkins, Skin } from "~/types/skins"
+import { chunkArray } from "~/helpers/chunking"
+import { API_CONSTANTS } from "~/constants/api"
 
 /**
  * Custom hook to fetch account skins and skin details
- * Fetches skin details in chunks of 200 to handle large skin collections
+ * Fetches skin details in chunks to handle large skin collections
  */
 export const useSkins = () => {
   const { currentAccount } = useToken()
@@ -23,8 +25,10 @@ export const useSkins = () => {
     enabled: !!token,
   })
 
-  // Chunk account skin IDs into groups of 200
-  const skinIdChunks = accountSkinIds ? chunkArray(accountSkinIds, 200) : []
+  // Chunk account skin IDs into groups using API_CONSTANTS.ITEMS_CHUNK_SIZE
+  const skinIdChunks = accountSkinIds
+    ? chunkArray(accountSkinIds, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    : []
 
   // Fetch skin details for each chunk
   const skinQueries = useQueries({
@@ -60,15 +64,4 @@ export const useSkins = () => {
     error,
     hasToken: !!token,
   }
-}
-
-/**
- * Helper function to split an array into chunks of specified size
- */
-function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-  const chunks: T[][] = []
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize))
-  }
-  return chunks
 }
