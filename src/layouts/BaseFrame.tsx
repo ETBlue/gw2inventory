@@ -1,4 +1,4 @@
-import Header from "blocks/Header"
+import Header from "~/layouts/Header"
 
 import { Box, Grid } from "@chakra-ui/react"
 
