@@ -52,6 +52,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useTitles` - Fetches account titles and title details
 - `useWallet` - Fetches account wallet and currency details
 - `useSkins` - Fetches account skins with detailed skin information and chunked API requests
+- `useOutfits` - Fetches account outfits with detailed outfit information and chunked API requests
 
 **Architecture Principles:**
 - Prefer custom hooks over React Context when data is used in limited components
@@ -80,6 +81,7 @@ The application uses a hybrid approach with React Context API for global state a
     - `/account/overview` - Account overview with titles
     - `/account/wallet` - Wallet currencies display
     - `/account/skins` - Skins management with search, filtering, and sorting
+    - `/account/outfits` - Outfits display with alphabetical sorting
 
 ### Code Organization
 
@@ -89,6 +91,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `titles.ts` - Title-related types (AccountTitles, Title from @gw2api/types)
   - `wallet.ts` - Wallet and currency types (AccountWallet, Currency from @gw2api/types)
   - `skins.ts` - Skin-related types (AccountSkins, Skin from @gw2api/types)
+  - `outfits.ts` - Outfit-related types (AccountOutfits, Outfit from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
