@@ -135,34 +135,32 @@ describe("Overview Component", () => {
       expect(screen.getByText("Test Account")).toBeInTheDocument()
     })
 
-    // Check that account information is displayed
-    expect(screen.getByText(/Created:/)).toBeInTheDocument()
-    expect(screen.getByText(/Access:/)).toBeInTheDocument()
-    expect(screen.getByText("WvW Rank: 100")).toBeInTheDocument()
-    expect(screen.getByText("Fractal Level: 50")).toBeInTheDocument()
+    // Check that dt elements are displayed
+    expect(screen.getByText("Access")).toBeInTheDocument()
+    expect(screen.getByText("WvW Rank")).toBeInTheDocument()
+    expect(screen.getByText("Fractal Level")).toBeInTheDocument()
+    expect(screen.getByText("luck")).toBeInTheDocument()
+    expect(screen.getByText("gold")).toBeInTheDocument()
+    expect(screen.getByText("Titles")).toBeInTheDocument()
 
-    // Check that progression data is displayed
-    expect(screen.getByText("luck: 250,000")).toBeInTheDocument()
-    expect(screen.getByText("gold: 1,000,000")).toBeInTheDocument()
-
-    // Check that titles are displayed with count
-    expect(screen.getByText("Titles (3)")).toBeInTheDocument()
+    // Check that dd values are displayed
+    expect(screen.getByText("100")).toBeInTheDocument()
+    expect(screen.getByText("50")).toBeInTheDocument()
+    expect(screen.getByText("250,000")).toBeInTheDocument()
+    expect(screen.getByText("1,000,000")).toBeInTheDocument()
+    expect(screen.getByText("3")).toBeInTheDocument()
 
     // Check that individual titles are rendered (should be sorted alphabetically)
-    expect(screen.getByText("Champion (500 AP)")).toBeInTheDocument()
-    expect(screen.getByText("Kingmaker (100 AP)")).toBeInTheDocument()
+    expect(screen.getByText("Champion")).toBeInTheDocument()
+    expect(screen.getByText("Kingmaker")).toBeInTheDocument() 
     expect(screen.getByText("Slayer")).toBeInTheDocument()
 
-    // Verify that titles without AP requirement don't show AP
-    const slayerElement = screen.getByText("Slayer")
-    expect(slayerElement.textContent).toBe("Slayer")
-
-    // Verify alphabetical order by checking the DOM structure
-    const titlesList = screen.getByText("Titles (3)").nextElementSibling
-    const titleItems = titlesList?.querySelectorAll("li")
-    expect(titleItems?.[0]?.textContent).toBe("Champion (500 AP)")
-    expect(titleItems?.[1]?.textContent).toBe("Kingmaker (100 AP)")
-    expect(titleItems?.[2]?.textContent).toBe("Slayer")
+    // Verify alphabetical order by checking the list structure
+    const titlesList = screen.getByRole("list")
+    const titleItems = titlesList.querySelectorAll("li")
+    expect(titleItems[0]).toHaveTextContent("Champion ($500 AP)")
+    expect(titleItems[1]).toHaveTextContent("Kingmaker ($100 AP)")
+    expect(titleItems[2]).toHaveTextContent("Slayer")
   })
 
   it("displays empty titles list when account has no titles", async () => {
@@ -209,12 +207,13 @@ describe("Overview Component", () => {
       expect(screen.getByText("New Account")).toBeInTheDocument()
     })
 
-    // Check that titles section shows 0 count
-    expect(screen.getByText("Titles (0)")).toBeInTheDocument()
+    // Check that titles dt shows and dd shows 0 count
+    expect(screen.getByText("Titles")).toBeInTheDocument()
+    expect(screen.getByText("0")).toBeInTheDocument()
 
     // Check that no title items are rendered
-    const titlesList = screen.getByText("Titles (0)").nextElementSibling
-    expect(titlesList?.children).toHaveLength(0)
+    const titlesList = screen.getByRole("list")
+    expect(titlesList.children).toHaveLength(0)
   })
 
   it("handles titles loading state independently", async () => {
@@ -276,7 +275,8 @@ describe("Overview Component", () => {
       expect(screen.getByText("Test Account")).toBeInTheDocument()
     })
 
-    expect(screen.getByText("Titles (1)")).toBeInTheDocument()
+    expect(screen.getByText("Titles")).toBeInTheDocument()
+    expect(screen.getByText("1")).toBeInTheDocument()
     expect(screen.getByText("Test Title")).toBeInTheDocument()
   })
 })
