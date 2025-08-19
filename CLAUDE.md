@@ -30,7 +30,10 @@ npm run test:coverage   # Run tests with coverage
 # Code quality
 npm run typecheck       # TypeScript type checking
 npm run lint            # ESLint code analysis
+npm run lint:fix        # ESLint code analysis with auto-fix
 npm run format          # Format code with Prettier
+npm run format:check    # Check code formatting without changes
+npm run prepare         # Setup git hooks (husky)
 ```
 
 ## Architecture
@@ -40,11 +43,13 @@ npm run format          # Format code with Prettier
 The application uses a hybrid approach with React Context API for global state and custom hooks for data management:
 
 **Active Contexts:**
+
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
 
 **Custom Hooks (replacing previous contexts):**
+
 - `useItemsData` - Manages all item-related data (replaced ItemContext)
 - `useAccountItems` - Handles account-specific items (inventory, bank, materials)
 - `useItemCache` - Manages item caching and deduplication
@@ -55,6 +60,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useOutfits` - Fetches account outfits with detailed outfit information and chunked API requests
 
 **Architecture Principles:**
+
 - Prefer custom hooks over React Context when data is used in limited components
 - Reactive patterns where hooks automatically respond to dependency changes
 - Public vs Internal API design for proper encapsulation
@@ -94,6 +100,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `outfits.ts` - Outfit-related types (AccountOutfits, Outfit from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
+- `/src/layouts/` - Layout components (BaseFrame, Header)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, and type guards
 - `/src/pages/items/helpers/` - Item-specific helper functions including rarity comparison and sorting utilities
 - `/src/hooks/` - Custom React hooks for state management and data fetching
@@ -103,6 +110,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `/src/test/` - Test configuration and setup files
 
 **Hook Patterns:**
+
 - Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`) expose read-only data
 - Focused custom hooks for specific functionality (e.g., `useItemCache`, `useAccountItems`)
 - Direct hook usage preferred over context when data is component-specific
@@ -152,6 +160,16 @@ The application uses a hybrid approach with React Context API for global state a
   - Discriminated unions for reducer actions
 - Target ES5 with modern library features
 
+### Quality Control Pipeline
+
+- **Husky git hooks** for automated quality checks:
+  - Pre-commit: runs lint-staged for staged files
+  - Pre-push: comprehensive checks (typecheck, lint, test, build)
+- **lint-staged** configuration:
+  - TypeScript files: ESLint auto-fix + Prettier formatting
+  - Other files: Prettier formatting only
+- **Automated validation** ensures code quality before commits and pushes
+
 ### Error Handling
 
 - Comprehensive error handling with custom error classes (`src/helpers/errors.ts`)
@@ -171,6 +189,7 @@ The application uses a hybrid approach with React Context API for global state a
 Recent refactoring efforts have significantly improved code quality:
 
 **Maintainability (9/10):**
+
 - Eliminated code duplication through reusable hooks
 - Replaced magic numbers with semantic constants
 - Broke down large components into focused, single-responsibility pieces
@@ -179,17 +198,20 @@ Recent refactoring efforts have significantly improved code quality:
 - Consolidated type definitions in `/src/types/` organized by domain
 
 **Type Safety (9/10):**
+
 - Comprehensive TypeScript type safety with generics and type guards
 - Explicit return type annotations on all exported functions
 - Runtime validation for external data sources
 
 **Error Handling (8/10):**
+
 - Custom error classes with specific error types
 - Retry logic with exponential backoff
 - User feedback through toast notifications
 - Graceful degradation for API failures
 
 **Performance (8/10):**
+
 - Optimized rendering with proper memoization
 - Efficient data fetching with chunking and caching
 - Minimized unnecessary re-renders
