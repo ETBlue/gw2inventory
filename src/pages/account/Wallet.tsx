@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
+import { useNavigate } from "react-router"
 import {
   Center,
   Spinner,
@@ -14,6 +15,8 @@ import {
 } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useWallet } from "~/hooks/useWallet"
+import { useSearchParams } from "~/hooks/url"
+import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 import sharedTextCss from "~/styles/shared-text.module.css"
@@ -24,8 +27,11 @@ const WALLET_TABLE_HEADERS: WalletSort[] = ["name", "value"]
 
 export default function Wallet() {
   const { walletWithDetails = [], isFetching, hasToken } = useWallet()
-  const [sortBy, setSortBy] = useState<WalletSort>("name")
-  const [sortOrder, setSortOrder] = useState<WalletOrder>("asc")
+  const navigate = useNavigate()
+  const { queryString, sortBy, order } = useSearchParams()
+
+  const activeSortBy: WalletSort = (sortBy as WalletSort) || "name"
+  const activeSortOrder: WalletOrder = (order as WalletOrder) || "asc"
 
   // Sort wallet entries based on selected criteria
   const sortedWalletEntries = useMemo(() => {
@@ -33,7 +39,7 @@ export default function Wallet() {
       let aValue: string | number = ""
       let bValue: string | number = ""
 
-      switch (sortBy) {
+      switch (activeSortBy) {
         case "name":
           aValue = a.currency?.name ?? `Currency ${a.id}`
           bValue = b.currency?.name ?? `Currency ${b.id}`
@@ -48,23 +54,30 @@ export default function Wallet() {
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         const result = aValue.toLowerCase().localeCompare(bValue.toLowerCase())
-        return sortOrder === "asc" ? result : -result
+        return activeSortOrder === "asc" ? result : -result
       } else {
-        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1
-        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1
+        if (aValue < bValue) return activeSortOrder === "asc" ? -1 : 1
+        if (aValue > bValue) return activeSortOrder === "asc" ? 1 : -1
         return 0
       }
     })
-  }, [walletWithDetails, sortBy, sortOrder])
+  }, [walletWithDetails, activeSortBy, activeSortOrder])
 
   // Handle column sorting
   const handleSort = (column: WalletSort) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+    let newQueryString: string
+
+    if (activeSortBy === column) {
+      // Toggle order if same column
+      const newOrder = activeSortOrder === "asc" ? "desc" : "asc"
+      newQueryString = getQueryString("order", newOrder, queryString)
     } else {
-      setSortBy(column)
-      setSortOrder("asc")
+      // Set new column and reset to asc
+      const tempQueryString = getQueryString("sortBy", column, queryString)
+      newQueryString = getQueryString("order", "asc", tempQueryString)
     }
+
+    navigate(`/account/wallet?${newQueryString}`)
   }
 
   return (
@@ -78,11 +91,18 @@ export default function Wallet() {
                 key={header}
                 cursor="pointer"
                 onClick={() => handleSort(header)}
-                className={`${sharedTableCss.title} ${sortBy === header ? sharedTableCss.active : ""}`}
+                className={`${sharedTableCss.title} ${activeSortBy === header ? sharedTableCss.active : ""}`}
               >
                 {header.charAt(0).toUpperCase() + header.slice(1)}
-                {sortBy === header && (
-                  <> {sortOrder === "asc" ? <CgArrowDown /> : <CgArrowUp />}</>
+                {activeSortBy === header && (
+                  <>
+                    {" "}
+                    {activeSortOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )}
+                  </>
                 )}
               </Th>
             ))}
