@@ -22,11 +22,16 @@ vi.mock("~/hooks/url", () => ({
 }))
 
 // Mock react-router hooks
+const { useParams } = vi.hoisted(() => ({
+  useParams: vi.fn(() => ({})),
+}))
+
 vi.mock("react-router", async () => {
   const actual = await vi.importActual("react-router")
   return {
     ...actual,
     useNavigate: vi.fn(() => vi.fn()),
+    useParams,
   }
 })
 
@@ -49,6 +54,9 @@ const mockUseSearchParams = vi.mocked(useSearchParams)
 describe("Dyes Component", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Reset mocks to default state
+    vi.mocked(useParams).mockReturnValue({})
 
     // Default mock for useSearchParams
     mockUseSearchParams.mockReturnValue({
@@ -197,12 +205,12 @@ describe("Dyes Component", () => {
     expect(screen.getByText("Abyss")).toBeInTheDocument()
     expect(screen.getByText("Celestial")).toBeInTheDocument()
 
-    // Check that category data is rendered
-    expect(screen.getByText("Gray")).toBeInTheDocument() // hue (categories[0])
+    // Check that category data is rendered in table cells
+    expect(screen.getAllByText("Gray")).toHaveLength(2) // hue in table cell + filter tab
     expect(screen.getAllByText("Leather")).toHaveLength(2) // material (categories[1]) + column header
     expect(screen.getByText("Rare")).toBeInTheDocument() // rarity (categories[2])
 
-    expect(screen.getByText("Blue")).toBeInTheDocument() // hue (categories[0])
+    expect(screen.getAllByText("Blue")).toHaveLength(2) // hue in table cell + filter tab
     expect(screen.getByText("Vibrant")).toBeInTheDocument() // material (categories[1])
     expect(screen.getByText("Exotic")).toBeInTheDocument() // rarity (categories[2])
   })
@@ -690,7 +698,497 @@ describe("Dyes Component", () => {
     render(<Dyes />)
 
     expect(screen.getByText("Incomplete Dye")).toBeInTheDocument()
-    expect(screen.getByText("Red")).toBeInTheDocument() // Should show available category
+    expect(screen.getAllByText("Red")).toHaveLength(2) // Should show available category in table cell + filter tab
     // Component should not crash with missing categories
+  })
+
+  it("displays hue filter tabs with All, Gray, Brown, Red, etc.", () => {
+    mockUseDyes.mockReturnValue({
+      dyesData: [],
+      colors: [],
+      dyesWithDetails: [],
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Check that all hue filter tabs are present
+    const expectedHues = [
+      "All",
+      "Gray",
+      "Brown",
+      "Red",
+      "Orange",
+      "Yellow",
+      "Green",
+      "Blue",
+      "Purple",
+    ]
+    expectedHues.forEach((hue) => {
+      expect(
+        screen.getByRole("tab", { name: new RegExp(hue) }),
+      ).toBeInTheDocument()
+    })
+  })
+
+  it("displays count badges for each hue filter", () => {
+    const mockDyesWithDetails = [
+      {
+        id: 1,
+        color: {
+          id: 1,
+          name: "Red Dye 1",
+          categories: ["Red", "Vibrant", "Rare"],
+          cloth: {
+            rgb: [200, 50, 50] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 0,
+            saturation: 60,
+            lightness: 50,
+          },
+          leather: {
+            rgb: [180, 60, 60] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 5,
+            saturation: 55,
+            lightness: 45,
+          },
+          metal: {
+            rgb: [220, 40, 40] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 355,
+            saturation: 65,
+            lightness: 55,
+          },
+        },
+      },
+      {
+        id: 2,
+        color: {
+          id: 2,
+          name: "Blue Dye 1",
+          categories: ["Blue", "Natural", "Common"],
+          cloth: {
+            rgb: [50, 50, 200] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 240,
+            saturation: 60,
+            lightness: 50,
+          },
+          leather: {
+            rgb: [60, 60, 180] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 235,
+            saturation: 55,
+            lightness: 45,
+          },
+          metal: {
+            rgb: [40, 40, 220] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 245,
+            saturation: 65,
+            lightness: 55,
+          },
+        },
+      },
+      {
+        id: 3,
+        color: {
+          id: 3,
+          name: "Red Dye 2",
+          categories: ["Red", "Leather", "Exotic"],
+          cloth: {
+            rgb: [180, 30, 30] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 0,
+            saturation: 70,
+            lightness: 40,
+          },
+          leather: {
+            rgb: [160, 40, 40] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 5,
+            saturation: 65,
+            lightness: 35,
+          },
+          metal: {
+            rgb: [200, 20, 20] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 355,
+            saturation: 75,
+            lightness: 45,
+          },
+        },
+      },
+    ]
+
+    mockUseDyes.mockReturnValue({
+      dyesData: [1, 2, 3],
+      colors: mockDyesWithDetails.map((d) => d.color),
+      dyesWithDetails: mockDyesWithDetails,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Check count for "All" tab - should show 3
+    const allTab = screen.getByRole("tab", { name: /All.*3/ })
+    expect(allTab).toBeInTheDocument()
+
+    // Check count for "Red" tab - should show 2
+    const redTab = screen.getByRole("tab", { name: /Red.*2/ })
+    expect(redTab).toBeInTheDocument()
+
+    // Check count for "Blue" tab - should show 1
+    const blueTab = screen.getByRole("tab", { name: /Blue.*1/ })
+    expect(blueTab).toBeInTheDocument()
+
+    // Check count for "Gray" tab - should show 0
+    const grayTab = screen.getByRole("tab", { name: /Gray.*0/ })
+    expect(grayTab).toBeInTheDocument()
+  })
+
+  it("filters dyes by selected hue when URL has hue parameter", () => {
+    const mockDyesWithDetails = [
+      {
+        id: 1,
+        color: {
+          id: 1,
+          name: "Red Dye",
+          categories: ["Red", "Vibrant", "Rare"],
+          cloth: {
+            rgb: [200, 50, 50] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 0,
+            saturation: 60,
+            lightness: 50,
+          },
+          leather: {
+            rgb: [180, 60, 60] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 5,
+            saturation: 55,
+            lightness: 45,
+          },
+          metal: {
+            rgb: [220, 40, 40] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 355,
+            saturation: 65,
+            lightness: 55,
+          },
+        },
+      },
+      {
+        id: 2,
+        color: {
+          id: 2,
+          name: "Blue Dye",
+          categories: ["Blue", "Natural", "Common"],
+          cloth: {
+            rgb: [50, 50, 200] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 240,
+            saturation: 60,
+            lightness: 50,
+          },
+          leather: {
+            rgb: [60, 60, 180] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 235,
+            saturation: 55,
+            lightness: 45,
+          },
+          metal: {
+            rgb: [40, 40, 220] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 245,
+            saturation: 65,
+            lightness: 55,
+          },
+        },
+      },
+    ]
+
+    // Mock URL params to filter by Red
+    vi.mocked(useParams).mockReturnValue({ hue: "red" })
+
+    mockUseDyes.mockReturnValue({
+      dyesData: [1, 2],
+      colors: mockDyesWithDetails.map((d) => d.color),
+      dyesWithDetails: mockDyesWithDetails,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Should only show Red Dye, not Blue Dye
+    expect(screen.getByText("Red Dye")).toBeInTheDocument()
+    expect(screen.queryByText("Blue Dye")).not.toBeInTheDocument()
+  })
+
+  it("displays search input field", () => {
+    mockUseDyes.mockReturnValue({
+      dyesData: [],
+      colors: [],
+      dyesWithDetails: [],
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Check that search input is present
+    const searchInput = screen.getByRole("textbox")
+    expect(searchInput).toBeInTheDocument()
+  })
+
+  it("filters dyes based on search keyword", () => {
+    const mockDyesWithDetails = [
+      {
+        id: 1,
+        color: {
+          id: 1,
+          name: "Abyss Dye",
+          categories: ["Gray", "Metal", "Rare"],
+          cloth: {
+            rgb: [30, 30, 30] as [number, number, number],
+            brightness: -15,
+            contrast: 1.1,
+            hue: 0,
+            saturation: 0,
+            lightness: 15,
+          },
+          leather: {
+            rgb: [35, 35, 35] as [number, number, number],
+            brightness: -10,
+            contrast: 1.05,
+            hue: 0,
+            saturation: 0,
+            lightness: 18,
+          },
+          metal: {
+            rgb: [40, 40, 40] as [number, number, number],
+            brightness: -5,
+            contrast: 1.15,
+            hue: 0,
+            saturation: 0,
+            lightness: 20,
+          },
+        },
+      },
+      {
+        id: 2,
+        color: {
+          id: 2,
+          name: "Celestial Dye",
+          categories: ["Blue", "Vibrant", "Exotic"],
+          cloth: {
+            rgb: [128, 191, 255] as [number, number, number],
+            brightness: 15,
+            contrast: 1.25,
+            hue: 200,
+            saturation: 30,
+            lightness: 50,
+          },
+          leather: {
+            rgb: [120, 180, 240] as [number, number, number],
+            brightness: 10,
+            contrast: 1.2,
+            hue: 200,
+            saturation: 25,
+            lightness: 45,
+          },
+          metal: {
+            rgb: [140, 200, 255] as [number, number, number],
+            brightness: 20,
+            contrast: 1.3,
+            hue: 200,
+            saturation: 35,
+            lightness: 55,
+          },
+        },
+      },
+    ]
+
+    // Reset useParams mock for this test
+    vi.mocked(useParams).mockReturnValue({})
+
+    // Mock URL params with search keyword
+    mockUseSearchParams.mockReturnValue({
+      queryString: "?keyword=abyss",
+      keyword: "abyss",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
+    })
+
+    mockUseDyes.mockReturnValue({
+      dyesData: [1, 2],
+      colors: mockDyesWithDetails.map((d) => d.color),
+      dyesWithDetails: mockDyesWithDetails,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Should show Abyss Dye when searching for "abyss" (case insensitive match)
+    expect(screen.getByText("Abyss Dye")).toBeInTheDocument()
+    expect(screen.queryByText("Celestial Dye")).not.toBeInTheDocument()
+  })
+
+  it("combines hue filter and search keyword", () => {
+    const mockDyesWithDetails = [
+      {
+        id: 1,
+        color: {
+          id: 1,
+          name: "Deep Red",
+          categories: ["Red", "Dark", "Rare"],
+          cloth: {
+            rgb: [150, 20, 20] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 0,
+            saturation: 75,
+            lightness: 35,
+          },
+          leather: {
+            rgb: [140, 30, 30] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 5,
+            saturation: 70,
+            lightness: 30,
+          },
+          metal: {
+            rgb: [160, 10, 10] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 355,
+            saturation: 80,
+            lightness: 40,
+          },
+        },
+      },
+      {
+        id: 2,
+        color: {
+          id: 2,
+          name: "Light Red",
+          categories: ["Red", "Vibrant", "Common"],
+          cloth: {
+            rgb: [255, 100, 100] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 0,
+            saturation: 40,
+            lightness: 70,
+          },
+          leather: {
+            rgb: [240, 110, 110] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 5,
+            saturation: 35,
+            lightness: 65,
+          },
+          metal: {
+            rgb: [255, 90, 90] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 355,
+            saturation: 45,
+            lightness: 75,
+          },
+        },
+      },
+      {
+        id: 3,
+        color: {
+          id: 3,
+          name: "Deep Blue",
+          categories: ["Blue", "Dark", "Rare"],
+          cloth: {
+            rgb: [20, 20, 150] as [number, number, number],
+            brightness: 100,
+            contrast: 1.0,
+            hue: 240,
+            saturation: 75,
+            lightness: 35,
+          },
+          leather: {
+            rgb: [30, 30, 140] as [number, number, number],
+            brightness: 90,
+            contrast: 0.9,
+            hue: 235,
+            saturation: 70,
+            lightness: 30,
+          },
+          metal: {
+            rgb: [10, 10, 160] as [number, number, number],
+            brightness: 110,
+            contrast: 1.1,
+            hue: 245,
+            saturation: 80,
+            lightness: 40,
+          },
+        },
+      },
+    ]
+
+    // Mock URL params with both hue filter and search keyword
+    vi.mocked(useParams).mockReturnValue({ hue: "red" })
+    mockUseSearchParams.mockReturnValue({
+      queryString: "?keyword=deep",
+      keyword: "deep",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
+    })
+
+    mockUseDyes.mockReturnValue({
+      dyesData: [1, 2, 3],
+      colors: mockDyesWithDetails.map((d) => d.color),
+      dyesWithDetails: mockDyesWithDetails,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useDyes>)
+
+    render(<Dyes />)
+
+    // Should only show "Deep Red" (matches both Red hue and "deep" keyword)
+    expect(screen.getByText("Deep Red")).toBeInTheDocument()
+    // Should not show "Light Red" (matches Red hue but not "deep" keyword)
+    expect(screen.queryByText("Light Red")).not.toBeInTheDocument()
+    // Should not show "Deep Blue" (matches "deep" keyword but not Red hue)
+    expect(screen.queryByText("Deep Blue")).not.toBeInTheDocument()
   })
 })
