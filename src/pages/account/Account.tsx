@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes } from "react-router"
+import { NavLink, Route, Routes, useLocation } from "react-router"
 import { Tabs, TabList, Tab, Tag } from "@chakra-ui/react"
 
 import { MENU_ITEMS } from "./contants"
@@ -8,9 +8,18 @@ import { useDyes } from "~/hooks/useDyes"
 import { isNumber } from "lodash"
 
 function Account() {
+  const location = useLocation()
   const { walletData } = useWallet()
   const { outfits } = useOutfits()
   const { dyesData } = useDyes()
+
+  const getActiveTabIndex = (): number => {
+    const currentPath = location.pathname
+      .replace("/account/", "")
+      .replace("/account", "")
+    const activeIndex = MENU_ITEMS.findIndex((item) => item.to === currentPath)
+    return activeIndex >= 0 ? activeIndex : 0
+  }
 
   const getItemCount = (menuTo: string): number | undefined => {
     switch (menuTo) {
@@ -28,7 +37,12 @@ function Account() {
   }
 
   return (
-    <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
+    <Tabs
+      defaultIndex={getActiveTabIndex()}
+      display="grid"
+      gridTemplateRows="auto 1fr"
+      height="100%"
+    >
       <TabList>
         {MENU_ITEMS.map((item) => {
           const count = getItemCount(item.to)
