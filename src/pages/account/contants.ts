@@ -2,6 +2,7 @@ import Overview from "~/pages/account/Overview"
 import Wallet from "~/pages/account/Wallet"
 import Skins from "~/pages/account/Skins"
 import Outfits from "./Outfits"
+import Dyes from "./Dyes"
 /* 
 import Achievements from "pages/account/Achievements"
 import Masteries from "pages/account/Masteries"
@@ -15,7 +16,8 @@ export const MENU_ITEMS = [
   { to: "wallet", text: "Wallet", component: Wallet },
   { to: "skins", text: "Skins", component: Skins },
   { to: "outfits", text: "Outfits", component: Outfits },
-  /* 
+  { to: "dyes", text: "Dyes", component: Dyes },
+  /*
   { to: "home", text: "Home", component: Home },
   {
     to: "achievements",
