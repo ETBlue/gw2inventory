@@ -168,10 +168,6 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -195,10 +191,6 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -221,10 +213,6 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -250,10 +238,6 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -275,10 +259,6 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -330,10 +310,6 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -383,10 +359,6 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -412,10 +384,6 @@ describe("Items", () => {
       inventoryItems: mockUserItems,
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
-      setCharacterItems: vi.fn(),
-      setInventoryItems: vi.fn(),
-      setBankItems: vi.fn(),
-      setMaterialItems: vi.fn(),
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
