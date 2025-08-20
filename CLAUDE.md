@@ -145,7 +145,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Consistent count badges on navigation tabs using Chakra UI Tag component with standardized styling (`size="sm"` and `margin="0 0 -0.1em 0.5em"`)
 - Standardized empty/loading/missing token states across all pages for consistent user experience
 - Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
-- URL-based state management for sorting and search parameters using `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items and Skins pages)
+- URL-based state management for sorting and search parameters using `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items, Skins, and Characters pages)
 
 ### Testing
 

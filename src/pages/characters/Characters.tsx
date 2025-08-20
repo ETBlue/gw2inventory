@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
+import { getQueryString } from "helpers/url"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
 
@@ -36,7 +37,7 @@ function Characters() {
   const navigate = useNavigate()
   const { profession } = useParams<{ profession?: string }>()
 
-  const { keyword } = useSearchParams()
+  const { queryString, keyword } = useSearchParams()
 
   // Convert profession param to match the format used in filtering (capitalized)
   const activeProfession = profession
@@ -69,10 +70,7 @@ function Characters() {
     >
       <div>
         <TabList>
-          <Tab
-            as={Link}
-            to={keyword ? `/characters?keyword=${keyword}` : "/characters"}
-          >
+          <Tab as={Link} to={`/characters${queryString}`}>
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
               {characters?.length || "0"}
@@ -82,11 +80,7 @@ function Characters() {
             <Tab
               key={profession}
               as={Link}
-              to={
-                keyword
-                  ? `/characters/${profession.toLowerCase()}?keyword=${keyword}`
-                  : `/characters/${profession.toLowerCase()}`
-              }
+              to={`/characters/${profession.toLowerCase()}${queryString}`}
             >
               {profession}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
@@ -109,8 +103,13 @@ function Characters() {
                 const basePath = profession
                   ? `/characters/${profession}`
                   : "/characters"
-                const to = searchValue
-                  ? `${basePath}?keyword=${searchValue}`
+                const newQueryString = getQueryString(
+                  "keyword",
+                  searchValue,
+                  queryString,
+                )
+                const to = newQueryString
+                  ? `${basePath}?${newQueryString}`
                   : basePath
                 navigate(to)
               }}
