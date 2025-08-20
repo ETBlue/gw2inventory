@@ -191,7 +191,6 @@ export default function Dyes() {
                   header.slice(1).replace(/_/g, " ")}
                 {activeSortBy === header && (
                   <>
-                    {" "}
                     {activeSortOrder === "asc" ? (
                       <CgArrowDown />
                     ) : (

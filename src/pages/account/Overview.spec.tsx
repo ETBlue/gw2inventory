@@ -158,8 +158,8 @@ describe("Overview Component", () => {
     // Verify alphabetical order by checking the list structure
     const titlesList = screen.getByRole("list")
     const titleItems = titlesList.querySelectorAll("li")
-    expect(titleItems[0]).toHaveTextContent("Champion ($500 AP)")
-    expect(titleItems[1]).toHaveTextContent("Kingmaker ($100 AP)")
+    expect(titleItems[0]).toHaveTextContent("Champion (500 AP)")
+    expect(titleItems[1]).toHaveTextContent("Kingmaker (100 AP)")
     expect(titleItems[2]).toHaveTextContent("Slayer")
   })
 

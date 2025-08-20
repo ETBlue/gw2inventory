@@ -67,7 +67,7 @@ function SortableTable(props: Props) {
                 activeSort === col.title ? css.active : ""
               }`}
             >
-              {col.title}{" "}
+              {col.title}
               {activeSort === col.title ? (
                 activeOrder === "asc" ? (
                   <CgArrowDown />

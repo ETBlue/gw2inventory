@@ -120,7 +120,7 @@ function Overview() {
             {title.ap_required && (
               <span className={sharedTextCss.secondary}>
                 {" "}
-                (${title.ap_required} AP)
+                ({title.ap_required} AP)
               </span>
             )}
           </ListItem>

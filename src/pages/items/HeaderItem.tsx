@@ -45,7 +45,7 @@ function HeaderItem(props: Props) {
           }`}
           className={`${sharedTableCss.title} ${activeSort === title ? sharedTableCss.active : ""}`}
         >
-          {title}{" "}
+          {title}
           {activeSort === title ? (
             activeOrder === "asc" ? (
               <CgArrowDown />

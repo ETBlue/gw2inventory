@@ -231,7 +231,6 @@ export default function Skins() {
                 {header.charAt(0).toUpperCase() + header.slice(1)}
                 {activeSortBy === header && (
                   <>
-                    {" "}
                     {activeSortOrder === "asc" ? (
                       <CgArrowDown />
                     ) : (
