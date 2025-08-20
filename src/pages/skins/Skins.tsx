@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { chunk } from "lodash"
+import { useNavigate, useLocation } from "react-router"
 import {
   Center,
   Spinner,
@@ -25,6 +26,8 @@ import {
 import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSkins } from "~/hooks/useSkins"
+import { useSearchParams } from "~/hooks/url"
+import { getQueryString } from "~/helpers/url"
 import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
 import { ITEM_COUNT_PER_PAGE } from "~/config"
@@ -53,7 +56,9 @@ const SKIN_TABLE_HEADERS: SkinSort[] = [
 
 export default function Skins() {
   const { skins = [], isFetching, hasToken } = useSkins()
-  const [searchQuery, setSearchQuery] = useState("")
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const { queryString, keyword } = useSearchParams()
   const [selectedType, setSelectedType] = useState<SkinType>("All")
   const [pageIndex, setPageIndex] = useState<number>(0)
   const [sortBy, setSortBy] = useState<SkinSort>("name")
@@ -69,8 +74,8 @@ export default function Skins() {
     }
 
     // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
+    if (keyword?.trim()) {
+      const query = keyword.toLowerCase()
       filtered = filtered.filter((skin) =>
         JSON.stringify(skin).toLowerCase().includes(query),
       )
@@ -117,7 +122,7 @@ export default function Skins() {
     })
 
     return filtered
-  }, [skins, searchQuery, selectedType, sortBy, sortOrder])
+  }, [skins, keyword, selectedType, sortBy, sortOrder])
 
   // Create pages for pagination
   const pages = useMemo(() => {
@@ -128,7 +133,7 @@ export default function Skins() {
   // Reset page index when filters or sorting change
   useEffect(() => {
     setPageIndex(0)
-  }, [searchQuery, selectedType, sortBy, sortOrder])
+  }, [keyword, selectedType, sortBy, sortOrder])
 
   // Count skins by type for tags
   const getSkinCountByType = (type: SkinType): number => {
@@ -167,8 +172,15 @@ export default function Skins() {
             <Input
               variant="unstyled"
               placeholder=""
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={keyword || ""}
+              onChange={(e) => {
+                const to = `${pathname}?${getQueryString(
+                  "keyword",
+                  e.currentTarget.value,
+                  queryString,
+                )}`
+                navigate(to)
+              }}
             />
           </InputGroup>
         </TabList>

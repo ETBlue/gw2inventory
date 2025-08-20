@@ -10,6 +10,19 @@ import { useSkins } from "~/hooks/useSkins"
 // Mock the skins hook
 vi.mock("~/hooks/useSkins")
 
+// Mock the useSearchParams hook
+vi.mock("~/hooks/url", () => ({
+  useSearchParams: vi.fn(() => ({
+    queryString: "",
+    keyword: "",
+  })),
+}))
+
+// Mock the getQueryString helper
+vi.mock("~/helpers/url", () => ({
+  getQueryString: vi.fn(() => ""),
+}))
+
 const mockUseSkins = vi.mocked(useSkins)
 
 describe("Skins Component", () => {

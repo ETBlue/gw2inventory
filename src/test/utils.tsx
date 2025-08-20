@@ -2,6 +2,7 @@ import { ReactElement } from "react"
 import { render, RenderOptions } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
+import { MemoryRouter } from "react-router"
 
 // Custom render function that includes providers
 export const createTestQueryClient = () =>
@@ -22,9 +23,11 @@ const AllTheProviders = ({ children }: AllTheProvidersProps) => {
   const queryClient = createTestQueryClient()
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
-    </QueryClientProvider>
+    <MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider>{children}</ChakraProvider>
+      </QueryClientProvider>
+    </MemoryRouter>
   )
 }
 
