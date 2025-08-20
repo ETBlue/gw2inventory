@@ -436,7 +436,7 @@ describe("useOutfits", () => {
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/outfits") {
         return mockOutfitIds
       }
