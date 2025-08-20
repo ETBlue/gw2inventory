@@ -4,14 +4,12 @@ import { Tabs, TabList, Tab, Tag } from "@chakra-ui/react"
 import { MENU_ITEMS } from "./contants"
 import { useWallet } from "~/hooks/useWallet"
 import { useOutfits } from "~/hooks/useOutfits"
-import { useDyes } from "~/hooks/useDyes"
 import { isNumber } from "lodash"
 
 function Account() {
   const location = useLocation()
   const { walletData } = useWallet()
   const { outfits } = useOutfits()
-  const { dyesData } = useDyes()
 
   const getActiveTabIndex = (): number => {
     const currentPath = location.pathname
@@ -29,8 +27,6 @@ function Account() {
         return walletData?.length ?? 0
       case "outfits":
         return outfits?.length ?? 0
-      case "dyes":
-        return dyesData?.length ?? 0
       default:
         return undefined
     }
