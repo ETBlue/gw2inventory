@@ -6,13 +6,10 @@ import { TokenProvider } from "contexts/TokenContext"
 import { CharacterProvider } from "contexts/CharacterContext"
 import { StaticDataProvider } from "contexts/StaticDataContext"
 import BaseFrame from "layouts/BaseFrame"
-import Characters from "pages/characters"
-import Items from "pages/items"
 import Settings from "pages/settings"
-import Skins from "pages/skins"
 
 import "./App.css"
-import Account from "pages/account"
+import { LEVEL_ONE_MENU_ITEMS } from "./layouts/constants"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,10 +24,9 @@ const Content = () => {
   return (
     <BaseFrame>
       <Routes>
-        <Route path="/account/*" element={<Account />} />
-        <Route path="/characters/:profession?" element={<Characters />} />
-        <Route path="/items/:category?" element={<Items />} />
-        <Route path="/skins/:skinType?" element={<Skins />} />
+        {LEVEL_ONE_MENU_ITEMS.map((item) => (
+          <Route key={item.to} path={item.path} element={item.element} />
+        ))}
         <Route path="/settings" element={<Settings />} />
         <Route path="/" element={<Navigate to="/characters" replace />} />
       </Routes>

@@ -16,16 +16,7 @@ import { APP_NAME, BASE_URL } from "config"
 import { useToken } from "hooks/useToken"
 import { COLORS, COMPONENT_THEME, LAYOUT } from "constants"
 import { UsedAccount } from "contexts/types/TokenContext"
-
-const MENU_ITEMS = [
-  { to: "/account", text: "Account" },
-  { to: "/characters", text: "Characters" },
-  { to: "/items", text: "Items" },
-  { to: "/skins", text: "Skins" },
-  // { to: "/unlocks", text: "Unlocks" },
-  // { to: "/trades", text: "Trades" },
-  // { to: "/wallet", text: "Wallet" },
-]
+import { LEVEL_ONE_MENU_ITEMS } from "./constants"
 
 function Header() {
   const { usedAccounts, currentAccount, setCurrentAccount } = useToken()
@@ -56,7 +47,7 @@ function Header() {
         {APP_NAME}
       </Flex>
       <Flex as="nav" justifyContent="center">
-        {MENU_ITEMS.map((item) => (
+        {LEVEL_ONE_MENU_ITEMS.map((item) => (
           <Button
             key={item.to}
             as={NavLink}
