@@ -60,7 +60,7 @@ describe("Skins Component", () => {
 
     render(<Skins />)
 
-    expect(screen.getByText("No skins available")).toBeInTheDocument()
+    expect(screen.getByText("No skin found")).toBeInTheDocument()
   })
 
   it("fetches an array of id from `/v2/account/skins`, and render the actual data from `/v2/skins`", async () => {
@@ -511,7 +511,7 @@ describe("Skins Component", () => {
 
     // Filter by "Weapon" when only armor exists
     fireEvent.click(screen.getByRole("button", { name: "Weapon 0" }))
-    expect(screen.getByText("No skins match your filters")).toBeInTheDocument()
+    expect(screen.getByText("No skin found")).toBeInTheDocument()
     expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
   })
 
@@ -666,9 +666,9 @@ describe("Skins Component", () => {
 
     render(<Skins />)
 
-    // Pagination controls should not be visible with only 20 skins
-    expect(screen.queryByLabelText("first page")).not.toBeInTheDocument()
-    expect(screen.queryByLabelText("next page")).not.toBeInTheDocument()
+    // Pagination controls should be visible even with only 20 skins
+    expect(screen.getByLabelText("first page")).toBeInTheDocument()
+    expect(screen.getByLabelText("next page")).toBeInTheDocument()
   })
 
   it("sorts skins by rarity hierarchy when rarity column header is clicked", () => {

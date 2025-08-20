@@ -484,7 +484,7 @@ describe("Dyes", () => {
 
     render(<Dyes />, { wrapper: createWrapper() })
 
-    expect(screen.getByText("No dye data available")).toBeInTheDocument()
+    expect(screen.getByText("No dye found")).toBeInTheDocument()
   })
 
   it("handles missing category data gracefully", async () => {

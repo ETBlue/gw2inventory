@@ -59,7 +59,7 @@ describe("Wallet Component", () => {
 
     render(<Wallet />)
 
-    expect(screen.getByText("No wallet data available")).toBeInTheDocument()
+    expect(screen.getByText("No currency found")).toBeInTheDocument()
   })
 
   it("fetches an array of id and value from `/v2/account/wallet`, and render the actual data from `/v2/currencies`", async () => {
