@@ -35,6 +35,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
   })
 
@@ -226,6 +230,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "leather",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     const { rerender } = render(<Skins />)
@@ -238,6 +246,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "weapon",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -250,6 +262,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "legendary",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -262,6 +278,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "nocost",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -274,6 +294,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -494,6 +518,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "leather",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     const { rerender } = render(<Skins />)
@@ -508,6 +536,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "boots",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -521,6 +553,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
@@ -691,6 +727,10 @@ describe("Skins Component", () => {
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "Test Skin 1",
+      sortBy: null,
+      order: null,
+      profession: null,
+      type: null,
     })
 
     rerender(<Skins />)
