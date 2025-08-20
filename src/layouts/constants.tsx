@@ -24,5 +24,5 @@ export const LEVEL_ONE_MENU_ITEMS = [
     path: "/skins/:skinType?",
     element: <Skins />,
   },
-  { to: "/dyes", text: "Dyes", path: "/dyes", element: <Dyes /> },
+  { to: "/dyes", text: "Dyes", path: "/dyes/:hue?", element: <Dyes /> },
 ]
