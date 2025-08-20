@@ -154,6 +154,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **Test Files:** Place test files with `.test.ts` or `.test.tsx` extensions anywhere in `src/`
 - **Coverage:** Available via `npm run test:coverage`
 - **UI:** Interactive test runner available via `npm run test:ui`
+- **Test Patterns:** Comprehensive component testing with proper mocking of hooks, router, and external dependencies. Tests cover UI rendering, data filtering, search functionality, sorting, navigation, and URL state management including query string preservation across route changes.
 
 ### Code Style
 

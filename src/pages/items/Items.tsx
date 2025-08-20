@@ -151,14 +151,14 @@ function Items() {
         index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
       >
         <TabList>
-          <Tab as={NavLink} to="/items">
+          <Tab as={NavLink} to={`/items${queryString}`}>
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
               {allItems?.length}
             </Tag>
           </Tab>
           {MENU_ITEMS.map((item) => (
-            <Tab key={item.to} as={NavLink} to={item.to}>
+            <Tab key={item.to} as={NavLink} to={`${item.to}${queryString}`}>
               {item.text}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {getTypedItemLength({
