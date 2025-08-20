@@ -4,6 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 
 import { TokenProvider } from "contexts/TokenContext"
 import { CharacterProvider } from "contexts/CharacterContext"
+import { StaticDataProvider } from "contexts/StaticDataContext"
 import BaseFrame from "layouts/BaseFrame"
 import Characters from "pages/characters"
 import Items from "pages/items"
@@ -13,7 +14,14 @@ import Skins from "pages/skins"
 import "./App.css"
 import Account from "pages/account"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  },
+})
 
 const Content = () => {
   return (
@@ -35,11 +43,13 @@ export const App = () => {
     <ChakraProvider>
       <TokenProvider>
         <QueryClientProvider client={queryClient}>
-          <CharacterProvider>
-            <Router>
-              <Content />
-            </Router>
-          </CharacterProvider>
+          <StaticDataProvider>
+            <CharacterProvider>
+              <Router>
+                <Content />
+              </Router>
+            </CharacterProvider>
+          </StaticDataProvider>
         </QueryClientProvider>
       </TokenProvider>
     </ChakraProvider>
