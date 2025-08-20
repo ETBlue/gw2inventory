@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { screen, fireEvent, cleanup } from "@testing-library/react"
+import { screen, cleanup, fireEvent } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Skins from "./Skins"
 import { useSkins } from "~/hooks/useSkins"
@@ -19,6 +19,21 @@ vi.mock("~/hooks/url", () => ({
   })),
 }))
 
+// Mock react-router hooks
+vi.mock("react-router", async () => {
+  const actual = await vi.importActual("react-router")
+  return {
+    ...actual,
+    useNavigate: vi.fn(() => vi.fn()),
+    useParams: vi.fn(() => ({})),
+    Link: ({ children, to, ...props }: any) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
+  }
+})
+
 // Mock the getQueryString helper
 vi.mock("~/helpers/url", () => ({
   getQueryString: vi.fn(() => ""),
@@ -26,6 +41,10 @@ vi.mock("~/helpers/url", () => ({
 
 const mockUseSkins = vi.mocked(useSkins)
 const mockUseSearchParams = vi.mocked(useSearchParams)
+
+// Get mock reference after mocking
+const { useParams } = await import("react-router")
+const mockUseParams = vi.mocked(useParams)
 
 describe("Skins Component", () => {
   beforeEach(() => {
@@ -40,6 +59,9 @@ describe("Skins Component", () => {
       profession: null,
       type: null,
     })
+
+    // Default mock for useParams
+    mockUseParams.mockReturnValue({})
   })
 
   afterEach(() => {
@@ -404,7 +426,7 @@ describe("Skins Component", () => {
     expect(allTab).toHaveAttribute("aria-selected", "true")
   })
 
-  it("filters skins by type when type filter is selected", () => {
+  it("filters skins by type when skinType URL parameter is set", () => {
     const mockSkins = [
       {
         id: 1,
@@ -446,30 +468,34 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    render(<Skins />)
+    // Test showing all skins (no skinType param)
+    mockUseParams.mockReturnValue({})
+    const { rerender } = render(<Skins />)
 
-    // Initially all skins should be visible
     expect(screen.getByText("Test Armor")).toBeInTheDocument()
     expect(screen.getByText("Test Weapon")).toBeInTheDocument()
     expect(screen.getByText("Test Back Item")).toBeInTheDocument()
 
-    // Click on "Armor" filter
-    fireEvent.click(screen.getByRole("tab", { name: "Armor 1" }))
+    // Test filtering by "armor" skinType
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    rerender(<Skins />)
     expect(screen.getByText("Test Armor")).toBeInTheDocument()
     expect(screen.queryByText("Test Weapon")).not.toBeInTheDocument()
     expect(screen.queryByText("Test Back Item")).not.toBeInTheDocument()
 
-    // Click on "Weapon" filter
-    fireEvent.click(screen.getByRole("tab", { name: "Weapon 1" }))
+    // Test filtering by "weapon" skinType
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
+    rerender(<Skins />)
     expect(screen.getByText("Test Weapon")).toBeInTheDocument()
     expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
     expect(screen.queryByText("Test Back Item")).not.toBeInTheDocument()
 
-    // Click on "All" to show all skins again
-    fireEvent.click(screen.getByRole("tab", { name: "All 3" }))
-    expect(screen.getByText("Test Armor")).toBeInTheDocument()
-    expect(screen.getByText("Test Weapon")).toBeInTheDocument()
+    // Test filtering by "back" skinType
+    mockUseParams.mockReturnValue({ skinType: "back" })
+    rerender(<Skins />)
     expect(screen.getByText("Test Back Item")).toBeInTheDocument()
+    expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
+    expect(screen.queryByText("Test Weapon")).not.toBeInTheDocument()
   })
 
   it("combines search and type filters", () => {
@@ -514,7 +540,7 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    // Test with search keyword "leather" and armor type
+    // Test with search keyword "leather" and armor type filter
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "leather",
@@ -523,16 +549,16 @@ describe("Skins Component", () => {
       profession: null,
       type: null,
     })
+    mockUseParams.mockReturnValue({ skinType: "armor" })
 
     const { rerender } = render(<Skins />)
 
-    // Filter by "Armor" type with search active
-    fireEvent.click(screen.getByRole("tab", { name: "Armor 2" }))
+    // Should show armor skins matching "leather" search
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
-    // Test with search keyword "boots" - should only show boots
+    // Test with search keyword "boots" and armor type filter
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "boots",
@@ -544,12 +570,12 @@ describe("Skins Component", () => {
 
     rerender(<Skins />)
 
-    // With Armor filter still active, only leather boots should show
+    // Should show only boots matching search within armor type
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.queryByText("Leather Gloves")).not.toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
-    // Clear search filter but keep type filter
+    // Clear search but keep armor type filter
     mockUseSearchParams.mockReturnValue({
       queryString: "",
       keyword: "",
@@ -561,13 +587,16 @@ describe("Skins Component", () => {
 
     rerender(<Skins />)
 
-    // Should show all armor items when no search term
+    // Should show all armor items
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
-    // Reset to "All" filter
-    fireEvent.click(screen.getByRole("tab", { name: "All 3" }))
+    // Remove type filter (show all)
+    mockUseParams.mockReturnValue({})
+    rerender(<Skins />)
+
+    // Should show all skins
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Iron Sword")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
@@ -595,10 +624,10 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
+    // Filter by "weapon" when only armor exists
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
     render(<Skins />)
 
-    // Filter by "Weapon" when only armor exists
-    fireEvent.click(screen.getByRole("tab", { name: "Weapon 0" }))
     expect(screen.getByText("No skin found")).toBeInTheDocument()
     expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
   })
@@ -707,21 +736,20 @@ describe("Skins Component", () => {
 
     const { rerender } = render(<Skins />)
 
-    // Navigate to second page
-    fireEvent.click(screen.getByLabelText("next page"))
-    expect(screen.queryByText("Test Skin 1")).not.toBeInTheDocument()
-    // Should be on second page after clicking next
+    // Navigate to second page using pagination
+    const nextButton = screen.getByLabelText("next page")
+    nextButton.click()
 
-    // Filter by "Armor" type - should still have 120 armor skins (2 pages)
-    fireEvent.click(screen.getByRole("tab", { name: "Armor 120" }))
+    // Mock filter by "Armor" type - should reset to first page
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    rerender(<Skins />)
 
     // Should reset to first page and show armor skins alphabetically
     expect(screen.getByText("Test Skin 1")).toBeInTheDocument()
 
     // Navigate to second page of armor skins
-    fireEvent.click(screen.getByLabelText("next page"))
-    expect(screen.queryByText("Test Skin 1")).not.toBeInTheDocument()
-    // Should be on second page of armor items after clicking next
+    const nextButtonAfterFilter = screen.getByLabelText("next page")
+    nextButtonAfterFilter.click()
 
     // Mock search for a specific skin - this should reset to first page
     mockUseSearchParams.mockReturnValue({

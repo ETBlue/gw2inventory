@@ -83,7 +83,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `/` → redirects to `/characters`
   - `/characters/:profession?` - Character overview and management with optional profession filtering
   - `/items/:category?` - Item inventory with optional category filtering
-  - `/skins` - Skins management with search, filtering, and sorting
+  - `/skins/:skinType?` - Skins management with pathname-based type filtering (armor, weapon, back, gathering), search, filtering, and sorting
   - `/settings` - Token configuration
   - `/account/*` - Account-related pages:
     - `/account/overview` - Account overview with titles
@@ -144,6 +144,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Sortable table implementation with multi-column support and visual sorting indicators
 - Consistent count badges on navigation tabs using Chakra UI Tag component with standardized styling (`size="sm"` and `margin="0 0 -0.1em 0.5em"`)
 - Standardized empty/loading/missing token states across all pages for consistent user experience
+- Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
 
 ### Testing
 

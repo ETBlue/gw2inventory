@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { chunk } from "lodash"
-import { useNavigate, useLocation } from "react-router"
+import { useNavigate, useParams, Link } from "react-router"
 import {
   Center,
   Spinner,
@@ -27,7 +27,6 @@ import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSkins } from "~/hooks/useSkins"
 import { useSearchParams } from "~/hooks/url"
-import { getQueryString } from "~/helpers/url"
 import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
 import { ITEM_COUNT_PER_PAGE } from "~/config"
@@ -57,12 +56,16 @@ const SKIN_TABLE_HEADERS: SkinSort[] = [
 export default function Skins() {
   const { skins = [], isFetching, hasToken } = useSkins()
   const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const { queryString, keyword } = useSearchParams()
-  const [selectedType, setSelectedType] = useState<SkinType>("All")
+  const { skinType } = useParams<{ skinType?: string }>()
+  const { keyword } = useSearchParams()
   const [pageIndex, setPageIndex] = useState<number>(0)
   const [sortBy, setSortBy] = useState<SkinSort>("name")
   const [sortOrder, setSortOrder] = useState<SkinOrder>("asc")
+
+  // Convert skinType param to match the format used in filtering (capitalized)
+  const selectedType: SkinType = skinType
+    ? ((skinType.charAt(0).toUpperCase() + skinType.slice(1)) as SkinType)
+    : "All"
 
   // Filter and sort skins based on search query, type, and sort criteria
   const filteredSkins = useMemo(() => {
@@ -157,7 +160,19 @@ export default function Skins() {
       <Tabs index={SKIN_TYPES.indexOf(selectedType)}>
         <TabList>
           {SKIN_TYPES.map((type) => (
-            <Tab key={type} onClick={() => setSelectedType(type)}>
+            <Tab
+              key={type}
+              as={Link}
+              to={
+                type === "All"
+                  ? keyword
+                    ? `/skins?keyword=${keyword}`
+                    : "/skins"
+                  : keyword
+                    ? `/skins/${type.toLowerCase()}?keyword=${keyword}`
+                    : `/skins/${type.toLowerCase()}`
+              }
+            >
               {type}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {getSkinCountByType(type)}
@@ -174,11 +189,11 @@ export default function Skins() {
               placeholder=""
               value={keyword || ""}
               onChange={(e) => {
-                const to = `${pathname}?${getQueryString(
-                  "keyword",
-                  e.currentTarget.value,
-                  queryString,
-                )}`
+                const searchValue = e.currentTarget.value
+                const basePath = skinType ? `/skins/${skinType}` : "/skins"
+                const to = searchValue
+                  ? `${basePath}?keyword=${searchValue}`
+                  : basePath
                 navigate(to)
               }}
             />
