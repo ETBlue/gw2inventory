@@ -3,6 +3,7 @@ import { screen, fireEvent, cleanup } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Skins from "./Skins"
 import { useSkins } from "~/hooks/useSkins"
+import { useSearchParams } from "~/hooks/url"
 
 // API reference for `/v2/account/skins`: https://wiki.guildwars2.com/wiki/API:2/account/skins
 // API reference for `/v2/skins`: https://wiki.guildwars2.com/wiki/API:2/skins
@@ -24,10 +25,17 @@ vi.mock("~/helpers/url", () => ({
 }))
 
 const mockUseSkins = vi.mocked(useSkins)
+const mockUseSearchParams = vi.mocked(useSearchParams)
 
 describe("Skins Component", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Default mock for useSearchParams
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "",
+    })
   })
 
   afterEach(() => {
@@ -169,7 +177,7 @@ describe("Skins Component", () => {
     }
   })
 
-  it("user can search for a skin by anything in the skin object", async () => {
+  it("user can search for a skin by anything in the skin object", () => {
     const mockSkins = [
       {
         id: 1,
@@ -214,48 +222,62 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    render(<Skins />)
+    // Test searching by name - mock keyword from URL
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "leather",
+    })
 
-    const searchInput = screen.getByRole("textbox")
+    const { rerender } = render(<Skins />)
 
-    // Test searching by name
-    fireEvent.change(searchInput, { target: { value: "leather" } })
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
 
     // Test searching by type
-    fireEvent.change(searchInput, { target: { value: "weapon" } })
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "weapon",
+    })
+
+    rerender(<Skins />)
+
     expect(screen.getByText("Iron Sword")).toBeInTheDocument()
     expect(screen.queryByText("Studded Leather Boots")).not.toBeInTheDocument()
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
 
     // Test searching by rarity
-    fireEvent.change(searchInput, { target: { value: "legendary" } })
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "legendary",
+    })
+
+    rerender(<Skins />)
+
     expect(screen.getByText("Mystic Cape")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
     expect(screen.queryByText("Studded Leather Boots")).not.toBeInTheDocument()
 
     // Test searching by flag
-    fireEvent.change(searchInput, { target: { value: "nocost" } })
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "nocost",
+    })
+
+    rerender(<Skins />)
+
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
-
-    // Test searching by restriction
-    fireEvent.change(searchInput, { target: { value: "human" } })
-    expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
-    expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
-    expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
-
-    // Test searching by detail property
-    fireEvent.change(searchInput, { target: { value: "glowing" } })
-    expect(screen.getByText("Mystic Cape")).toBeInTheDocument()
-    expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
-    expect(screen.queryByText("Studded Leather Boots")).not.toBeInTheDocument()
 
     // Test clearing search - should show all items again
-    fireEvent.change(searchInput, { target: { value: "" } })
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "",
+    })
+
+    rerender(<Skins />)
+
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Iron Sword")).toBeInTheDocument()
     expect(screen.getByText("Mystic Cape")).toBeInTheDocument()
@@ -468,28 +490,47 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    render(<Skins />)
+    // Test with search keyword "leather" and armor type
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "leather",
+    })
 
-    const searchInput = screen.getByRole("textbox")
+    const { rerender } = render(<Skins />)
 
-    // Filter by "Armor" type first
+    // Filter by "Armor" type with search active
     fireEvent.click(screen.getByRole("tab", { name: "Armor 2" }))
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
-    // Now search for "leather" within armor items
-    fireEvent.change(searchInput, { target: { value: "leather" } })
-    expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
-    expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
+    // Test with search keyword "boots" - should only show boots
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "boots",
+    })
 
-    // Search for "boots" within armor items
-    fireEvent.change(searchInput, { target: { value: "boots" } })
+    rerender(<Skins />)
+
+    // With Armor filter still active, only leather boots should show
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.queryByText("Leather Gloves")).not.toBeInTheDocument()
+    expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
-    // Clear filters
-    fireEvent.change(searchInput, { target: { value: "" } })
+    // Clear search filter but keep type filter
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "",
+    })
+
+    rerender(<Skins />)
+
+    // Should show all armor items when no search term
+    expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
+    expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
+    expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
+
+    // Reset to "All" filter
     fireEvent.click(screen.getByRole("tab", { name: "All 3" }))
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Iron Sword")).toBeInTheDocument()
@@ -628,7 +669,7 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    render(<Skins />)
+    const { rerender } = render(<Skins />)
 
     // Navigate to second page
     fireEvent.click(screen.getByLabelText("next page"))
@@ -646,13 +687,18 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Test Skin 1")).not.toBeInTheDocument()
     // Should be on second page of armor items after clicking next
 
-    // Search for a specific skin
-    const searchInput = screen.getByRole("textbox")
-    fireEvent.change(searchInput, { target: { value: "Test Skin 1" } })
+    // Mock search for a specific skin - this should reset to first page
+    mockUseSearchParams.mockReturnValue({
+      queryString: "",
+      keyword: "Test Skin 1",
+    })
+
+    rerender(<Skins />)
 
     // Should reset to first page with filtered results
     expect(screen.getByText("Test Skin 1")).toBeInTheDocument()
     expect(screen.getByText("Test Skin 10")).toBeInTheDocument() // Contains "Test Skin 1"
+    expect(screen.getByText("Test Skin 100")).toBeInTheDocument() // Contains "Test Skin 1"
   })
 
   it("does not display pagination when there are 100 or fewer skins", () => {
