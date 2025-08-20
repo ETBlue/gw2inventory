@@ -20,7 +20,7 @@ const Content = () => {
     <BaseFrame>
       <Routes>
         <Route path="/account/*" element={<Account />} />
-        <Route path="/characters" element={<Characters />} />
+        <Route path="/characters/:profession?" element={<Characters />} />
         <Route path="/items/:category?" element={<Items />} />
         <Route path="/skins" element={<Skins />} />
         <Route path="/settings" element={<Settings />} />

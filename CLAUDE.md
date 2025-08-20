@@ -81,7 +81,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Uses HashRouter for GitHub Pages compatibility
 - Main routes:
   - `/` → redirects to `/characters`
-  - `/characters` - Character overview and management
+  - `/characters/:profession?` - Character overview and management with optional profession filtering
   - `/items/:category?` - Item inventory with optional category filtering
   - `/skins` - Skins management with search, filtering, and sorting
   - `/settings` - Token configuration

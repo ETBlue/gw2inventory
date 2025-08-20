@@ -1,4 +1,4 @@
-import { Link, Route, Routes, useNavigate } from "react-router"
+import { Link, Route, Routes, useNavigate, useParams } from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
@@ -13,7 +13,6 @@ import {
   InputLeftElement,
 } from "@chakra-ui/react"
 
-import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
@@ -35,12 +34,14 @@ const PROFESSIONS = [
 function Characters() {
   const { hasToken, characters, isFetching } = useCharacters()
   const navigate = useNavigate()
+  const { profession } = useParams<{ profession?: string }>()
 
-  const {
-    queryString,
-    profession: activeProfession,
-    keyword,
-  } = useSearchParams()
+  const { keyword } = useSearchParams()
+
+  // Convert profession param to match the format used in filtering (capitalized)
+  const activeProfession = profession
+    ? profession.charAt(0).toUpperCase() + profession.slice(1)
+    : undefined
 
   const visibleCharacters = characters
     ?.filter(
@@ -53,13 +54,24 @@ function Characters() {
         : true,
     )
 
+  const getActiveTabIndex = (): number => {
+    if (!activeProfession) return 0 // "All" tab
+    const professionIndex = PROFESSIONS.findIndex((p) => p === activeProfession)
+    return professionIndex >= 0 ? professionIndex + 1 : 0 // +1 because "All" is at index 0
+  }
+
   return (
-    <Tabs display="grid" gridTemplateRows="auto 1fr" height="100%">
+    <Tabs
+      defaultIndex={getActiveTabIndex()}
+      display="grid"
+      gridTemplateRows="auto 1fr"
+      height="100%"
+    >
       <div>
         <TabList>
           <Tab
             as={Link}
-            to={`/characters?${getQueryString("profession", "", queryString)}`}
+            to={keyword ? `/characters?keyword=${keyword}` : "/characters"}
           >
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
@@ -70,11 +82,11 @@ function Characters() {
             <Tab
               key={profession}
               as={Link}
-              to={`/characters?${getQueryString(
-                "profession",
-                profession,
-                queryString,
-              )}`}
+              to={
+                keyword
+                  ? `/characters/${profession.toLowerCase()}?keyword=${keyword}`
+                  : `/characters/${profession.toLowerCase()}`
+              }
             >
               {profession}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
@@ -93,11 +105,13 @@ function Characters() {
               variant="unstyled"
               value={keyword || ""}
               onChange={(e) => {
-                const to = `/characters?${getQueryString(
-                  "keyword",
-                  e.currentTarget.value,
-                  queryString,
-                )}`
+                const searchValue = e.currentTarget.value
+                const basePath = profession
+                  ? `/characters/${profession}`
+                  : "/characters"
+                const to = searchValue
+                  ? `${basePath}?keyword=${searchValue}`
+                  : basePath
                 navigate(to)
               }}
             />
