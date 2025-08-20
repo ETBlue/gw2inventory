@@ -84,12 +84,12 @@ The application uses a hybrid approach with React Context API for global state a
   - `/characters/:profession?` - Character overview and management with optional profession filtering
   - `/items/:category?` - Item inventory with optional category filtering
   - `/skins/:skinType?` - Skins management with pathname-based type filtering (armor, weapon, back, gathering), search, filtering, and sorting
+  - `/dyes` - Dyes management with sortable table and color swatches
   - `/settings` - Token configuration
   - `/account/*` - Account-related pages:
     - `/account/overview` - Account overview with titles
     - `/account/wallet` - Wallet currencies display
     - `/account/outfits` - Outfits display with alphabetical sorting
-    - `/account/dyes` - Dyes management with sortable table and color swatches
 
 ### Code Organization
 
@@ -103,6 +103,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `dyes.ts` - Dye-related types (AccountDyesData, Color, DyeEntryWithDetails from @gw2api/types)
 - `/src/pages/` - Route components
   - `/src/pages/skins/` - Skins page components (elevated to top-level route)
+  - `/src/pages/dyes/` - Dyes page components (elevated to top-level route)
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/layouts/` - Layout components (BaseFrame, Header)
 - `/src/helpers/` - Utility functions for API calls, CSS, URL handling, error handling, type guards, and character data processing
