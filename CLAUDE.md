@@ -84,7 +84,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `/characters/:profession?` - Character overview and management with optional profession filtering
   - `/items/:category?` - Item inventory with optional category filtering
   - `/skins/:skinType?` - Skins management with pathname-based type filtering (armor, weapon, back, gathering), search, filtering, and sorting
-  - `/dyes` - Dyes management with sortable table and color swatches
+  - `/dyes/:hue?` - Dyes management with hue filtering, search functionality, sortable table and color swatches
   - `/settings` - Token configuration
   - `/account/*` - Account-related pages:
     - `/account/overview` - Account overview with titles
@@ -148,8 +148,9 @@ The application uses a hybrid approach with React Context API for global state a
 - Sortable table implementation with multi-column support and visual sorting indicators
 - Consistent count badges on navigation tabs using Chakra UI Tag component with standardized styling (`size="sm"` and `margin="0 0 -0.1em 0.5em"`)
 - Standardized empty/loading/missing token states across all pages for consistent user experience
-- Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
+- Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`, `/dyes/red`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
 - URL-based state management for sorting and search parameters using `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items, Skins, Characters, Wallet, and Dyes pages)
+- Hue-based filtering with count badges for Dyes page, following similar patterns established in Skins page for consistent user experience
 
 ### Testing
 
@@ -159,7 +160,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **Test Files:** Place test files with `.test.ts` or `.test.tsx` extensions anywhere in `src/`
 - **Coverage:** Available via `npm run test:coverage`
 - **UI:** Interactive test runner available via `npm run test:ui`
-- **Test Patterns:** Comprehensive component testing with proper mocking of hooks, router, and external dependencies. Tests cover UI rendering, data filtering, search functionality, sorting, navigation, and URL state management including query string preservation across route changes.
+- **Test Patterns:** Comprehensive component testing with proper mocking of hooks, router, and external dependencies. Tests cover UI rendering, data filtering, search functionality, sorting, navigation, URL state management including query string preservation across route changes, hue-based filtering, count badges, and combined filtering scenarios.
 
 ### Code Style
 
