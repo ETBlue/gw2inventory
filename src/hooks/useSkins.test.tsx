@@ -54,7 +54,7 @@ describe("useSkins", () => {
 
   it("fetches account skin IDs when token is available", async () => {
     const mockToken = "test-token"
-    const mockAccountSkinIds = [] // Use empty array to avoid triggering skin details fetch
+    const mockAccountSkinIds: number[] = [] // Use empty array to avoid triggering skin details fetch
 
     mockUseToken.mockReturnValue({
       currentAccount: { name: "Test Account", token: mockToken },
