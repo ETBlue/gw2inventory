@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate, useParams, Link } from "react-router"
 import {
   Center,
   Spinner,
@@ -12,17 +12,36 @@ import {
   Heading,
   Box,
   Grid,
+  Tabs,
+  TabList,
+  Tab,
+  Tag,
+  Spacer,
+  Input,
+  InputGroup,
+  InputLeftElement,
   /* disable tooltip for now
   Tooltip,
   */
 } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
+import { MdSearch } from "react-icons/md"
 import { useDyes } from "~/hooks/useDyes"
 import { useSearchParams } from "~/hooks/url"
 import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 
+type DyeHue =
+  | "All"
+  | "Gray"
+  | "Brown"
+  | "Red"
+  | "Orange"
+  | "Yellow"
+  | "Green"
+  | "Blue"
+  | "Purple"
 type DyeSort =
   | "name"
   | "cloth"
@@ -34,6 +53,17 @@ type DyeSort =
   | "rarity"
 type DyeOrder = "asc" | "desc"
 
+const DYE_HUES: DyeHue[] = [
+  "All",
+  "Gray",
+  "Brown",
+  "Red",
+  "Orange",
+  "Yellow",
+  "Green",
+  "Blue",
+  "Purple",
+]
 const DYE_TABLE_HEADERS: DyeSort[] = [
   "name",
   "cloth",
@@ -94,14 +124,49 @@ const ColorSwatch = ({
 export default function Dyes() {
   const { dyesWithDetails = [], isFetching, hasToken } = useDyes()
   const navigate = useNavigate()
-  const { queryString, sortBy, order } = useSearchParams()
+  const { hue } = useParams<{ hue?: string }>()
+  const { queryString, keyword, sortBy, order } = useSearchParams()
 
   const activeSortBy: DyeSort = (sortBy as DyeSort) || "name"
   const activeSortOrder: DyeOrder = (order as DyeOrder) || "asc"
 
-  // Sort dye entries based on selected criteria
-  const sortedDyeEntries = useMemo(() => {
-    return [...dyesWithDetails].sort((a, b) => {
+  // Convert hue param to match the format used in filtering (capitalized)
+  const selectedHue: DyeHue = hue
+    ? ((hue.charAt(0).toUpperCase() + hue.slice(1)) as DyeHue)
+    : "All"
+
+  // Count dyes by hue for tags
+  const getDyeCountByHue = (hue: DyeHue): number => {
+    if (!dyesWithDetails) return 0
+    if (hue === "All") return dyesWithDetails.length
+    return dyesWithDetails.filter((entry) => {
+      const hueCategory = entry.color?.categories[0]
+      return hueCategory === hue
+    }).length
+  }
+
+  // Filter and sort dye entries based on selected hue, search query, and sort criteria
+  const filteredAndSortedDyeEntries = useMemo(() => {
+    let filtered = [...dyesWithDetails]
+
+    // Filter by hue
+    if (selectedHue !== "All") {
+      filtered = filtered.filter((entry) => {
+        const hueCategory = entry.color?.categories[0]
+        return hueCategory === selectedHue
+      })
+    }
+
+    // Filter by search query
+    if (keyword?.trim()) {
+      const query = keyword.toLowerCase()
+      filtered = filtered.filter((entry) =>
+        JSON.stringify(entry).toLowerCase().includes(query),
+      )
+    }
+
+    // Sort the filtered results
+    return filtered.sort((a, b) => {
       let aValue: string | number = ""
       let bValue: string | number = ""
 
@@ -156,7 +221,7 @@ export default function Dyes() {
         return 0
       }
     })
-  }, [dyesWithDetails, activeSortBy, activeSortOrder])
+  }, [dyesWithDetails, selectedHue, keyword, activeSortBy, activeSortOrder])
 
   // Handle column sorting
   const handleSort = (column: DyeSort) => {
@@ -172,11 +237,60 @@ export default function Dyes() {
       newQueryString = getQueryString("order", "asc", tempQueryString)
     }
 
-    navigate(`/account/dyes?${newQueryString}`)
+    const basePath =
+      selectedHue === "All" ? "/dyes" : `/dyes/${selectedHue.toLowerCase()}`
+    navigate(`${basePath}?${newQueryString}`)
   }
 
   return (
-    <Grid gridTemplateRows={"auto 1fr"}>
+    <Grid gridTemplateRows={"auto auto 1fr"} height={"100%"}>
+      <Tabs index={DYE_HUES.indexOf(selectedHue)}>
+        <TabList>
+          {DYE_HUES.map((hue) => (
+            <Tab
+              key={hue}
+              as={Link}
+              to={
+                hue === "All"
+                  ? `/dyes${queryString}`
+                  : `/dyes/${hue.toLowerCase()}${queryString}`
+              }
+            >
+              {hue}
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {getDyeCountByHue(hue)}
+              </Tag>
+            </Tab>
+          ))}
+          <Spacer />
+          <InputGroup width="20ch">
+            <InputLeftElement>
+              <MdSearch opacity="0.5" />
+            </InputLeftElement>
+            <Input
+              variant="unstyled"
+              placeholder=""
+              value={keyword || ""}
+              onChange={(e) => {
+                const searchValue = e.currentTarget.value
+                const basePath =
+                  selectedHue === "All"
+                    ? "/dyes"
+                    : `/dyes/${selectedHue.toLowerCase()}`
+                const newQueryString = getQueryString(
+                  "keyword",
+                  searchValue,
+                  queryString,
+                )
+                const to = newQueryString
+                  ? `${basePath}?${newQueryString}`
+                  : basePath
+                navigate(to)
+              }}
+            />
+          </InputGroup>
+        </TabList>
+      </Tabs>
       <Table className={sharedTableCss.table}>
         <Thead>
           <Tr>
@@ -203,7 +317,7 @@ export default function Dyes() {
           </Tr>
         </Thead>
         <Tbody>
-          {sortedDyeEntries.map((entry) => {
+          {filteredAndSortedDyeEntries.map((entry) => {
             const color = entry.color
             if (!color) return null
 
@@ -264,7 +378,7 @@ export default function Dyes() {
         </Center>
       ) : !hasToken ? (
         <Center>No account selected</Center>
-      ) : sortedDyeEntries.length === 0 ? (
+      ) : filteredAndSortedDyeEntries.length === 0 ? (
         <Center>No dye found</Center>
       ) : null}
     </Grid>
