@@ -3,7 +3,6 @@ import { chunk } from "lodash"
 import {
   Center,
   Spinner,
-  Flex,
   Image,
   Box,
   Input,
@@ -15,10 +14,13 @@ import {
   Tr,
   Th,
   Td,
-  Button,
   Tag,
   Heading,
   Grid,
+  Tabs,
+  TabList,
+  Tab,
+  Spacer,
 } from "@chakra-ui/react"
 import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
@@ -147,33 +149,30 @@ export default function Skins() {
 
   return (
     <Grid gridTemplateRows={"auto auto auto 1fr"} minHeight={"100%"}>
-      <Flex justifyContent="center" margin="1rem auto">
-        {SKIN_TYPES.map((type) => (
-          <Button
-            key={type}
-            variant="ghost"
-            fontWeight="normal"
-            isActive={selectedType === type}
-            onClick={() => setSelectedType(type)}
-          >
-            {type}
-            <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getSkinCountByType(type)}
-            </Tag>
-          </Button>
-        ))}
-        <InputGroup width="20ch">
-          <InputLeftElement>
-            <MdSearch opacity="0.5" />
-          </InputLeftElement>
-          <Input
-            variant="unstyled"
-            placeholder=""
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </InputGroup>
-      </Flex>
+      <Tabs index={SKIN_TYPES.indexOf(selectedType)}>
+        <TabList>
+          {SKIN_TYPES.map((type) => (
+            <Tab key={type} onClick={() => setSelectedType(type)}>
+              {type}
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {getSkinCountByType(type)}
+              </Tag>
+            </Tab>
+          ))}
+          <Spacer />
+          <InputGroup width="20ch">
+            <InputLeftElement>
+              <MdSearch opacity="0.5" />
+            </InputLeftElement>
+            <Input
+              variant="unstyled"
+              placeholder=""
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
+        </TabList>
+      </Tabs>
       <Pagination
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}

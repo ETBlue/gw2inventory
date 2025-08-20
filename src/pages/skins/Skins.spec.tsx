@@ -333,18 +333,16 @@ describe("Skins Component", () => {
 
     render(<Skins />)
 
-    // Check that all filter buttons are present with their counts
-    expect(screen.getByRole("button", { name: "All 1" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Armor 1" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Weapon 0" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Back 0" })).toBeInTheDocument()
-    expect(
-      screen.getByRole("button", { name: "Gathering 0" }),
-    ).toBeInTheDocument()
+    // Check that all filter tabs are present with their counts
+    expect(screen.getByRole("tab", { name: "All 1" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Armor 1" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Weapon 0" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Back 0" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Gathering 0" })).toBeInTheDocument()
 
     // "All" should be active by default
-    const allButton = screen.getByRole("button", { name: "All 1" })
-    expect(allButton).toHaveAttribute("data-active")
+    const allTab = screen.getByRole("tab", { name: "All 1" })
+    expect(allTab).toHaveAttribute("aria-selected", "true")
   })
 
   it("filters skins by type when type filter is selected", () => {
@@ -397,19 +395,19 @@ describe("Skins Component", () => {
     expect(screen.getByText("Test Back Item")).toBeInTheDocument()
 
     // Click on "Armor" filter
-    fireEvent.click(screen.getByRole("button", { name: "Armor 1" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Armor 1" }))
     expect(screen.getByText("Test Armor")).toBeInTheDocument()
     expect(screen.queryByText("Test Weapon")).not.toBeInTheDocument()
     expect(screen.queryByText("Test Back Item")).not.toBeInTheDocument()
 
     // Click on "Weapon" filter
-    fireEvent.click(screen.getByRole("button", { name: "Weapon 1" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Weapon 1" }))
     expect(screen.getByText("Test Weapon")).toBeInTheDocument()
     expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
     expect(screen.queryByText("Test Back Item")).not.toBeInTheDocument()
 
     // Click on "All" to show all skins again
-    fireEvent.click(screen.getByRole("button", { name: "All 3" }))
+    fireEvent.click(screen.getByRole("tab", { name: "All 3" }))
     expect(screen.getByText("Test Armor")).toBeInTheDocument()
     expect(screen.getByText("Test Weapon")).toBeInTheDocument()
     expect(screen.getByText("Test Back Item")).toBeInTheDocument()
@@ -462,7 +460,7 @@ describe("Skins Component", () => {
     const searchInput = screen.getByRole("textbox")
 
     // Filter by "Armor" type first
-    fireEvent.click(screen.getByRole("button", { name: "Armor 2" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Armor 2" }))
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
@@ -479,7 +477,7 @@ describe("Skins Component", () => {
 
     // Clear filters
     fireEvent.change(searchInput, { target: { value: "" } })
-    fireEvent.click(screen.getByRole("button", { name: "All 3" }))
+    fireEvent.click(screen.getByRole("tab", { name: "All 3" }))
     expect(screen.getByText("Studded Leather Boots")).toBeInTheDocument()
     expect(screen.getByText("Iron Sword")).toBeInTheDocument()
     expect(screen.getByText("Leather Gloves")).toBeInTheDocument()
@@ -510,7 +508,7 @@ describe("Skins Component", () => {
     render(<Skins />)
 
     // Filter by "Weapon" when only armor exists
-    fireEvent.click(screen.getByRole("button", { name: "Weapon 0" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Weapon 0" }))
     expect(screen.getByText("No skin found")).toBeInTheDocument()
     expect(screen.queryByText("Test Armor")).not.toBeInTheDocument()
   })
@@ -625,7 +623,7 @@ describe("Skins Component", () => {
     // Should be on second page after clicking next
 
     // Filter by "Armor" type - should still have 120 armor skins (2 pages)
-    fireEvent.click(screen.getByRole("button", { name: "Armor 120" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Armor 120" }))
 
     // Should reset to first page and show armor skins alphabetically
     expect(screen.getByText("Test Skin 1")).toBeInTheDocument()
