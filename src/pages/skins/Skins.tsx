@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { chunk } from "lodash"
 import { useNavigate, useParams, Link } from "react-router"
+import { getQueryString } from "~/helpers/url"
 import {
   Center,
   Spinner,
@@ -57,10 +58,11 @@ export default function Skins() {
   const { skins = [], isFetching, hasToken } = useSkins()
   const navigate = useNavigate()
   const { skinType } = useParams<{ skinType?: string }>()
-  const { keyword } = useSearchParams()
+  const { queryString, keyword, sortBy, order } = useSearchParams()
   const [pageIndex, setPageIndex] = useState<number>(0)
-  const [sortBy, setSortBy] = useState<SkinSort>("name")
-  const [sortOrder, setSortOrder] = useState<SkinOrder>("asc")
+
+  const activeSortBy: SkinSort = (sortBy as SkinSort) || "name"
+  const activeSortOrder: SkinOrder = (order as SkinOrder) || "asc"
 
   // Convert skinType param to match the format used in filtering (capitalized)
   const selectedType: SkinType = skinType
@@ -89,10 +91,12 @@ export default function Skins() {
       let aValue: string | number = ""
       let bValue: string | number = ""
 
-      switch (sortBy) {
+      switch (activeSortBy) {
         case "rarity": {
           const rarityComparison = compareRarity(a.rarity, b.rarity)
-          return sortOrder === "asc" ? rarityComparison : rarityComparison * -1
+          return activeSortOrder === "asc"
+            ? rarityComparison
+            : rarityComparison * -1
         }
         case "name":
           aValue = a.name.toLowerCase()
@@ -119,13 +123,13 @@ export default function Skins() {
           return 0
       }
 
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1
+      if (aValue < bValue) return activeSortOrder === "asc" ? -1 : 1
+      if (aValue > bValue) return activeSortOrder === "asc" ? 1 : -1
       return 0
     })
 
     return filtered
-  }, [skins, keyword, selectedType, sortBy, sortOrder])
+  }, [skins, keyword, selectedType, activeSortBy, activeSortOrder])
 
   // Create pages for pagination
   const pages = useMemo(() => {
@@ -136,7 +140,7 @@ export default function Skins() {
   // Reset page index when filters or sorting change
   useEffect(() => {
     setPageIndex(0)
-  }, [keyword, selectedType, sortBy, sortOrder])
+  }, [keyword, selectedType, activeSortBy, activeSortOrder])
 
   // Count skins by type for tags
   const getSkinCountByType = (type: SkinType): number => {
@@ -147,12 +151,20 @@ export default function Skins() {
 
   // Handle column sorting
   const handleSort = (column: SkinSort) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+    const currentPath = skinType ? `/skins/${skinType}` : "/skins"
+    let newQueryString: string
+
+    if (activeSortBy === column) {
+      // Toggle order if same column
+      const newOrder = activeSortOrder === "asc" ? "desc" : "asc"
+      newQueryString = getQueryString("order", newOrder, queryString)
     } else {
-      setSortBy(column)
-      setSortOrder("asc")
+      // Set new column and reset to asc
+      const tempQueryString = getQueryString("sortBy", column, queryString)
+      newQueryString = getQueryString("order", "asc", tempQueryString)
     }
+
+    navigate(`${currentPath}?${newQueryString}`)
   }
 
   return (
@@ -165,12 +177,8 @@ export default function Skins() {
               as={Link}
               to={
                 type === "All"
-                  ? keyword
-                    ? `/skins?keyword=${keyword}`
-                    : "/skins"
-                  : keyword
-                    ? `/skins/${type.toLowerCase()}?keyword=${keyword}`
-                    : `/skins/${type.toLowerCase()}`
+                  ? `/skins${queryString}`
+                  : `/skins/${type.toLowerCase()}${queryString}`
               }
             >
               {type}
@@ -191,8 +199,13 @@ export default function Skins() {
               onChange={(e) => {
                 const searchValue = e.currentTarget.value
                 const basePath = skinType ? `/skins/${skinType}` : "/skins"
-                const to = searchValue
-                  ? `${basePath}?keyword=${searchValue}`
+                const newQueryString = getQueryString(
+                  "keyword",
+                  searchValue,
+                  queryString,
+                )
+                const to = newQueryString
+                  ? `${basePath}?${newQueryString}`
                   : basePath
                 navigate(to)
               }}
@@ -213,11 +226,18 @@ export default function Skins() {
                 key={header}
                 cursor="pointer"
                 onClick={() => handleSort(header)}
-                className={`${css.title} ${sortBy === header ? css.active : ""}`}
+                className={`${css.title} ${activeSortBy === header ? css.active : ""}`}
               >
                 {header.charAt(0).toUpperCase() + header.slice(1)}
-                {sortBy === header && (
-                  <> {sortOrder === "asc" ? <CgArrowDown /> : <CgArrowUp />}</>
+                {activeSortBy === header && (
+                  <>
+                    {" "}
+                    {activeSortOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )}
+                  </>
                 )}
               </Th>
             ))}
