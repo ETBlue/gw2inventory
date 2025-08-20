@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
+import { useNavigate } from "react-router"
 import {
   Center,
   Spinner,
@@ -17,6 +18,8 @@ import {
 } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useDyes } from "~/hooks/useDyes"
+import { useSearchParams } from "~/hooks/url"
+import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 
@@ -90,8 +93,11 @@ const ColorSwatch = ({
 
 export default function Dyes() {
   const { dyesWithDetails = [], isFetching, hasToken } = useDyes()
-  const [sortBy, setSortBy] = useState<DyeSort>("name")
-  const [sortOrder, setSortOrder] = useState<DyeOrder>("asc")
+  const navigate = useNavigate()
+  const { queryString, sortBy, order } = useSearchParams()
+
+  const activeSortBy: DyeSort = (sortBy as DyeSort) || "name"
+  const activeSortOrder: DyeOrder = (order as DyeOrder) || "asc"
 
   // Sort dye entries based on selected criteria
   const sortedDyeEntries = useMemo(() => {
@@ -104,7 +110,7 @@ export default function Dyes() {
 
       if (!aColor || !bColor) return 0
 
-      switch (sortBy) {
+      switch (activeSortBy) {
         case "name":
           aValue = aColor.name
           bValue = bColor.name
@@ -143,23 +149,30 @@ export default function Dyes() {
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         const result = aValue.toLowerCase().localeCompare(bValue.toLowerCase())
-        return sortOrder === "asc" ? result : -result
+        return activeSortOrder === "asc" ? result : -result
       } else {
-        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1
-        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1
+        if (aValue < bValue) return activeSortOrder === "asc" ? -1 : 1
+        if (aValue > bValue) return activeSortOrder === "asc" ? 1 : -1
         return 0
       }
     })
-  }, [dyesWithDetails, sortBy, sortOrder])
+  }, [dyesWithDetails, activeSortBy, activeSortOrder])
 
   // Handle column sorting
   const handleSort = (column: DyeSort) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+    let newQueryString: string
+
+    if (activeSortBy === column) {
+      // Toggle order if same column
+      const newOrder = activeSortOrder === "asc" ? "desc" : "asc"
+      newQueryString = getQueryString("order", newOrder, queryString)
     } else {
-      setSortBy(column)
-      setSortOrder("asc")
+      // Set new column and reset to asc
+      const tempQueryString = getQueryString("sortBy", column, queryString)
+      newQueryString = getQueryString("order", "asc", tempQueryString)
     }
+
+    navigate(`/account/dyes?${newQueryString}`)
   }
 
   return (
@@ -172,12 +185,19 @@ export default function Dyes() {
                 key={header}
                 cursor="pointer"
                 onClick={() => handleSort(header)}
-                className={`${sharedTableCss.title} ${sortBy === header ? sharedTableCss.active : ""}`}
+                className={`${sharedTableCss.title} ${activeSortBy === header ? sharedTableCss.active : ""}`}
               >
                 {header.charAt(0).toUpperCase() +
                   header.slice(1).replace(/_/g, " ")}
-                {sortBy === header && (
-                  <> {sortOrder === "asc" ? <CgArrowDown /> : <CgArrowUp />}</>
+                {activeSortBy === header && (
+                  <>
+                    {" "}
+                    {activeSortOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )}
+                  </>
                 )}
               </Th>
             ))}
