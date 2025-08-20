@@ -58,6 +58,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useWallet` - Fetches account wallet and currency details
 - `useSkins` - Fetches account skins with detailed skin information and chunked API requests
 - `useOutfits` - Fetches account outfits with detailed outfit information and chunked API requests
+- `useDyes` - Fetches account dyes and color details with chunked API requests
 
 **Architecture Principles:**
 
@@ -88,6 +89,7 @@ The application uses a hybrid approach with React Context API for global state a
     - `/account/wallet` - Wallet currencies display
     - `/account/skins` - Skins management with search, filtering, and sorting
     - `/account/outfits` - Outfits display with alphabetical sorting
+    - `/account/dyes` - Dyes management with sortable table and color swatches
 
 ### Code Organization
 
@@ -98,6 +100,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `wallet.ts` - Wallet and currency types (AccountWallet, Currency from @gw2api/types)
   - `skins.ts` - Skin-related types (AccountSkins, Skin from @gw2api/types)
   - `outfits.ts` - Outfit-related types (AccountOutfits, Outfit from @gw2api/types)
+  - `dyes.ts` - Dye-related types (AccountDyesData, Color, DyeEntryWithDetails from @gw2api/types)
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
 - `/src/layouts/` - Layout components (BaseFrame, Header)
@@ -111,7 +114,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Hook Patterns:**
 
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`) expose read-only data
 - Focused custom hooks for specific functionality (e.g., `useItemCache`, `useAccountItems`)
 - Direct hook usage preferred over context when data is component-specific
 - Generic components support different data types (e.g., Pagination component)
@@ -136,6 +139,8 @@ The application uses a hybrid approach with React Context API for global state a
 - Consistent rarity sorting using shared `compareRarity` function that follows Guild Wars 2 hierarchy (Junk → Basic → Fine → Masterwork → Rare → Exotic → Ascended → Legendary)
 - Centralized pagination configuration via ITEM_COUNT_PER_PAGE constant
 - Shared helper functions for common operations (e.g., `formatAccessText` for text formatting, `compare` utilities for sorting)
+- Color swatch components with RGB to hex conversion for visual color representation
+- Sortable table implementation with multi-column support and visual sorting indicators
 
 ### Testing
 
