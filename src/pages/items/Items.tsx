@@ -146,7 +146,7 @@ function Items() {
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   return (
-    <Grid gridTemplateRows="auto 1fr">
+    <Grid gridTemplateRows="auto 1fr" minHeight={"100%"}>
       <Tabs
         index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
       >
@@ -193,55 +193,53 @@ function Items() {
             />
           </InputGroup>
         </TabList>
-        <div>
-          <Routes>
-            {MENU_ITEMS.map((menuItem) => (
-              <Route
-                key={menuItem.to}
-                path={menuItem.to}
-                element={
-                  <SubMenuItem
-                    showOnly={
-                      menuItem.to === "/items/material"
-                        ? materialCategories
-                        : menuItem.showOnly
-                    }
-                    activeType={activeType}
-                    userItems={allItems}
-                    items={items}
-                    materials={materials}
+        <Routes>
+          {MENU_ITEMS.map((menuItem) => (
+            <Route
+              key={menuItem.to}
+              path={menuItem.to}
+              element={
+                <SubMenuItem
+                  showOnly={
+                    menuItem.to === "/items/material"
+                      ? materialCategories
+                      : menuItem.showOnly
+                  }
+                  activeType={activeType}
+                  userItems={allItems}
+                  items={items}
+                  materials={materials}
+                />
+              }
+            />
+          ))}
+        </Routes>
+        <Pagination
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndex}
+          pages={pages}
+        />
+        <Table className={sharedTableCss.table}>
+          <Thead>
+            <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
+          </Thead>
+          <Tbody>
+            {pages[pageIndex]?.map(
+              (userItem: UserItemInList, index: number) => {
+                const item: ItemTypeDef = items[userItem.id]
+                const materialCategory = materials[(userItem as any).category]
+                return (
+                  <Item
+                    key={index}
+                    item={item}
+                    userItem={userItem}
+                    materialCategory={materialCategory}
                   />
-                }
-              />
-            ))}
-          </Routes>
-          <Pagination
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            pages={pages}
-          />
-          <Table className={sharedTableCss.table}>
-            <Thead>
-              <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
-            </Thead>
-            <Tbody>
-              {pages[pageIndex]?.map(
-                (userItem: UserItemInList, index: number) => {
-                  const item: ItemTypeDef = items[userItem.id]
-                  const materialCategory = materials[(userItem as any).category]
-                  return (
-                    <Item
-                      key={index}
-                      item={item}
-                      userItem={userItem}
-                      materialCategory={materialCategory}
-                    />
-                  )
-                },
-              )}
-            </Tbody>
-          </Table>
-        </div>
+                )
+              },
+            )}
+          </Tbody>
+        </Table>
       </Tabs>
       {isItemsFetching || isCharactersFetching ? (
         <Center>
