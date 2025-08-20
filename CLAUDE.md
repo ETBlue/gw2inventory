@@ -141,6 +141,8 @@ The application uses a hybrid approach with React Context API for global state a
 - Shared helper functions for common operations (e.g., `formatAccessText` for text formatting, `compare` utilities for sorting)
 - Color swatch components with RGB to hex conversion for visual color representation
 - Sortable table implementation with multi-column support and visual sorting indicators
+- Consistent count badges on navigation tabs using Chakra UI Tag component with standardized styling (`size="sm"` and `margin="0 0 -0.1em 0.5em"`)
+- Standardized empty/loading/missing token states across all pages for consistent user experience
 
 ### Testing
 
