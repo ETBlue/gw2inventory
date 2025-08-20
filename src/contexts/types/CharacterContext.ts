@@ -8,6 +8,7 @@ import {
 } from "./Character"
 
 export interface Values {
+  hasToken: boolean
   characters: Character[]
   isFetching: boolean
 }

@@ -2,7 +2,6 @@ import { useState, useMemo } from "react"
 import {
   Center,
   Spinner,
-  VStack,
   Table,
   Thead,
   Tbody,
@@ -11,6 +10,7 @@ import {
   Td,
   Heading,
   Box,
+  Grid,
   /* disable tooltip for now
   Tooltip,
   */
@@ -89,13 +89,12 @@ const ColorSwatch = ({
 }
 
 export default function Dyes() {
-  const { dyesWithDetails, isFetching, hasToken } = useDyes()
+  const { dyesWithDetails = [], isFetching, hasToken } = useDyes()
   const [sortBy, setSortBy] = useState<DyeSort>("name")
   const [sortOrder, setSortOrder] = useState<DyeOrder>("asc")
 
   // Sort dye entries based on selected criteria
   const sortedDyeEntries = useMemo(() => {
-    if (!dyesWithDetails) return undefined
     return [...dyesWithDetails].sort((a, b) => {
       let aValue: string | number = ""
       let bValue: string | number = ""
@@ -163,21 +162,8 @@ export default function Dyes() {
     }
   }
 
-  if (!hasToken) return <Center>No account selected</Center>
-
-  if (isFetching)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    )
-
-  if (!sortedDyeEntries || sortedDyeEntries.length === 0) {
-    return <Center>No dye data available</Center>
-  }
-
   return (
-    <VStack spacing={4} align="stretch">
+    <Grid gridTemplateRows={"auto 1fr"}>
       <Table className={sharedTableCss.table}>
         <Thead>
           <Tr>
@@ -253,6 +239,15 @@ export default function Dyes() {
           })}
         </Tbody>
       </Table>
-    </VStack>
+      {isFetching ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : !hasToken ? (
+        <Center>No account selected</Center>
+      ) : sortedDyeEntries.length === 0 ? (
+        <Center>No dye found</Center>
+      ) : null}
+    </Grid>
   )
 }

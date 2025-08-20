@@ -2,7 +2,6 @@ import { useState, useMemo } from "react"
 import {
   Center,
   Spinner,
-  VStack,
   Image,
   Table,
   Thead,
@@ -11,6 +10,7 @@ import {
   Th,
   Td,
   Heading,
+  Grid,
 } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useWallet } from "~/hooks/useWallet"
@@ -23,13 +23,12 @@ type WalletOrder = "asc" | "desc"
 const WALLET_TABLE_HEADERS: WalletSort[] = ["name", "value"]
 
 export default function Wallet() {
-  const { walletWithDetails, isFetching, hasToken } = useWallet()
+  const { walletWithDetails = [], isFetching, hasToken } = useWallet()
   const [sortBy, setSortBy] = useState<WalletSort>("name")
   const [sortOrder, setSortOrder] = useState<WalletOrder>("asc")
 
   // Sort wallet entries based on selected criteria
   const sortedWalletEntries = useMemo(() => {
-    if (!walletWithDetails) return undefined
     return [...walletWithDetails].sort((a, b) => {
       let aValue: string | number = ""
       let bValue: string | number = ""
@@ -68,21 +67,8 @@ export default function Wallet() {
     }
   }
 
-  if (!hasToken) return <Center>No account selected</Center>
-
-  if (isFetching)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    )
-
-  if (!sortedWalletEntries || sortedWalletEntries.length === 0) {
-    return <Center>No wallet data available</Center>
-  }
-
   return (
-    <VStack spacing={4} align="stretch">
+    <Grid gridTemplateRows={"auto 1fr"}>
       <Table className={sharedTableCss.table}>
         <Thead>
           <Tr>
@@ -132,6 +118,15 @@ export default function Wallet() {
           ))}
         </Tbody>
       </Table>
-    </VStack>
+      {isFetching ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : !hasToken ? (
+        <Center>No account selected</Center>
+      ) : sortedWalletEntries.length === 0 ? (
+        <Center>No currency found</Center>
+      ) : null}
+    </Grid>
   )
 }

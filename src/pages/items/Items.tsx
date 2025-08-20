@@ -23,6 +23,7 @@ import {
   Tag,
   Center,
   Spinner,
+  Grid,
 } from "@chakra-ui/react"
 
 import { ITEM_COUNT_PER_PAGE } from "config"
@@ -50,6 +51,7 @@ import { MENU_ITEMS } from "./constants"
 
 function Items() {
   const {
+    hasToken,
     items,
     materials,
     materialCategories,
@@ -144,60 +146,53 @@ function Items() {
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   return (
-    <Tabs
-      display="grid"
-      gridTemplateRows="auto 1fr"
-      height="100%"
-      index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
-    >
-      <TabList>
-        <Tab as={NavLink} to="/items">
-          All
-          <Tag size="sm" margin="0 0 -0.1em 0.5em">
-            {allItems?.length}
-          </Tag>
-        </Tab>
-        {MENU_ITEMS.map((item) => (
-          <Tab key={item.to} as={NavLink} to={item.to}>
-            {item.text}
+    <Grid gridTemplateRows="auto 1fr">
+      <Tabs
+        index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
+      >
+        <TabList>
+          <Tab as={NavLink} to="/items">
+            All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getTypedItemLength({
-                types:
-                  item.to === "/items/material"
-                    ? materialCategories
-                    : item.showOnly,
-                userItems: allItems,
-                items,
-                materials,
-                pathname: item.to,
-              })}
+              {allItems?.length}
             </Tag>
           </Tab>
-        ))}
-        <Spacer />
-        <InputGroup width="20ch">
-          <InputLeftElement>
-            <MdSearch opacity="0.5" />
-          </InputLeftElement>
-          <Input
-            variant="unstyled"
-            value={keyword || ""}
-            onChange={(e) => {
-              const to = `${pathname}?${getQueryString(
-                "keyword",
-                e.currentTarget.value,
-                queryString,
-              )}`
-              navigate(to)
-            }}
-          />
-        </InputGroup>
-      </TabList>
-      {isItemsFetching || isCharactersFetching ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : (
+          {MENU_ITEMS.map((item) => (
+            <Tab key={item.to} as={NavLink} to={item.to}>
+              {item.text}
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {getTypedItemLength({
+                  types:
+                    item.to === "/items/material"
+                      ? materialCategories
+                      : item.showOnly,
+                  userItems: allItems,
+                  items,
+                  materials,
+                  pathname: item.to,
+                })}
+              </Tag>
+            </Tab>
+          ))}
+          <Spacer />
+          <InputGroup width="20ch">
+            <InputLeftElement>
+              <MdSearch opacity="0.5" />
+            </InputLeftElement>
+            <Input
+              variant="unstyled"
+              value={keyword || ""}
+              onChange={(e) => {
+                const to = `${pathname}?${getQueryString(
+                  "keyword",
+                  e.currentTarget.value,
+                  queryString,
+                )}`
+                navigate(to)
+              }}
+            />
+          </InputGroup>
+        </TabList>
         <div>
           <Routes>
             {MENU_ITEMS.map((menuItem) => (
@@ -247,8 +242,17 @@ function Items() {
             </Tbody>
           </Table>
         </div>
-      )}
-    </Tabs>
+      </Tabs>
+      {isItemsFetching || isCharactersFetching ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : !hasToken ? (
+        <Center>No account selected</Center>
+      ) : visibleItems.length === 0 ? (
+        <Center>No item found</Center>
+      ) : null}
+    </Grid>
   )
 }
 

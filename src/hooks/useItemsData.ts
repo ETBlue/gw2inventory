@@ -103,6 +103,7 @@ export const useItemsData = () => {
     isCharactersFetching
 
   return {
+    hasToken: !!currentAccount?.token,
     items,
     materials,
     materialCategories,

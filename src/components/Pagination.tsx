@@ -50,7 +50,6 @@ function Pagination<T = UserItemInList>(props: Props<T>) {
       as={ButtonGroup}
       isAttached
       variant="ghost"
-      marginTop="1rem"
       borderBottomWidth="1px"
       justifyContent="center"
     >

@@ -3,7 +3,6 @@ import { chunk } from "lodash"
 import {
   Center,
   Spinner,
-  VStack,
   Flex,
   Image,
   Box,
@@ -19,6 +18,7 @@ import {
   Button,
   Tag,
   Heading,
+  Grid,
 } from "@chakra-ui/react"
 import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
@@ -50,7 +50,7 @@ const SKIN_TABLE_HEADERS: SkinSort[] = [
 ]
 
 export default function Skins() {
-  const { skins, isFetching, hasToken } = useSkins()
+  const { skins = [], isFetching, hasToken } = useSkins()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedType, setSelectedType] = useState<SkinType>("All")
   const [pageIndex, setPageIndex] = useState<number>(0)
@@ -59,8 +59,6 @@ export default function Skins() {
 
   // Filter and sort skins based on search query, type, and sort criteria
   const filteredSkins = useMemo(() => {
-    if (!skins) return undefined
-
     let filtered = skins
 
     // Filter by type
@@ -147,63 +145,8 @@ export default function Skins() {
     }
   }
 
-  if (!hasToken) return <Center>No account selected</Center>
-
-  if (isFetching)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    )
-
-  if (!filteredSkins || filteredSkins.length === 0) {
-    return (
-      <VStack spacing={4} align="stretch">
-        <Flex justifyContent="center" margin="1rem auto">
-          {SKIN_TYPES.map((type) => (
-            <Button
-              key={type}
-              variant="ghost"
-              fontWeight="normal"
-              isActive={selectedType === type}
-              onClick={() => setSelectedType(type)}
-            >
-              {type}
-              <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {getSkinCountByType(type)}
-              </Tag>
-            </Button>
-          ))}
-          <InputGroup width="20ch">
-            <InputLeftElement>
-              <MdSearch opacity="0.5" />
-            </InputLeftElement>
-            <Input
-              variant="unstyled"
-              placeholder="Search skins by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </InputGroup>
-        </Flex>
-        {pages.length > 1 && (
-          <Pagination
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            pages={pages}
-          />
-        )}
-        <Center>
-          {searchQuery || selectedType !== "All"
-            ? "No skins match your filters"
-            : "No skins available"}
-        </Center>
-      </VStack>
-    )
-  }
-
   return (
-    <div>
+    <Grid gridTemplateRows={"auto auto auto 1fr"}>
       <Flex justifyContent="center" margin="1rem auto">
         {SKIN_TYPES.map((type) => (
           <Button
@@ -231,13 +174,11 @@ export default function Skins() {
           />
         </InputGroup>
       </Flex>
-      {pages.length > 1 && (
-        <Pagination
-          pageIndex={pageIndex}
-          setPageIndex={setPageIndex}
-          pages={pages}
-        />
-      )}
+      <Pagination
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        pages={pages}
+      />
       <Table className={css.table}>
         <Thead>
           <Tr>
@@ -305,6 +246,15 @@ export default function Skins() {
           ))}
         </Tbody>
       </Table>
-    </div>
+      {isFetching ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : !hasToken ? (
+        <Center>No account selected</Center>
+      ) : filteredSkins.length === 0 ? (
+        <Center>No skin found</Center>
+      ) : null}
+    </Grid>
   )
 }
