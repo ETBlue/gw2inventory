@@ -64,12 +64,12 @@ describe("Dyes Component", () => {
   it("shows 'No account selected' when no token is available", () => {
     mockUseDyes.mockReturnValue({
       dyesData: undefined,
-      colors: undefined,
+      colors: [],
       dyesWithDetails: undefined,
       isFetching: false,
       error: null,
       hasToken: false,
-    } as ReturnType<typeof useDyes>)
+    })
 
     render(<Dyes />)
 
@@ -79,12 +79,12 @@ describe("Dyes Component", () => {
   it("shows loading spinner when data is being fetched", () => {
     mockUseDyes.mockReturnValue({
       dyesData: undefined,
-      colors: undefined,
+      colors: [],
       dyesWithDetails: undefined,
       isFetching: true,
       error: null,
       hasToken: true,
-    } as ReturnType<typeof useDyes>)
+    })
 
     render(<Dyes />)
 
