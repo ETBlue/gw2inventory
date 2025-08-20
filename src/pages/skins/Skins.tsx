@@ -146,7 +146,7 @@ export default function Skins() {
   }
 
   return (
-    <Grid gridTemplateRows={"auto auto auto 1fr"}>
+    <Grid gridTemplateRows={"auto auto auto 1fr"} minHeight={"100%"}>
       <Flex justifyContent="center" margin="1rem auto">
         {SKIN_TYPES.map((type) => (
           <Button

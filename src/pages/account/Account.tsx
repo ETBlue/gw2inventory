@@ -3,14 +3,12 @@ import { Tabs, TabList, Tab, Tag } from "@chakra-ui/react"
 
 import { MENU_ITEMS } from "./contants"
 import { useWallet } from "~/hooks/useWallet"
-import { useSkins } from "~/hooks/useSkins"
 import { useOutfits } from "~/hooks/useOutfits"
 import { useDyes } from "~/hooks/useDyes"
 import { isNumber } from "lodash"
 
 function Account() {
   const { walletData } = useWallet()
-  const { skins } = useSkins()
   const { outfits } = useOutfits()
   const { dyesData } = useDyes()
 
@@ -20,8 +18,6 @@ function Account() {
         return undefined
       case "wallet":
         return walletData?.length ?? 0
-      case "skins":
-        return skins?.length ?? 0
       case "outfits":
         return outfits?.length ?? 0
       case "dyes":

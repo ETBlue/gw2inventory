@@ -1,6 +1,5 @@
 import Overview from "~/pages/account/Overview"
 import Wallet from "~/pages/account/Wallet"
-import Skins from "~/pages/account/Skins"
 import Outfits from "./Outfits"
 import Dyes from "./Dyes"
 /* 
@@ -14,7 +13,6 @@ import Legendaries from "pages/account/Legendaries"
 export const MENU_ITEMS = [
   { to: "", text: "Overview", component: Overview },
   { to: "wallet", text: "Wallet", component: Wallet },
-  { to: "skins", text: "Skins", component: Skins },
   { to: "outfits", text: "Outfits", component: Outfits },
   { to: "dyes", text: "Dyes", component: Dyes },
   /*

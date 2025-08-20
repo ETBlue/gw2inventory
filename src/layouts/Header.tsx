@@ -21,6 +21,7 @@ const MENU_ITEMS = [
   { to: "/account", text: "Account" },
   { to: "/characters", text: "Characters" },
   { to: "/items", text: "Items" },
+  { to: "/skins", text: "Skins" },
   // { to: "/unlocks", text: "Unlocks" },
   // { to: "/trades", text: "Trades" },
   // { to: "/wallet", text: "Wallet" },

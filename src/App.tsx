@@ -8,6 +8,7 @@ import BaseFrame from "layouts/BaseFrame"
 import Characters from "pages/characters"
 import Items from "pages/items"
 import Settings from "pages/settings"
+import Skins from "pages/skins"
 
 import "./App.css"
 import Account from "pages/account"
@@ -21,6 +22,7 @@ const Content = () => {
         <Route path="/account/*" element={<Account />} />
         <Route path="/characters" element={<Characters />} />
         <Route path="/items/:category?" element={<Items />} />
+        <Route path="/skins" element={<Skins />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/" element={<Navigate to="/characters" replace />} />
       </Routes>
