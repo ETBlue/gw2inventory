@@ -3,14 +3,14 @@
  * These help ensure type safety when dealing with unknown data
  */
 
-import type { Item } from "@gw2api/types/data/item"
 import type { Character } from "@gw2api/types/data/character"
 import { UsedAccount } from "contexts/types/TokenContext"
+import { PatchedItem } from "~/types/items"
 
 /**
  * Type guard to check if value is a valid Item
  */
-export function isItem(value: unknown): value is Item {
+export function isItem(value: unknown): value is PatchedItem {
   return (
     typeof value === "object" &&
     value !== null &&
@@ -24,7 +24,7 @@ export function isItem(value: unknown): value is Item {
 /**
  * Type guard to check if value is an array of Items
  */
-export function isItemArray(value: unknown): value is Item[] {
+export function isItemArray(value: unknown): value is PatchedItem[] {
   return Array.isArray(value) && value.every(isItem)
 }
 

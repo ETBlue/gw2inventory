@@ -23,8 +23,7 @@ import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
 import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
-import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
-import { UserItemInList } from "types/items"
+import { PatchedItem, UserItemInList } from "types/items"
 import Pagination from "components/Pagination"
 
 import SubMenuItem from "./SubMenuItem"
@@ -127,7 +126,7 @@ function Items() {
       })
       .filter((userItem: UserItemInList) => {
         if (!keyword) return true
-        const itemRaw: ItemTypeDef = items[userItem.id]
+        const itemRaw: PatchedItem = items[userItem.id]
         const item = { ...userItem, ...itemRaw }
         return JSON.stringify(item).match(new RegExp(keyword, "i"))
       })
@@ -217,7 +216,7 @@ function Items() {
           <Tbody>
             {pages[pageIndex]?.map(
               (userItem: UserItemInList, index: number) => {
-                const item: ItemTypeDef = items[userItem.id]
+                const item: PatchedItem = items[userItem.id]
                 const materialCategory = materials[(userItem as any).category]
                 return (
                   <Item

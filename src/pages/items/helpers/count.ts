@@ -1,5 +1,4 @@
-import { Items, Materials, UserItemInList } from "types/items"
-import type { Item } from "@gw2api/types/data/item"
+import { Items, Materials, PatchedItem, UserItemInList } from "types/items"
 import { MENU_ITEMS } from "~/pages/items/constants"
 
 interface LengthParams {
@@ -34,7 +33,7 @@ interface TypeParams {
 }
 export const isItemInTypes = (params: TypeParams) => {
   const { types, userItem, items, materials, pathname } = params
-  const itemRaw: Item = items[userItem.id]
+  const itemRaw: PatchedItem = items[userItem.id]
   if (!itemRaw) return false
 
   if (pathname === "/items/material") {
@@ -54,7 +53,7 @@ export const isItemInCategory = (params: CategoryParams) => {
   const { userItem, category, items, pathname } = params
   if (!category) return true
 
-  const itemRaw: Item = items[userItem.id]
+  const itemRaw: PatchedItem = items[userItem.id]
   if (!itemRaw) return false
 
   const activeTypes =

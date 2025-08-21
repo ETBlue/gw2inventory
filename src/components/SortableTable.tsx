@@ -6,22 +6,23 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 import { getQueryString } from "helpers/url"
 import { useSearchParams } from "hooks/url"
 import type { Character } from "@gw2api/types/data/character"
-import type { Item } from "@gw2api/types/data/item"
+
 import { compare } from "pages/items/helpers/compare"
 
 import css from "./styles/SortableTable.module.css"
+import { PatchedItem } from "~/types/items"
 
 export interface Column {
   key: string
   title: string
   render:
     | ((data: Character) => React.JSX.Element | string)
-    | ((data: Item) => React.JSX.Element | string)
+    | ((data: PatchedItem) => React.JSX.Element | string)
 }
 
 interface Props {
   columns: Column[]
-  rows: Character[] | Item[]
+  rows: Character[] | PatchedItem[]
   defaultSortBy: string
   defaultOrder: "asc" | "dsc"
 }

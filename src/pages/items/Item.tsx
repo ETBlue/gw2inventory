@@ -1,13 +1,12 @@
 import { Td, Tr, Image, Heading, Tag, Code, Badge, Box } from "@chakra-ui/react"
 import { BsQuestionOctagonFill } from "react-icons/bs"
 
-import type { Item } from "@gw2api/types/data/item"
-import { UserItemInList } from "types/items"
+import { PatchedItem, UserItemInList } from "types/items"
 
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 interface Props {
-  item: Item
+  item: PatchedItem
   userItem: UserItemInList
   materialCategory?: string
 }

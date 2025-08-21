@@ -8,31 +8,31 @@ import React, {
   ReactNode,
 } from "react"
 import { chunk, sortBy } from "lodash"
-import type { Item } from "@gw2api/types/data/item"
+
 import type { MaterialCategory } from "@gw2api/types/data/material"
 import { fetchGW2 } from "helpers/api"
 import { API_CONSTANTS } from "constants"
-import { materialCategoryAliases } from "types/items"
+import { materialCategoryAliases, PatchedItem } from "types/items"
 
 // Types
 interface StaticDataState {
-  items: Record<number, Item>
+  items: Record<number, PatchedItem>
   isItemsFetching: boolean
   materialCategoriesData: MaterialCategory[]
   isMaterialFetching: boolean
 }
 
 type StaticDataAction =
-  | { type: "ADD_ITEMS"; items: Item[] }
+  | { type: "ADD_ITEMS"; items: PatchedItem[] }
   | { type: "SET_FETCHING"; fetching: boolean }
   | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
 
 interface StaticDataContextType {
-  items: Record<number, Item>
+  items: Record<number, PatchedItem>
   isItemsFetching: boolean
   fetchItems: (itemIds: number[]) => Promise<void>
-  addItems: (items: Item[]) => void
+  addItems: (items: PatchedItem[]) => void
   materialCategoriesData: MaterialCategory[]
   materialCategories: string[]
   materials: Record<number, string>
@@ -87,10 +87,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   })
 
   // Use ref for stable reference to current items
-  const itemsRef = useRef<Record<number, Item>>({})
+  const itemsRef = useRef<Record<number, PatchedItem>>({})
   itemsRef.current = state.items
 
-  const addItems = useCallback((newItems: Item[]) => {
+  const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
   }, [])
 
@@ -130,12 +130,15 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       }
 
       const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-      let newItems: Item[] = []
+      let newItems: PatchedItem[] = []
       let failedChunks = 0
 
       for (const chunk of chunks) {
         try {
-          const data = await fetchGW2<Item[]>("items", `ids=${chunk.join(",")}`)
+          const data = await fetchGW2<PatchedItem[]>(
+            "items",
+            `ids=${chunk.join(",")}`,
+          )
           if (data) {
             newItems = [...newItems, ...data]
           }
