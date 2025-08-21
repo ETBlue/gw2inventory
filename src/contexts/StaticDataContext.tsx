@@ -7,26 +7,37 @@ import React, {
   useEffect,
   ReactNode,
 } from "react"
-import { chunk } from "lodash"
+import { chunk, sortBy } from "lodash"
 import type { Item } from "@gw2api/types/data/item"
+import type { MaterialCategory } from "@gw2api/types/data/material"
 import { fetchGW2 } from "helpers/api"
 import { API_CONSTANTS } from "constants"
+import { materialCategoryAliases } from "types/items"
 
 // Types
 interface StaticDataState {
   items: Record<number, Item>
   isItemsFetching: boolean
+  materialCategoriesData: MaterialCategory[]
+  isMaterialFetching: boolean
 }
 
 type StaticDataAction =
   | { type: "ADD_ITEMS"; items: Item[] }
   | { type: "SET_FETCHING"; fetching: boolean }
+  | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
+  | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
 
 interface StaticDataContextType {
   items: Record<number, Item>
   isItemsFetching: boolean
   fetchItems: (itemIds: number[]) => Promise<void>
   addItems: (items: Item[]) => void
+  materialCategoriesData: MaterialCategory[]
+  materialCategories: string[]
+  materials: Record<number, string>
+  isMaterialFetching: boolean
+  fetchMaterialCategories: () => Promise<void>
 }
 
 // Context
@@ -47,6 +58,10 @@ const staticDataReducer = (
     }
     case "SET_FETCHING":
       return { ...state, isItemsFetching: action.fetching }
+    case "SET_MATERIAL_CATEGORIES":
+      return { ...state, materialCategoriesData: action.materialCategories }
+    case "SET_MATERIAL_FETCHING":
+      return { ...state, isMaterialFetching: action.fetching }
     default:
       return state
   }
@@ -67,6 +82,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   const [state, dispatch] = useReducer(staticDataReducer, {
     items: {},
     isItemsFetching: false,
+    materialCategoriesData: [],
+    isMaterialFetching: false,
   })
 
   // Use ref for stable reference to current items
@@ -76,6 +93,23 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   const addItems = useCallback((newItems: Item[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
   }, [])
+
+  const fetchMaterialCategories = useCallback(async () => {
+    if (state.materialCategoriesData.length > 0) return
+
+    dispatch({ type: "SET_MATERIAL_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<MaterialCategory[]>("materials", "ids=all")
+      if (data) {
+        dispatch({ type: "SET_MATERIAL_CATEGORIES", materialCategories: data })
+      }
+    } catch (error) {
+      console.error("Failed to fetch material categories:", error)
+    } finally {
+      dispatch({ type: "SET_MATERIAL_FETCHING", fetching: false })
+    }
+  }, [state.materialCategoriesData.length])
 
   const fetchItems = useCallback(
     async (newIds: number[]) => {
@@ -127,11 +161,36 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     [addItems],
   )
 
+  // Process material categories data
+  const materialCategories =
+    state.materialCategoriesData.length > 0
+      ? sortBy(state.materialCategoriesData, ["order"]).map(
+          (item: MaterialCategory) => materialCategoryAliases[item.name],
+        )
+      : []
+
+  // Create materials lookup map for category ID to alias mapping
+  const materials =
+    state.materialCategoriesData.length > 0
+      ? state.materialCategoriesData.reduce(
+          (prev: Record<number, string>, curr: MaterialCategory) => {
+            prev[curr.id] = materialCategoryAliases[curr.name]
+            return prev
+          },
+          {},
+        )
+      : {}
+
   const contextValue: StaticDataContextType = {
     items: state.items,
     isItemsFetching: state.isItemsFetching,
     fetchItems,
     addItems,
+    materialCategoriesData: state.materialCategoriesData,
+    materialCategories,
+    materials,
+    isMaterialFetching: state.isMaterialFetching,
+    fetchMaterialCategories,
   }
 
   return (
