@@ -1,15 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
+import { useEffect, useMemo } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
-import { AccountWalletData, Currency, WalletData } from "~/types/wallet"
+import { AccountWalletData, WalletData } from "~/types/wallet"
+import { useStaticData } from "~/contexts/StaticDataContext"
 
 /**
  * Custom hook to fetch account wallet and currency details
- * Follows the pattern established in the Overview component
+ * Uses StaticDataContext for currency data caching
+ * Returns wallet data enriched with currency details
  */
 export const useWallet = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
+  const { currencies, isCurrenciesFetching, fetchCurrencies } = useStaticData()
 
   // Fetch account wallet data
   const {
@@ -23,41 +27,50 @@ export const useWallet = () => {
     enabled: !!token,
   })
 
-  // Fetch currency details for the wallet currencies
-  const currencyIds = walletData
-    ? (walletData as any).map((entry: any) => entry.id).join(",")
-    : ""
-  const {
-    data: currencies,
-    isFetching: isCurrenciesFetching,
-    error: currenciesError,
-  } = useQuery<Currency[]>({
-    queryKey: ["currencies", undefined, `ids=${currencyIds}`],
-    queryFn: queryFunction as any,
-    staleTime: Infinity,
-    enabled: !!walletData && (walletData as any).length > 0,
-  })
+  // Auto-fetch currencies when wallet data is available
+  useEffect(() => {
+    if (walletData && walletData.length > 0) {
+      // Extract currency IDs from wallet data
+      const currencyIds = walletData.map((entry) => entry.id)
+      // Only fetch currencies that aren't already cached
+      const uncachedCurrencyIds = currencyIds.filter(
+        (currencyId) => !currencies[currencyId],
+      )
+      if (uncachedCurrencyIds.length > 0) {
+        fetchCurrencies(uncachedCurrencyIds)
+      }
+    }
+  }, [walletData, currencies, fetchCurrencies])
 
   // Combine wallet data with currency details
-  const walletWithDetails: WalletData | undefined =
-    walletData && currencies
-      ? (walletData as any).map((walletEntry: any) => ({
-          ...walletEntry,
-          currency: (currencies as any).find(
-            (currency: any) => currency.id === walletEntry.id,
-          ),
-        }))
-      : undefined
+  const walletWithDetails: WalletData | undefined = useMemo(() => {
+    if (!walletData || walletData.length === 0) return undefined
+
+    return walletData.map((walletEntry) => ({
+      ...walletEntry,
+      currency: currencies[walletEntry.id],
+    }))
+  }, [walletData, currencies])
+
+  // Extract currencies that are actually used in the wallet
+  const walletCurrencies = useMemo(() => {
+    if (!walletData) return undefined
+
+    const currencyList = walletData
+      .map((entry) => currencies[entry.id])
+      .filter((currency) => currency !== undefined)
+
+    return currencyList.length > 0 ? currencyList : undefined
+  }, [walletData, currencies])
 
   const isFetching = isWalletFetching || isCurrenciesFetching
-  const error = walletError || currenciesError
 
   return {
     walletData,
-    currencies,
+    currencies: walletCurrencies,
     walletWithDetails,
     isFetching,
-    error,
+    error: walletError,
     hasToken: !!token,
   }
 }

@@ -6,6 +6,7 @@ import { createTestQueryClient } from "~/test/utils"
 import { useWallet } from "./useWallet"
 import * as tokenHook from "./useToken"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataContext from "~/contexts/StaticDataContext"
 
 // Mock the useToken hook
 vi.mock("./useToken")
@@ -14,6 +15,10 @@ const mockUseToken = vi.mocked(tokenHook.useToken)
 // Mock the API helpers
 vi.mock("~/helpers/api")
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+
+// Mock the StaticDataContext
+vi.mock("~/contexts/StaticDataContext")
+const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 
 // Create a wrapper component for React Query using shared test utility
 const createWrapper = () => {
@@ -29,6 +34,44 @@ const createWrapper = () => {
 describe("useWallet", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Set up default StaticDataContext mock
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        version: null,
+      })),
+    })
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -106,6 +149,13 @@ describe("useWallet", () => {
         icon: "https://example.com/gem.png",
       },
     ]
+    const mockFetchCurrencies = vi.fn()
+
+    // Create a mock currencies object that simulates cached currencies
+    const mockCachedCurrencies = {
+      1: mockCurrencies[0],
+      5: mockCurrencies[1],
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -115,13 +165,47 @@ describe("useWallet", () => {
       setCurrentAccount: vi.fn(),
     })
 
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: mockCachedCurrencies,
+      isCurrenciesFetching: false,
+      fetchCurrencies: mockFetchCurrencies,
+      addCurrencies: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        version: null,
+      })),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , paramsString] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/wallet") {
         return mockWalletData
-      }
-      if (endpoint === "currencies" && paramsString === "ids=1,5") {
-        return mockCurrencies
       }
       return null
     })
@@ -217,6 +301,12 @@ describe("useWallet", () => {
       // Note: Currency 999 is missing from the response
     ]
 
+    // Create a mock currencies object with partial data
+    const mockCachedCurrencies = {
+      1: mockCurrencies[0],
+      // Currency 999 is missing, simulating partial cache data
+    }
+
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
       usedAccounts: [],
@@ -225,13 +315,47 @@ describe("useWallet", () => {
       setCurrentAccount: vi.fn(),
     })
 
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: mockCachedCurrencies,
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        version: null,
+      })),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , paramsString] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/wallet") {
         return mockWalletData
-      }
-      if (endpoint === "currencies" && paramsString === "ids=1,999") {
-        return mockCurrencies
       }
       return null
     })
