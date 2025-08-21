@@ -47,7 +47,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, and colors) with global caching and chunked fetching
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, and skins) with global caching and chunked fetching
 
 **Custom Hooks (replacing previous contexts):**
 
@@ -55,7 +55,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useAccountItemsData` - Handles account-specific items (inventory, bank, materials) with read-only API
 - `useTitles` - Fetches account titles and title details
 - `useWallet` - Fetches account wallet and currency details
-- `useSkins` - Fetches account skins with detailed skin information and chunked API requests
+- `useSkins` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
 - `useOutfits` - Fetches account outfits with detailed outfit information and chunked API requests
 - `useDyes` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
 
@@ -245,11 +245,11 @@ Significant architectural improvements were made to the static data management s
 
 **Key Changes:**
 
-- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, and colors)
+- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, and skins)
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
-- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes` to StaticDataContext
+- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes` and skin management from `useSkins` to StaticDataContext
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
