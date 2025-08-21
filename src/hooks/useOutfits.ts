@@ -1,26 +1,25 @@
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect, useMemo } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
-import type { Outfit } from "@gw2api/types/data/outfit"
-import { chunkArray } from "~/helpers/chunking"
-import { API_CONSTANTS } from "~/constants/api"
-
-// Account outfits endpoint returns number[]
-type AccountOutfits = number[]
+import { AccountOutfits } from "~/types/outfits"
+import { useStaticData } from "~/contexts/StaticDataContext"
 
 /**
  * Custom hook to fetch account outfits and outfit details
- * Fetches outfit details in chunks to handle large collections
+ * Uses StaticDataContext for outfit data caching
+ * Returns account outfits with outfit details
  */
 export const useOutfits = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
+  const { outfits, isOutfitsFetching, fetchOutfits } = useStaticData()
 
   // Fetch account outfit IDs
   const {
     data: accountOutfitIds,
-    isFetching: isOutfitIdsFetching,
-    error: outfitIdsError,
+    isFetching: isAccountOutfitsFetching,
+    error: accountOutfitsError,
   } = useQuery<AccountOutfits>({
     queryKey: ["account/outfits", token] as const,
     queryFn: queryFunction as any,
@@ -28,46 +27,40 @@ export const useOutfits = () => {
     enabled: !!token,
   })
 
-  // Chunk account outfit IDs into groups using API_CONSTANTS.ITEMS_CHUNK_SIZE
-  const outfitIdChunks = accountOutfitIds
-    ? chunkArray(accountOutfitIds, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    : []
-
-  // Fetch outfit details for each chunk
-  const outfitQueries = useQueries({
-    queries: outfitIdChunks.map((chunk) => ({
-      queryKey: ["outfits", undefined, `ids=${chunk.join(",")}`] as const,
-      queryFn: queryFunction as any,
-      staleTime: Infinity,
-      enabled: !!accountOutfitIds && accountOutfitIds.length > 0,
-    })),
-  })
-
-  // Combine all outfit data from chunks
-  const outfits = outfitQueries.reduce<Outfit[]>((allOutfits, query) => {
-    if (query.data && Array.isArray(query.data)) {
-      return [...allOutfits, ...query.data]
+  // Auto-fetch outfit details when account outfit IDs are available
+  useEffect(() => {
+    if (accountOutfitIds && accountOutfitIds.length > 0) {
+      // Only fetch outfits that aren't already cached
+      const uncachedOutfitIds = accountOutfitIds.filter(
+        (outfitId) => !outfits[outfitId],
+      )
+      if (uncachedOutfitIds.length > 0) {
+        fetchOutfits(uncachedOutfitIds)
+      }
     }
-    return allOutfits
-  }, [])
+  }, [accountOutfitIds, outfits, fetchOutfits])
 
-  // Sort outfits alphabetically by name
-  const sortedOutfits = outfits.sort((a, b) => a.name.localeCompare(b.name))
+  // Extract outfits that are owned by the account
+  const accountOutfits = useMemo(() => {
+    if (!accountOutfitIds) return undefined
 
-  // Check if any outfit queries are fetching
-  const isOutfitsFetching = outfitQueries.some((query) => query.isFetching)
+    const outfitList = accountOutfitIds
+      .map((outfitId) => outfits[outfitId])
+      .filter((outfit) => outfit !== undefined)
 
-  // Check for errors in outfit queries
-  const outfitsError = outfitQueries.find((query) => query.error)?.error
+    if (outfitList.length === 0) return undefined
 
-  const isFetching = isOutfitIdsFetching || isOutfitsFetching
-  const error = outfitIdsError || outfitsError
+    // Sort outfits alphabetically by name
+    return outfitList.sort((a, b) => a.name.localeCompare(b.name))
+  }, [accountOutfitIds, outfits])
+
+  const isFetching = isAccountOutfitsFetching || isOutfitsFetching
 
   return {
     accountOutfitIds,
-    outfits: sortedOutfits.length > 0 ? sortedOutfits : undefined,
+    outfits: accountOutfits,
     isFetching,
-    error,
+    error: accountOutfitsError,
     hasToken: !!token,
   }
 }

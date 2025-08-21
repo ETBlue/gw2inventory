@@ -127,6 +127,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -134,6 +138,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -197,6 +202,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -204,6 +213,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -273,6 +283,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -280,6 +294,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -379,6 +394,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -386,6 +405,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -462,6 +482,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -469,6 +493,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -527,6 +552,10 @@ describe("useDyes", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -534,6 +563,7 @@ describe("useDyes", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })

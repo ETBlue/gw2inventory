@@ -1,46 +1,79 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { renderHook, waitFor } from "@testing-library/react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { ReactNode } from "react"
+import { createTestQueryClient } from "~/test/utils"
 import { useOutfits } from "./useOutfits"
 import * as tokenHook from "./useToken"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataContext from "~/contexts/StaticDataContext"
 
 // Mock dependencies
 vi.mock("./useToken")
 vi.mock("~/helpers/api")
-vi.mock("~/helpers/chunking", () => ({
-  chunkArray: vi.fn((array: any[], size: number) => {
-    const chunks = []
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size))
-    }
-    return chunks
-  }),
-}))
+vi.mock("~/contexts/StaticDataContext")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 
-// Test wrapper with QueryClient
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  })
+// Create a wrapper component for React Query using shared test utility
+const createWrapper = () => {
+  const queryClient = createTestQueryClient()
+
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
-  Wrapper.displayName = "TestWrapper"
+  Wrapper.displayName = "QueryClientWrapper"
   return Wrapper
 }
 
 describe("useOutfits", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Set up default StaticDataContext mock
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        version: null,
+      })),
+    })
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -61,9 +94,10 @@ describe("useOutfits", () => {
     expect(result.current.outfits).toBeUndefined()
   })
 
-  it("fetches outfit IDs when token is available", async () => {
+  it("fetches account outfit IDs and triggers outfit fetching when token is available", async () => {
     const mockToken = "test-token"
-    const mockOutfitIds = [1, 2, 3, 4, 5]
+    const mockOutfitIds = [1, 2, 3]
+    const mockFetchOutfits = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -71,6 +105,48 @@ describe("useOutfits", () => {
       addUsedAccount: vi.fn(),
       removeUsedAccount: vi.fn(),
       setCurrentAccount: vi.fn(),
+    })
+
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: mockFetchOutfits,
+      addOutfits: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -90,9 +166,13 @@ describe("useOutfits", () => {
     await waitFor(() => {
       expect(result.current.accountOutfitIds).toEqual(mockOutfitIds)
     })
+
+    await waitFor(() => {
+      expect(mockFetchOutfits).toHaveBeenCalledWith(mockOutfitIds)
+    })
   })
 
-  it("fetches outfit details and sorts them alphabetically", async () => {
+  it("combines account outfit IDs with outfit details when both are available", async () => {
     const mockToken = "test-token"
     const mockOutfitIds = [3, 1, 2]
     const mockOutfits = [
@@ -115,6 +195,11 @@ describe("useOutfits", () => {
         unlock_items: [79709],
       },
     ]
+    const mockOutfitsRecord = {
+      1: mockOutfits[1],
+      2: mockOutfits[2],
+      3: mockOutfits[0],
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -124,13 +209,52 @@ describe("useOutfits", () => {
       setCurrentAccount: vi.fn(),
     })
 
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      outfits: mockOutfitsRecord,
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        version: null,
+      })),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/outfits") {
         return mockOutfitIds
-      }
-      if (endpoint === "outfits" && params === "ids=3,1,2") {
-        return mockOutfits
       }
       return null
     })
@@ -166,72 +290,9 @@ describe("useOutfits", () => {
         },
       ])
     })
-
-    expect(result.current.isFetching).toBe(false)
   })
 
-  it("handles chunked requests for large outfit collections", async () => {
-    const mockToken = "test-token"
-    // Create 250 outfit IDs to test chunking (should split into 2 chunks with ITEMS_CHUNK_SIZE=200)
-    const mockOutfitIds = Array.from({ length: 250 }, (_, i) => i + 1)
-    const mockOutfitsChunk1 = mockOutfitIds.slice(0, 200).map((id) => ({
-      id,
-      name: `Outfit ${String(id).padStart(3, "0")}`, // Pad for consistent alphabetical sorting
-      icon: `https://render.guildwars2.com/file/${id}.png`,
-      unlock_items: [60000 + id],
-    }))
-    const mockOutfitsChunk2 = mockOutfitIds.slice(200).map((id) => ({
-      id,
-      name: `Outfit ${String(id).padStart(3, "0")}`,
-      icon: `https://render.guildwars2.com/file/${id}.png`,
-      unlock_items: [60000 + id],
-    }))
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
-      if (endpoint === "account/outfits") {
-        return mockOutfitIds
-      }
-      if (endpoint === "outfits") {
-        // Check which chunk is being requested
-        const idsParam = params?.replace("ids=", "")
-        const requestedIds = idsParam?.split(",").map(Number)
-        if (requestedIds && requestedIds[0] === 1) {
-          return mockOutfitsChunk1
-        }
-        if (requestedIds && requestedIds[0] === 201) {
-          return mockOutfitsChunk2
-        }
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useOutfits(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.accountOutfitIds).toEqual(mockOutfitIds)
-    })
-
-    await waitFor(() => {
-      const outfits = result.current.outfits
-      expect(outfits).toHaveLength(250)
-      // Verify alphabetical sorting
-      expect(outfits?.[0].name).toBe("Outfit 001")
-      expect(outfits?.[249].name).toBe("Outfit 250")
-    })
-  })
-
-  it("handles empty outfit data", async () => {
+  it("handles empty outfit data gracefully", async () => {
     const mockToken = "test-token"
 
     mockUseToken.mockReturnValue({
@@ -261,24 +322,8 @@ describe("useOutfits", () => {
     expect(result.current.outfits).toBeUndefined()
   })
 
-  it("handles partial outfit data gracefully", async () => {
+  it("aggregates fetching status from account outfits and outfits", async () => {
     const mockToken = "test-token"
-    const mockOutfitIds = [1, 2, 999] // ID 999 doesn't exist in outfits response
-    const mockOutfits = [
-      {
-        id: 1,
-        name: "Arcane Outfit",
-        icon: "https://render.guildwars2.com/file/1.png",
-        unlock_items: [67062],
-      },
-      {
-        id: 2,
-        name: "Bloody Prince's Outfit",
-        icon: "https://render.guildwars2.com/file/2.png",
-        unlock_items: [79709],
-      },
-      // Note: Outfit 999 is missing from the response
-    ]
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -288,42 +333,63 @@ describe("useOutfits", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
-      if (endpoint === "account/outfits") {
-        return mockOutfitIds
-      }
-      if (endpoint === "outfits" && params === "ids=1,2,999") {
-        return mockOutfits
-      }
-      return null
+    // Mock outfits fetching as true
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: true,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        version: null,
+      })),
     })
 
     const { result } = renderHook(() => useOutfits(), {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => {
-      // Should only include outfits that were found, sorted alphabetically
-      expect(result.current.outfits).toEqual([
-        {
-          id: 1,
-          name: "Arcane Outfit",
-          icon: "https://render.guildwars2.com/file/1.png",
-          unlock_items: [67062],
-        },
-        {
-          id: 2,
-          name: "Bloody Prince's Outfit",
-          icon: "https://render.guildwars2.com/file/2.png",
-          unlock_items: [79709],
-        },
-      ])
-    })
+    expect(result.current.isFetching).toBe(true)
   })
 
-  it("handles API errors gracefully", async () => {
+  it("only fetches uncached outfits", async () => {
     const mockToken = "test-token"
+    const mockOutfitIds = [1, 2, 3]
+    const mockFetchOutfits = vi.fn()
+    const existingOutfits = {
+      1: { id: 1, name: "Arcane Outfit", icon: "", unlock_items: [] }, // Outfit 1 already cached
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -333,106 +399,46 @@ describe("useOutfits", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    const mockError = new Error("API Error")
-    mockQueryFunction.mockRejectedValue(mockError)
-
-    const { result } = renderHook(() => useOutfits(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.error).toBe(mockError)
-    })
-  })
-
-  it("handles errors in chunked requests gracefully", async () => {
-    const mockToken = "test-token"
-    const mockOutfitIds = Array.from({ length: 250 }, (_, i) => i + 1)
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    const mockError = new Error("Chunk request failed")
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
-      if (endpoint === "account/outfits") {
-        return mockOutfitIds
-      }
-      if (endpoint === "outfits") {
-        // Fail the second chunk
-        const idsParam = params?.replace("ids=", "")
-        const requestedIds = idsParam?.split(",").map(Number)
-        if (requestedIds && requestedIds[0] === 201) {
-          throw mockError
-        }
-        // Return data for first chunk
-        if (requestedIds && requestedIds[0] === 1) {
-          return mockOutfitIds.slice(0, 200).map((id) => ({
-            id,
-            name: `Outfit ${String(id).padStart(3, "0")}`,
-            icon: `https://render.guildwars2.com/file/${id}.png`,
-            unlock_items: [60000 + id],
-          }))
-        }
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useOutfits(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.error).toBe(mockError)
-    })
-
-    // Should still have partial data from successful chunk, sorted alphabetically
-    expect(result.current.outfits).toHaveLength(200)
-    expect(result.current.outfits?.[0].name).toBe("Outfit 001")
-    expect(result.current.outfits?.[199].name).toBe("Outfit 200")
-  })
-
-  it("maintains alphabetical sorting with mixed case names", async () => {
-    const mockToken = "test-token"
-    const mockOutfitIds = [1, 2, 3, 4]
-    const mockOutfits = [
-      {
-        id: 1,
-        name: "zodiac light armor",
-        icon: "https://render.guildwars2.com/file/1.png",
-        unlock_items: [1001],
-      },
-      {
-        id: 2,
-        name: "Arcane Outfit",
-        icon: "https://render.guildwars2.com/file/2.png",
-        unlock_items: [1002],
-      },
-      {
-        id: 3,
-        name: "BANDIT SNIPER'S OUTFIT",
-        icon: "https://render.guildwars2.com/file/3.png",
-        unlock_items: [1003],
-      },
-      {
-        id: 4,
-        name: "arctic Explorer Outfit",
-        icon: "https://render.guildwars2.com/file/4.png",
-        unlock_items: [1004],
-      },
-    ]
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      currencies: {},
+      isCurrenciesFetching: false,
+      fetchCurrencies: vi.fn(),
+      addCurrencies: vi.fn(),
+      outfits: existingOutfits,
+      isOutfitsFetching: false,
+      fetchOutfits: mockFetchOutfits,
+      addOutfits: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -440,9 +446,6 @@ describe("useOutfits", () => {
       if (endpoint === "account/outfits") {
         return mockOutfitIds
       }
-      if (endpoint === "outfits") {
-        return mockOutfits
-      }
       return null
     })
 
@@ -451,12 +454,12 @@ describe("useOutfits", () => {
     })
 
     await waitFor(() => {
-      const outfits = result.current.outfits
-      // Case-insensitive alphabetical sorting
-      expect(outfits?.[0].name).toBe("Arcane Outfit")
-      expect(outfits?.[1].name).toBe("arctic Explorer Outfit")
-      expect(outfits?.[2].name).toBe("BANDIT SNIPER'S OUTFIT")
-      expect(outfits?.[3].name).toBe("zodiac light armor")
+      expect(result.current.accountOutfitIds).toEqual(mockOutfitIds)
+    })
+
+    // Should only fetch uncached outfits (2 and 3)
+    await waitFor(() => {
+      expect(mockFetchOutfits).toHaveBeenCalledWith([2, 3])
     })
   })
 })

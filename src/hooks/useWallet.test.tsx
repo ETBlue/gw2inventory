@@ -62,6 +62,10 @@ describe("useWallet", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -69,6 +73,7 @@ describe("useWallet", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -191,6 +196,10 @@ describe("useWallet", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: mockFetchCurrencies,
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -198,6 +207,7 @@ describe("useWallet", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })
@@ -341,6 +351,10 @@ describe("useWallet", () => {
       isCurrenciesFetching: false,
       fetchCurrencies: vi.fn(),
       addCurrencies: vi.fn(),
+      outfits: {},
+      isOutfitsFetching: false,
+      fetchOutfits: vi.fn(),
+      addOutfits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -348,6 +362,7 @@ describe("useWallet", () => {
         skinCount: 0,
         titleCount: 0,
         currencyCount: 0,
+        outfitCount: 0,
         version: null,
       })),
     })

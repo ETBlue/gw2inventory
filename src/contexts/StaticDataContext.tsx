@@ -18,6 +18,7 @@ import { Color } from "types/dyes"
 import { Skin } from "types/skins"
 import { Title } from "types/titles"
 import { Currency } from "types/wallet"
+import { Outfit } from "types/outfits"
 
 // Local storage utilities
 const STORAGE_KEYS = {
@@ -27,6 +28,7 @@ const STORAGE_KEYS = {
   SKINS: "gw2inventory_static_skins",
   TITLES: "gw2inventory_static_titles",
   CURRENCIES: "gw2inventory_static_currencies",
+  OUTFITS: "gw2inventory_static_outfits",
   VERSION: "gw2inventory_cache_version",
 }
 
@@ -81,6 +83,7 @@ const cacheUtils = {
     skins: Record<number, Skin>
     titles: Record<number, Title>
     currencies: Record<number, Currency>
+    outfits: Record<number, Outfit>
   } {
     if (!this.checkVersion()) {
       return {
@@ -90,6 +93,7 @@ const cacheUtils = {
         skins: {},
         titles: {},
         currencies: {},
+        outfits: {},
       }
     }
 
@@ -102,8 +106,18 @@ const cacheUtils = {
     const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
     const currencies =
       this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
+    const outfits =
+      this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
 
-    return { items, materialCategories, colors, skins, titles, currencies }
+    return {
+      items,
+      materialCategories,
+      colors,
+      skins,
+      titles,
+      currencies,
+      outfits,
+    }
   },
 
   saveItems(items: Record<number, PatchedItem>): void {
@@ -130,6 +144,10 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.CURRENCIES, currencies)
   },
 
+  saveOutfits(outfits: Record<number, Outfit>): void {
+    this.save(STORAGE_KEYS.OUTFITS, outfits)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -137,6 +155,7 @@ const cacheUtils = {
     skinCount: number
     titleCount: number
     currencyCount: number
+    outfitCount: number
     version: string | null
   } {
     const items =
@@ -148,6 +167,8 @@ const cacheUtils = {
     const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
     const currencies =
       this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
+    const outfits =
+      this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -157,6 +178,7 @@ const cacheUtils = {
       skinCount: Object.keys(skins).length,
       titleCount: Object.keys(titles).length,
       currencyCount: Object.keys(currencies).length,
+      outfitCount: Object.keys(outfits).length,
       version,
     }
   },
@@ -176,6 +198,8 @@ interface StaticDataState {
   isTitlesFetching: boolean
   currencies: Record<number, Currency>
   isCurrenciesFetching: boolean
+  outfits: Record<number, Outfit>
+  isOutfitsFetching: boolean
 }
 
 type StaticDataAction =
@@ -200,6 +224,9 @@ type StaticDataAction =
   | { type: "ADD_CURRENCIES"; currencies: Currency[] }
   | { type: "SET_CURRENCIES_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_CURRENCIES"; currencies: Record<number, Currency> }
+  | { type: "ADD_OUTFITS"; outfits: Outfit[] }
+  | { type: "SET_OUTFITS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_OUTFITS"; outfits: Record<number, Outfit> }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -227,6 +254,10 @@ interface StaticDataContextType {
   isCurrenciesFetching: boolean
   fetchCurrencies: (currencyIds: number[]) => Promise<void>
   addCurrencies: (currencies: Currency[]) => void
+  outfits: Record<number, Outfit>
+  isOutfitsFetching: boolean
+  fetchOutfits: (outfitIds: number[]) => Promise<void>
+  addOutfits: (outfits: Outfit[]) => void
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -302,6 +333,15 @@ const staticDataReducer = (
       return { ...state, isCurrenciesFetching: action.fetching }
     case "LOAD_CACHED_CURRENCIES":
       return { ...state, currencies: action.currencies }
+    case "ADD_OUTFITS":
+      return {
+        ...state,
+        outfits: addItemsToRecord(state.outfits, action.outfits),
+      }
+    case "SET_OUTFITS_FETCHING":
+      return { ...state, isOutfitsFetching: action.fetching }
+    case "LOAD_CACHED_OUTFITS":
+      return { ...state, outfits: action.outfits }
     default:
       return state
   }
@@ -335,6 +375,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isTitlesFetching: false,
       currencies: cachedData.currencies,
       isCurrenciesFetching: false,
+      outfits: cachedData.outfits,
+      isOutfitsFetching: false,
     }
   })
 
@@ -345,6 +387,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     skins: {} as Record<number, Skin>,
     titles: {} as Record<number, Title>,
     currencies: {} as Record<number, Currency>,
+    outfits: {} as Record<number, Outfit>,
   })
 
   // Update refs whenever state changes
@@ -353,6 +396,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   staticDataRef.current.skins = state.skins
   staticDataRef.current.titles = state.titles
   staticDataRef.current.currencies = state.currencies
+  staticDataRef.current.outfits = state.outfits
 
   // Debug function to check cache info
   const getCacheInfo = useCallback(() => {
@@ -370,7 +414,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.skinCount > 0 ||
       cacheInfo.materialCategoryCount > 0 ||
       cacheInfo.titleCount > 0 ||
-      cacheInfo.currencyCount > 0
+      cacheInfo.currencyCount > 0 ||
+      cacheInfo.outfitCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -651,6 +696,62 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: false })
   }, [])
 
+  const fetchOutfits = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_OUTFITS_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.outfits
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newItems: Outfit[] = []
+    let failedChunks = 0
+
+    for (const chunk of chunks) {
+      try {
+        const data = await fetchGW2<Outfit[]>(
+          "outfits",
+          `ids=${chunk.join(",")}`,
+        )
+        if (data) {
+          newItems = [...newItems, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch outfits chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newItems.length > 0) {
+      dispatch({ type: "ADD_OUTFITS", outfits: newItems })
+      // Save updated outfits to cache after adding new ones
+      const updatedOutfits = { ...staticDataRef.current.outfits }
+      newItems.forEach((item) => {
+        updatedOutfits[item.id] = item
+      })
+      cacheUtils.saveOutfits(updatedOutfits)
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} outfits chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
+  }, [])
+
   // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -670,6 +771,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
   const addCurrencies = useCallback((newCurrencies: Currency[]) => {
     dispatch({ type: "ADD_CURRENCIES", currencies: newCurrencies })
+  }, [])
+
+  const addOutfits = useCallback((newOutfits: Outfit[]) => {
+    dispatch({ type: "ADD_OUTFITS", outfits: newOutfits })
   }, [])
 
   const fetchMaterialCategories = useCallback(async () => {
@@ -744,6 +849,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isCurrenciesFetching: state.isCurrenciesFetching,
       fetchCurrencies,
       addCurrencies,
+      outfits: state.outfits,
+      isOutfitsFetching: state.isOutfitsFetching,
+      fetchOutfits,
+      addOutfits,
       getCacheInfo,
     }),
     [
@@ -759,6 +868,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isTitlesFetching,
       state.currencies,
       state.isCurrenciesFetching,
+      state.outfits,
+      state.isOutfitsFetching,
       fetchItems,
       addItems,
       materialCategories,
@@ -772,6 +883,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       addTitles,
       fetchCurrencies,
       addCurrencies,
+      fetchOutfits,
+      addOutfits,
       getCacheInfo,
     ],
   )
