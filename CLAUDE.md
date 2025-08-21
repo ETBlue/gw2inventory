@@ -47,13 +47,12 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (primarily item data) with global caching
+- `StaticDataContext` - Manages static GW2 API data (items and material categories) with global caching
 
 **Custom Hooks (replacing previous contexts):**
 
 - `useItemsData` - Manages all item-related data with batched fetching (replaced ItemContext)
 - `useAccountItemsData` - Handles account-specific items (inventory, bank, materials) with read-only API
-- `useMaterialCategoriesData` - Handles material category data
 - `useTitles` - Fetches account titles and title details
 - `useWallet` - Fetches account wallet and currency details
 - `useSkins` - Fetches account skins with detailed skin information and chunked API requests
@@ -245,11 +244,11 @@ Significant architectural improvements were made to the static data management s
 
 **Key Changes:**
 
-- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management
+- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes both items and material categories)
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
-- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`) into the context
+- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context
 
 **Benefits:**
 
