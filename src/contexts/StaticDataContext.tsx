@@ -14,6 +14,7 @@ import { fetchGW2 } from "helpers/api"
 import { API_CONSTANTS } from "constants"
 import { materialCategoryAliases, PatchedItem } from "types/items"
 import { Color } from "types/dyes"
+import { Skin } from "types/skins"
 
 // Types
 interface StaticDataState {
@@ -23,6 +24,8 @@ interface StaticDataState {
   isMaterialFetching: boolean
   colors: Record<number, Color>
   isColorsFetching: boolean
+  skins: Record<number, Skin>
+  isSkinsFetching: boolean
 }
 
 type StaticDataAction =
@@ -32,6 +35,8 @@ type StaticDataAction =
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
   | { type: "ADD_COLORS"; colors: Color[] }
   | { type: "SET_COLORS_FETCHING"; fetching: boolean }
+  | { type: "ADD_SKINS"; skins: Skin[] }
+  | { type: "SET_SKINS_FETCHING"; fetching: boolean }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -47,6 +52,10 @@ interface StaticDataContextType {
   isColorsFetching: boolean
   fetchColors: (colorIds: number[]) => Promise<void>
   addColors: (colors: Color[]) => void
+  skins: Record<number, Skin>
+  isSkinsFetching: boolean
+  fetchSkins: (skinIds: number[]) => Promise<void>
+  addSkins: (skins: Skin[]) => void
 }
 
 // Context
@@ -80,6 +89,15 @@ const staticDataReducer = (
     }
     case "SET_COLORS_FETCHING":
       return { ...state, isColorsFetching: action.fetching }
+    case "ADD_SKINS": {
+      const newSkins = { ...state.skins }
+      action.skins.forEach((skin) => {
+        newSkins[skin.id] = skin
+      })
+      return { ...state, skins: newSkins }
+    }
+    case "SET_SKINS_FETCHING":
+      return { ...state, isSkinsFetching: action.fetching }
     default:
       return state
   }
@@ -104,13 +122,17 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     isMaterialFetching: false,
     colors: {},
     isColorsFetching: false,
+    skins: {},
+    isSkinsFetching: false,
   })
 
-  // Use ref for stable reference to current items and colors
+  // Use ref for stable reference to current items, colors, and skins
   const itemsRef = useRef<Record<number, PatchedItem>>({})
   const colorsRef = useRef<Record<number, Color>>({})
+  const skinsRef = useRef<Record<number, Skin>>({})
   itemsRef.current = state.items
   colorsRef.current = state.colors
+  skinsRef.current = state.skins
 
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -118,6 +140,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
   const addColors = useCallback((newColors: Color[]) => {
     dispatch({ type: "ADD_COLORS", colors: newColors })
+  }, [])
+
+  const addSkins = useCallback((newSkins: Skin[]) => {
+    dispatch({ type: "ADD_SKINS", skins: newSkins })
   }, [])
 
   const fetchMaterialCategories = useCallback(async () => {
@@ -243,6 +269,56 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     [addColors],
   )
 
+  const fetchSkins = useCallback(
+    async (newIds: number[]) => {
+      if (newIds.length === 0) return
+
+      dispatch({ type: "SET_SKINS_FETCHING", fetching: true })
+
+      // Use ref to access current skins without adding to dependencies
+      const currentSkins = skinsRef.current
+      const existingIdSet = new Set(
+        Object.keys(currentSkins).map((key) => parseInt(key)),
+      )
+      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+      if (idsToFetch.length === 0) {
+        dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
+        return
+      }
+
+      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+      let newSkins: Skin[] = []
+      let failedChunks = 0
+
+      for (const chunk of chunks) {
+        try {
+          const data = await fetchGW2<Skin[]>("skins", `ids=${chunk.join(",")}`)
+          if (data) {
+            newSkins = [...newSkins, ...data]
+          }
+        } catch (error) {
+          console.error(`Failed to fetch skins chunk:`, error)
+          failedChunks++
+          // Continue fetching other chunks even if one fails
+        }
+      }
+
+      if (newSkins.length > 0) {
+        addSkins(newSkins)
+      }
+
+      if (failedChunks > 0) {
+        console.warn(
+          `Failed to fetch ${failedChunks} out of ${chunks.length} skin chunks`,
+        )
+      }
+
+      dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
+    },
+    [addSkins],
+  )
+
   // Process material categories data
   const materialCategories =
     state.materialCategoriesData.length > 0
@@ -277,6 +353,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     isColorsFetching: state.isColorsFetching,
     fetchColors,
     addColors,
+    skins: state.skins,
+    isSkinsFetching: state.isSkinsFetching,
+    fetchSkins,
+    addSkins,
   }
 
   return (

@@ -115,6 +115,10 @@ describe("useDyes", () => {
       isColorsFetching: false,
       fetchColors: vi.fn(),
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
   })
 
@@ -164,6 +168,10 @@ describe("useDyes", () => {
       isColorsFetching: false,
       fetchColors: mockFetchColors,
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -219,6 +227,10 @@ describe("useDyes", () => {
       isColorsFetching: false,
       fetchColors: vi.fn(),
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -304,6 +316,10 @@ describe("useDyes", () => {
       isColorsFetching: true,
       fetchColors: vi.fn(),
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
 
     const { result } = renderHook(() => useDyes(), {
@@ -366,6 +382,10 @@ describe("useDyes", () => {
       isColorsFetching: false,
       fetchColors: mockFetchColors,
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -410,6 +430,10 @@ describe("useDyes", () => {
       isColorsFetching: false,
       fetchColors: vi.fn(),
       addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
     })
 
     mockUseToken.mockReturnValue({

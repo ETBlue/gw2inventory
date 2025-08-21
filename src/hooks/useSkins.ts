@@ -1,17 +1,18 @@
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
-import { AccountSkins, Skin } from "~/types/skins"
-import { chunkArray } from "~/helpers/chunking"
-import { API_CONSTANTS } from "~/constants/api"
+import { AccountSkins } from "~/types/skins"
+import { useStaticData } from "~/contexts/StaticDataContext"
 
 /**
  * Custom hook to fetch account skins and skin details
- * Fetches skin details in chunks to handle large skin collections
+ * Uses StaticDataContext for skin data caching
  */
 export const useSkins = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
+  const { skins, isSkinsFetching, fetchSkins } = useStaticData()
 
   // Fetch account skin IDs
   const {
@@ -25,43 +26,27 @@ export const useSkins = () => {
     enabled: !!token,
   })
 
-  // Chunk account skin IDs into groups using API_CONSTANTS.ITEMS_CHUNK_SIZE
-  const skinIdChunks = accountSkinIds
-    ? chunkArray(accountSkinIds, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    : []
-
-  // Fetch skin details for each chunk
-  const skinQueries = useQueries({
-    queries: skinIdChunks.map((chunk) => ({
-      queryKey: ["skins", undefined, `ids=${chunk.join(",")}`] as const,
-      queryFn: queryFunction as any,
-      staleTime: Infinity,
-      enabled: !!accountSkinIds && accountSkinIds.length > 0,
-    })),
-  })
-
-  // Combine all skin data from chunks
-  const skins = skinQueries.reduce<Skin[]>((allSkins, query) => {
-    if (query.data && Array.isArray(query.data)) {
-      return [...allSkins, ...query.data]
+  // Auto-fetch skins when account skin IDs are available
+  useEffect(() => {
+    if (accountSkinIds && accountSkinIds.length > 0) {
+      // Only fetch skins that aren't already cached
+      const uncachedSkinIds = accountSkinIds.filter((skinId) => !skins[skinId])
+      if (uncachedSkinIds.length > 0) {
+        fetchSkins(uncachedSkinIds)
+      }
     }
-    return allSkins
-  }, [])
+  }, [accountSkinIds, skins, fetchSkins])
 
-  // Check if any skin queries are fetching
-  const isSkinsFetching = skinQueries.some((query) => query.isFetching)
-
-  // Check for errors in skin queries
-  const skinsError = skinQueries.find((query) => query.error)?.error
+  // Convert skins record to array for backward compatibility
+  const skinsArray = Object.values(skins)
 
   const isFetching = isSkinIdsFetching || isSkinsFetching
-  const error = skinIdsError || skinsError
 
   return {
     accountSkinIds,
-    skins: skins.length > 0 ? skins : undefined,
+    skins: skinsArray.length > 0 ? skinsArray : undefined,
     isFetching,
-    error,
+    error: skinIdsError,
     hasToken: !!token,
   }
 }
