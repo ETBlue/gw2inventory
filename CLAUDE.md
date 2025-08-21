@@ -252,6 +252,7 @@ Significant architectural improvements were made to the static data management s
 - **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
+- **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
 
 **Benefits:**
 
@@ -261,3 +262,4 @@ Significant architectural improvements were made to the static data management s
 - Improved maintainability through consolidated static data management
 - Enhanced performance with optimized URL parameter handling and navigation
 - Proper browser history management using `navigate({ replace: true })`
+- Comprehensive upgrade/infusion tracking across all item locations (bags, equipped, bank, shared inventory)
