@@ -37,21 +37,58 @@ export function processCharacterItems(
               ...item,
               location: character.name,
             }
-            return [...prev, currentItem]
+            const upgradeItems = (item.upgrades ?? []).map(
+              (upgrade: number) => {
+                return {
+                  id: upgrade,
+                  count: 1,
+                  location: character.name,
+                }
+              },
+            )
+            const infusionItems = (item.infusions ?? []).map(
+              (infusion: number) => {
+                return {
+                  id: infusion,
+                  count: 1,
+                  location: character.name,
+                }
+              },
+            )
+            return [...prev, currentItem, ...upgradeItems, ...infusionItems]
           }, [])
         return [...prev, currentBag, ...currentBagItems]
       },
       [],
     )
-    const equippedItems = (character.equipment ?? []).map(
-      (item: CharacterEquipmentItem) => {
-        return {
+    const equippedItems = (character.equipment ?? []).reduce(
+      (prev: CharacterItemInList[], item: CharacterEquipmentItem) => {
+        const currentItem = {
           ...item,
           location: character.name,
           isEquipped: true,
         }
+        const upgradeItems = (item.upgrades ?? []).map((upgrade: number) => {
+          return {
+            id: upgrade,
+            count: 1,
+            location: character.name,
+            isEquipped: true,
+          }
+        })
+        const infusionItems = (item.infusions ?? []).map((infusion: number) => {
+          return {
+            id: infusion,
+            count: 1,
+            location: character.name,
+            isEquipped: true,
+          }
+        })
+        return [...prev, currentItem, ...upgradeItems, ...infusionItems]
       },
+      [],
     )
+
     characterItems = [...characterItems, ...bagItems, ...equippedItems]
   }
 
