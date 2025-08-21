@@ -4,7 +4,6 @@ import { useItemsData } from "./useItemsData"
 import * as tokenHook from "./useToken"
 import * as charactersHook from "./useCharacters"
 import * as staticDataContext from "../contexts/StaticDataContext"
-import * as materialCategoriesHook from "./useMaterialCategoriesData"
 import * as accountItemsHook from "./useAccountItemsData"
 import * as characterItemsHelper from "../helpers/characterItems"
 
@@ -12,7 +11,6 @@ import * as characterItemsHelper from "../helpers/characterItems"
 vi.mock("./useToken")
 vi.mock("./useCharacters")
 vi.mock("../contexts/StaticDataContext")
-vi.mock("./useMaterialCategoriesData")
 vi.mock("./useAccountItemsData")
 vi.mock("../helpers/characterItems")
 
@@ -21,9 +19,6 @@ const mockUseCharacters = vi.mocked(charactersHook.useCharacters)
 const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 const mockUseBatchAutoFetchItems = vi.mocked(
   staticDataContext.useBatchAutoFetchItems,
-)
-const mockUseMaterialCategoriesData = vi.mocked(
-  materialCategoriesHook.useMaterialCategoriesData,
 )
 const mockUseAccountItemsData = vi.mocked(accountItemsHook.useAccountItemsData)
 const mockProcessCharacterItems = vi.mocked(
@@ -80,13 +75,11 @@ describe("useItemsData", () => {
       isItemsFetching: false,
       fetchItems: vi.fn(),
       addItems: vi.fn(),
-    })
-
-    mockUseMaterialCategoriesData.mockReturnValue({
       materials: mockMaterials,
       materialCategories: mockMaterialCategories,
       isMaterialFetching: false,
       materialCategoriesData: [],
+      fetchMaterialCategories: vi.fn(),
     })
 
     mockUseAccountItemsData.mockReturnValue({
@@ -138,6 +131,11 @@ describe("useItemsData", () => {
       isItemsFetching: true, // Set to true
       fetchItems: vi.fn(),
       addItems: vi.fn(),
+      materials: mockMaterials,
+      materialCategories: mockMaterialCategories,
+      isMaterialFetching: false,
+      materialCategoriesData: [],
+      fetchMaterialCategories: vi.fn(),
     })
 
     const { result } = renderHook(() => useItemsData())

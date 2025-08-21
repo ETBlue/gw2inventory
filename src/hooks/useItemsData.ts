@@ -1,11 +1,10 @@
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { useToken } from "hooks/useToken"
 import { useCharacters } from "hooks/useCharacters"
 import {
   useStaticData,
   useBatchAutoFetchItems,
 } from "contexts/StaticDataContext"
-import { useMaterialCategoriesData } from "hooks/useMaterialCategoriesData"
 import { useAccountItemsData } from "hooks/useAccountItemsData"
 import { processCharacterItems } from "helpers/characterItems"
 
@@ -18,9 +17,14 @@ export const useItemsData = () => {
   const { characters, isFetching: isCharactersFetching } = useCharacters()
 
   // Use StaticDataContext for static item data
-  const { items, isItemsFetching } = useStaticData()
-  const { materialCategories, materials, isMaterialFetching } =
-    useMaterialCategoriesData()
+  const {
+    items,
+    isItemsFetching,
+    materialCategories,
+    materials,
+    isMaterialFetching,
+    fetchMaterialCategories,
+  } = useStaticData()
   const {
     inventoryItems,
     bankItems,
@@ -35,6 +39,13 @@ export const useItemsData = () => {
     () => processCharacterItems(characters),
     [characters],
   )
+
+  // Auto-fetch material categories on first use
+  useEffect(() => {
+    if (materialCategories.length === 0 && !isMaterialFetching) {
+      fetchMaterialCategories()
+    }
+  }, [materialCategories.length, isMaterialFetching, fetchMaterialCategories])
 
   // Batch fetch item details for all item sources in a single API call
   // More efficient than fetching each source separately as it avoids duplicate API calls
