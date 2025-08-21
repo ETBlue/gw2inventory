@@ -47,16 +47,16 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, and skins) with global caching and chunked fetching
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, and outfits) with global caching, localStorage persistence, and chunked fetching
 
 **Custom Hooks (replacing previous contexts):**
 
 - `useItemsData` - Manages all item-related data with batched fetching (replaced ItemContext)
 - `useAccountItemsData` - Handles account-specific items (inventory, bank, materials) with read-only API
-- `useTitles` - Fetches account titles and title details
-- `useWallet` - Fetches account wallet and currency details
+- `useTitles` - Fetches account titles with title details managed by StaticDataContext for efficient caching
+- `useWallet` - Fetches account wallet with currency details managed by StaticDataContext for efficient caching
 - `useSkins` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
-- `useOutfits` - Fetches account outfits with detailed outfit information and chunked API requests
+- `useOutfits` - Fetches account outfits with outfit details managed by StaticDataContext for efficient caching
 - `useDyes` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
 
 **Architecture Principles:**
@@ -245,12 +245,12 @@ Significant architectural improvements were made to the static data management s
 
 **Key Changes:**
 
-- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, skins, and titles) with integrated localStorage caching
+- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, skins, titles, currencies, and outfits) with integrated localStorage caching
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
-- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, and title management from `useTitles` to StaticDataContext with individual useCallback functions to comply with React Hook rules
-- **LocalStorage Caching**: Implemented persistent caching of all static data with cache versioning system to prevent stale data across app updates
+- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, title management from `useTitles`, currency management from `useWallet`, and outfit management from `useOutfits` to StaticDataContext with individual useCallback functions to comply with React Hook rules
+- **LocalStorage Caching**: Implemented persistent caching of all static data (items, material categories, colors, skins, titles, currencies, outfits) with cache versioning system to prevent stale data across app updates
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
