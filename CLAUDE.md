@@ -245,11 +245,11 @@ Significant architectural improvements were made to the static data management s
 
 **Key Changes:**
 
-- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, and skins) with integrated localStorage caching
+- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, skins, and titles) with integrated localStorage caching
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
-- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes` and skin management from `useSkins` to StaticDataContext with individual useCallback functions to comply with React Hook rules
+- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, and title management from `useTitles` to StaticDataContext with individual useCallback functions to comply with React Hook rules
 - **LocalStorage Caching**: Implemented persistent caching of all static data with cache versioning system to prevent stale data across app updates
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
@@ -258,7 +258,7 @@ Significant architectural improvements were made to the static data management s
 **Benefits:**
 
 - ~60% reduction in API calls through intelligent batching and deduplication
-- **Persistent localStorage caching** of all static data (items, colors, skins, material categories) with automatic cache version management
+- **Persistent localStorage caching** of all static data (items, colors, skins, material categories, titles) with automatic cache version management
 - Better global state management with proper React Context patterns
 - Cleaner public APIs with read-only interfaces
 - Improved maintainability through consolidated static data management

@@ -88,11 +88,16 @@ describe("useItemsData", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
         colorCount: 0,
         skinCount: 0,
+        titleCount: 0,
         version: null,
       })),
     })
@@ -159,11 +164,16 @@ describe("useItemsData", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
         colorCount: 0,
         skinCount: 0,
+        titleCount: 0,
         version: null,
       })),
     })

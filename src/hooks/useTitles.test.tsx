@@ -6,6 +6,7 @@ import { createTestQueryClient } from "~/test/utils"
 import { useTitles } from "./useTitles"
 import * as tokenHook from "./useToken"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataContext from "~/contexts/StaticDataContext"
 
 // Mock the useToken hook
 vi.mock("./useToken")
@@ -14,6 +15,10 @@ const mockUseToken = vi.mocked(tokenHook.useToken)
 // Mock the API helpers
 vi.mock("~/helpers/api")
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+
+// Mock the StaticDataContext
+vi.mock("~/contexts/StaticDataContext")
+const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 
 // Create a wrapper component for React Query using shared test utility
 const createWrapper = () => {
@@ -29,6 +34,39 @@ const createWrapper = () => {
 describe("useTitles", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Set up default StaticDataContext mock
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      fetchTitles: vi.fn(),
+      addTitles: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        version: null,
+      })),
+    })
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -87,6 +125,13 @@ describe("useTitles", () => {
       { id: 11, name: "Test Title 1", achievements: [123] },
       { id: 12, name: "Test Title 2", achievements: [124], ap_required: 100 },
     ]
+    const mockFetchTitles = vi.fn()
+
+    // Create a mock titles object that simulates cached titles
+    const mockCachedTitles = {
+      11: mockTitles[0],
+      12: mockTitles[1],
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -96,13 +141,42 @@ describe("useTitles", () => {
       setCurrentAccount: vi.fn(),
     })
 
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      addSkins: vi.fn(),
+      titles: mockCachedTitles,
+      isTitlesFetching: false,
+      fetchTitles: mockFetchTitles,
+      addTitles: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        version: null,
+      })),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , paramsString] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/titles") {
         return mockAccountTitleIds
-      }
-      if (endpoint === "titles" && paramsString === "ids=11,12") {
-        return mockTitles
       }
       return null
     })

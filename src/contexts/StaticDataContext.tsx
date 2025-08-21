@@ -16,6 +16,7 @@ import { API_CONSTANTS } from "constants"
 import { materialCategoryAliases, PatchedItem } from "types/items"
 import { Color } from "types/dyes"
 import { Skin } from "types/skins"
+import { Title } from "types/titles"
 
 // Local storage utilities
 const STORAGE_KEYS = {
@@ -23,6 +24,7 @@ const STORAGE_KEYS = {
   MATERIAL_CATEGORIES: "gw2inventory_static_material_categories",
   COLORS: "gw2inventory_static_colors",
   SKINS: "gw2inventory_static_skins",
+  TITLES: "gw2inventory_static_titles",
   VERSION: "gw2inventory_cache_version",
 }
 
@@ -75,6 +77,7 @@ const cacheUtils = {
     materialCategories: MaterialCategory[]
     colors: Record<number, Color>
     skins: Record<number, Skin>
+    titles: Record<number, Title>
   } {
     if (!this.checkVersion()) {
       return {
@@ -82,6 +85,7 @@ const cacheUtils = {
         materialCategories: [],
         colors: {},
         skins: {},
+        titles: {},
       }
     }
 
@@ -91,8 +95,9 @@ const cacheUtils = {
       this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
     const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
     const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
+    const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
 
-    return { items, materialCategories, colors, skins }
+    return { items, materialCategories, colors, skins, titles }
   },
 
   saveItems(items: Record<number, PatchedItem>): void {
@@ -111,11 +116,16 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.SKINS, skins)
   },
 
+  saveTitles(titles: Record<number, Title>): void {
+    this.save(STORAGE_KEYS.TITLES, titles)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
     colorCount: number
     skinCount: number
+    titleCount: number
     version: string | null
   } {
     const items =
@@ -124,6 +134,7 @@ const cacheUtils = {
       this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
     const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
     const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
+    const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -131,6 +142,7 @@ const cacheUtils = {
       materialCategoryCount: materialCategories.length,
       colorCount: Object.keys(colors).length,
       skinCount: Object.keys(skins).length,
+      titleCount: Object.keys(titles).length,
       version,
     }
   },
@@ -146,6 +158,8 @@ interface StaticDataState {
   isColorsFetching: boolean
   skins: Record<number, Skin>
   isSkinsFetching: boolean
+  titles: Record<number, Title>
+  isTitlesFetching: boolean
 }
 
 type StaticDataAction =
@@ -164,6 +178,9 @@ type StaticDataAction =
   | { type: "ADD_SKINS"; skins: Skin[] }
   | { type: "SET_SKINS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_SKINS"; skins: Record<number, Skin> }
+  | { type: "ADD_TITLES"; titles: Title[] }
+  | { type: "SET_TITLES_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_TITLES"; titles: Record<number, Title> }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -183,6 +200,10 @@ interface StaticDataContextType {
   isSkinsFetching: boolean
   fetchSkins: (skinIds: number[]) => Promise<void>
   addSkins: (skins: Skin[]) => void
+  titles: Record<number, Title>
+  isTitlesFetching: boolean
+  fetchTitles: (titleIds: number[]) => Promise<void>
+  addTitles: (titles: Title[]) => void
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -240,6 +261,15 @@ const staticDataReducer = (
       return { ...state, isSkinsFetching: action.fetching }
     case "LOAD_CACHED_SKINS":
       return { ...state, skins: action.skins }
+    case "ADD_TITLES":
+      return {
+        ...state,
+        titles: addItemsToRecord(state.titles, action.titles),
+      }
+    case "SET_TITLES_FETCHING":
+      return { ...state, isTitlesFetching: action.fetching }
+    case "LOAD_CACHED_TITLES":
+      return { ...state, titles: action.titles }
     default:
       return state
   }
@@ -269,6 +299,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isColorsFetching: false,
       skins: cachedData.skins,
       isSkinsFetching: false,
+      titles: cachedData.titles,
+      isTitlesFetching: false,
     }
   })
 
@@ -277,12 +309,14 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     items: {} as Record<number, PatchedItem>,
     colors: {} as Record<number, Color>,
     skins: {} as Record<number, Skin>,
+    titles: {} as Record<number, Title>,
   })
 
   // Update refs whenever state changes
   staticDataRef.current.items = state.items
   staticDataRef.current.colors = state.colors
   staticDataRef.current.skins = state.skins
+  staticDataRef.current.titles = state.titles
 
   // Debug function to check cache info
   const getCacheInfo = useCallback(() => {
@@ -298,7 +332,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.itemCount > 0 ||
       cacheInfo.colorCount > 0 ||
       cacheInfo.skinCount > 0 ||
-      cacheInfo.materialCategoryCount > 0
+      cacheInfo.materialCategoryCount > 0 ||
+      cacheInfo.titleCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -470,6 +505,59 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
   }, [])
 
+  const fetchTitles = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_TITLES_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.titles
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_TITLES_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newItems: Title[] = []
+    let failedChunks = 0
+
+    for (const chunk of chunks) {
+      try {
+        const data = await fetchGW2<Title[]>("titles", `ids=${chunk.join(",")}`)
+        if (data) {
+          newItems = [...newItems, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch titles chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newItems.length > 0) {
+      dispatch({ type: "ADD_TITLES", titles: newItems })
+      // Save updated titles to cache after adding new ones
+      const updatedTitles = { ...staticDataRef.current.titles }
+      newItems.forEach((item) => {
+        updatedTitles[item.id] = item
+      })
+      cacheUtils.saveTitles(updatedTitles)
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} titles chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_TITLES_FETCHING", fetching: false })
+  }, [])
+
   // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -481,6 +569,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
   const addSkins = useCallback((newSkins: Skin[]) => {
     dispatch({ type: "ADD_SKINS", skins: newSkins })
+  }, [])
+
+  const addTitles = useCallback((newTitles: Title[]) => {
+    dispatch({ type: "ADD_TITLES", titles: newTitles })
   }, [])
 
   const fetchMaterialCategories = useCallback(async () => {
@@ -547,6 +639,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isSkinsFetching: state.isSkinsFetching,
       fetchSkins,
       addSkins,
+      titles: state.titles,
+      isTitlesFetching: state.isTitlesFetching,
+      fetchTitles,
+      addTitles,
       getCacheInfo,
     }),
     [
@@ -558,6 +654,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isColorsFetching,
       state.skins,
       state.isSkinsFetching,
+      state.titles,
+      state.isTitlesFetching,
       fetchItems,
       addItems,
       materialCategories,
@@ -567,6 +665,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       addColors,
       fetchSkins,
       addSkins,
+      fetchTitles,
+      addTitles,
       getCacheInfo,
     ],
   )
