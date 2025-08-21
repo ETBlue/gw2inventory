@@ -80,6 +80,10 @@ describe("useItemsData", () => {
       isMaterialFetching: false,
       materialCategoriesData: [],
       fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
     })
 
     mockUseAccountItemsData.mockReturnValue({
@@ -136,6 +140,10 @@ describe("useItemsData", () => {
       isMaterialFetching: false,
       materialCategoriesData: [],
       fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
     })
 
     const { result } = renderHook(() => useItemsData())

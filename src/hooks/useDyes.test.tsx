@@ -5,22 +5,16 @@ import { ReactNode } from "react"
 import { useDyes } from "./useDyes"
 import * as tokenHook from "./useToken"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataContext from "~/contexts/StaticDataContext"
 
 // Mock dependencies
 vi.mock("./useToken")
 vi.mock("~/helpers/api")
-vi.mock("~/helpers/chunking", () => ({
-  chunkArray: vi.fn((array: any[], size: number) => {
-    const chunks = []
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size))
-    }
-    return chunks
-  }),
-}))
+vi.mock("~/contexts/StaticDataContext")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 
 // Test wrapper with QueryClient
 function createWrapper() {
@@ -38,9 +32,90 @@ function createWrapper() {
   return Wrapper
 }
 
+// Mock color data
+const mockColors = [
+  {
+    id: 1,
+    name: "Dye Black",
+    base_rgb: [0, 0, 0] as [number, number, number],
+    categories: ["Gray", "Metal", "Rare"],
+    cloth: {
+      brightness: 0,
+      contrast: 1,
+      hue: 0,
+      saturation: 0,
+      lightness: 0,
+      rgb: [10, 10, 10] as [number, number, number],
+    },
+    leather: {
+      brightness: 0,
+      contrast: 1,
+      hue: 0,
+      saturation: 0,
+      lightness: 5,
+      rgb: [15, 15, 15] as [number, number, number],
+    },
+    metal: {
+      brightness: 0,
+      contrast: 1.5,
+      hue: 0,
+      saturation: 0,
+      lightness: 10,
+      rgb: [20, 20, 20] as [number, number, number],
+    },
+  },
+  {
+    id: 2,
+    name: "Celestial",
+    base_rgb: [255, 255, 255] as [number, number, number],
+    categories: ["Blue", "Vibrant", "Rare"],
+    cloth: {
+      brightness: 15,
+      contrast: 1.25,
+      hue: 200,
+      saturation: 30,
+      lightness: 50,
+      rgb: [128, 191, 255] as [number, number, number],
+    },
+    leather: {
+      brightness: 10,
+      contrast: 1.2,
+      hue: 200,
+      saturation: 25,
+      lightness: 45,
+      rgb: [120, 180, 240] as [number, number, number],
+    },
+    metal: {
+      brightness: 20,
+      contrast: 1.3,
+      hue: 200,
+      saturation: 35,
+      lightness: 55,
+      rgb: [140, 200, 255] as [number, number, number],
+    },
+  },
+]
+
 describe("useDyes", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Set up default StaticDataContext mock
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+    })
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -62,9 +137,10 @@ describe("useDyes", () => {
     expect(result.current.dyesWithDetails).toBeUndefined()
   })
 
-  it("fetches dye IDs when token is available", async () => {
+  it("fetches dye IDs and triggers color fetching when token is available", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = [1, 2, 3, 4, 5]
+    const mockDyeIds = [1, 2]
+    const mockFetchColors = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -72,6 +148,22 @@ describe("useDyes", () => {
       addUsedAccount: vi.fn(),
       removeUsedAccount: vi.fn(),
       setCurrentAccount: vi.fn(),
+    })
+
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: false,
+      fetchColors: mockFetchColors,
+      addColors: vi.fn(),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -91,111 +183,19 @@ describe("useDyes", () => {
     await waitFor(() => {
       expect(result.current.dyesData).toEqual(mockDyeIds)
     })
+
+    await waitFor(() => {
+      expect(mockFetchColors).toHaveBeenCalledWith(mockDyeIds)
+    })
   })
 
-  it("fetches color details for dye IDs", async () => {
+  it("combines dye data with color details when both are available", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = [1, 2, 3]
-    const mockColors = [
-      {
-        id: 1,
-        name: "Dye Black",
-        base_rgb: [0, 0, 0] as [number, number, number],
-        categories: ["Gray", "Metal", "Rare"],
-        cloth: {
-          brightness: 0,
-          contrast: 1,
-          hue: 0,
-          saturation: 0,
-          lightness: 0,
-          rgb: [10, 10, 10] as [number, number, number],
-        },
-        leather: {
-          brightness: 0,
-          contrast: 1,
-          hue: 0,
-          saturation: 0,
-          lightness: 5,
-          rgb: [15, 15, 15] as [number, number, number],
-        },
-        metal: {
-          brightness: 0,
-          contrast: 1.5,
-          hue: 0,
-          saturation: 0,
-          lightness: 10,
-          rgb: [20, 20, 20] as [number, number, number],
-        },
-        fur: {
-          brightness: 0,
-          contrast: 1,
-          hue: 0,
-          saturation: 0,
-          lightness: 8,
-          rgb: [18, 18, 18] as [number, number, number],
-        },
-      },
-      {
-        id: 2,
-        name: "Celestial",
-        base_rgb: [255, 255, 255] as [number, number, number],
-        categories: ["Blue", "Vibrant", "Rare"],
-        cloth: {
-          brightness: 15,
-          contrast: 1.25,
-          hue: 200,
-          saturation: 30,
-          lightness: 50,
-          rgb: [128, 191, 255] as [number, number, number],
-        },
-        leather: {
-          brightness: 10,
-          contrast: 1.2,
-          hue: 200,
-          saturation: 25,
-          lightness: 45,
-          rgb: [120, 180, 240] as [number, number, number],
-        },
-        metal: {
-          brightness: 20,
-          contrast: 1.3,
-          hue: 200,
-          saturation: 35,
-          lightness: 55,
-          rgb: [140, 200, 255] as [number, number, number],
-        },
-      },
-      {
-        id: 3,
-        name: "Abyss",
-        base_rgb: [28, 28, 28] as [number, number, number],
-        categories: ["Gray", "Leather", "Rare"],
-        cloth: {
-          brightness: -15,
-          contrast: 1.1,
-          hue: 0,
-          saturation: 0,
-          lightness: 15,
-          rgb: [30, 30, 30] as [number, number, number],
-        },
-        leather: {
-          brightness: -10,
-          contrast: 1.05,
-          hue: 0,
-          saturation: 0,
-          lightness: 18,
-          rgb: [35, 35, 35] as [number, number, number],
-        },
-        metal: {
-          brightness: -5,
-          contrast: 1.15,
-          hue: 0,
-          saturation: 0,
-          lightness: 20,
-          rgb: [40, 40, 40] as [number, number, number],
-        },
-      },
-    ]
+    const mockDyeIds = [1, 2]
+    const mockColorsRecord = {
+      1: mockColors[0],
+      2: mockColors[1],
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -205,13 +205,26 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: mockColorsRecord,
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/dyes") {
         return mockDyeIds
-      }
-      if (endpoint === "colors" && params === "ids=1,2,3") {
-        return mockColors
       }
       return null
     })
@@ -222,143 +235,19 @@ describe("useDyes", () => {
 
     await waitFor(() => {
       expect(result.current.dyesData).toEqual(mockDyeIds)
-    })
-
-    await waitFor(() => {
-      expect(result.current.colors).toEqual(mockColors)
     })
 
     await waitFor(() => {
       expect(result.current.dyesWithDetails).toEqual([
         { id: 1, color: mockColors[0] },
         { id: 2, color: mockColors[1] },
-        { id: 3, color: mockColors[2] },
       ])
     })
 
-    expect(result.current.isFetching).toBe(false)
+    expect(result.current.colors).toEqual(mockColors)
   })
 
-  it("handles chunked requests for large dye collections", async () => {
-    const mockToken = "test-token"
-    // Create 250 dye IDs to test chunking (should split into 2 chunks with ITEMS_CHUNK_SIZE=200)
-    const mockDyeIds = Array.from({ length: 250 }, (_, i) => i + 1)
-    const mockColorsChunk1 = mockDyeIds.slice(0, 200).map((id) => ({
-      id,
-      name: `Dye ${id}`,
-      base_rgb: [id, id, id] as [number, number, number],
-      categories: ["Gray", "Metal", "Common"],
-      cloth: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-      leather: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-      metal: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-    }))
-    const mockColorsChunk2 = mockDyeIds.slice(200).map((id) => ({
-      id,
-      name: `Dye ${id}`,
-      base_rgb: [id, id, id] as [number, number, number],
-      categories: ["Gray", "Metal", "Common"],
-      cloth: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-      leather: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-      metal: {
-        brightness: 0,
-        contrast: 1,
-        hue: id,
-        saturation: 0,
-        lightness: id,
-        rgb: [id, id, id] as [number, number, number],
-      },
-    }))
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
-      if (endpoint === "account/dyes") {
-        return mockDyeIds
-      }
-      if (endpoint === "colors") {
-        // Check which chunk is being requested
-        const idsParam = params?.replace("ids=", "")
-        const requestedIds = idsParam?.split(",").map(Number)
-        if (requestedIds && requestedIds[0] === 1) {
-          return mockColorsChunk1
-        }
-        if (requestedIds && requestedIds[0] === 201) {
-          return mockColorsChunk2
-        }
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useDyes(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.dyesData).toEqual(mockDyeIds)
-    })
-
-    await waitFor(() => {
-      expect(result.current.colors).toHaveLength(250)
-    })
-
-    // Verify that all dyes have their corresponding color data
-    await waitFor(() => {
-      const details = result.current.dyesWithDetails
-      expect(details).toHaveLength(250)
-      expect(details?.[0]).toEqual({
-        id: 1,
-        color: expect.objectContaining({ id: 1, name: "Dye 1" }),
-      })
-      expect(details?.[249]).toEqual({
-        id: 250,
-        color: expect.objectContaining({ id: 250, name: "Dye 250" }),
-      })
-    })
-  })
-
-  it("handles empty dye data", async () => {
+  it("handles empty dye data gracefully", async () => {
     const mockToken = "test-token"
 
     mockUseToken.mockReturnValue({
@@ -389,72 +278,8 @@ describe("useDyes", () => {
     expect(result.current.dyesWithDetails).toBeUndefined()
   })
 
-  it("handles partial color data gracefully", async () => {
+  it("aggregates fetching status from account dyes and colors", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = [1, 2, 999] // ID 999 doesn't exist in colors response
-    const mockColors = [
-      {
-        id: 1,
-        name: "Dye Black",
-        base_rgb: [0, 0, 0] as [number, number, number],
-        categories: ["Gray", "Metal", "Rare"],
-        cloth: {
-          brightness: 0,
-          contrast: 1,
-          hue: 0,
-          saturation: 0,
-          lightness: 0,
-          rgb: [10, 10, 10] as [number, number, number],
-        },
-        leather: {
-          brightness: 0,
-          contrast: 1,
-          hue: 0,
-          saturation: 0,
-          lightness: 5,
-          rgb: [15, 15, 15] as [number, number, number],
-        },
-        metal: {
-          brightness: 0,
-          contrast: 1.5,
-          hue: 0,
-          saturation: 0,
-          lightness: 10,
-          rgb: [20, 20, 20] as [number, number, number],
-        },
-      },
-      {
-        id: 2,
-        name: "Celestial",
-        base_rgb: [255, 255, 255] as [number, number, number],
-        categories: ["Blue", "Vibrant", "Rare"],
-        cloth: {
-          brightness: 15,
-          contrast: 1.25,
-          hue: 200,
-          saturation: 30,
-          lightness: 50,
-          rgb: [128, 191, 255] as [number, number, number],
-        },
-        leather: {
-          brightness: 10,
-          contrast: 1.2,
-          hue: 200,
-          saturation: 25,
-          lightness: 45,
-          rgb: [120, 180, 240] as [number, number, number],
-        },
-        metal: {
-          brightness: 20,
-          contrast: 1.3,
-          hue: 200,
-          saturation: 35,
-          lightness: 55,
-          rgb: [140, 200, 255] as [number, number, number],
-        },
-      },
-      // Note: Color 999 is missing from the response
-    ]
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -464,41 +289,33 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
-      if (endpoint === "account/dyes") {
-        return mockDyeIds
-      }
-      if (endpoint === "colors" && params === "ids=1,2,999") {
-        return mockColors
-      }
-      return null
+    // Mock colors fetching as true
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: {},
+      isColorsFetching: true,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
     })
 
     const { result } = renderHook(() => useDyes(), {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => {
-      expect(result.current.dyesWithDetails).toEqual([
-        {
-          id: 1,
-          color: mockColors[0],
-        },
-        {
-          id: 2,
-          color: mockColors[1],
-        },
-        {
-          id: 999,
-          color: undefined, // Color data not found
-        },
-      ])
-    })
+    expect(result.current.isFetching).toBe(true)
   })
 
-  it("handles API errors gracefully", async () => {
+  it("handles API errors for dye data", async () => {
     const mockToken = "test-token"
+    const mockError = new Error("API Error")
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -508,7 +325,6 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    const mockError = new Error("API Error")
     mockQueryFunction.mockRejectedValue(mockError)
 
     const { result } = renderHook(() => useDyes(), {
@@ -520,9 +336,13 @@ describe("useDyes", () => {
     })
   })
 
-  it("handles errors in chunked requests gracefully", async () => {
+  it("only fetches uncached colors", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = Array.from({ length: 250 }, (_, i) => i + 1)
+    const mockDyeIds = [1, 2, 3]
+    const mockFetchColors = vi.fn()
+    const existingColors = {
+      1: mockColors[0], // Color 1 already cached
+    }
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -532,52 +352,26 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    const mockError = new Error("Chunk request failed")
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: existingColors,
+      isColorsFetching: false,
+      fetchColors: mockFetchColors,
+      addColors: vi.fn(),
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint, , params] = queryKey
+      const [endpoint] = queryKey
       if (endpoint === "account/dyes") {
         return mockDyeIds
-      }
-      if (endpoint === "colors") {
-        // Fail the second chunk
-        const idsParam = params?.replace("ids=", "")
-        const requestedIds = idsParam?.split(",").map(Number)
-        if (requestedIds && requestedIds[0] === 201) {
-          throw mockError
-        }
-        // Return data for first chunk
-        if (requestedIds && requestedIds[0] === 1) {
-          return mockDyeIds.slice(0, 200).map((id) => ({
-            id,
-            name: `Dye ${id}`,
-            base_rgb: [id, id, id] as [number, number, number],
-            categories: ["Gray", "Metal", "Common"],
-            cloth: {
-              brightness: 0,
-              contrast: 1,
-              hue: id,
-              saturation: 0,
-              lightness: id,
-              rgb: [id, id, id] as [number, number, number],
-            },
-            leather: {
-              brightness: 0,
-              contrast: 1,
-              hue: id,
-              saturation: 0,
-              lightness: id,
-              rgb: [id, id, id] as [number, number, number],
-            },
-            metal: {
-              brightness: 0,
-              contrast: 1,
-              hue: id,
-              saturation: 0,
-              lightness: id,
-              rgb: [id, id, id] as [number, number, number],
-            },
-          }))
-        }
       }
       return null
     })
@@ -587,10 +381,49 @@ describe("useDyes", () => {
     })
 
     await waitFor(() => {
-      expect(result.current.error).toBe(mockError)
+      expect(result.current.dyesData).toEqual(mockDyeIds)
     })
 
-    // Should still have partial data from successful chunk
-    expect(result.current.colors).toHaveLength(200)
+    // Should only fetch uncached colors (2 and 3)
+    await waitFor(() => {
+      expect(mockFetchColors).toHaveBeenCalledWith([2, 3])
+    })
+  })
+
+  it("converts colors record to array for backward compatibility", () => {
+    const mockColorsRecord = {
+      1: mockColors[0],
+      2: mockColors[1],
+    }
+
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      addItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      fetchMaterialCategories: vi.fn(),
+      colors: mockColorsRecord,
+      isColorsFetching: false,
+      fetchColors: vi.fn(),
+      addColors: vi.fn(),
+    })
+
+    mockUseToken.mockReturnValue({
+      currentAccount: null,
+      usedAccounts: [],
+      addUsedAccount: vi.fn(),
+      removeUsedAccount: vi.fn(),
+      setCurrentAccount: vi.fn(),
+    })
+
+    const { result } = renderHook(() => useDyes(), {
+      wrapper: createWrapper(),
+    })
+
+    expect(result.current.colors).toEqual(mockColors)
   })
 })

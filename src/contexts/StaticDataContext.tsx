@@ -13,6 +13,7 @@ import type { MaterialCategory } from "@gw2api/types/data/material"
 import { fetchGW2 } from "helpers/api"
 import { API_CONSTANTS } from "constants"
 import { materialCategoryAliases, PatchedItem } from "types/items"
+import { Color } from "types/dyes"
 
 // Types
 interface StaticDataState {
@@ -20,6 +21,8 @@ interface StaticDataState {
   isItemsFetching: boolean
   materialCategoriesData: MaterialCategory[]
   isMaterialFetching: boolean
+  colors: Record<number, Color>
+  isColorsFetching: boolean
 }
 
 type StaticDataAction =
@@ -27,6 +30,8 @@ type StaticDataAction =
   | { type: "SET_FETCHING"; fetching: boolean }
   | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
+  | { type: "ADD_COLORS"; colors: Color[] }
+  | { type: "SET_COLORS_FETCHING"; fetching: boolean }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -38,6 +43,10 @@ interface StaticDataContextType {
   materials: Record<number, string>
   isMaterialFetching: boolean
   fetchMaterialCategories: () => Promise<void>
+  colors: Record<number, Color>
+  isColorsFetching: boolean
+  fetchColors: (colorIds: number[]) => Promise<void>
+  addColors: (colors: Color[]) => void
 }
 
 // Context
@@ -62,6 +71,15 @@ const staticDataReducer = (
       return { ...state, materialCategoriesData: action.materialCategories }
     case "SET_MATERIAL_FETCHING":
       return { ...state, isMaterialFetching: action.fetching }
+    case "ADD_COLORS": {
+      const newColors = { ...state.colors }
+      action.colors.forEach((color) => {
+        newColors[color.id] = color
+      })
+      return { ...state, colors: newColors }
+    }
+    case "SET_COLORS_FETCHING":
+      return { ...state, isColorsFetching: action.fetching }
     default:
       return state
   }
@@ -84,14 +102,22 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     isItemsFetching: false,
     materialCategoriesData: [],
     isMaterialFetching: false,
+    colors: {},
+    isColorsFetching: false,
   })
 
-  // Use ref for stable reference to current items
+  // Use ref for stable reference to current items and colors
   const itemsRef = useRef<Record<number, PatchedItem>>({})
+  const colorsRef = useRef<Record<number, Color>>({})
   itemsRef.current = state.items
+  colorsRef.current = state.colors
 
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
+  }, [])
+
+  const addColors = useCallback((newColors: Color[]) => {
+    dispatch({ type: "ADD_COLORS", colors: newColors })
   }, [])
 
   const fetchMaterialCategories = useCallback(async () => {
@@ -164,6 +190,59 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     [addItems],
   )
 
+  const fetchColors = useCallback(
+    async (newIds: number[]) => {
+      if (newIds.length === 0) return
+
+      dispatch({ type: "SET_COLORS_FETCHING", fetching: true })
+
+      // Use ref to access current colors without adding to dependencies
+      const currentColors = colorsRef.current
+      const existingIdSet = new Set(
+        Object.keys(currentColors).map((key) => parseInt(key)),
+      )
+      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+      if (idsToFetch.length === 0) {
+        dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
+        return
+      }
+
+      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+      let newColors: Color[] = []
+      let failedChunks = 0
+
+      for (const chunk of chunks) {
+        try {
+          const data = await fetchGW2<Color[]>(
+            "colors",
+            `ids=${chunk.join(",")}`,
+          )
+          if (data) {
+            newColors = [...newColors, ...data]
+          }
+        } catch (error) {
+          console.error(`Failed to fetch colors chunk:`, error)
+          failedChunks++
+          // Continue fetching other chunks even if one fails
+        }
+      }
+
+      if (newColors.length > 0) {
+        addColors(newColors)
+      }
+
+      if (failedChunks > 0) {
+        console.warn(
+          `Failed to fetch ${failedChunks} out of ${chunks.length} color chunks`,
+        )
+      }
+
+      dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
+    },
+    [addColors],
+  )
+
   // Process material categories data
   const materialCategories =
     state.materialCategoriesData.length > 0
@@ -194,6 +273,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     materials,
     isMaterialFetching: state.isMaterialFetching,
     fetchMaterialCategories,
+    colors: state.colors,
+    isColorsFetching: state.isColorsFetching,
+    fetchColors,
+    addColors,
   }
 
   return (

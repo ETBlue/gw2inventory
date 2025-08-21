@@ -1,17 +1,18 @@
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
-import { AccountDyesData, Color, DyesData } from "~/types/dyes"
-import { chunkArray } from "~/helpers/chunking"
-import { API_CONSTANTS } from "~/constants/api"
+import { AccountDyesData, DyesData } from "~/types/dyes"
+import { useStaticData } from "~/contexts/StaticDataContext"
 
 /**
  * Custom hook to fetch account dyes and color details
- * Fetches color details in chunks to handle large dye collections
+ * Uses StaticDataContext for color data caching
  */
 export const useDyes = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
+  const { colors, isColorsFetching, fetchColors } = useStaticData()
 
   // Fetch account dyes data
   const {
@@ -25,53 +26,37 @@ export const useDyes = () => {
     enabled: !!token,
   })
 
-  // Chunk account dye IDs into groups using API_CONSTANTS.ITEMS_CHUNK_SIZE
-  const dyeIdChunks = dyesData
-    ? chunkArray(dyesData, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    : []
-
-  // Fetch color details for each chunk
-  const colorQueries = useQueries({
-    queries: dyeIdChunks.map((chunk) => ({
-      queryKey: ["colors", undefined, `ids=${chunk.join(",")}`] as const,
-      queryFn: queryFunction as any,
-      staleTime: Infinity,
-      enabled: !!dyesData && dyesData.length > 0,
-    })),
-  })
-
-  // Combine all color data from chunks
-  const colors = colorQueries.reduce<Color[]>((allColors, query) => {
-    if (query.data && Array.isArray(query.data)) {
-      return [...allColors, ...query.data]
+  // Auto-fetch colors when dyes data is available
+  useEffect(() => {
+    if (dyesData && dyesData.length > 0) {
+      // Only fetch colors that aren't already cached
+      const uncachedColorIds = dyesData.filter((dyeId) => !colors[dyeId])
+      if (uncachedColorIds.length > 0) {
+        fetchColors(uncachedColorIds)
+      }
     }
-    return allColors
-  }, [])
+  }, [dyesData, colors, fetchColors])
 
-  // Check if any color queries are fetching
-  const isColorsFetching = colorQueries.some((query) => query.isFetching)
-
-  // Check if any color queries have errors
-  const colorsError = colorQueries.find((query) => query.error)?.error
+  // Convert colors record to array for backward compatibility
+  const colorsArray = Object.values(colors)
 
   // Combine dyes data with color details
   const dyesWithDetails: DyesData | undefined =
-    dyesData && colors.length > 0
+    dyesData && Object.keys(colors).length > 0
       ? dyesData.map((dyeId: number) => ({
           id: dyeId,
-          color: colors.find((color: Color) => color.id === dyeId),
+          color: colors[dyeId],
         }))
       : undefined
 
   const isFetching = isDyesFetching || isColorsFetching
-  const error = dyesError || colorsError
 
   return {
     dyesData,
-    colors,
+    colors: colorsArray,
     dyesWithDetails,
     isFetching,
-    error,
+    error: dyesError,
     hasToken: !!token,
   }
 }
