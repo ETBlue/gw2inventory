@@ -66,7 +66,28 @@ export function useAccountItemsData() {
     const inventoryItems: InventoryItemInList[] = inventoryItemsData.reduce(
       (prev: InventoryItemInList[], curr: SharedInventoryItemStack | null) => {
         if (curr) {
-          prev.push({ ...curr, location: "Shared Inventory" })
+          const currentItem = { ...curr, location: "Shared Inventory" }
+          prev.push(currentItem)
+
+          // Extract upgrades
+          const upgrades = (curr as any).upgrades ?? []
+          upgrades.forEach((upgrade: number) => {
+            prev.push({
+              id: upgrade,
+              count: 1,
+              location: "Shared Inventory",
+            })
+          })
+
+          // Extract infusions
+          const infusions = (curr as any).infusions ?? []
+          infusions.forEach((infusion: number) => {
+            prev.push({
+              id: infusion,
+              count: 1,
+              location: "Shared Inventory",
+            })
+          })
         }
         return prev
       },
@@ -81,7 +102,28 @@ export function useAccountItemsData() {
     const bankItems: BankItemInList[] = bankItemsData.reduce(
       (prev: BankItemInList[], curr: ItemStack | null) => {
         if (curr) {
-          prev.push({ ...curr, location: "Bank" })
+          const currentItem = { ...curr, location: "Bank" }
+          prev.push(currentItem)
+
+          // Extract upgrades
+          const upgrades = (curr as any).upgrades ?? []
+          upgrades.forEach((upgrade: number) => {
+            prev.push({
+              id: upgrade,
+              count: 1,
+              location: "Bank",
+            })
+          })
+
+          // Extract infusions
+          const infusions = (curr as any).infusions ?? []
+          infusions.forEach((infusion: number) => {
+            prev.push({
+              id: infusion,
+              count: 1,
+              location: "Bank",
+            })
+          })
         }
         return prev
       },
