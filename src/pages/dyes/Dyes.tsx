@@ -348,7 +348,26 @@ export default function Dyes() {
                   <Heading
                     as="h4"
                     size="sm"
-                    className={`${sharedTableCss.name}`}
+                    className={`${sharedTableCss.name} ${(() => {
+                      const dyeRarity = color.categories[2] || "Starter"
+                      const mapDyeRarity = (dyeRarity: string): string => {
+                        switch (dyeRarity) {
+                          case "Starter":
+                            return "basic"
+                          case "Common":
+                            return "fine"
+                          case "Uncommon":
+                            return "masterwork"
+                          case "Rare":
+                            return "rare"
+                          case "Exclusive":
+                            return "exotic"
+                          default:
+                            return "basic"
+                        }
+                      }
+                      return sharedTableCss[mapDyeRarity(dyeRarity)]
+                    })()}`}
                   >
                     {color.name}
                   </Heading>
