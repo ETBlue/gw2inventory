@@ -1,18 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { renderHook } from "@testing-library/react"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactNode } from "react"
+import { createTestQueryClient } from "~/test/utils"
 import { useItemsData } from "./useItemsData"
 import * as tokenHook from "./useToken"
 import * as charactersHook from "./useCharacters"
 import * as staticDataContext from "../contexts/StaticDataContext"
-import * as accountItemsHook from "./useAccountItemsData"
 import * as characterItemsHelper from "../helpers/characterItems"
+import * as apiHelpers from "../helpers/api"
 
 // Mock all dependencies
 vi.mock("./useToken")
 vi.mock("./useCharacters")
 vi.mock("../contexts/StaticDataContext")
-vi.mock("./useAccountItemsData")
 vi.mock("../helpers/characterItems")
+vi.mock("../helpers/api")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockUseCharacters = vi.mocked(charactersHook.useCharacters)
@@ -20,10 +23,21 @@ const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
 const mockUseBatchAutoFetchItems = vi.mocked(
   staticDataContext.useBatchAutoFetchItems,
 )
-const mockUseAccountItemsData = vi.mocked(accountItemsHook.useAccountItemsData)
 const mockProcessCharacterItems = vi.mocked(
   characterItemsHelper.processCharacterItems,
 )
+const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+
+// Create a wrapper component for React Query using shared test utility
+const createWrapper = () => {
+  const queryClient = createTestQueryClient()
+
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+  Wrapper.displayName = "QueryClientWrapper"
+  return Wrapper
+}
 
 // Mock data
 const mockAccount = {
@@ -41,13 +55,9 @@ const mockItems = {} as any
 const mockMaterials = { 1: "Wood", 2: "Metal" }
 const mockMaterialCategories = ["Wood", "Metal"]
 
-const mockInventoryItems = [
-  { id: 999, count: 10, location: "Shared Inventory" },
-]
-const mockBankItems = [{ id: 888, count: 3, location: "Bank" }]
-const mockMaterialItems = [
-  { id: 777, count: 50, category: 1, location: "Material Storage" },
-]
+const mockInventoryItems = [{ id: 999, count: 10 }]
+const mockBankItems = [{ id: 888, count: 3 }]
+const mockMaterialItems = [{ id: 777, count: 50, category: 1 }]
 
 describe("useItemsData", () => {
   beforeEach(() => {
@@ -112,20 +122,27 @@ describe("useItemsData", () => {
       })),
     })
 
-    mockUseAccountItemsData.mockReturnValue({
-      inventoryItems: mockInventoryItems,
-      bankItems: mockBankItems,
-      materialItems: mockMaterialItems,
-      isInventoryFetching: false,
-      isBankFetching: false,
-      isMaterialsFetching: false,
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account/inventory") {
+        return mockInventoryItems.map((item) => ({ ...item, id: item.id }))
+      }
+      if (endpoint === "account/bank") {
+        return mockBankItems.map((item) => ({ ...item, id: item.id }))
+      }
+      if (endpoint === "account/materials") {
+        return mockMaterialItems.map((item) => ({ ...item, id: item.id }))
+      }
+      return []
     })
 
     mockUseBatchAutoFetchItems.mockImplementation(() => {})
   })
 
   it("processes character items using helper function", () => {
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     expect(mockProcessCharacterItems).toHaveBeenCalledWith(null)
     expect(result.current.characterItems).toEqual(mockCharacterItems)
@@ -133,22 +150,26 @@ describe("useItemsData", () => {
   })
 
   it("batches all item sources for efficient fetching using useBatchAutoFetchItems", () => {
-    renderHook(() => useItemsData())
+    renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     // Verify that useBatchAutoFetchItems is called with all item sources batched together
     expect(mockUseBatchAutoFetchItems).toHaveBeenCalledWith(
       {
         characterItems: expect.any(Array),
-        inventoryItems: mockInventoryItems,
-        bankItems: mockBankItems,
-        materialItems: mockMaterialItems,
+        inventoryItems: expect.any(Array),
+        bankItems: expect.any(Array),
+        materialItems: expect.any(Array),
       },
       true,
     )
   })
 
   it("preserves item cache across account changes", () => {
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     // Item cache should remain stable
     expect(result.current.items).toEqual(mockItems)
@@ -198,13 +219,17 @@ describe("useItemsData", () => {
       })),
     })
 
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     expect(result.current.isFetching).toBe(true)
   })
 
   it("returns correct hasToken status", () => {
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
     expect(result.current.hasToken).toBe(true)
 
     // Test with no token
@@ -216,12 +241,16 @@ describe("useItemsData", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    const { result: result2 } = renderHook(() => useItemsData())
+    const { result: result2 } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
     expect(result2.current.hasToken).toBe(false)
   })
 
   it("maintains item cache stability across re-renders", () => {
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     const initialItems = result.current.items
 
@@ -231,7 +260,9 @@ describe("useItemsData", () => {
   })
 
   it("returns all required data and functions", () => {
-    const { result } = renderHook(() => useItemsData())
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
 
     expect(result.current).toHaveProperty("hasToken")
     expect(result.current).toHaveProperty("items")

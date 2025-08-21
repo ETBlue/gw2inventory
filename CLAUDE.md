@@ -51,8 +51,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Custom Hooks (replacing previous contexts):**
 
-- `useItemsData` - Manages all item-related data with batched fetching (replaced ItemContext)
-- `useAccountItemsData` - Handles account-specific items (inventory, bank, materials) with read-only API
+- `useItemsData` - Manages all item-related data including account items (inventory, bank, materials) and character items with batched fetching (replaced ItemContext and merged useAccountItemsData)
 - `useTitles` - Fetches account titles with title details managed by StaticDataContext for efficient caching
 - `useWallet` - Fetches account wallet with currency details managed by StaticDataContext for efficient caching
 - `useSkins` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
@@ -248,7 +247,7 @@ Significant architectural improvements were made to the static data management s
 - **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, skins, titles, currencies, and outfits) with integrated localStorage caching
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
-- **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
+- **Hook Consolidation**: Merged `useAccountItemsData` into `useItemsData` for unified item management (2025-01-21)
 - **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, title management from `useTitles`, currency management from `useWallet`, and outfit management from `useOutfits` to StaticDataContext with individual useCallback functions to comply with React Hook rules
 - **LocalStorage Caching**: Implemented persistent caching of all static data (items, material categories, colors, skins, titles, currencies, outfits) with cache versioning system to prevent stale data across app updates
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
@@ -266,3 +265,4 @@ Significant architectural improvements were made to the static data management s
 - Proper browser history management using `navigate({ replace: true })`
 - Comprehensive upgrade/infusion tracking across all item locations (bags, equipped, bank, shared inventory)
 - **Zero API calls on repeat visits** for previously fetched static data, significantly improving app loading performance
+- Unified item data access point eliminating code duplication between character and account items
