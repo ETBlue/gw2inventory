@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { NavLink, useNavigate, useLocation, useParams } from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
@@ -21,7 +21,6 @@ import {
 
 import { ITEM_COUNT_PER_PAGE } from "config"
 import { useSearchParams } from "hooks/url"
-import { getQueryString } from "helpers/url"
 import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import type { Item as ItemTypeDef } from "@gw2api/types/data/item"
@@ -76,6 +75,20 @@ function Items() {
     const result = params.toString()
     return result ? `?${result}` : ""
   }, [queryString])
+
+  // Update search keyword in URL
+  const updateSearch = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(queryString)
+      if (value) {
+        params.set("keyword", value)
+      } else {
+        params.delete("keyword")
+      }
+      navigate(`${pathname}?${params.toString()}`, { replace: true })
+    },
+    [pathname, queryString, navigate],
+  )
 
   const allItems = useMemo(
     () => [
@@ -187,14 +200,7 @@ function Items() {
             <Input
               variant="unstyled"
               value={keyword || ""}
-              onChange={(e) => {
-                const to = `${pathname}?${getQueryString(
-                  "keyword",
-                  e.currentTarget.value,
-                  queryString,
-                )}`
-                navigate(to)
-              }}
+              onChange={(e) => updateSearch(e.currentTarget.value)}
             />
           </InputGroup>
         </TabList>
