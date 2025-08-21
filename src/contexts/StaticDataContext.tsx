@@ -6,6 +6,7 @@ import React, {
   useRef,
   useEffect,
   ReactNode,
+  useMemo,
 } from "react"
 import { chunk, sortBy } from "lodash"
 
@@ -30,7 +31,7 @@ interface StaticDataState {
 
 type StaticDataAction =
   | { type: "ADD_ITEMS"; items: PatchedItem[] }
-  | { type: "SET_FETCHING"; fetching: boolean }
+  | { type: "SET_ITEMS_FETCHING"; fetching: boolean }
   | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
   | { type: "ADD_COLORS"; colors: Color[] }
@@ -61,41 +62,47 @@ interface StaticDataContextType {
 // Context
 const StaticDataContext = createContext<StaticDataContextType | null>(null)
 
+// Generic helper to add items to state
+const addItemsToRecord = <T extends { id: number }>(
+  existingRecord: Record<number, T>,
+  newItems: T[],
+): Record<number, T> => {
+  const newRecord = { ...existingRecord }
+  newItems.forEach((item) => {
+    newRecord[item.id] = item
+  })
+  return newRecord
+}
+
 // Reducer
 const staticDataReducer = (
   state: StaticDataState,
   action: StaticDataAction,
 ): StaticDataState => {
   switch (action.type) {
-    case "ADD_ITEMS": {
-      const newItems = { ...state.items }
-      action.items.forEach((item) => {
-        newItems[item.id] = item
-      })
-      return { ...state, items: newItems }
-    }
-    case "SET_FETCHING":
+    case "ADD_ITEMS":
+      return {
+        ...state,
+        items: addItemsToRecord(state.items, action.items),
+      }
+    case "SET_ITEMS_FETCHING":
       return { ...state, isItemsFetching: action.fetching }
     case "SET_MATERIAL_CATEGORIES":
       return { ...state, materialCategoriesData: action.materialCategories }
     case "SET_MATERIAL_FETCHING":
       return { ...state, isMaterialFetching: action.fetching }
-    case "ADD_COLORS": {
-      const newColors = { ...state.colors }
-      action.colors.forEach((color) => {
-        newColors[color.id] = color
-      })
-      return { ...state, colors: newColors }
-    }
+    case "ADD_COLORS":
+      return {
+        ...state,
+        colors: addItemsToRecord(state.colors, action.colors),
+      }
     case "SET_COLORS_FETCHING":
       return { ...state, isColorsFetching: action.fetching }
-    case "ADD_SKINS": {
-      const newSkins = { ...state.skins }
-      action.skins.forEach((skin) => {
-        newSkins[skin.id] = skin
-      })
-      return { ...state, skins: newSkins }
-    }
+    case "ADD_SKINS":
+      return {
+        ...state,
+        skins: addItemsToRecord(state.skins, action.skins),
+      }
     case "SET_SKINS_FETCHING":
       return { ...state, isSkinsFetching: action.fetching }
     default:
@@ -109,7 +116,7 @@ interface StaticDataProviderProps {
 }
 
 /**
- * Provider for static data from GW2 API (primarily item data)
+ * Provider for static data from GW2 API
  * Manages global cache of static data that never changes
  */
 export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
@@ -126,14 +133,164 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     isSkinsFetching: false,
   })
 
-  // Use ref for stable reference to current items, colors, and skins
-  const itemsRef = useRef<Record<number, PatchedItem>>({})
-  const colorsRef = useRef<Record<number, Color>>({})
-  const skinsRef = useRef<Record<number, Skin>>({})
-  itemsRef.current = state.items
-  colorsRef.current = state.colors
-  skinsRef.current = state.skins
+  // Use a single ref for all static data to avoid multiple refs
+  const staticDataRef = useRef({
+    items: {} as Record<number, PatchedItem>,
+    colors: {} as Record<number, Color>,
+    skins: {} as Record<number, Skin>,
+  })
 
+  // Update refs whenever state changes
+  staticDataRef.current.items = state.items
+  staticDataRef.current.colors = state.colors
+  staticDataRef.current.skins = state.skins
+
+  // Individual fetch functions using useCallback
+  const fetchItems = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_ITEMS_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.items
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_ITEMS_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newItems: PatchedItem[] = []
+    let failedChunks = 0
+
+    for (const chunk of chunks) {
+      try {
+        const data = await fetchGW2<PatchedItem[]>(
+          "items",
+          `ids=${chunk.join(",")}`,
+        )
+        if (data) {
+          newItems = [...newItems, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch items chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newItems.length > 0) {
+      dispatch({ type: "ADD_ITEMS", items: newItems })
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} items chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_ITEMS_FETCHING", fetching: false })
+  }, [])
+
+  const fetchColors = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_COLORS_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.colors
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newItems: Color[] = []
+    let failedChunks = 0
+
+    for (const chunk of chunks) {
+      try {
+        const data = await fetchGW2<Color[]>("colors", `ids=${chunk.join(",")}`)
+        if (data) {
+          newItems = [...newItems, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch colors chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newItems.length > 0) {
+      dispatch({ type: "ADD_COLORS", colors: newItems })
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} colors chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
+  }, [])
+
+  const fetchSkins = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_SKINS_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.skins
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newItems: Skin[] = []
+    let failedChunks = 0
+
+    for (const chunk of chunks) {
+      try {
+        const data = await fetchGW2<Skin[]>("skins", `ids=${chunk.join(",")}`)
+        if (data) {
+          newItems = [...newItems, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch skins chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newItems.length > 0) {
+      dispatch({ type: "ADD_SKINS", skins: newItems })
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} skins chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
+  }, [])
+
+  // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
   }, [])
@@ -163,201 +320,73 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.materialCategoriesData.length])
 
-  const fetchItems = useCallback(
-    async (newIds: number[]) => {
-      if (newIds.length === 0) return
-
-      dispatch({ type: "SET_FETCHING", fetching: true })
-
-      // Use ref to access current items without adding to dependencies
-      const currentItems = itemsRef.current
-      const existingIdSet = new Set(
-        Object.keys(currentItems).map((key) => parseInt(key)),
-      )
-      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-      if (idsToFetch.length === 0) {
-        dispatch({ type: "SET_FETCHING", fetching: false })
-        return
-      }
-
-      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-      let newItems: PatchedItem[] = []
-      let failedChunks = 0
-
-      for (const chunk of chunks) {
-        try {
-          const data = await fetchGW2<PatchedItem[]>(
-            "items",
-            `ids=${chunk.join(",")}`,
+  // Memoize processed material categories data
+  const materialCategories = useMemo(
+    () =>
+      state.materialCategoriesData.length > 0
+        ? sortBy(state.materialCategoriesData, ["order"]).map(
+            (item: MaterialCategory) => materialCategoryAliases[item.name],
           )
-          if (data) {
-            newItems = [...newItems, ...data]
-          }
-        } catch (error) {
-          console.error(`Failed to fetch items chunk:`, error)
-          failedChunks++
-          // Continue fetching other chunks even if one fails
-        }
-      }
-
-      if (newItems.length > 0) {
-        addItems(newItems)
-      }
-
-      if (failedChunks > 0) {
-        console.warn(
-          `Failed to fetch ${failedChunks} out of ${chunks.length} item chunks`,
-        )
-      }
-
-      dispatch({ type: "SET_FETCHING", fetching: false })
-    },
-    [addItems],
+        : [],
+    [state.materialCategoriesData],
   )
 
-  const fetchColors = useCallback(
-    async (newIds: number[]) => {
-      if (newIds.length === 0) return
-
-      dispatch({ type: "SET_COLORS_FETCHING", fetching: true })
-
-      // Use ref to access current colors without adding to dependencies
-      const currentColors = colorsRef.current
-      const existingIdSet = new Set(
-        Object.keys(currentColors).map((key) => parseInt(key)),
-      )
-      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-      if (idsToFetch.length === 0) {
-        dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
-        return
-      }
-
-      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-      let newColors: Color[] = []
-      let failedChunks = 0
-
-      for (const chunk of chunks) {
-        try {
-          const data = await fetchGW2<Color[]>(
-            "colors",
-            `ids=${chunk.join(",")}`,
+  // Memoize materials lookup map
+  const materials = useMemo(
+    () =>
+      state.materialCategoriesData.length > 0
+        ? state.materialCategoriesData.reduce(
+            (prev: Record<number, string>, curr: MaterialCategory) => {
+              prev[curr.id] = materialCategoryAliases[curr.name]
+              return prev
+            },
+            {},
           )
-          if (data) {
-            newColors = [...newColors, ...data]
-          }
-        } catch (error) {
-          console.error(`Failed to fetch colors chunk:`, error)
-          failedChunks++
-          // Continue fetching other chunks even if one fails
-        }
-      }
-
-      if (newColors.length > 0) {
-        addColors(newColors)
-      }
-
-      if (failedChunks > 0) {
-        console.warn(
-          `Failed to fetch ${failedChunks} out of ${chunks.length} color chunks`,
-        )
-      }
-
-      dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
-    },
-    [addColors],
+        : {},
+    [state.materialCategoriesData],
   )
 
-  const fetchSkins = useCallback(
-    async (newIds: number[]) => {
-      if (newIds.length === 0) return
-
-      dispatch({ type: "SET_SKINS_FETCHING", fetching: true })
-
-      // Use ref to access current skins without adding to dependencies
-      const currentSkins = skinsRef.current
-      const existingIdSet = new Set(
-        Object.keys(currentSkins).map((key) => parseInt(key)),
-      )
-      const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-      if (idsToFetch.length === 0) {
-        dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
-        return
-      }
-
-      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-      let newSkins: Skin[] = []
-      let failedChunks = 0
-
-      for (const chunk of chunks) {
-        try {
-          const data = await fetchGW2<Skin[]>("skins", `ids=${chunk.join(",")}`)
-          if (data) {
-            newSkins = [...newSkins, ...data]
-          }
-        } catch (error) {
-          console.error(`Failed to fetch skins chunk:`, error)
-          failedChunks++
-          // Continue fetching other chunks even if one fails
-        }
-      }
-
-      if (newSkins.length > 0) {
-        addSkins(newSkins)
-      }
-
-      if (failedChunks > 0) {
-        console.warn(
-          `Failed to fetch ${failedChunks} out of ${chunks.length} skin chunks`,
-        )
-      }
-
-      dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
-    },
-    [addSkins],
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    (): StaticDataContextType => ({
+      items: state.items,
+      isItemsFetching: state.isItemsFetching,
+      fetchItems,
+      addItems,
+      materialCategoriesData: state.materialCategoriesData,
+      materialCategories,
+      materials,
+      isMaterialFetching: state.isMaterialFetching,
+      fetchMaterialCategories,
+      colors: state.colors,
+      isColorsFetching: state.isColorsFetching,
+      fetchColors,
+      addColors,
+      skins: state.skins,
+      isSkinsFetching: state.isSkinsFetching,
+      fetchSkins,
+      addSkins,
+    }),
+    [
+      state.items,
+      state.isItemsFetching,
+      state.materialCategoriesData,
+      state.isMaterialFetching,
+      state.colors,
+      state.isColorsFetching,
+      state.skins,
+      state.isSkinsFetching,
+      fetchItems,
+      addItems,
+      materialCategories,
+      materials,
+      fetchMaterialCategories,
+      fetchColors,
+      addColors,
+      fetchSkins,
+      addSkins,
+    ],
   )
-
-  // Process material categories data
-  const materialCategories =
-    state.materialCategoriesData.length > 0
-      ? sortBy(state.materialCategoriesData, ["order"]).map(
-          (item: MaterialCategory) => materialCategoryAliases[item.name],
-        )
-      : []
-
-  // Create materials lookup map for category ID to alias mapping
-  const materials =
-    state.materialCategoriesData.length > 0
-      ? state.materialCategoriesData.reduce(
-          (prev: Record<number, string>, curr: MaterialCategory) => {
-            prev[curr.id] = materialCategoryAliases[curr.name]
-            return prev
-          },
-          {},
-        )
-      : {}
-
-  const contextValue: StaticDataContextType = {
-    items: state.items,
-    isItemsFetching: state.isItemsFetching,
-    fetchItems,
-    addItems,
-    materialCategoriesData: state.materialCategoriesData,
-    materialCategories,
-    materials,
-    isMaterialFetching: state.isMaterialFetching,
-    fetchMaterialCategories,
-    colors: state.colors,
-    isColorsFetching: state.isColorsFetching,
-    fetchColors,
-    addColors,
-    skins: state.skins,
-    isSkinsFetching: state.isSkinsFetching,
-    fetchSkins,
-    addSkins,
-  }
 
   return (
     <StaticDataContext.Provider value={contextValue}>
