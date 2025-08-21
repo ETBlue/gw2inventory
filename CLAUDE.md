@@ -149,6 +149,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Standardized empty/loading/missing token states across all pages for consistent user experience
 - Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`, `/dyes/red`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
 - URL-based state management for sorting and search parameters using `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items, Skins, Characters, Wallet, and Dyes pages)
+- Smart URL parameter isolation: category navigation removes conflicting `type` filters to prevent incorrect state persistence across different item categories
 - Hue-based filtering with count badges for Dyes page, following similar patterns established in Skins page for consistent user experience
 
 ### Testing
@@ -249,6 +250,8 @@ Significant architectural improvements were made to the static data management s
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
 - **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context
+- **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
+- **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 
 **Benefits:**
 
@@ -256,3 +259,5 @@ Significant architectural improvements were made to the static data management s
 - Better global state management with proper React Context patterns
 - Cleaner public APIs with read-only interfaces
 - Improved maintainability through consolidated static data management
+- Enhanced performance with optimized URL parameter handling and navigation
+- Proper browser history management using `navigate({ replace: true })`
