@@ -19,6 +19,22 @@ vi.mock("~/hooks/url", () => ({
   })),
 }))
 
+// Mock StaticDataContext
+vi.mock("~/contexts/StaticDataContext", () => ({
+  useStaticData: vi.fn(() => ({
+    items: {},
+    isItemsFetching: false,
+    fetchItems: vi.fn(),
+    addItems: vi.fn(),
+    materialCategoriesData: [],
+    materialCategories: [],
+    materials: {},
+    isMaterialFetching: false,
+    fetchMaterialCategories: vi.fn(),
+  })),
+  StaticDataProvider: ({ children }: { children: React.ReactNode }) => children,
+}))
+
 // Mock react-router hooks
 vi.mock("react-router", async () => {
   const actual = await vi.importActual("react-router")
@@ -41,19 +57,6 @@ vi.mock("react-router", async () => {
     Route: ({ element }: any) => element,
   }
 })
-
-// Mock the getQueryString helper
-vi.mock("~/helpers/url", () => ({
-  getQueryString: vi.fn((key, value, existing) => {
-    const params = new URLSearchParams(existing)
-    if (value) {
-      params.set(key, value)
-    } else {
-      params.delete(key)
-    }
-    return params.toString()
-  }),
-}))
 
 const mockUseItemsData = vi.mocked(useItemsData)
 const mockUseCharacters = vi.mocked(useCharacters)
