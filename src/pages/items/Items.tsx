@@ -1,12 +1,5 @@
 import { useState, useMemo } from "react"
-import {
-  NavLink,
-  Routes,
-  Route,
-  useNavigate,
-  useLocation,
-  useParams,
-} from "react-router"
+import { NavLink, useNavigate, useLocation, useParams } from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
 import {
@@ -193,27 +186,7 @@ function Items() {
             />
           </InputGroup>
         </TabList>
-        <Routes>
-          {MENU_ITEMS.map((menuItem) => (
-            <Route
-              key={menuItem.to}
-              path={menuItem.to}
-              element={
-                <SubMenuItem
-                  showOnly={
-                    menuItem.to === "/items/material"
-                      ? materialCategories
-                      : menuItem.showOnly
-                  }
-                  activeType={activeType}
-                  userItems={allItems}
-                  items={items}
-                  materials={materials}
-                />
-              }
-            />
-          ))}
-        </Routes>
+        <SubMenuItem userItems={allItems} />
         <Pagination
           pageIndex={pageIndex}
           setPageIndex={setPageIndex}

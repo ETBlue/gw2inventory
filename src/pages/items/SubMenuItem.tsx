@@ -3,32 +3,46 @@ import { Tag, Flex, Button } from "@chakra-ui/react"
 
 import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
-import { Items, Materials, UserItemInList } from "types/items"
+import { UserItemInList } from "types/items"
 
-import { MenuItem } from "./types"
 import { getTypedItemLength } from "./helpers/count"
+import { useStaticData } from "~/contexts/StaticDataContext"
+import { isEqual } from "lodash"
+import { MENU_ITEMS } from "./constants"
 
 interface Props {
-  activeType: string | null
-  showOnly: MenuItem["showOnly"]
   userItems: UserItemInList[]
-  items: Items
-  materials: Materials
 }
 
 function SubMenuItem(props: Props) {
-  const { activeType, showOnly, userItems, items, materials } = props
+  const { userItems } = props
+  const { items, materials, materialCategories } = useStaticData()
   const { pathname } = useLocation()
-  const { queryString } = useSearchParams()
+  const { queryString, type: activeType } = useSearchParams()
+
+  const menuItem = MENU_ITEMS.find((item) => item.to === pathname)
+
+  const showOnly = menuItem
+    ? isEqual(menuItem.showOnly, ["CraftingMaterial"])
+      ? materialCategories
+      : menuItem.showOnly
+    : []
+
+  if (showOnly.length <= 1) return null
 
   return (
-    <Flex justifyContent="center" margin="1rem auto">
+    <Flex
+      justifyContent="center"
+      margin="0 auto"
+      borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
+    >
       {showOnly.map((type: string) => (
         <Button
           key={type}
           as={Link}
           variant="ghost"
           fontWeight="normal"
+          borderRadius={0}
           isActive={type === activeType}
           to={`${pathname}?${getQueryString("type", type, queryString)}`}
         >
