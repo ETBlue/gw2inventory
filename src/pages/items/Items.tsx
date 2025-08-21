@@ -69,6 +69,14 @@ function Items() {
   const activeSort: Sort = (sortBy as Sort) || "location"
   const activeOrder: Order = (order as Order) || "asc"
 
+  // Query string without 'type' parameter for navigation
+  const navigationQueryString = useMemo(() => {
+    const params = new URLSearchParams(queryString)
+    params.delete("type")
+    const result = params.toString()
+    return result ? `?${result}` : ""
+  }, [queryString])
+
   const allItems = useMemo(
     () => [
       ...characterItems,
@@ -144,14 +152,18 @@ function Items() {
         index={findIndex(MENU_ITEMS, (item) => item.to === pathname) + 1 || 0}
       >
         <TabList>
-          <Tab as={NavLink} to={`/items${queryString}`}>
+          <Tab as={NavLink} to={`/items${navigationQueryString}`}>
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
               {allItems?.length}
             </Tag>
           </Tab>
           {MENU_ITEMS.map((item) => (
-            <Tab key={item.to} as={NavLink} to={`${item.to}${queryString}`}>
+            <Tab
+              key={item.to}
+              as={NavLink}
+              to={`${item.to}${navigationQueryString}`}
+            >
               {item.text}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {getTypedItemLength({
