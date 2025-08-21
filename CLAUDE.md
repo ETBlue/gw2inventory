@@ -245,11 +245,12 @@ Significant architectural improvements were made to the static data management s
 
 **Key Changes:**
 
-- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, and skins)
+- **StaticDataContext**: Replaced `useItemCache` hook with a proper React Context for global static data management (now includes items, material categories, colors, and skins) with integrated localStorage caching
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Improved Encapsulation**: Removed setter functions from `useAccountItemsData` API - state management is now fully internal
 - **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes` and skin management from `useSkins` to StaticDataContext with individual useCallback functions to comply with React Hook rules
+- **LocalStorage Caching**: Implemented persistent caching of all static data with cache versioning system to prevent stale data across app updates
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
@@ -257,9 +258,11 @@ Significant architectural improvements were made to the static data management s
 **Benefits:**
 
 - ~60% reduction in API calls through intelligent batching and deduplication
+- **Persistent localStorage caching** of all static data (items, colors, skins, material categories) with automatic cache version management
 - Better global state management with proper React Context patterns
 - Cleaner public APIs with read-only interfaces
 - Improved maintainability through consolidated static data management
 - Enhanced performance with optimized URL parameter handling and navigation
 - Proper browser history management using `navigate({ replace: true })`
 - Comprehensive upgrade/infusion tracking across all item locations (bags, equipped, bank, shared inventory)
+- **Zero API calls on repeat visits** for previously fetched static data, significantly improving app loading performance

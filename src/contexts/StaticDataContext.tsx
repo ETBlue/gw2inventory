@@ -17,6 +17,125 @@ import { materialCategoryAliases, PatchedItem } from "types/items"
 import { Color } from "types/dyes"
 import { Skin } from "types/skins"
 
+// Local storage utilities
+const STORAGE_KEYS = {
+  ITEMS: "gw2inventory_static_items",
+  MATERIAL_CATEGORIES: "gw2inventory_static_material_categories",
+  COLORS: "gw2inventory_static_colors",
+  SKINS: "gw2inventory_static_skins",
+  VERSION: "gw2inventory_cache_version",
+}
+
+// Cache version for invalidating old cache data
+const CACHE_VERSION = "1.0.0"
+
+// Local storage cache utilities
+const cacheUtils = {
+  save<T>(key: string, data: T): void {
+    try {
+      localStorage.setItem(key, JSON.stringify(data))
+    } catch (error) {
+      console.warn(`Failed to save ${key} to localStorage:`, error)
+    }
+  },
+
+  load<T>(key: string): T | null {
+    try {
+      const data = localStorage.getItem(key)
+      return data ? JSON.parse(data) : null
+    } catch (error) {
+      console.warn(`Failed to load ${key} from localStorage:`, error)
+      return null
+    }
+  },
+
+  clear(): void {
+    Object.values(STORAGE_KEYS).forEach((key) => {
+      try {
+        localStorage.removeItem(key)
+      } catch (error) {
+        console.warn(`Failed to clear ${key} from localStorage:`, error)
+      }
+    })
+  },
+
+  checkVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.VERSION)
+    if (cachedVersion !== CACHE_VERSION) {
+      console.log("Cache version mismatch, clearing static data cache")
+      this.clear()
+      this.save(STORAGE_KEYS.VERSION, CACHE_VERSION)
+      return false
+    }
+    return true
+  },
+
+  loadStaticData(): {
+    items: Record<number, PatchedItem>
+    materialCategories: MaterialCategory[]
+    colors: Record<number, Color>
+    skins: Record<number, Skin>
+  } {
+    if (!this.checkVersion()) {
+      return {
+        items: {},
+        materialCategories: [],
+        colors: {},
+        skins: {},
+      }
+    }
+
+    const items =
+      this.load<Record<number, PatchedItem>>(STORAGE_KEYS.ITEMS) || {}
+    const materialCategories =
+      this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
+    const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
+    const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
+
+    return { items, materialCategories, colors, skins }
+  },
+
+  saveItems(items: Record<number, PatchedItem>): void {
+    this.save(STORAGE_KEYS.ITEMS, items)
+  },
+
+  saveMaterialCategories(categories: MaterialCategory[]): void {
+    this.save(STORAGE_KEYS.MATERIAL_CATEGORIES, categories)
+  },
+
+  saveColors(colors: Record<number, Color>): void {
+    this.save(STORAGE_KEYS.COLORS, colors)
+  },
+
+  saveSkins(skins: Record<number, Skin>): void {
+    this.save(STORAGE_KEYS.SKINS, skins)
+  },
+
+  getCacheInfo(): {
+    itemCount: number
+    materialCategoryCount: number
+    colorCount: number
+    skinCount: number
+    version: string | null
+  } {
+    const items =
+      this.load<Record<number, PatchedItem>>(STORAGE_KEYS.ITEMS) || {}
+    const materialCategories =
+      this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
+    const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
+    const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
+    const version = this.load<string>(STORAGE_KEYS.VERSION)
+
+    return {
+      itemCount: Object.keys(items).length,
+      materialCategoryCount: materialCategories.length,
+      colorCount: Object.keys(colors).length,
+      skinCount: Object.keys(skins).length,
+      version,
+    }
+  },
+}
+
 // Types
 interface StaticDataState {
   items: Record<number, PatchedItem>
@@ -32,12 +151,19 @@ interface StaticDataState {
 type StaticDataAction =
   | { type: "ADD_ITEMS"; items: PatchedItem[] }
   | { type: "SET_ITEMS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_ITEMS"; items: Record<number, PatchedItem> }
   | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
+  | {
+      type: "LOAD_CACHED_MATERIAL_CATEGORIES"
+      materialCategories: MaterialCategory[]
+    }
   | { type: "ADD_COLORS"; colors: Color[] }
   | { type: "SET_COLORS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_COLORS"; colors: Record<number, Color> }
   | { type: "ADD_SKINS"; skins: Skin[] }
   | { type: "SET_SKINS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_SKINS"; skins: Record<number, Skin> }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -57,6 +183,7 @@ interface StaticDataContextType {
   isSkinsFetching: boolean
   fetchSkins: (skinIds: number[]) => Promise<void>
   addSkins: (skins: Skin[]) => void
+  getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
 // Context
@@ -87,10 +214,14 @@ const staticDataReducer = (
       }
     case "SET_ITEMS_FETCHING":
       return { ...state, isItemsFetching: action.fetching }
+    case "LOAD_CACHED_ITEMS":
+      return { ...state, items: action.items }
     case "SET_MATERIAL_CATEGORIES":
       return { ...state, materialCategoriesData: action.materialCategories }
     case "SET_MATERIAL_FETCHING":
       return { ...state, isMaterialFetching: action.fetching }
+    case "LOAD_CACHED_MATERIAL_CATEGORIES":
+      return { ...state, materialCategoriesData: action.materialCategories }
     case "ADD_COLORS":
       return {
         ...state,
@@ -98,6 +229,8 @@ const staticDataReducer = (
       }
     case "SET_COLORS_FETCHING":
       return { ...state, isColorsFetching: action.fetching }
+    case "LOAD_CACHED_COLORS":
+      return { ...state, colors: action.colors }
     case "ADD_SKINS":
       return {
         ...state,
@@ -105,6 +238,8 @@ const staticDataReducer = (
       }
     case "SET_SKINS_FETCHING":
       return { ...state, isSkinsFetching: action.fetching }
+    case "LOAD_CACHED_SKINS":
+      return { ...state, skins: action.skins }
     default:
       return state
   }
@@ -122,15 +257,19 @@ interface StaticDataProviderProps {
 export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(staticDataReducer, {
-    items: {},
-    isItemsFetching: false,
-    materialCategoriesData: [],
-    isMaterialFetching: false,
-    colors: {},
-    isColorsFetching: false,
-    skins: {},
-    isSkinsFetching: false,
+  // Initialize state with cached data if available
+  const [state, dispatch] = useReducer(staticDataReducer, null, () => {
+    const cachedData = cacheUtils.loadStaticData()
+    return {
+      items: cachedData.items,
+      isItemsFetching: false,
+      materialCategoriesData: cachedData.materialCategories,
+      isMaterialFetching: false,
+      colors: cachedData.colors,
+      isColorsFetching: false,
+      skins: cachedData.skins,
+      isSkinsFetching: false,
+    }
   })
 
   // Use a single ref for all static data to avoid multiple refs
@@ -144,6 +283,29 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   staticDataRef.current.items = state.items
   staticDataRef.current.colors = state.colors
   staticDataRef.current.skins = state.skins
+
+  // Debug function to check cache info
+  const getCacheInfo = useCallback(() => {
+    const cacheInfo = cacheUtils.getCacheInfo()
+    console.log("Static Data Cache Info:", cacheInfo)
+    return cacheInfo
+  }, [])
+
+  // Log cache info on initialization
+  useEffect(() => {
+    const cacheInfo = cacheUtils.getCacheInfo()
+    if (
+      cacheInfo.itemCount > 0 ||
+      cacheInfo.colorCount > 0 ||
+      cacheInfo.skinCount > 0 ||
+      cacheInfo.materialCategoryCount > 0
+    ) {
+      console.log(
+        "StaticDataContext: Loaded cached data on initialization",
+        cacheInfo,
+      )
+    }
+  }, [])
 
   // Individual fetch functions using useCallback
   const fetchItems = useCallback(async (newIds: number[]) => {
@@ -185,6 +347,12 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
     if (newItems.length > 0) {
       dispatch({ type: "ADD_ITEMS", items: newItems })
+      // Save updated items to cache after adding new ones
+      const updatedItems = { ...staticDataRef.current.items }
+      newItems.forEach((item) => {
+        updatedItems[item.id] = item
+      })
+      cacheUtils.saveItems(updatedItems)
     }
 
     if (failedChunks > 0) {
@@ -232,6 +400,12 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
     if (newItems.length > 0) {
       dispatch({ type: "ADD_COLORS", colors: newItems })
+      // Save updated colors to cache after adding new ones
+      const updatedColors = { ...staticDataRef.current.colors }
+      newItems.forEach((item) => {
+        updatedColors[item.id] = item
+      })
+      cacheUtils.saveColors(updatedColors)
     }
 
     if (failedChunks > 0) {
@@ -279,6 +453,12 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
     if (newItems.length > 0) {
       dispatch({ type: "ADD_SKINS", skins: newItems })
+      // Save updated skins to cache after adding new ones
+      const updatedSkins = { ...staticDataRef.current.skins }
+      newItems.forEach((item) => {
+        updatedSkins[item.id] = item
+      })
+      cacheUtils.saveSkins(updatedSkins)
     }
 
     if (failedChunks > 0) {
@@ -312,6 +492,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       const data = await fetchGW2<MaterialCategory[]>("materials", "ids=all")
       if (data) {
         dispatch({ type: "SET_MATERIAL_CATEGORIES", materialCategories: data })
+        cacheUtils.saveMaterialCategories(data)
       }
     } catch (error) {
       console.error("Failed to fetch material categories:", error)
@@ -366,6 +547,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isSkinsFetching: state.isSkinsFetching,
       fetchSkins,
       addSkins,
+      getCacheInfo,
     }),
     [
       state.items,
@@ -385,6 +567,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       addColors,
       fetchSkins,
       addSkins,
+      getCacheInfo,
     ],
   )
 

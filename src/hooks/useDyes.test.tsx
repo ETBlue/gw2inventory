@@ -119,6 +119,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
   })
 
@@ -172,6 +179,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -231,6 +245,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -320,6 +341,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     const { result } = renderHook(() => useDyes(), {
@@ -386,6 +414,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -434,6 +469,13 @@ describe("useDyes", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockUseToken.mockReturnValue({

@@ -88,6 +88,13 @@ describe("useItemsData", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockUseAccountItemsData.mockReturnValue({
@@ -152,6 +159,13 @@ describe("useItemsData", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     const { result } = renderHook(() => useItemsData())

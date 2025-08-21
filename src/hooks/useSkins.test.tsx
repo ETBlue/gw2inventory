@@ -90,6 +90,13 @@ describe("useSkins", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
   })
 
@@ -142,6 +149,13 @@ describe("useSkins", () => {
       isSkinsFetching: false,
       fetchSkins: mockFetchSkins,
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -201,6 +215,13 @@ describe("useSkins", () => {
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
@@ -284,6 +305,13 @@ describe("useSkins", () => {
       isSkinsFetching: true,
       fetchSkins: vi.fn(),
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     const { result } = renderHook(() => useSkins(), {
@@ -327,6 +355,13 @@ describe("useSkins", () => {
       isSkinsFetching: false,
       fetchSkins: mockFetchSkins,
       addSkins: vi.fn(),
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        version: null,
+      })),
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {

@@ -8,6 +8,7 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 /**
  * Custom hook to fetch account skins and skin details
  * Uses StaticDataContext for skin data caching
+ * Returns only skins that are owned by the current account
  */
 export const useSkins = () => {
   const { currentAccount } = useToken()
@@ -37,14 +38,18 @@ export const useSkins = () => {
     }
   }, [accountSkinIds, skins, fetchSkins])
 
-  // Convert skins record to array for backward compatibility
-  const skinsArray = Object.values(skins)
+  // Filter skins to only include those owned by the account
+  const accountSkins = accountSkinIds
+    ? accountSkinIds
+        .map((skinId) => skins[skinId])
+        .filter((skin) => skin !== undefined)
+    : []
 
   const isFetching = isSkinIdsFetching || isSkinsFetching
 
   return {
     accountSkinIds,
-    skins: skinsArray.length > 0 ? skinsArray : undefined,
+    skins: accountSkins.length > 0 ? accountSkins : undefined,
     isFetching,
     error: skinIdsError,
     hasToken: !!token,
