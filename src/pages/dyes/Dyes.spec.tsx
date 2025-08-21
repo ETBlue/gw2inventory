@@ -161,7 +161,7 @@ describe("Dyes Component", () => {
         color: {
           id: 2,
           name: "Celestial",
-          categories: ["Blue", "Vibrant", "Exotic"],
+          categories: ["Blue", "Vibrant", "Exclusive"],
           cloth: {
             rgb: [128, 191, 255] as [number, number, number],
             brightness: 15,
@@ -212,7 +212,7 @@ describe("Dyes Component", () => {
 
     expect(screen.getAllByText("Blue")).toHaveLength(2) // hue in table cell + filter tab
     expect(screen.getByText("Vibrant")).toBeInTheDocument() // material (categories[1])
-    expect(screen.getByText("Exotic")).toBeInTheDocument() // rarity (categories[2])
+    expect(screen.getByText("Exclusive")).toBeInTheDocument() // rarity (categories[2])
   })
 
   it("displays correct table headers with sorting functionality", () => {
@@ -740,7 +740,7 @@ describe("Dyes Component", () => {
         color: {
           id: 1,
           name: "Red Dye 1",
-          categories: ["Red", "Vibrant", "Rare"],
+          categories: ["Red", "Vibrant", "Uncommon"],
           cloth: {
             rgb: [200, 50, 50] as [number, number, number],
             brightness: 100,
@@ -804,7 +804,7 @@ describe("Dyes Component", () => {
         color: {
           id: 3,
           name: "Red Dye 2",
-          categories: ["Red", "Leather", "Exotic"],
+          categories: ["Red", "Leather", "Exclusive"],
           cloth: {
             rgb: [180, 30, 30] as [number, number, number],
             brightness: 100,
@@ -868,7 +868,7 @@ describe("Dyes Component", () => {
         color: {
           id: 1,
           name: "Red Dye",
-          categories: ["Red", "Vibrant", "Rare"],
+          categories: ["Red", "Vibrant", "Uncommon"],
           cloth: {
             rgb: [200, 50, 50] as [number, number, number],
             brightness: 100,
@@ -972,7 +972,7 @@ describe("Dyes Component", () => {
         color: {
           id: 1,
           name: "Abyss Dye",
-          categories: ["Gray", "Metal", "Rare"],
+          categories: ["Gray", "Metal", "Starter"],
           cloth: {
             rgb: [30, 30, 30] as [number, number, number],
             brightness: -15,
@@ -1004,7 +1004,7 @@ describe("Dyes Component", () => {
         color: {
           id: 2,
           name: "Celestial Dye",
-          categories: ["Blue", "Vibrant", "Exotic"],
+          categories: ["Blue", "Vibrant", "Exclusive"],
           cloth: {
             rgb: [128, 191, 255] as [number, number, number],
             brightness: 15,

@@ -28,6 +28,7 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
 import { useDyes } from "~/hooks/useDyes"
 import { useSearchParams } from "~/hooks/url"
+import { compareRarity } from "~/pages/items/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
@@ -204,10 +205,30 @@ export default function Dyes() {
           aValue = aColor.categories[1] || ""
           bValue = bColor.categories[1] || ""
           break
-        case "rarity":
-          aValue = aColor.categories[2] || ""
-          bValue = bColor.categories[2] || ""
-          break
+        case "rarity": {
+          // Map dye rarity to standard GW2 rarity scale
+          const mapDyeRarity = (dyeRarity: string): string => {
+            switch (dyeRarity) {
+              case "Starter":
+                return "Basic"
+              case "Common":
+                return "Fine"
+              case "Uncommon":
+                return "Masterwork"
+              case "Rare":
+                return "Rare"
+              case "Exclusive":
+                return "Exotic"
+              default:
+                return "Basic"
+            }
+          }
+
+          const aMappedRarity = mapDyeRarity(aColor.categories[2] || "")
+          const bMappedRarity = mapDyeRarity(bColor.categories[2] || "")
+          const rarityResult = compareRarity(aMappedRarity, bMappedRarity)
+          return activeSortOrder === "asc" ? rarityResult : -rarityResult
+        }
         default:
           return 0
       }
