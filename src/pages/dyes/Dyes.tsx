@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useNavigate, useParams, Link } from "react-router"
+import { useNavigate, useParams, Link, useSearchParams } from "react-router"
 import {
   Center,
   Spinner,
@@ -27,7 +27,6 @@ import {
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
 import { useDyes } from "~/hooks/useDyes"
-import { useSearchParams } from "~/hooks/url"
 import { compareRarity } from "~/pages/items/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
@@ -126,7 +125,11 @@ export default function Dyes() {
   const { dyesWithDetails = [], isFetching, hasToken } = useDyes()
   const navigate = useNavigate()
   const { hue } = useParams<{ hue?: string }>()
-  const { queryString, keyword, sortBy, order } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const keyword = searchParams.get("keyword")
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
+  const queryString = searchParams.toString()
 
   const activeSortBy: DyeSort = (sortBy as DyeSort) || "name"
   const activeSortOrder: DyeOrder = (order as DyeOrder) || "asc"
@@ -273,8 +276,8 @@ export default function Dyes() {
               as={Link}
               to={
                 hue === "All"
-                  ? `/dyes${queryString}`
-                  : `/dyes/${hue.toLowerCase()}${queryString}`
+                  ? `/dyes?${queryString}`
+                  : `/dyes/${hue.toLowerCase()}?${queryString}`
               }
             >
               {hue}

@@ -3,21 +3,11 @@ import { screen, cleanup, fireEvent } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Skins from "./Skins"
 import { useSkins } from "~/hooks/useSkins"
-import { useSearchParams } from "~/hooks/url"
-
 // API reference for `/v2/account/skins`: https://wiki.guildwars2.com/wiki/API:2/account/skins
 // API reference for `/v2/skins`: https://wiki.guildwars2.com/wiki/API:2/skins
 
 // Mock the skins hook
 vi.mock("~/hooks/useSkins")
-
-// Mock the useSearchParams hook
-vi.mock("~/hooks/url", () => ({
-  useSearchParams: vi.fn(() => ({
-    queryString: "",
-    keyword: "",
-  })),
-}))
 
 // Mock react-router hooks
 vi.mock("react-router", async () => {
@@ -26,6 +16,7 @@ vi.mock("react-router", async () => {
     ...actual,
     useNavigate: vi.fn(() => vi.fn()),
     useParams: vi.fn(() => ({})),
+    useSearchParams: vi.fn(() => [new URLSearchParams(""), vi.fn()]),
     Link: ({ children, to, ...props }: any) => (
       <a href={to} {...props}>
         {children}
@@ -40,25 +31,17 @@ vi.mock("~/helpers/url", () => ({
 }))
 
 const mockUseSkins = vi.mocked(useSkins)
-const mockUseSearchParams = vi.mocked(useSearchParams)
 
 // Get mock reference after mocking
-const { useParams } = await import("react-router")
+const { useParams, useSearchParams } = await import("react-router")
 const mockUseParams = vi.mocked(useParams)
+const mockUseSearchParams = vi.mocked(useSearchParams)
 
 describe("Skins Component", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Default mock for useSearchParams
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    // Default mock for useSearchParams - handled by React Router mock above
 
     // Default mock for useParams
     mockUseParams.mockReturnValue({})
@@ -249,14 +232,10 @@ describe("Skins Component", () => {
     } as ReturnType<typeof useSkins>)
 
     // Test searching by name - mock keyword from URL
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "leather",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=leather"),
+      vi.fn(),
+    ])
 
     const { rerender } = render(<Skins />)
 
@@ -265,14 +244,10 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
 
     // Test searching by type
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "weapon",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=weapon"),
+      vi.fn(),
+    ])
 
     rerender(<Skins />)
 
@@ -281,14 +256,10 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
 
     // Test searching by rarity
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "legendary",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=legendary"),
+      vi.fn(),
+    ])
 
     rerender(<Skins />)
 
@@ -297,14 +268,10 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Studded Leather Boots")).not.toBeInTheDocument()
 
     // Test searching by flag
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "nocost",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=nocost"),
+      vi.fn(),
+    ])
 
     rerender(<Skins />)
 
@@ -313,14 +280,7 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Mystic Cape")).not.toBeInTheDocument()
 
     // Test clearing search - should show all items again
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([new URLSearchParams(""), vi.fn()])
 
     rerender(<Skins />)
 
@@ -541,14 +501,10 @@ describe("Skins Component", () => {
     } as ReturnType<typeof useSkins>)
 
     // Test with search keyword "leather" and armor type filter
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "leather",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=leather"),
+      vi.fn(),
+    ])
     mockUseParams.mockReturnValue({ skinType: "armor" })
 
     const { rerender } = render(<Skins />)
@@ -559,14 +515,10 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
     // Test with search keyword "boots" and armor type filter
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "boots",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=boots"),
+      vi.fn(),
+    ])
 
     rerender(<Skins />)
 
@@ -576,14 +528,7 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
 
     // Clear search but keep armor type filter
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([new URLSearchParams(""), vi.fn()])
 
     rerender(<Skins />)
 
@@ -752,14 +697,10 @@ describe("Skins Component", () => {
     nextButtonAfterFilter.click()
 
     // Mock search for a specific skin - this should reset to first page
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "Test Skin 1",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=Test Skin 1"),
+      vi.fn(),
+    ])
 
     rerender(<Skins />)
 

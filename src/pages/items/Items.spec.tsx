@@ -4,42 +4,16 @@ import { render } from "~/test/utils"
 import Items from "./Items"
 import { useItemsData } from "~/hooks/useItemsData"
 import { useCharacters } from "~/hooks/useCharacters"
-import { useSearchParams } from "~/hooks/url"
-
 // Mock the hooks
 vi.mock("~/hooks/useItemsData")
 vi.mock("~/hooks/useCharacters")
-vi.mock("~/hooks/url", () => ({
-  useSearchParams: vi.fn(() => ({
-    queryString: "",
-    keyword: "",
-    sortBy: null,
-    order: null,
-    type: null,
-  })),
-}))
 
-// Mock StaticDataContext
-vi.mock("~/contexts/StaticDataContext", () => ({
-  useStaticData: vi.fn(() => ({
-    items: {},
-    isItemsFetching: false,
-    fetchItems: vi.fn(),
-    addItems: vi.fn(),
-    materialCategoriesData: [],
-    materialCategories: [],
-    materials: {},
-    isMaterialFetching: false,
-    fetchMaterialCategories: vi.fn(),
-  })),
-  StaticDataProvider: ({ children }: { children: React.ReactNode }) => children,
-}))
-
-// Mock react-router hooks
+// Mock React Router
 vi.mock("react-router", async () => {
   const actual = await vi.importActual("react-router")
   return {
     ...actual,
+    useSearchParams: vi.fn(() => [new URLSearchParams(""), vi.fn()]),
     useNavigate: vi.fn(() => vi.fn()),
     useParams: vi.fn(() => ({})),
     useLocation: vi.fn(() => ({ pathname: "/items" })),
@@ -58,14 +32,30 @@ vi.mock("react-router", async () => {
   }
 })
 
+// Mock StaticDataContext
+vi.mock("~/contexts/StaticDataContext", () => ({
+  useStaticData: vi.fn(() => ({
+    items: {},
+    isItemsFetching: false,
+    fetchItems: vi.fn(),
+    addItems: vi.fn(),
+    materialCategoriesData: [],
+    materialCategories: [],
+    materials: {},
+    isMaterialFetching: false,
+    fetchMaterialCategories: vi.fn(),
+  })),
+  StaticDataProvider: ({ children }: { children: React.ReactNode }) => children,
+}))
+
 const mockUseItemsData = vi.mocked(useItemsData)
 const mockUseCharacters = vi.mocked(useCharacters)
-const mockUseSearchParams = vi.mocked(useSearchParams)
 
 // Get mock references after mocking
-const { useParams, useLocation } = await import("react-router")
+const { useParams, useLocation, useSearchParams } = await import("react-router")
 const mockUseParams = vi.mocked(useParams)
 const mockUseLocation = vi.mocked(useLocation)
+const mockUseSearchParams = vi.mocked(useSearchParams)
 
 // Mock data
 const mockItems = {
@@ -129,15 +119,7 @@ describe("Items", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Default mock for useSearchParams
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    // Default mock for useSearchParams - handled by React Router mock above
 
     // Default mock for useParams
     mockUseParams.mockReturnValue({})
@@ -317,14 +299,10 @@ describe("Items", () => {
     } as ReturnType<typeof useItemsData>)
 
     // Test search by item name
-    mockUseSearchParams.mockReturnValue({
-      queryString: "keyword=sword",
-      keyword: "sword",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=sword"),
+      vi.fn(),
+    ])
 
     const { rerender } = render(<Items />)
 
@@ -333,14 +311,10 @@ describe("Items", () => {
     expect(screen.queryByText("Trophy Item")).not.toBeInTheDocument()
 
     // Test search by item type
-    mockUseSearchParams.mockReturnValue({
-      queryString: "keyword=trophy",
-      keyword: "trophy",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=trophy"),
+      vi.fn(),
+    ])
 
     rerender(<Items />)
 
@@ -391,14 +365,10 @@ describe("Items", () => {
     } as ReturnType<typeof useItemsData>)
 
     // Mock having a search query
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?keyword=test&sortBy=rarity&order=desc",
-      keyword: "test",
-      sortBy: "rarity",
-      order: "desc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=test&sortBy=rarity&order=desc"),
+      vi.fn(),
+    ])
 
     render(<Items />)
 

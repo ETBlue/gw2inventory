@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { chunk } from "lodash"
-import { useNavigate, useParams, Link } from "react-router"
+import { useNavigate, useParams, Link, useSearchParams } from "react-router"
 import { getQueryString } from "~/helpers/url"
 import {
   Center,
@@ -27,7 +27,6 @@ import {
 import { MdSearch } from "react-icons/md"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSkins } from "~/hooks/useSkins"
-import { useSearchParams } from "~/hooks/url"
 import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
 import { ITEM_COUNT_PER_PAGE } from "~/config"
@@ -58,7 +57,11 @@ export default function Skins() {
   const { skins = [], isFetching, hasToken } = useSkins()
   const navigate = useNavigate()
   const { skinType } = useParams<{ skinType?: string }>()
-  const { queryString, keyword, sortBy, order } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const keyword = searchParams.get("keyword")
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
+  const queryString = searchParams.toString()
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   const activeSortBy: SkinSort = (sortBy as SkinSort) || "name"
@@ -177,8 +180,8 @@ export default function Skins() {
               as={Link}
               to={
                 type === "All"
-                  ? `/skins${queryString}`
-                  : `/skins/${type.toLowerCase()}${queryString}`
+                  ? `/skins?${queryString}`
+                  : `/skins/${type.toLowerCase()}?${queryString}`
               }
             >
               {type}

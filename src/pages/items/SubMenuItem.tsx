@@ -1,7 +1,6 @@
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useSearchParams } from "react-router"
 import { Tag, Flex, Button } from "@chakra-ui/react"
 
-import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { UserItemInList } from "types/items"
 
@@ -18,7 +17,9 @@ function SubMenuItem(props: Props) {
   const { userItems } = props
   const { items, materials, materialCategories } = useStaticData()
   const { pathname } = useLocation()
-  const { queryString, type: activeType } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const queryString = searchParams.toString()
+  const activeType = searchParams.get("type")
 
   const menuItem = MENU_ITEMS.find((item) => item.to === pathname)
 

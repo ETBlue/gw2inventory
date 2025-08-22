@@ -1,10 +1,9 @@
 import React from "react"
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useSearchParams } from "react-router"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
-import { useSearchParams } from "hooks/url"
 import type { Character } from "@gw2api/types/data/character"
 
 import { compare } from "pages/items/helpers/compare"
@@ -35,7 +34,10 @@ function SortableTable(props: Props) {
     defaultOrder = "asc",
   } = props
   const { pathname } = useLocation()
-  const { queryString, sortBy, order } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
+  const queryString = searchParams.toString()
   const activeSort = sortBy || defaultSortBy
   const activeOrder = order || defaultOrder
 

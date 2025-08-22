@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate, useSearchParams } from "react-router"
 import {
   Center,
   Spinner,
@@ -15,7 +15,6 @@ import {
 } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useWallet } from "~/hooks/useWallet"
-import { useSearchParams } from "~/hooks/url"
 import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import { BsQuestionOctagonFill } from "react-icons/bs"
@@ -28,7 +27,10 @@ const WALLET_TABLE_HEADERS: WalletSort[] = ["name", "value"]
 export default function Wallet() {
   const { walletWithDetails = [], isFetching, hasToken } = useWallet()
   const navigate = useNavigate()
-  const { queryString, sortBy, order } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
+  const queryString = searchParams.toString()
 
   const activeSortBy: WalletSort = (sortBy as WalletSort) || "name"
   const activeSortOrder: WalletOrder = (order as WalletOrder) || "asc"

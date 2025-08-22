@@ -3,23 +3,11 @@ import { screen, fireEvent } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Dyes from "./Dyes"
 import { useDyes } from "~/hooks/useDyes"
-import { useSearchParams } from "~/hooks/url"
-
 // API reference for `/v2/account/dyes`: https://wiki.guildwars2.com/wiki/API:2/account/dyes
 // API reference for `/v2/colors`: https://wiki.guildwars2.com/wiki/API:2/colors
 
 // Mock the dyes hook
 vi.mock("~/hooks/useDyes")
-
-// Mock the useSearchParams hook
-vi.mock("~/hooks/url", () => ({
-  useSearchParams: vi.fn(() => ({
-    queryString: "",
-    keyword: "",
-    sortBy: null,
-    order: null,
-  })),
-}))
 
 // Mock react-router hooks
 const { useParams } = vi.hoisted(() => ({
@@ -32,6 +20,7 @@ vi.mock("react-router", async () => {
     ...actual,
     useNavigate: vi.fn(() => vi.fn()),
     useParams,
+    useSearchParams: vi.fn(() => [new URLSearchParams(""), vi.fn()]),
   }
 })
 
@@ -49,6 +38,10 @@ vi.mock("~/helpers/url", () => ({
 }))
 
 const mockUseDyes = vi.mocked(useDyes)
+
+// Get mock references after mocking
+const { useParams, useSearchParams } = await import("react-router")
+const mockUseParams = vi.mocked(useParams)
 const mockUseSearchParams = vi.mocked(useSearchParams)
 
 describe("Dyes Component", () => {
@@ -56,17 +49,9 @@ describe("Dyes Component", () => {
     vi.clearAllMocks()
 
     // Reset mocks to default state
-    vi.mocked(useParams).mockReturnValue({})
+    mockUseParams.mockReturnValue({})
 
-    // Default mock for useSearchParams
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    // Default mock for useSearchParams - handled by React Router mock above
   })
 
   it("shows 'No account selected' when no token is available", () => {
@@ -349,14 +334,10 @@ describe("Dyes Component", () => {
     ]
 
     // Mock URL parameters to sort by name
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=name&order=asc",
-      keyword: "",
-      sortBy: "name",
-      order: "asc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=name&order=asc"),
+      vi.fn(),
+    ])
 
     mockUseDyes.mockReturnValue({
       dyesData: [1, 2],
@@ -449,14 +430,10 @@ describe("Dyes Component", () => {
     ]
 
     // Mock URL parameters for descending hue sort
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=hue&order=desc",
-      keyword: "",
-      sortBy: "hue",
-      order: "desc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=hue&order=desc"),
+      vi.fn(),
+    ])
 
     mockUseDyes.mockReturnValue({
       dyesData: [1, 2],
@@ -624,14 +601,10 @@ describe("Dyes Component", () => {
     ]
 
     // Mock URL parameters with existing sort settings
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=rarity&order=desc",
-      keyword: "",
-      sortBy: "rarity",
-      order: "desc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=rarity&order=desc"),
+      vi.fn(),
+    ])
 
     mockUseDyes.mockReturnValue({
       dyesData: [1],
@@ -930,7 +903,7 @@ describe("Dyes Component", () => {
     ]
 
     // Mock URL params to filter by Red
-    vi.mocked(useParams).mockReturnValue({ hue: "red" })
+    mockUseParams.mockReturnValue({ hue: "red" })
 
     mockUseDyes.mockReturnValue({
       dyesData: [1, 2],
@@ -1034,17 +1007,13 @@ describe("Dyes Component", () => {
     ]
 
     // Reset useParams mock for this test
-    vi.mocked(useParams).mockReturnValue({})
+    mockUseParams.mockReturnValue({})
 
     // Mock URL params with search keyword
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?keyword=abyss",
-      keyword: "abyss",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=abyss"),
+      vi.fn(),
+    ])
 
     mockUseDyes.mockReturnValue({
       dyesData: [1, 2],
@@ -1163,15 +1132,11 @@ describe("Dyes Component", () => {
     ]
 
     // Mock URL params with both hue filter and search keyword
-    vi.mocked(useParams).mockReturnValue({ hue: "red" })
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?keyword=deep",
-      keyword: "deep",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    mockUseParams.mockReturnValue({ hue: "red" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=deep"),
+      vi.fn(),
+    ])
 
     mockUseDyes.mockReturnValue({
       dyesData: [1, 2, 3],

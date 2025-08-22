@@ -1,5 +1,11 @@
 import { useState, useMemo, useCallback } from "react"
-import { NavLink, useNavigate, useLocation, useParams } from "react-router"
+import {
+  NavLink,
+  useNavigate,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
 import {
@@ -20,7 +26,6 @@ import {
 } from "@chakra-ui/react"
 
 import { ITEM_COUNT_PER_PAGE } from "config"
-import { useSearchParams } from "hooks/url"
 import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import { PatchedItem, UserItemInList } from "types/items"
@@ -53,40 +58,42 @@ function Items() {
     isFetching: isItemsFetching,
   } = useItemsData()
   const { isFetching: isCharactersFetching } = useCharacters()
-  const navigate = useNavigate()
   const { pathname } = useLocation()
   const { category } = useParams()
 
-  const {
-    queryString,
-    keyword,
-    sortBy,
-    order,
-    type: activeType,
-  } = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const keyword = searchParams.get("keyword")
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
+  const activeType = searchParams.get("type")
   const activeSort: Sort = (sortBy as Sort) || "location"
   const activeOrder: Order = (order as Order) || "asc"
 
   // Query string without 'type' parameter for navigation
   const navigationQueryString = useMemo(() => {
-    const params = new URLSearchParams(queryString)
+    const params = new URLSearchParams(searchParams)
     params.delete("type")
     const result = params.toString()
     return result ? `?${result}` : ""
-  }, [queryString])
+  }, [searchParams])
 
   // Update search keyword in URL
   const updateSearch = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(queryString)
-      if (value) {
-        params.set("keyword", value)
-      } else {
-        params.delete("keyword")
-      }
-      navigate(`${pathname}?${params.toString()}`, { replace: true })
+      setSearchParams(
+        (prev) => {
+          const newParams = new URLSearchParams(prev)
+          if (value) {
+            newParams.set("keyword", value)
+          } else {
+            newParams.delete("keyword")
+          }
+          return newParams
+        },
+        { replace: true },
+      )
     },
-    [pathname, queryString, navigate],
+    [setSearchParams],
   )
 
   const allItems = useMemo(

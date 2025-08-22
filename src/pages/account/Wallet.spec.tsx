@@ -3,23 +3,11 @@ import { screen, fireEvent } from "@testing-library/react"
 import { render } from "~/test/utils"
 import Wallet from "./Wallet"
 import { useWallet } from "~/hooks/useWallet"
-import { useSearchParams } from "~/hooks/url"
-
 // API reference for `/v2/account/wallet`: https://wiki.guildwars2.com/wiki/API:2/account/wallet
 // API reference for `/v2/currencies`: https://wiki.guildwars2.com/wiki/API:2/currencies
 
 // Mock the wallet hook
 vi.mock("~/hooks/useWallet")
-
-// Mock the useSearchParams hook
-vi.mock("~/hooks/url", () => ({
-  useSearchParams: vi.fn(() => ({
-    queryString: "",
-    keyword: "",
-    sortBy: null,
-    order: null,
-  })),
-}))
 
 // Mock react-router hooks
 vi.mock("react-router", async () => {
@@ -27,6 +15,7 @@ vi.mock("react-router", async () => {
   return {
     ...actual,
     useNavigate: vi.fn(() => vi.fn()),
+    useSearchParams: vi.fn(() => [new URLSearchParams(""), vi.fn()]),
   }
 })
 
@@ -44,21 +33,16 @@ vi.mock("~/helpers/url", () => ({
 }))
 
 const mockUseWallet = vi.mocked(useWallet)
+
+// Get mock references after mocking
+const { useSearchParams } = await import("react-router")
 const mockUseSearchParams = vi.mocked(useSearchParams)
 
 describe("Wallet Component", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Default mock for useSearchParams
-    mockUseSearchParams.mockReturnValue({
-      queryString: "",
-      keyword: "",
-      sortBy: null,
-      order: null,
-      profession: null,
-      type: null,
-    })
+    // Default mock for useSearchParams - handled by React Router mock above
   })
 
   it("shows 'No account selected' when no token is available", () => {
@@ -502,14 +486,10 @@ describe("Wallet Component", () => {
     ]
 
     // Mock URL parameters to sort by value
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=value&order=asc",
-      keyword: "",
-      sortBy: "value",
-      order: "asc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=value&order=asc"),
+      vi.fn(),
+    ])
 
     mockUseWallet.mockReturnValue({
       walletData: undefined,
@@ -561,14 +541,10 @@ describe("Wallet Component", () => {
     ]
 
     // Mock URL parameters for descending name sort
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=name&order=desc",
-      keyword: "",
-      sortBy: "name",
-      order: "desc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=name&order=desc"),
+      vi.fn(),
+    ])
 
     mockUseWallet.mockReturnValue({
       walletData: undefined,
@@ -610,14 +586,10 @@ describe("Wallet Component", () => {
     ]
 
     // Mock URL parameters with existing sort settings
-    mockUseSearchParams.mockReturnValue({
-      queryString: "?sortBy=value&order=desc",
-      keyword: "",
-      sortBy: "value",
-      order: "desc",
-      profession: null,
-      type: null,
-    })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=value&order=desc"),
+      vi.fn(),
+    ])
 
     mockUseWallet.mockReturnValue({
       walletData: undefined,

@@ -1,4 +1,11 @@
-import { Link, Route, Routes, useNavigate, useParams } from "react-router"
+import {
+  Link,
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router"
 import { MdSearch } from "react-icons/md"
 import {
   Tabs,
@@ -13,7 +20,6 @@ import {
   InputLeftElement,
 } from "@chakra-ui/react"
 
-import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
@@ -37,7 +43,9 @@ function Characters() {
   const navigate = useNavigate()
   const { profession } = useParams<{ profession?: string }>()
 
-  const { queryString, keyword } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const keyword = searchParams.get("keyword")
+  const queryString = searchParams.toString()
 
   // Convert profession param to match the format used in filtering (capitalized)
   const activeProfession = profession
@@ -70,7 +78,7 @@ function Characters() {
     >
       <div>
         <TabList>
-          <Tab as={Link} to={`/characters${queryString}`}>
+          <Tab as={Link} to={`/characters?${queryString}`}>
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
               {characters?.length || "0"}
@@ -80,7 +88,7 @@ function Characters() {
             <Tab
               key={profession}
               as={Link}
-              to={`/characters/${profession.toLowerCase()}${queryString}`}
+              to={`/characters/${profession.toLowerCase()}?${queryString}`}
             >
               {profession}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">

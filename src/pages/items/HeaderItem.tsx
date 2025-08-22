@@ -1,8 +1,7 @@
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useSearchParams } from "react-router"
 import { Tr, Th } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 
-import { useSearchParams } from "hooks/url"
 import { getQueryString } from "helpers/url"
 
 import { Order, Sort } from "./types"
@@ -26,7 +25,8 @@ interface Props {
 function HeaderItem(props: Props) {
   const { activeSort, activeOrder } = props
   const { pathname } = useLocation()
-  const { queryString } = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const queryString = searchParams.toString()
 
   return (
     <Tr>
