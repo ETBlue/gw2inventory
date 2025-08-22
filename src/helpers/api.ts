@@ -44,7 +44,7 @@ export const fetchGW2 = async <T = unknown>(
   endpoint: string,
   queryString?: string,
 ): Promise<T | null> => {
-  const url = `${API_URL}/${endpoint}?${queryString}`
+  const url = `${API_URL}/${endpoint}${queryString ? `?${queryString}` : ""}`
 
   try {
     const res = await fetch(url, {
