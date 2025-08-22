@@ -5,7 +5,7 @@ import { useToken } from "~/hooks/useToken"
 import { useStaticData } from "~/contexts/StaticDataContext"
 import { queryFunction } from "~/helpers/api"
 
-export function useCats() {
+export default function useHomeCats() {
   const { currentAccount } = useToken()
   const { homeCats, isHomeCatsFetching, fetchHomeCats } = useStaticData()
 
@@ -27,9 +27,8 @@ export function useCats() {
 
   const hasToken = !!currentAccount?.token
   const isFetching = isHomeCatsFetching || isAccountCatsLoading
-  const accountHomeCatIds = (accountCatIds ?? []).map(
-    (cat: { id: number }) => cat.id,
-  )
+  const accountHomeCatIds =
+    accountCatIds && accountCatIds.map((cat: { id: number }) => cat.id)
 
   return {
     hasToken,

@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react"
 import { FaCheck, FaMinus } from "react-icons/fa"
 
-import { useHomeNodes } from "~/hooks/useHomeNodes"
-import { useCats } from "~/hooks/useCats"
+import useHomeNodes from "~/hooks/useHomeNodes"
+import useHomeCats from "~/hooks/useHomeCats"
 
 export default function Home() {
   const {
@@ -32,7 +32,7 @@ export default function Home() {
     accountHomeCatIds,
     isFetching: isCatsFetching,
     error: accountCatsError,
-  } = useCats()
+  } = useHomeCats()
 
   const isFetching = isNodesFetching || isCatsFetching
 

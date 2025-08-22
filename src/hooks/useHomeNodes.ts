@@ -5,7 +5,7 @@ import { useToken } from "~/hooks/useToken"
 import { useStaticData } from "~/contexts/StaticDataContext"
 import { queryFunction } from "~/helpers/api"
 
-export function useHomeNodes() {
+export default function useHomeNodes() {
   const { currentAccount } = useToken()
   const { homeNodes, isHomeNodesFetching, fetchHomeNodes } = useStaticData()
 
