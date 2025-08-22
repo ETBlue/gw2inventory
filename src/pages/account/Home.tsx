@@ -15,6 +15,7 @@ import {
 import { FaCheck, FaMinus } from "react-icons/fa"
 
 import { useHomeNodes } from "~/hooks/useHomeNodes"
+import { useCats } from "~/hooks/useCats"
 
 export default function Home() {
   const {
@@ -22,13 +23,22 @@ export default function Home() {
     homeNodes,
     accountHomeNodeIds,
     enabledNodes,
-    isFetching,
+    isFetching: isNodesFetching,
     error: accountHomeNodesError,
   } = useHomeNodes()
 
+  const {
+    homeCats,
+    accountHomeCatIds,
+    isFetching: isCatsFetching,
+    error: accountCatsError,
+  } = useCats()
+
+  const isFetching = isNodesFetching || isCatsFetching
+
   return (
     <Grid gridTemplateRows={"auto 1fr"}>
-      <SimpleGrid columns={{ base: 1 }} gap={"1rem"}>
+      <SimpleGrid columns={{ base: 1, md: 2 }} gap={"1rem"}>
         <Box padding={"1rem"}>
           <Heading
             as="h3"
@@ -46,20 +56,57 @@ export default function Home() {
           <List>
             {accountHomeNodeIds &&
               homeNodes.map((nodeId) => {
-                const isEnabled = enabledNodes.has(nodeId)
+                const isUnlocked = enabledNodes.has(nodeId)
                 return (
                   <ListItem key={nodeId} padding={"0.125rem 0"}>
                     <ListIcon
-                      as={isEnabled ? FaCheck : FaMinus}
-                      color={isEnabled ? "green" : "lightgray"}
-                      opacity={isEnabled ? 1 : 0.5}
+                      as={isUnlocked ? FaCheck : FaMinus}
+                      color={isUnlocked ? "green" : "lightgray"}
+                      opacity={isUnlocked ? 1 : 0.5}
                     />
                     <Text
                       as={"span"}
                       textTransform={"capitalize"}
-                      opacity={isEnabled ? 1 : 0.5}
+                      opacity={isUnlocked ? 1 : 0.5}
                     >
                       {nodeId.replace(/_/g, " ")}
+                    </Text>
+                  </ListItem>
+                )
+              })}
+          </List>
+        </Box>
+        <Box padding={"1rem"}>
+          <Heading
+            as="h3"
+            size="sm"
+            display={"flex"}
+            alignItems={"center"}
+            gap={"0.5rem"}
+          >
+            Cats
+            <Tag>
+              {accountHomeCatIds?.length ?? 0} / {homeCats.length}
+            </Tag>
+          </Heading>
+          <Divider margin={"0.5rem 0"} />
+          <List>
+            {accountHomeCatIds &&
+              homeCats.map((cat) => {
+                const isUnlocked = accountHomeCatIds.includes(cat.id)
+                return (
+                  <ListItem key={cat.id} padding={"0.125rem 0"}>
+                    <ListIcon
+                      as={isUnlocked ? FaCheck : FaMinus}
+                      color={isUnlocked ? "green" : "lightgray"}
+                      opacity={isUnlocked ? 1 : 0.5}
+                    />
+                    <Text
+                      as={"span"}
+                      textTransform={"capitalize"}
+                      opacity={isUnlocked ? 1 : 0.5}
+                    >
+                      {cat.hint.replace(/_/g, " ")}
                     </Text>
                   </ListItem>
                 )
@@ -73,12 +120,13 @@ export default function Home() {
         </Center>
       ) : !hasToken ? (
         <Center>No account selected</Center>
-      ) : homeNodes.length === 0 ? (
-        <Center>No home nodes found</Center>
-      ) : accountHomeNodesError ? (
+      ) : homeNodes.length === 0 && homeCats.length === 0 ? (
+        <Center>No home data found</Center>
+      ) : accountHomeNodesError || accountCatsError ? (
         <Center>
           <Text color="red.500">
-            Error loading home nodes: {(accountHomeNodesError as Error).message}
+            Error loading home data:{" "}
+            {((accountHomeNodesError || accountCatsError) as Error).message}
           </Text>
         </Center>
       ) : null}

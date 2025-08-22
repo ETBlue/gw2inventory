@@ -134,6 +134,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -143,6 +146,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })
@@ -213,6 +217,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -222,6 +229,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })
@@ -298,6 +306,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -307,6 +318,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })
@@ -413,6 +425,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -422,6 +437,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })
@@ -505,6 +521,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -514,6 +533,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })
@@ -579,6 +599,9 @@ describe("useDyes", () => {
       homeNodes: [],
       isHomeNodesFetching: false,
       fetchHomeNodes: vi.fn(),
+      homeCats: [],
+      isHomeCatsFetching: false,
+      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -588,6 +611,7 @@ describe("useDyes", () => {
         currencyCount: 0,
         outfitCount: 0,
         homeNodeCount: 0,
+        homeCatCount: 0,
         version: null,
       })),
     })

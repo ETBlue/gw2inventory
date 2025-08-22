@@ -19,6 +19,7 @@ import { Skin } from "types/skins"
 import { Title } from "types/titles"
 import { Currency } from "types/wallet"
 import { Outfit } from "types/outfits"
+import { HomeCat } from "types/homeCats"
 
 // Local storage utilities
 const STORAGE_KEYS = {
@@ -30,6 +31,7 @@ const STORAGE_KEYS = {
   CURRENCIES: "gw2inventory_static_currencies",
   OUTFITS: "gw2inventory_static_outfits",
   HOME_NODES: "gw2inventory_static_home_nodes",
+  HOME_CATS: "gw2inventory_static_home_cats",
   VERSION: "gw2inventory_cache_version",
 }
 
@@ -86,6 +88,7 @@ const cacheUtils = {
     currencies: Record<number, Currency>
     outfits: Record<number, Outfit>
     homeNodes: string[]
+    homeCats: HomeCat[]
   } {
     if (!this.checkVersion()) {
       return {
@@ -97,6 +100,7 @@ const cacheUtils = {
         currencies: {},
         outfits: {},
         homeNodes: [],
+        homeCats: [],
       }
     }
 
@@ -112,6 +116,7 @@ const cacheUtils = {
     const outfits =
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
+    const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
 
     return {
       items,
@@ -122,6 +127,7 @@ const cacheUtils = {
       currencies,
       outfits,
       homeNodes,
+      homeCats,
     }
   },
 
@@ -157,6 +163,10 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.HOME_NODES, homeNodes)
   },
 
+  saveHomeCats(homeCats: HomeCat[]): void {
+    this.save(STORAGE_KEYS.HOME_CATS, homeCats)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -166,6 +176,7 @@ const cacheUtils = {
     currencyCount: number
     outfitCount: number
     homeNodeCount: number
+    homeCatCount: number
     version: string | null
   } {
     const items =
@@ -180,6 +191,7 @@ const cacheUtils = {
     const outfits =
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
+    const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -191,6 +203,7 @@ const cacheUtils = {
       currencyCount: Object.keys(currencies).length,
       outfitCount: Object.keys(outfits).length,
       homeNodeCount: homeNodes.length,
+      homeCatCount: homeCats.length,
       version,
     }
   },
@@ -214,6 +227,8 @@ interface StaticDataState {
   isOutfitsFetching: boolean
   homeNodes: string[]
   isHomeNodesFetching: boolean
+  homeCats: HomeCat[]
+  isHomeCatsFetching: boolean
 }
 
 type StaticDataAction =
@@ -244,6 +259,9 @@ type StaticDataAction =
   | { type: "SET_HOME_NODES"; homeNodes: string[] }
   | { type: "SET_HOME_NODES_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_HOME_NODES"; homeNodes: string[] }
+  | { type: "SET_HOME_CATS"; homeCats: HomeCat[] }
+  | { type: "SET_HOME_CATS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_HOME_CATS"; homeCats: HomeCat[] }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -278,6 +296,9 @@ interface StaticDataContextType {
   homeNodes: string[]
   isHomeNodesFetching: boolean
   fetchHomeNodes: () => Promise<void>
+  homeCats: HomeCat[]
+  isHomeCatsFetching: boolean
+  fetchHomeCats: () => Promise<void>
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -368,6 +389,12 @@ const staticDataReducer = (
       return { ...state, isHomeNodesFetching: action.fetching }
     case "LOAD_CACHED_HOME_NODES":
       return { ...state, homeNodes: action.homeNodes }
+    case "SET_HOME_CATS":
+      return { ...state, homeCats: action.homeCats }
+    case "SET_HOME_CATS_FETCHING":
+      return { ...state, isHomeCatsFetching: action.fetching }
+    case "LOAD_CACHED_HOME_CATS":
+      return { ...state, homeCats: action.homeCats }
     default:
       return state
   }
@@ -405,6 +432,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isOutfitsFetching: false,
       homeNodes: cachedData.homeNodes,
       isHomeNodesFetching: false,
+      homeCats: cachedData.homeCats,
+      isHomeCatsFetching: false,
     }
   })
 
@@ -799,6 +828,22 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homeNodes.length])
 
+  const fetchHomeCats = useCallback(async () => {
+    if (state.homeCats.length > 0) return
+    dispatch({ type: "SET_HOME_CATS_FETCHING", fetching: true })
+    try {
+      const data = await fetchGW2<HomeCat[]>("home/cats?ids=all")
+      if (data) {
+        dispatch({ type: "SET_HOME_CATS", homeCats: data })
+        cacheUtils.saveHomeCats(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch home cats:", error)
+    } finally {
+      dispatch({ type: "SET_HOME_CATS_FETCHING", fetching: false })
+    }
+  }, [state.homeCats.length])
+
   // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -903,6 +948,9 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       homeNodes: state.homeNodes,
       isHomeNodesFetching: state.isHomeNodesFetching,
       fetchHomeNodes,
+      homeCats: state.homeCats,
+      isHomeCatsFetching: state.isHomeCatsFetching,
+      fetchHomeCats,
       getCacheInfo,
     }),
     [
@@ -922,6 +970,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isOutfitsFetching,
       state.homeNodes,
       state.isHomeNodesFetching,
+      state.homeCats,
+      state.isHomeCatsFetching,
       fetchItems,
       addItems,
       materialCategories,
@@ -938,6 +988,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       fetchOutfits,
       addOutfits,
       fetchHomeNodes,
+      fetchHomeCats,
       getCacheInfo,
     ],
   )
