@@ -147,7 +147,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Consistent count badges on navigation tabs using Chakra UI Tag component with standardized styling (`size="sm"` and `margin="0 0 -0.1em 0.5em"`)
 - Standardized empty/loading/missing token states across all pages for consistent user experience
 - Pathname-based routing for filtering (e.g., `/characters/elementalist`, `/skins/armor`, `/dyes/red`) using `useParams` hook instead of query parameters or local state for better URL shareability and navigation
-- URL-based state management for sorting and search parameters using `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items, Skins, Characters, Wallet, and Dyes pages)
+- URL-based state management for sorting and search parameters using React Router v7's built-in `useSearchParams` hook, allowing persistent state across page refreshes and better user experience through shareable URLs (implemented in Items, Skins, Characters, Wallet, and Dyes pages)
 - Smart URL parameter isolation: category navigation removes conflicting `type` filters to prevent incorrect state persistence across different item categories
 - Hue-based filtering with count badges for Dyes page, following similar patterns established in Skins page for consistent user experience
 
@@ -159,7 +159,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **Test Files:** Place test files with `.test.ts` or `.test.tsx` extensions anywhere in `src/`
 - **Coverage:** Available via `npm run test:coverage`
 - **UI:** Interactive test runner available via `npm run test:ui`
-- **Test Patterns:** Comprehensive component testing with proper mocking of hooks, router, and external dependencies. Tests cover UI rendering, data filtering, search functionality, sorting, navigation, URL state management including query string preservation across route changes, hue-based filtering, count badges, and combined filtering scenarios.
+- **Test Patterns:** Comprehensive component testing with proper mocking of hooks, React Router v7, and external dependencies. Tests cover UI rendering, data filtering, search functionality, sorting, navigation, URL state management including query string preservation across route changes, hue-based filtering, count badges, and combined filtering scenarios. All tests use React Router's built-in `useSearchParams` mock patterns.
 
 ### Code Style
 
@@ -250,6 +250,7 @@ Significant architectural improvements were made to the static data management s
 - **Hook Consolidation**: Merged `useAccountItemsData` into `useItemsData` for unified item management (2025-01-21)
 - **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, title management from `useTitles`, currency management from `useWallet`, and outfit management from `useOutfits` to StaticDataContext with individual useCallback functions to comply with React Hook rules
 - **LocalStorage Caching**: Implemented persistent caching of all static data (items, material categories, colors, skins, titles, currencies, outfits) with cache versioning system to prevent stale data across app updates
+- **React Router v7 Migration**: Replaced custom `useSearchParams` hook with React Router v7's built-in implementation, eliminating 159 lines of custom URL parameter handling code (2025-01-22)
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
@@ -266,3 +267,4 @@ Significant architectural improvements were made to the static data management s
 - Comprehensive upgrade/infusion tracking across all item locations (bags, equipped, bank, shared inventory)
 - **Zero API calls on repeat visits** for previously fetched static data, significantly improving app loading performance
 - Unified item data access point eliminating code duplication between character and account items
+- **Reduced technical debt** by eliminating custom URL parameter handling in favor of React Router v7 standards, improving maintainability and compatibility
