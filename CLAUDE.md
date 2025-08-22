@@ -47,7 +47,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, and home nodes) with global caching, localStorage persistence, and chunked fetching
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, and chunked fetching
 
 **Custom Hooks (replacing previous contexts):**
 
@@ -58,6 +58,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useOutfits` - Fetches account outfits with outfit details managed by StaticDataContext for efficient caching
 - `useDyes` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
 - `useHomeNodes` - Fetches account home instance nodes with home node data managed by StaticDataContext for efficient caching
+- `useCats` - Fetches account home instance cats with home cat data managed by StaticDataContext for efficient caching
 
 **Architecture Principles:**
 
@@ -89,7 +90,7 @@ The application uses a hybrid approach with React Context API for global state a
     - `/account/overview` - Account overview with titles
     - `/account/wallet` - Wallet currencies display
     - `/account/outfits` - Outfits display with alphabetical sorting
-    - `/account/home` - Home instance nodes with enabled/disabled status
+    - `/account/home` - Home instance nodes and cats with unlocked/locked status
 
 ### Code Organization
 
@@ -102,6 +103,7 @@ The application uses a hybrid approach with React Context API for global state a
   - `outfits.ts` - Outfit-related types (AccountOutfits, Outfit from @gw2api/types)
   - `dyes.ts` - Dye-related types (AccountDyesData, Color, DyeEntryWithDetails from @gw2api/types)
   - `homeNodes.ts` - Home node-related types (AccountHomeNodes from @gw2api/types)
+  - `homeCats.ts` - Home cat-related types (HomeCat interface with id and hint)
 - `/src/pages/` - Route components
   - `/src/pages/skins/` - Skins page components (elevated to top-level route)
   - `/src/pages/dyes/` - Dyes page components (elevated to top-level route)
@@ -118,7 +120,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Hook Patterns:**
 
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`, `useCats`) expose read-only data
 - Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useAutoFetchItems`, `useBatchAutoFetchItems`)
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
