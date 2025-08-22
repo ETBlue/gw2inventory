@@ -102,6 +102,9 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      fetchHomeNodes: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -110,6 +113,7 @@ describe("useSkins", () => {
         titleCount: 0,
         currencyCount: 0,
         outfitCount: 0,
+        homeNodeCount: 0,
         version: null,
       })),
     })
@@ -176,6 +180,9 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      fetchHomeNodes: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -184,6 +191,7 @@ describe("useSkins", () => {
         titleCount: 0,
         currencyCount: 0,
         outfitCount: 0,
+        homeNodeCount: 0,
         version: null,
       })),
     })
@@ -257,6 +265,9 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      fetchHomeNodes: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -265,6 +276,7 @@ describe("useSkins", () => {
         titleCount: 0,
         currencyCount: 0,
         outfitCount: 0,
+        homeNodeCount: 0,
         version: null,
       })),
     })
@@ -362,6 +374,9 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      fetchHomeNodes: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -370,6 +385,7 @@ describe("useSkins", () => {
         titleCount: 0,
         currencyCount: 0,
         outfitCount: 0,
+        homeNodeCount: 0,
         version: null,
       })),
     })
@@ -427,6 +443,9 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      fetchHomeNodes: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -435,6 +454,7 @@ describe("useSkins", () => {
         titleCount: 0,
         currencyCount: 0,
         outfitCount: 0,
+        homeNodeCount: 0,
         version: null,
       })),
     })

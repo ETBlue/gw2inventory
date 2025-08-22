@@ -29,6 +29,7 @@ const STORAGE_KEYS = {
   TITLES: "gw2inventory_static_titles",
   CURRENCIES: "gw2inventory_static_currencies",
   OUTFITS: "gw2inventory_static_outfits",
+  HOME_NODES: "gw2inventory_static_home_nodes",
   VERSION: "gw2inventory_cache_version",
 }
 
@@ -84,6 +85,7 @@ const cacheUtils = {
     titles: Record<number, Title>
     currencies: Record<number, Currency>
     outfits: Record<number, Outfit>
+    homeNodes: string[]
   } {
     if (!this.checkVersion()) {
       return {
@@ -94,6 +96,7 @@ const cacheUtils = {
         titles: {},
         currencies: {},
         outfits: {},
+        homeNodes: [],
       }
     }
 
@@ -108,6 +111,7 @@ const cacheUtils = {
       this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
     const outfits =
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
+    const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
 
     return {
       items,
@@ -117,6 +121,7 @@ const cacheUtils = {
       titles,
       currencies,
       outfits,
+      homeNodes,
     }
   },
 
@@ -148,6 +153,10 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.OUTFITS, outfits)
   },
 
+  saveHomeNodes(homeNodes: string[]): void {
+    this.save(STORAGE_KEYS.HOME_NODES, homeNodes)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -156,6 +165,7 @@ const cacheUtils = {
     titleCount: number
     currencyCount: number
     outfitCount: number
+    homeNodeCount: number
     version: string | null
   } {
     const items =
@@ -169,6 +179,7 @@ const cacheUtils = {
       this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
     const outfits =
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
+    const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -179,6 +190,7 @@ const cacheUtils = {
       titleCount: Object.keys(titles).length,
       currencyCount: Object.keys(currencies).length,
       outfitCount: Object.keys(outfits).length,
+      homeNodeCount: homeNodes.length,
       version,
     }
   },
@@ -200,6 +212,8 @@ interface StaticDataState {
   isCurrenciesFetching: boolean
   outfits: Record<number, Outfit>
   isOutfitsFetching: boolean
+  homeNodes: string[]
+  isHomeNodesFetching: boolean
 }
 
 type StaticDataAction =
@@ -227,6 +241,9 @@ type StaticDataAction =
   | { type: "ADD_OUTFITS"; outfits: Outfit[] }
   | { type: "SET_OUTFITS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_OUTFITS"; outfits: Record<number, Outfit> }
+  | { type: "SET_HOME_NODES"; homeNodes: string[] }
+  | { type: "SET_HOME_NODES_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_HOME_NODES"; homeNodes: string[] }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -258,6 +275,9 @@ interface StaticDataContextType {
   isOutfitsFetching: boolean
   fetchOutfits: (outfitIds: number[]) => Promise<void>
   addOutfits: (outfits: Outfit[]) => void
+  homeNodes: string[]
+  isHomeNodesFetching: boolean
+  fetchHomeNodes: () => Promise<void>
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -342,6 +362,12 @@ const staticDataReducer = (
       return { ...state, isOutfitsFetching: action.fetching }
     case "LOAD_CACHED_OUTFITS":
       return { ...state, outfits: action.outfits }
+    case "SET_HOME_NODES":
+      return { ...state, homeNodes: action.homeNodes }
+    case "SET_HOME_NODES_FETCHING":
+      return { ...state, isHomeNodesFetching: action.fetching }
+    case "LOAD_CACHED_HOME_NODES":
+      return { ...state, homeNodes: action.homeNodes }
     default:
       return state
   }
@@ -377,6 +403,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isCurrenciesFetching: false,
       outfits: cachedData.outfits,
       isOutfitsFetching: false,
+      homeNodes: cachedData.homeNodes,
+      isHomeNodesFetching: false,
     }
   })
 
@@ -415,7 +443,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.materialCategoryCount > 0 ||
       cacheInfo.titleCount > 0 ||
       cacheInfo.currencyCount > 0 ||
-      cacheInfo.outfitCount > 0
+      cacheInfo.outfitCount > 0 ||
+      cacheInfo.homeNodeCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -752,6 +781,24 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
   }, [])
 
+  const fetchHomeNodes = useCallback(async () => {
+    if (state.homeNodes.length > 0) return
+
+    dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<string[]>("home/nodes")
+      if (data) {
+        dispatch({ type: "SET_HOME_NODES", homeNodes: data })
+        cacheUtils.saveHomeNodes(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch home nodes:", error)
+    } finally {
+      dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: false })
+    }
+  }, [state.homeNodes.length])
+
   // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -853,6 +900,9 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isOutfitsFetching: state.isOutfitsFetching,
       fetchOutfits,
       addOutfits,
+      homeNodes: state.homeNodes,
+      isHomeNodesFetching: state.isHomeNodesFetching,
+      fetchHomeNodes,
       getCacheInfo,
     }),
     [
@@ -870,6 +920,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isCurrenciesFetching,
       state.outfits,
       state.isOutfitsFetching,
+      state.homeNodes,
+      state.isHomeNodesFetching,
       fetchItems,
       addItems,
       materialCategories,
@@ -885,6 +937,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       addCurrencies,
       fetchOutfits,
       addOutfits,
+      fetchHomeNodes,
       getCacheInfo,
     ],
   )
