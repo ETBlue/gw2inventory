@@ -40,7 +40,7 @@ vi.mock("~/helpers/url", () => ({
 const mockUseDyes = vi.mocked(useDyes)
 
 // Get mock references after mocking
-const { useParams, useSearchParams } = await import("react-router")
+const { useSearchParams } = await import("react-router")
 const mockUseParams = vi.mocked(useParams)
 const mockUseSearchParams = vi.mocked(useSearchParams)
 

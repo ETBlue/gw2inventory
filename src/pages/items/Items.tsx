@@ -1,11 +1,5 @@
 import { useState, useMemo, useCallback } from "react"
-import {
-  NavLink,
-  useNavigate,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from "react-router"
+import { NavLink, useLocation, useParams, useSearchParams } from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
 import {
