@@ -793,6 +793,9 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
+    // Mock search params for this test
+    mockUseSearchParams.mockReturnValue([new URLSearchParams(""), vi.fn()])
+
     render(<Skins />)
 
     // Find the rarity header and click it to sort

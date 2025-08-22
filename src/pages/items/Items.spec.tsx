@@ -339,6 +339,9 @@ describe("Items", () => {
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
+    // Mock search params for this test
+    mockUseSearchParams.mockReturnValue([new URLSearchParams(""), vi.fn()])
+
     render(<Items />)
 
     // Find the rarity header and click it to sort
