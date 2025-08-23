@@ -23,38 +23,20 @@ import { HomeCat } from "types/homeCats"
 
 // Local storage utilities
 const STORAGE_KEYS = {
+  VERSION: "gw2inventory_cache_version",
   ITEMS: "gw2inventory_static_items",
+  SKINS: "gw2inventory_static_skins",
   MATERIAL_CATEGORIES: "gw2inventory_static_material_categories",
   COLORS: "gw2inventory_static_colors",
-  COLORS_VERSION: "gw2inventory_static_colors_version",
-  SKINS: "gw2inventory_static_skins",
   TITLES: "gw2inventory_static_titles",
-  TITLES_VERSION: "gw2inventory_static_titles_version",
   CURRENCIES: "gw2inventory_static_currencies",
-  CURRENCIES_VERSION: "gw2inventory_static_currencies_version",
   OUTFITS: "gw2inventory_static_outfits",
-  OUTFITS_VERSION: "gw2inventory_static_outfits_version",
   HOME_NODES: "gw2inventory_static_home_nodes",
-  HOME_NODES_VERSION: "gw2inventory_static_home_nodes_version",
   HOME_CATS: "gw2inventory_static_home_cats",
-  HOME_CATS_VERSION: "gw2inventory_static_home_cats_version",
-  VERSION: "gw2inventory_cache_version",
 }
 
 // Cache version for invalidating old cache data
-const CACHE_VERSION = "1.0.0"
-// Colors version to handle transition from incremental to complete fetching
-const COLORS_VERSION = "complete-1.0.0"
-// Titles version to handle transition from incremental to complete fetching
-const TITLES_VERSION = "complete-1.0.0"
-// Currencies version to handle transition from incremental to complete fetching
-const CURRENCIES_VERSION = "complete-1.0.0"
-// Outfits version to handle transition from incremental to complete fetching
-const OUTFITS_VERSION = "complete-1.0.0"
-// Home nodes version to handle transition to ?ids=all fetching
-const HOME_NODES_VERSION = "complete-1.0.0"
-// Home cats version to handle transition to ?ids=all fetching
-const HOME_CATS_VERSION = "complete-1.0.0"
+const CACHE_VERSION = "2.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -126,25 +108,15 @@ const cacheUtils = {
       this.load<Record<number, PatchedItem>>(STORAGE_KEYS.ITEMS) || {}
     const materialCategories =
       this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
-    const colors = this.checkColorsVersion()
-      ? this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
-      : {}
+    const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
     const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
-    const titles = this.checkTitlesVersion()
-      ? this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
-      : {}
-    const currencies = this.checkCurrenciesVersion()
-      ? this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
-      : {}
-    const outfits = this.checkOutfitsVersion()
-      ? this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
-      : {}
-    const homeNodes = this.checkHomeNodesVersion()
-      ? this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
-      : []
-    const homeCats = this.checkHomeCatsVersion()
-      ? this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
-      : []
+    const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
+    const currencies =
+      this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
+    const outfits =
+      this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
+    const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
+    const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
 
     return {
       items,
@@ -169,22 +141,6 @@ const cacheUtils = {
 
   saveColors(colors: Record<number, Color>): void {
     this.save(STORAGE_KEYS.COLORS, colors)
-    this.save(STORAGE_KEYS.COLORS_VERSION, COLORS_VERSION)
-  },
-
-  checkColorsVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.COLORS_VERSION)
-    if (cachedVersion !== COLORS_VERSION) {
-      console.log("Colors version mismatch, clearing colors cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.COLORS)
-        localStorage.removeItem(STORAGE_KEYS.COLORS_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear colors cache:", error)
-      }
-      return false
-    }
-    return true
   },
 
   saveSkins(skins: Record<number, Skin>): void {
@@ -193,102 +149,22 @@ const cacheUtils = {
 
   saveTitles(titles: Record<number, Title>): void {
     this.save(STORAGE_KEYS.TITLES, titles)
-    this.save(STORAGE_KEYS.TITLES_VERSION, TITLES_VERSION)
-  },
-
-  checkTitlesVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.TITLES_VERSION)
-    if (cachedVersion !== TITLES_VERSION) {
-      console.log("Titles version mismatch, clearing titles cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.TITLES)
-        localStorage.removeItem(STORAGE_KEYS.TITLES_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear titles cache:", error)
-      }
-      return false
-    }
-    return true
   },
 
   saveCurrencies(currencies: Record<number, Currency>): void {
     this.save(STORAGE_KEYS.CURRENCIES, currencies)
-    this.save(STORAGE_KEYS.CURRENCIES_VERSION, CURRENCIES_VERSION)
-  },
-
-  checkCurrenciesVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.CURRENCIES_VERSION)
-    if (cachedVersion !== CURRENCIES_VERSION) {
-      console.log("Currencies version mismatch, clearing currencies cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.CURRENCIES)
-        localStorage.removeItem(STORAGE_KEYS.CURRENCIES_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear currencies cache:", error)
-      }
-      return false
-    }
-    return true
   },
 
   saveOutfits(outfits: Record<number, Outfit>): void {
     this.save(STORAGE_KEYS.OUTFITS, outfits)
-    this.save(STORAGE_KEYS.OUTFITS_VERSION, OUTFITS_VERSION)
-  },
-
-  checkOutfitsVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.OUTFITS_VERSION)
-    if (cachedVersion !== OUTFITS_VERSION) {
-      console.log("Outfits version mismatch, clearing outfits cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.OUTFITS)
-        localStorage.removeItem(STORAGE_KEYS.OUTFITS_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear outfits cache:", error)
-      }
-      return false
-    }
-    return true
-  },
-
-  checkHomeNodesVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.HOME_NODES_VERSION)
-    if (cachedVersion !== HOME_NODES_VERSION) {
-      console.log("Home nodes version mismatch, clearing home nodes cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.HOME_NODES)
-        localStorage.removeItem(STORAGE_KEYS.HOME_NODES_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear home nodes cache:", error)
-      }
-      return false
-    }
-    return true
   },
 
   saveHomeNodes(homeNodes: string[]): void {
     this.save(STORAGE_KEYS.HOME_NODES, homeNodes)
-    this.save(STORAGE_KEYS.HOME_NODES_VERSION, HOME_NODES_VERSION)
-  },
-
-  checkHomeCatsVersion(): boolean {
-    const cachedVersion = this.load<string>(STORAGE_KEYS.HOME_CATS_VERSION)
-    if (cachedVersion !== HOME_CATS_VERSION) {
-      console.log("Home cats version mismatch, clearing home cats cache")
-      try {
-        localStorage.removeItem(STORAGE_KEYS.HOME_CATS)
-        localStorage.removeItem(STORAGE_KEYS.HOME_CATS_VERSION)
-      } catch (error) {
-        console.warn("Failed to clear home cats cache:", error)
-      }
-      return false
-    }
-    return true
   },
 
   saveHomeCats(homeCats: HomeCat[]): void {
     this.save(STORAGE_KEYS.HOME_CATS, homeCats)
-    this.save(STORAGE_KEYS.HOME_CATS_VERSION, HOME_CATS_VERSION)
   },
 
   getCacheInfo(): {
@@ -651,9 +527,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [])
 
   const fetchColors = useCallback(async () => {
-    // Only fetch if colors cache version is outdated or no colors exist
-    if (cacheUtils.checkColorsVersion() && Object.keys(state.colors).length > 0)
-      return
+    // Only fetch if no colors exist
+    if (Object.keys(state.colors).length > 0) return
 
     dispatch({ type: "SET_COLORS_FETCHING", fetching: true })
 
@@ -724,9 +599,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [])
 
   const fetchTitles = useCallback(async () => {
-    // Only fetch if titles cache version is outdated or no titles exist
-    if (cacheUtils.checkTitlesVersion() && Object.keys(state.titles).length > 0)
-      return
+    // Only fetch if no titles exist
+    if (Object.keys(state.titles).length > 0) return
 
     dispatch({ type: "SET_TITLES_FETCHING", fetching: true })
 
@@ -752,12 +626,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.titles])
 
   const fetchCurrencies = useCallback(async () => {
-    // Only fetch if currencies cache version is outdated or no currencies exist
-    if (
-      cacheUtils.checkCurrenciesVersion() &&
-      Object.keys(state.currencies).length > 0
-    )
-      return
+    // Only fetch if no currencies exist
+    if (Object.keys(state.currencies).length > 0) return
 
     dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: true })
 
@@ -783,12 +653,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.currencies])
 
   const fetchOutfits = useCallback(async () => {
-    // Only fetch if outfits cache version is outdated or no outfits exist
-    if (
-      cacheUtils.checkOutfitsVersion() &&
-      Object.keys(state.outfits).length > 0
-    )
-      return
+    // Only fetch if no outfits exist
+    if (Object.keys(state.outfits).length > 0) return
 
     dispatch({ type: "SET_OUTFITS_FETCHING", fetching: true })
 
@@ -814,8 +680,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.outfits])
 
   const fetchHomeNodes = useCallback(async () => {
-    // Only fetch if home nodes cache version is outdated or no home nodes exist
-    if (cacheUtils.checkHomeNodesVersion() && state.homeNodes.length > 0) return
+    // Only fetch if no home nodes exist
+    if (state.homeNodes.length > 0) return
     dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: true })
 
     try {
@@ -832,8 +698,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.homeNodes])
 
   const fetchHomeCats = useCallback(async () => {
-    // Only fetch if home cats cache version is outdated or no home cats exist
-    if (cacheUtils.checkHomeCatsVersion() && state.homeCats.length > 0) return
+    // Only fetch if no home cats exist
+    if (state.homeCats.length > 0) return
     dispatch({ type: "SET_HOME_CATS_FETCHING", fetching: true })
     try {
       const data = await fetchGW2<HomeCat[]>("home/cats", "ids=all")
@@ -880,36 +746,24 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     fetchMaterialCategories,
   ])
 
-  // Auto-fetch colors on first use (when version is outdated or no colors exist)
-  // This handles incomplete color data from older versions
+  // Auto-fetch colors on first use when no colors exist
   useEffect(() => {
-    if (
-      (!cacheUtils.checkColorsVersion() ||
-        Object.keys(state.colors).length === 0) &&
-      !state.isColorsFetching
-    ) {
+    if (Object.keys(state.colors).length === 0 && !state.isColorsFetching) {
       fetchColors()
     }
   }, [Object.keys(state.colors).length, state.isColorsFetching, fetchColors])
 
-  // Auto-fetch titles on first use (when version is outdated or no titles exist)
-  // This handles incomplete title data from older versions
+  // Auto-fetch titles on first use when no titles exist
   useEffect(() => {
-    if (
-      (!cacheUtils.checkTitlesVersion() ||
-        Object.keys(state.titles).length === 0) &&
-      !state.isTitlesFetching
-    ) {
+    if (Object.keys(state.titles).length === 0 && !state.isTitlesFetching) {
       fetchTitles()
     }
   }, [Object.keys(state.titles).length, state.isTitlesFetching, fetchTitles])
 
-  // Auto-fetch currencies on first use (when version is outdated or no currencies exist)
-  // This handles incomplete currency data from older versions
+  // Auto-fetch currencies on first use when no currencies exist
   useEffect(() => {
     if (
-      (!cacheUtils.checkCurrenciesVersion() ||
-        Object.keys(state.currencies).length === 0) &&
+      Object.keys(state.currencies).length === 0 &&
       !state.isCurrenciesFetching
     ) {
       fetchCurrencies()
@@ -920,36 +774,23 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     fetchCurrencies,
   ])
 
-  // Auto-fetch outfits on first use (when version is outdated or no outfits exist)
-  // This handles incomplete outfit data from older versions
+  // Auto-fetch outfits on first use when no outfits exist
   useEffect(() => {
-    if (
-      (!cacheUtils.checkOutfitsVersion() ||
-        Object.keys(state.outfits).length === 0) &&
-      !state.isOutfitsFetching
-    ) {
+    if (Object.keys(state.outfits).length === 0 && !state.isOutfitsFetching) {
       fetchOutfits()
     }
   }, [Object.keys(state.outfits).length, state.isOutfitsFetching, fetchOutfits])
 
-  // Auto-fetch home nodes on first use (when version is outdated or no home nodes exist)
-  // This handles incomplete home nodes data from older versions
+  // Auto-fetch home nodes on first use when no home nodes exist
   useEffect(() => {
-    if (
-      (!cacheUtils.checkHomeNodesVersion() || state.homeNodes.length === 0) &&
-      !state.isHomeNodesFetching
-    ) {
+    if (state.homeNodes.length === 0 && !state.isHomeNodesFetching) {
       fetchHomeNodes()
     }
   }, [state.homeNodes.length, state.isHomeNodesFetching, fetchHomeNodes])
 
-  // Auto-fetch home cats on first use (when version is outdated or no home cats exist)
-  // This handles incomplete home cats data from older versions
+  // Auto-fetch home cats on first use when no home cats exist
   useEffect(() => {
-    if (
-      (!cacheUtils.checkHomeCatsVersion() || state.homeCats.length === 0) &&
-      !state.isHomeCatsFetching
-    ) {
+    if (state.homeCats.length === 0 && !state.isHomeCatsFetching) {
       fetchHomeCats()
     }
   }, [state.homeCats.length, state.isHomeCatsFetching, fetchHomeCats])
