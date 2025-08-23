@@ -22,13 +22,6 @@ export function isItem(value: unknown): value is PatchedItem {
 }
 
 /**
- * Type guard to check if value is an array of Items
- */
-export function isItemArray(value: unknown): value is PatchedItem[] {
-  return Array.isArray(value) && value.every(isItem)
-}
-
-/**
  * Type guard to check if value is a valid Character
  */
 export function isCharacter(value: unknown): value is Character {
@@ -40,13 +33,6 @@ export function isCharacter(value: unknown): value is Character {
     typeof (value as any).name === "string" &&
     typeof (value as any).profession === "string"
   )
-}
-
-/**
- * Type guard to check if value is an array of Characters
- */
-export function isCharacterArray(value: unknown): value is Character[] {
-  return Array.isArray(value) && value.every(isCharacter)
 }
 
 /**
@@ -68,13 +54,6 @@ export function isUsedAccount(value: unknown): value is UsedAccount {
  */
 export function isUsedAccountArray(value: unknown): value is UsedAccount[] {
   return Array.isArray(value) && value.every(isUsedAccount)
-}
-
-/**
- * Type guard to check if a string is a valid sort order
- */
-export function isSortOrder(value: string): value is "asc" | "dsc" {
-  return value === "asc" || value === "dsc"
 }
 
 /**

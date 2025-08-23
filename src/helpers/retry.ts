@@ -78,23 +78,3 @@ export async function withRetry<T>(
 
   throw lastError
 }
-
-/**
- * Batch retry multiple operations
- * Returns results array where failed operations are null
- */
-export async function batchWithRetry<T>(
-  operations: Array<() => Promise<T>>,
-  options: RetryOptions = {},
-): Promise<(T | null)[]> {
-  const promises = operations.map(async (operation) => {
-    try {
-      return await withRetry(operation, options)
-    } catch (error) {
-      console.error("Operation failed after retries:", error)
-      return null
-    }
-  })
-
-  return Promise.all(promises)
-}

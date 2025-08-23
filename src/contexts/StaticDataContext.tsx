@@ -895,33 +895,6 @@ export const useStaticData = (): StaticDataContextType => {
 }
 
 /**
- * Hook to automatically fetch item details when items change
- * Integrates the useItemFetching pattern directly with StaticDataContext
- *
- * @param items - Array of items with id property
- * @param enabled - Optional flag to enable/disable fetching (default: true)
- */
-export function useAutoFetchItems<T extends { id: number }>(
-  items: T[],
-  enabled: boolean = true,
-) {
-  const { fetchItems, items: cachedItems } = useStaticData()
-
-  useEffect(() => {
-    if (enabled && items.length > 0) {
-      const itemIds = items.map((item) => item.id).filter((id) => id != null)
-      if (itemIds.length > 0) {
-        // Only fetch if some items are not cached
-        const uncachedIds = itemIds.filter((id) => !cachedItems[id])
-        if (uncachedIds.length > 0) {
-          fetchItems(itemIds)
-        }
-      }
-    }
-  }, [items, fetchItems, enabled, cachedItems])
-}
-
-/**
  * Hook to batch multiple item sources and fetch all unique IDs together
  * More efficient than fetching each source separately as it avoids duplicate API calls
  * Integrated version of the useBatchItemFetching pattern

@@ -174,7 +174,7 @@ The application uses a hybrid approach with React Context API for global state a
 **Hook Patterns:**
 
 - Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`, `useHomeCats`) expose read-only data
-- Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useAutoFetchItems`, `useBatchAutoFetchItems`)
+- Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useBatchAutoFetchItems`)
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
 - Direct hook usage preferred over context when data is component-specific
