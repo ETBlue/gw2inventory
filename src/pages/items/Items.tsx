@@ -1,7 +1,14 @@
 import { useState, useMemo, useCallback } from "react"
-import { NavLink, useLocation, useParams, useSearchParams } from "react-router"
+import {
+  NavLink,
+  useLocation,
+  useParams,
+  useSearchParams,
+  useNavigate,
+} from "react-router"
 import { chunk, findIndex } from "lodash"
 import { MdSearch } from "react-icons/md"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import {
   Tabs,
   TabList,
@@ -13,6 +20,8 @@ import {
   Table,
   Thead,
   Tbody,
+  Tr,
+  Th,
   Tag,
   Center,
   Spinner,
@@ -24,9 +33,9 @@ import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import { PatchedItem, UserItemInList } from "types/items"
 import Pagination from "components/Pagination"
+import { getQueryString } from "helpers/url"
 
 import SubMenuItem from "./SubMenuItem"
-import HeaderItem from "./HeaderItem"
 import Item from "./Item"
 import {
   getTypedItemLength,
@@ -38,6 +47,16 @@ import { compare, compareRarity } from "./helpers/compare"
 import { Sort, Order } from "./types"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import { MENU_ITEMS } from "./constants"
+
+const TABLE_HEADERS = [
+  "rarity",
+  "name",
+  "type",
+  "level",
+  "location",
+  "count",
+  "chat_link",
+]
 
 function Items() {
   const {
@@ -53,6 +72,7 @@ function Items() {
   } = useItemsData()
   const { isFetching: isCharactersFetching } = useCharacters()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const { category } = useParams()
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -70,6 +90,24 @@ function Items() {
     const result = params.toString()
     return result ? `?${result}` : ""
   }, [searchParams])
+
+  // Handle table column sorting
+  const handleSort = useCallback(
+    (column: string) => {
+      const queryString = searchParams.toString()
+      const newUrl = `${pathname}?${
+        activeSort === column
+          ? getQueryString(
+              "order",
+              activeOrder === "asc" ? "dsc" : "",
+              queryString,
+            )
+          : getQueryString("sortBy", column, queryString)
+      }`
+      navigate(newUrl)
+    },
+    [pathname, activeSort, activeOrder, searchParams, navigate],
+  )
 
   // Update search keyword in URL
   const updateSearch = useCallback(
@@ -212,7 +250,25 @@ function Items() {
         />
         <Table className={sharedTableCss.table}>
           <Thead>
-            <HeaderItem activeSort={activeSort} activeOrder={activeOrder} />
+            <Tr>
+              {TABLE_HEADERS.map((title) => (
+                <Th
+                  key={title}
+                  cursor="pointer"
+                  onClick={() => handleSort(title)}
+                  className={`${sharedTableCss.title} ${activeSort === title ? sharedTableCss.active : ""}`}
+                >
+                  {title}
+                  {activeSort === title ? (
+                    activeOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )
+                  ) : null}
+                </Th>
+              ))}
+            </Tr>
           </Thead>
           <Tbody>
             {pages[pageIndex]?.map(
