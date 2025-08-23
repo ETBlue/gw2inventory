@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { useToken } from "~/hooks/useToken"
@@ -7,12 +6,10 @@ import { queryFunction } from "~/helpers/api"
 
 export default function useHomeCats() {
   const { currentAccount } = useToken()
-  const { homeCats, isHomeCatsFetching, fetchHomeCats } = useStaticData()
+  const { homeCats, isHomeCatsFetching } = useStaticData()
 
-  // Fetch all available home cats when hook is used
-  useEffect(() => {
-    fetchHomeCats()
-  }, [fetchHomeCats])
+  // Note: All home cats are now fetched automatically by StaticDataContext
+  // No manual fetching needed here
 
   // Fetch account's unlocked cat IDs
   const {

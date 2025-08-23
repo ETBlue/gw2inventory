@@ -60,7 +60,6 @@ describe("useTitles", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -171,7 +170,6 @@ describe("useTitles", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,

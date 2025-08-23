@@ -37,6 +37,7 @@ const STORAGE_KEYS = {
   HOME_NODES: "gw2inventory_static_home_nodes",
   HOME_NODES_VERSION: "gw2inventory_static_home_nodes_version",
   HOME_CATS: "gw2inventory_static_home_cats",
+  HOME_CATS_VERSION: "gw2inventory_static_home_cats_version",
   VERSION: "gw2inventory_cache_version",
 }
 
@@ -52,6 +53,8 @@ const CURRENCIES_VERSION = "complete-1.0.0"
 const OUTFITS_VERSION = "complete-1.0.0"
 // Home nodes version to handle transition to ?ids=all fetching
 const HOME_NODES_VERSION = "complete-1.0.0"
+// Home cats version to handle transition to ?ids=all fetching
+const HOME_CATS_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -139,7 +142,9 @@ const cacheUtils = {
     const homeNodes = this.checkHomeNodesVersion()
       ? this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
       : []
-    const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
+    const homeCats = this.checkHomeCatsVersion()
+      ? this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
+      : []
 
     return {
       items,
@@ -266,8 +271,24 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.HOME_NODES_VERSION, HOME_NODES_VERSION)
   },
 
+  checkHomeCatsVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.HOME_CATS_VERSION)
+    if (cachedVersion !== HOME_CATS_VERSION) {
+      console.log("Home cats version mismatch, clearing home cats cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.HOME_CATS)
+        localStorage.removeItem(STORAGE_KEYS.HOME_CATS_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear home cats cache:", error)
+      }
+      return false
+    }
+    return true
+  },
+
   saveHomeCats(homeCats: HomeCat[]): void {
     this.save(STORAGE_KEYS.HOME_CATS, homeCats)
+    this.save(STORAGE_KEYS.HOME_CATS_VERSION, HOME_CATS_VERSION)
   },
 
   getCacheInfo(): {
@@ -390,7 +411,6 @@ interface StaticDataContextType {
   isHomeNodesFetching: boolean
   homeCats: HomeCat[]
   isHomeCatsFetching: boolean
-  fetchHomeCats: () => Promise<void>
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -813,10 +833,11 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.homeNodes])
 
   const fetchHomeCats = useCallback(async () => {
-    if (state.homeCats.length > 0) return
+    // Only fetch if home cats cache version is outdated or no home cats exist
+    if (cacheUtils.checkHomeCatsVersion() && state.homeCats.length > 0) return
     dispatch({ type: "SET_HOME_CATS_FETCHING", fetching: true })
     try {
-      const data = await fetchGW2<HomeCat[]>("home/cats?ids=all")
+      const data = await fetchGW2<HomeCat[]>("home/cats", "ids=all")
       if (data) {
         dispatch({ type: "SET_HOME_CATS", homeCats: data })
         cacheUtils.saveHomeCats(data)
@@ -826,7 +847,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     } finally {
       dispatch({ type: "SET_HOME_CATS_FETCHING", fetching: false })
     }
-  }, [state.homeCats.length])
+  }, [state.homeCats])
 
   const fetchMaterialCategories = useCallback(async () => {
     if (state.materialCategoriesData.length > 0) return
@@ -928,6 +949,17 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homeNodes.length, state.isHomeNodesFetching, fetchHomeNodes])
 
+  // Auto-fetch home cats on first use (when version is outdated or no home cats exist)
+  // This handles incomplete home cats data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkHomeCatsVersion() || state.homeCats.length === 0) &&
+      !state.isHomeCatsFetching
+    ) {
+      fetchHomeCats()
+    }
+  }, [state.homeCats.length, state.isHomeCatsFetching, fetchHomeCats])
+
   // Memoize processed material categories data
   const materialCategories = useMemo(
     () =>
@@ -980,7 +1012,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isHomeNodesFetching: state.isHomeNodesFetching,
       homeCats: state.homeCats,
       isHomeCatsFetching: state.isHomeCatsFetching,
-      fetchHomeCats,
       getCacheInfo,
     }),
     [
@@ -1007,7 +1038,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       materialCategories,
       materials,
       fetchSkins,
-      fetchHomeCats,
       getCacheInfo,
     ],
   )

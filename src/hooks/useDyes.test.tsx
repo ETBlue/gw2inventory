@@ -125,7 +125,6 @@ describe("useDyes", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -196,7 +195,6 @@ describe("useDyes", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -270,7 +268,6 @@ describe("useDyes", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -378,7 +375,6 @@ describe("useDyes", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -453,7 +449,6 @@ describe("useDyes", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
