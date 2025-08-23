@@ -1,4 +1,4 @@
-import { createContext, useState } from "react"
+import { createContext, useContext, useState } from "react"
 
 import { STORAGE_KEYS } from "~/constants"
 
@@ -57,6 +57,10 @@ function TokenProvider(props: { children: React.ReactNode }) {
       {props.children}
     </TokenContext.Provider>
   )
+}
+
+export const useToken = (): Values => {
+  return useContext(TokenContext)
 }
 
 export default TokenContext

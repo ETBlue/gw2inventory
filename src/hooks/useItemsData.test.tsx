@@ -5,6 +5,7 @@ import { renderHook } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import * as tokenHook from "~/contexts/TokenContext"
 import { createTestQueryClient } from "~/test/utils"
 
 import * as staticDataContext from "../contexts/StaticDataContext"
@@ -12,10 +13,9 @@ import * as apiHelpers from "../helpers/api"
 import * as characterItemsHelper from "../helpers/characterItems"
 import * as charactersHook from "./useCharacters"
 import { useItemsData } from "./useItemsData"
-import * as tokenHook from "./useToken"
 
 // Mock all dependencies
-vi.mock("./useToken")
+vi.mock("~/contexts/TokenContext")
 vi.mock("./useCharacters")
 vi.mock("../contexts/StaticDataContext")
 vi.mock("../helpers/characterItems")

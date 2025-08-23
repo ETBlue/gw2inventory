@@ -2,8 +2,8 @@ import { createContext } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
+import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
-import { useToken } from "~/hooks/useToken"
 
 import { Values } from "./types/CharacterContext"
 

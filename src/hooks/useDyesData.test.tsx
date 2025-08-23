@@ -6,13 +6,13 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as staticDataContext from "~/contexts/StaticDataContext"
+import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
 
 import { useDyes } from "./useDyesData"
-import * as tokenHook from "./useToken"
 
 // Mock dependencies
-vi.mock("./useToken")
+vi.mock("~/contexts/TokenContext")
 vi.mock("~/helpers/api")
 vi.mock("~/contexts/StaticDataContext")
 

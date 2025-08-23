@@ -3,8 +3,8 @@ import { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
-import { useToken } from "~/hooks/useToken"
 import { AccountSkins } from "~/types/skins"
 
 /**

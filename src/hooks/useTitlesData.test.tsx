@@ -6,14 +6,14 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as staticDataContext from "~/contexts/StaticDataContext"
+import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
 import { createTestQueryClient } from "~/test/utils"
 
 import { useTitles } from "./useTitlesData"
-import * as tokenHook from "./useToken"
 
 // Mock the useToken hook
-vi.mock("./useToken")
+vi.mock("~/contexts/TokenContext")
 const mockUseToken = vi.mocked(tokenHook.useToken)
 
 // Mock the API helpers

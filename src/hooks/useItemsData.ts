@@ -9,10 +9,10 @@ import {
   useBatchAutoFetchItems,
   useStaticData,
 } from "~/contexts/StaticDataContext"
+import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
 import { processCharacterItems } from "~/helpers/characterItems"
 import { useCharacters } from "~/hooks/useCharacters"
-import { useToken } from "~/hooks/useToken"
 import {
   BankItemInList,
   InventoryItemInList,

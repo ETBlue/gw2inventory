@@ -2,15 +2,15 @@ import { screen, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
 import * as titlesHook from "~/hooks/useTitlesData"
-import * as tokenHook from "~/hooks/useToken"
 import { render } from "~/test/utils"
 
 import Overview from "./Overview"
 
 // Mock all the hooks
-vi.mock("~/hooks/useToken")
+vi.mock("~/contexts/TokenContext")
 vi.mock("~/hooks/useTitlesData")
 vi.mock("~/helpers/api")
 

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
+import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
-import { useToken } from "~/hooks/useToken"
 
 function Achievements() {
   const { currentAccount } = useToken()
