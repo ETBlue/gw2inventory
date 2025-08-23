@@ -35,6 +35,7 @@ const STORAGE_KEYS = {
   OUTFITS: "gw2inventory_static_outfits",
   OUTFITS_VERSION: "gw2inventory_static_outfits_version",
   HOME_NODES: "gw2inventory_static_home_nodes",
+  HOME_NODES_VERSION: "gw2inventory_static_home_nodes_version",
   HOME_CATS: "gw2inventory_static_home_cats",
   VERSION: "gw2inventory_cache_version",
 }
@@ -49,6 +50,8 @@ const TITLES_VERSION = "complete-1.0.0"
 const CURRENCIES_VERSION = "complete-1.0.0"
 // Outfits version to handle transition from incremental to complete fetching
 const OUTFITS_VERSION = "complete-1.0.0"
+// Home nodes version to handle transition to ?ids=all fetching
+const HOME_NODES_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -133,7 +136,9 @@ const cacheUtils = {
     const outfits = this.checkOutfitsVersion()
       ? this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
       : {}
-    const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
+    const homeNodes = this.checkHomeNodesVersion()
+      ? this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
+      : []
     const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
 
     return {
@@ -241,8 +246,24 @@ const cacheUtils = {
     return true
   },
 
+  checkHomeNodesVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.HOME_NODES_VERSION)
+    if (cachedVersion !== HOME_NODES_VERSION) {
+      console.log("Home nodes version mismatch, clearing home nodes cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.HOME_NODES)
+        localStorage.removeItem(STORAGE_KEYS.HOME_NODES_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear home nodes cache:", error)
+      }
+      return false
+    }
+    return true
+  },
+
   saveHomeNodes(homeNodes: string[]): void {
     this.save(STORAGE_KEYS.HOME_NODES, homeNodes)
+    this.save(STORAGE_KEYS.HOME_NODES_VERSION, HOME_NODES_VERSION)
   },
 
   saveHomeCats(homeCats: HomeCat[]): void {
@@ -367,7 +388,6 @@ interface StaticDataContextType {
   isOutfitsFetching: boolean
   homeNodes: string[]
   isHomeNodesFetching: boolean
-  fetchHomeNodes: () => Promise<void>
   homeCats: HomeCat[]
   isHomeCatsFetching: boolean
   fetchHomeCats: () => Promise<void>
@@ -641,25 +661,20 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
 
   const fetchSkins = useCallback(async (newIds: number[]) => {
     if (newIds.length === 0) return
-
     dispatch({ type: "SET_SKINS_FETCHING", fetching: true })
-
     // Use ref to access current data without adding to dependencies
     const currentData = staticDataRef.current.skins
     const existingIdSet = new Set(
       Object.keys(currentData).map((key) => parseInt(key)),
     )
     const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
     if (idsToFetch.length === 0) {
       dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
       return
     }
-
     const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
     let newItems: Skin[] = []
     let failedChunks = 0
-
     for (const chunk of chunks) {
       try {
         const data = await fetchGW2<Skin[]>("skins", `ids=${chunk.join(",")}`)
@@ -672,7 +687,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
         // Continue fetching other chunks even if one fails
       }
     }
-
     if (newItems.length > 0) {
       dispatch({ type: "ADD_SKINS", skins: newItems })
       // Save updated skins to cache after adding new ones
@@ -682,13 +696,11 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       })
       cacheUtils.saveSkins(updatedSkins)
     }
-
     if (failedChunks > 0) {
       console.warn(
         `Failed to fetch ${failedChunks} out of ${chunks.length} skins chunks`,
       )
     }
-
     dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
   }, [])
 
@@ -783,12 +795,12 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   }, [state.outfits])
 
   const fetchHomeNodes = useCallback(async () => {
-    if (state.homeNodes.length > 0) return
-
+    // Only fetch if home nodes cache version is outdated or no home nodes exist
+    if (cacheUtils.checkHomeNodesVersion() && state.homeNodes.length > 0) return
     dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: true })
 
     try {
-      const data = await fetchGW2<string[]>("home/nodes")
+      const data = await fetchGW2<string[]>("home/nodes", "ids=all")
       if (data) {
         dispatch({ type: "SET_HOME_NODES", homeNodes: data })
         cacheUtils.saveHomeNodes(data)
@@ -798,7 +810,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     } finally {
       dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: false })
     }
-  }, [state.homeNodes.length])
+  }, [state.homeNodes])
 
   const fetchHomeCats = useCallback(async () => {
     if (state.homeCats.length > 0) return
@@ -905,6 +917,17 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [Object.keys(state.outfits).length, state.isOutfitsFetching, fetchOutfits])
 
+  // Auto-fetch home nodes on first use (when version is outdated or no home nodes exist)
+  // This handles incomplete home nodes data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkHomeNodesVersion() || state.homeNodes.length === 0) &&
+      !state.isHomeNodesFetching
+    ) {
+      fetchHomeNodes()
+    }
+  }, [state.homeNodes.length, state.isHomeNodesFetching, fetchHomeNodes])
+
   // Memoize processed material categories data
   const materialCategories = useMemo(
     () =>
@@ -955,7 +978,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isOutfitsFetching: state.isOutfitsFetching,
       homeNodes: state.homeNodes,
       isHomeNodesFetching: state.isHomeNodesFetching,
-      fetchHomeNodes,
       homeCats: state.homeCats,
       isHomeCatsFetching: state.isHomeCatsFetching,
       fetchHomeCats,
@@ -985,7 +1007,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       materialCategories,
       materials,
       fetchSkins,
-      fetchHomeNodes,
       fetchHomeCats,
       getCacheInfo,
     ],

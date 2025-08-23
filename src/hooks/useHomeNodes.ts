@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { useToken } from "~/hooks/useToken"
@@ -7,12 +6,10 @@ import { queryFunction } from "~/helpers/api"
 
 export default function useHomeNodes() {
   const { currentAccount } = useToken()
-  const { homeNodes, isHomeNodesFetching, fetchHomeNodes } = useStaticData()
+  const { homeNodes, isHomeNodesFetching } = useStaticData()
 
-  // Fetch all available home nodes when hook is used
-  useEffect(() => {
-    fetchHomeNodes()
-  }, [fetchHomeNodes])
+  // Note: All home nodes are now fetched automatically by StaticDataContext
+  // No manual fetching needed here
 
   // Fetch account's enabled home nodes
   const {

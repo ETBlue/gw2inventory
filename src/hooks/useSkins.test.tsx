@@ -94,7 +94,6 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       homeNodes: [],
       isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
       homeCats: [],
       isHomeCatsFetching: false,
       fetchHomeCats: vi.fn(),
@@ -131,7 +130,7 @@ describe("useSkins", () => {
     expect(result.current.skins).toBeUndefined()
   })
 
-  it("fetches account skin IDs and triggers skin fetching when token is available", async () => {
+  it("fetches account skin IDs and triggers skin fetching with uncached skin IDs when token is available", async () => {
     const mockToken = "test-token"
     const mockAccountSkinIds = [1, 2]
     const mockFetchSkins = vi.fn()
@@ -166,7 +165,6 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       homeNodes: [],
       isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
       homeCats: [],
       isHomeCatsFetching: false,
       fetchHomeCats: vi.fn(),
@@ -202,8 +200,9 @@ describe("useSkins", () => {
       expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
     })
 
+    // Should call fetchSkins with uncached skin IDs (since skins cache is empty, all are uncached)
     await waitFor(() => {
-      expect(mockFetchSkins).toHaveBeenCalledWith(mockAccountSkinIds)
+      expect(mockFetchSkins).toHaveBeenCalledWith([1, 2])
     })
   })
 
@@ -245,7 +244,6 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       homeNodes: [],
       isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
       homeCats: [],
       isHomeCatsFetching: false,
       fetchHomeCats: vi.fn(),
@@ -348,7 +346,6 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       homeNodes: [],
       isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
       homeCats: [],
       isHomeCatsFetching: false,
       fetchHomeCats: vi.fn(),
@@ -373,7 +370,7 @@ describe("useSkins", () => {
     expect(result.current.isFetching).toBe(true)
   })
 
-  it("only fetches uncached skins", async () => {
+  it("calls fetchSkins with only uncached skin IDs when account skin IDs are available", async () => {
     const mockToken = "test-token"
     const mockAccountSkinIds = [1, 2, 3]
     const mockFetchSkins = vi.fn()
@@ -411,7 +408,6 @@ describe("useSkins", () => {
       isOutfitsFetching: false,
       homeNodes: [],
       isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
       homeCats: [],
       isHomeCatsFetching: false,
       fetchHomeCats: vi.fn(),
@@ -445,7 +441,7 @@ describe("useSkins", () => {
       expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
     })
 
-    // Should only fetch uncached skins (2 and 3)
+    // Should call fetchSkins with only uncached skin IDs (2 and 3, since 1 is already cached)
     await waitFor(() => {
       expect(mockFetchSkins).toHaveBeenCalledWith([2, 3])
     })
