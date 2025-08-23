@@ -43,7 +43,6 @@ vi.mock("~/contexts/StaticDataContext", () => ({
     materialCategories: [],
     materials: {},
     isMaterialFetching: false,
-    fetchMaterialCategories: vi.fn(),
   })),
   StaticDataProvider: ({ children }: { children: React.ReactNode }) => children,
 }))

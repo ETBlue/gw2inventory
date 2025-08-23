@@ -354,27 +354,17 @@ interface StaticDataContextType {
   materialCategories: string[]
   materials: Record<number, string>
   isMaterialFetching: boolean
-  fetchMaterialCategories: () => Promise<void>
   colors: Record<number, Color>
   isColorsFetching: boolean
-  fetchColors: () => Promise<void>
-  addColors: (colors: Color[]) => void
   skins: Record<number, Skin>
   isSkinsFetching: boolean
   fetchSkins: (skinIds: number[]) => Promise<void>
-  addSkins: (skins: Skin[]) => void
   titles: Record<number, Title>
   isTitlesFetching: boolean
-  fetchTitles: () => Promise<void>
-  addTitles: (titles: Title[]) => void
   currencies: Record<number, Currency>
   isCurrenciesFetching: boolean
-  fetchCurrencies: () => Promise<void>
-  addCurrencies: (currencies: Currency[]) => void
   outfits: Record<number, Outfit>
   isOutfitsFetching: boolean
-  fetchOutfits: () => Promise<void>
-  addOutfits: (outfits: Outfit[]) => void
   homeNodes: string[]
   isHomeNodesFetching: boolean
   fetchHomeNodes: () => Promise<void>
@@ -849,26 +839,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "ADD_ITEMS", items: newItems })
   }, [])
 
-  const addColors = useCallback((newColors: Color[]) => {
-    dispatch({ type: "ADD_COLORS", colors: newColors })
-  }, [])
-
-  const addSkins = useCallback((newSkins: Skin[]) => {
-    dispatch({ type: "ADD_SKINS", skins: newSkins })
-  }, [])
-
-  const addTitles = useCallback((newTitles: Title[]) => {
-    dispatch({ type: "ADD_TITLES", titles: newTitles })
-  }, [])
-
-  const addCurrencies = useCallback((newCurrencies: Currency[]) => {
-    dispatch({ type: "ADD_CURRENCIES", currencies: newCurrencies })
-  }, [])
-
-  const addOutfits = useCallback((newOutfits: Outfit[]) => {
-    dispatch({ type: "ADD_OUTFITS", outfits: newOutfits })
-  }, [])
-
   // Auto-fetch material categories on first use (when empty)
   useEffect(() => {
     if (
@@ -972,27 +942,17 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       materialCategories,
       materials,
       isMaterialFetching: state.isMaterialFetching,
-      fetchMaterialCategories,
       colors: state.colors,
       isColorsFetching: state.isColorsFetching,
-      fetchColors,
-      addColors,
       skins: state.skins,
       isSkinsFetching: state.isSkinsFetching,
       fetchSkins,
-      addSkins,
       titles: state.titles,
       isTitlesFetching: state.isTitlesFetching,
-      fetchTitles,
-      addTitles,
       currencies: state.currencies,
       isCurrenciesFetching: state.isCurrenciesFetching,
-      fetchCurrencies,
-      addCurrencies,
       outfits: state.outfits,
       isOutfitsFetching: state.isOutfitsFetching,
-      fetchOutfits,
-      addOutfits,
       homeNodes: state.homeNodes,
       isHomeNodesFetching: state.isHomeNodesFetching,
       fetchHomeNodes,
@@ -1024,17 +984,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       addItems,
       materialCategories,
       materials,
-      fetchMaterialCategories,
-      fetchColors,
-      addColors,
       fetchSkins,
-      addSkins,
-      fetchTitles,
-      addTitles,
-      fetchCurrencies,
-      addCurrencies,
-      fetchOutfits,
-      addOutfits,
       fetchHomeNodes,
       fetchHomeCats,
       getCacheInfo,
