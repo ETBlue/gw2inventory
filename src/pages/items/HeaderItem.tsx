@@ -1,4 +1,4 @@
-import { Link, useLocation, useSearchParams } from "react-router"
+import { useLocation, useSearchParams, useNavigate } from "react-router"
 import { Tr, Th } from "@chakra-ui/react"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 
@@ -26,23 +26,29 @@ function HeaderItem(props: Props) {
   const { activeSort, activeOrder } = props
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const queryString = searchParams.toString()
+
+  const handleSort = (column: string) => {
+    const newUrl = `${pathname}?${
+      activeSort === column
+        ? getQueryString(
+            "order",
+            activeOrder === "asc" ? "dsc" : "",
+            queryString,
+          )
+        : getQueryString("sortBy", column, queryString)
+    }`
+    navigate(newUrl)
+  }
 
   return (
     <Tr>
       {TABLE_HEADERS.map((title) => (
         <Th
           key={title}
-          as={Link}
-          to={`${pathname}?${
-            activeSort === title
-              ? getQueryString(
-                  "order",
-                  activeOrder === "asc" ? "dsc" : "",
-                  queryString,
-                )
-              : getQueryString("sortBy", title, queryString)
-          }`}
+          cursor="pointer"
+          onClick={() => handleSort(title)}
           className={`${sharedTableCss.title} ${activeSort === title ? sharedTableCss.active : ""}`}
         >
           {title}

@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, useLocation, useSearchParams } from "react-router"
+import { useLocation, useSearchParams, useNavigate } from "react-router"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
 
@@ -35,11 +35,25 @@ function SortableTable(props: Props) {
   } = props
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const sortBy = searchParams.get("sortBy")
   const order = searchParams.get("order")
   const queryString = searchParams.toString()
   const activeSort = sortBy || defaultSortBy
   const activeOrder = order || defaultOrder
+
+  const handleSort = (column: string) => {
+    const newUrl = `${pathname}?${
+      activeSort === column
+        ? getQueryString(
+            "order",
+            activeOrder === "asc" ? "dsc" : "",
+            queryString,
+          )
+        : getQueryString("sortBy", column, queryString)
+    }`
+    navigate(newUrl)
+  }
 
   const rows = unsortedRows.sort((a, b) => {
     // Type-safe property access using keyof operator
@@ -56,16 +70,8 @@ function SortableTable(props: Props) {
           {columns.map((col) => (
             <Th
               key={col.key}
-              as={Link}
-              to={`${pathname}?${
-                activeSort === col.title
-                  ? getQueryString(
-                      "order",
-                      activeOrder === "asc" ? "dsc" : "",
-                      queryString,
-                    )
-                  : getQueryString("sortBy", col.title, queryString)
-              }`}
+              cursor="pointer"
+              onClick={() => handleSort(col.title)}
               className={`${css.title} ${
                 activeSort === col.title ? css.active : ""
               }`}
