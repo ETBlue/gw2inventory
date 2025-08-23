@@ -32,9 +32,9 @@ import {
 
 import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
+import { useCharacters } from "~/contexts/CharacterContext"
 import { compare, compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
-import { useCharacters } from "~/hooks/useCharacters"
 import { useItemsData } from "~/hooks/useItemsData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import { PatchedItem, UserItemInList } from "~/types/items"

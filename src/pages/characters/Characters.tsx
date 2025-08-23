@@ -34,9 +34,9 @@ import {
   useSearchParams,
 } from "react-router"
 
+import { useCharacters } from "~/contexts/CharacterContext"
 import { compare } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
-import { useCharacters } from "~/hooks/useCharacters"
 import css from "~/styles/shared-table.module.css"
 import { PatchedItem } from "~/types/items"
 

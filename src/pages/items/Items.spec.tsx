@@ -2,7 +2,7 @@ import { cleanup, fireEvent, screen } from "@testing-library/react"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useCharacters } from "~/hooks/useCharacters"
+import { useCharacters } from "~/contexts/CharacterContext"
 import { useItemsData } from "~/hooks/useItemsData"
 import { render } from "~/test/utils"
 
@@ -10,7 +10,7 @@ import Items from "./Items"
 
 // Mock the hooks
 vi.mock("~/hooks/useItemsData")
-vi.mock("~/hooks/useCharacters")
+vi.mock("~/contexts/CharacterContext")
 
 // Mock React Router
 vi.mock("react-router", async () => {

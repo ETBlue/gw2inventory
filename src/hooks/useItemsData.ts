@@ -5,6 +5,7 @@ import type { ItemStack } from "@gw2api/types/data/item"
 import type { MaterialStack } from "@gw2api/types/data/material"
 import { useQuery } from "@tanstack/react-query"
 
+import { useCharacters } from "~/contexts/CharacterContext"
 import {
   useBatchAutoFetchItems,
   useStaticData,
@@ -12,7 +13,6 @@ import {
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
 import { processCharacterItems } from "~/helpers/characterItems"
-import { useCharacters } from "~/hooks/useCharacters"
 import {
   BankItemInList,
   InventoryItemInList,

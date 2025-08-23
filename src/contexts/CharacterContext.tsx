@@ -1,4 +1,4 @@
-import { createContext } from "react"
+import { createContext, useContext } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
@@ -34,6 +34,10 @@ function CharacterProvider(props: { children: React.ReactNode }) {
       {props.children}
     </CharacterContext.Provider>
   )
+}
+
+export const useCharacters = (): Values => {
+  return useContext(CharacterContext)
 }
 
 export default CharacterContext
