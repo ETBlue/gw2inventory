@@ -34,6 +34,11 @@ import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
 import { useCharacters } from "~/contexts/CharacterContext"
 import { compare, compareRarity } from "~/helpers/compare"
+import {
+  getTypedItemLength,
+  isItemInCategory,
+  isItemInTypes,
+} from "~/helpers/itemFiltering"
 import { getQueryString } from "~/helpers/url"
 import { useItemsData } from "~/hooks/useItemsData"
 import sharedTableCss from "~/styles/shared-table.module.css"
@@ -42,11 +47,6 @@ import { PatchedItem, UserItemInList } from "~/types/items"
 import Item from "./Item"
 import SubMenuItem from "./SubMenuItem"
 import { MENU_ITEMS } from "./constants"
-import {
-  getTypedItemLength,
-  isItemInCategory,
-  isItemInTypes,
-} from "./helpers/count"
 import { Order, Sort } from "./types"
 
 const TABLE_HEADERS = [

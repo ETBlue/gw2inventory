@@ -4,11 +4,11 @@ import { isEqual } from "lodash"
 import { Link, useLocation, useSearchParams } from "react-router"
 
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { getTypedItemLength } from "~/helpers/itemFiltering"
 import { getQueryString } from "~/helpers/url"
 import { UserItemInList } from "~/types/items"
 
 import { MENU_ITEMS } from "./constants"
-import { getTypedItemLength } from "./helpers/count"
 
 interface Props {
   userItems: UserItemInList[]
