@@ -47,7 +47,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, and chunked fetching
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/material categories/home data, chunked fetching for items/skins/titles/currencies/outfits)
 
 **Custom Hooks (replacing previous contexts):**
 
@@ -58,7 +58,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `useOutfits` - Fetches account outfits with outfit details managed by StaticDataContext for efficient caching
 - `useDyes` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
 - `useHomeNodes` - Fetches account home instance nodes with home node data managed by StaticDataContext for efficient caching
-- `useCats` - Fetches account home instance cats with home cat data managed by StaticDataContext for efficient caching
+- `useHomeCats` - Fetches account home instance cats with home cat data managed by StaticDataContext for efficient caching
 
 **Architecture Principles:**
 
@@ -120,7 +120,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Hook Patterns:**
 
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`, `useCats`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`, `useHomeCats`) expose read-only data
 - Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useAutoFetchItems`, `useBatchAutoFetchItems`)
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
@@ -259,11 +259,14 @@ Significant architectural improvements were made to the static data management s
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
+- **Colors Fetching Optimization**: Refactored colors fetching from incremental chunked requests to single complete API call using `/v2/colors?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 
 **Benefits:**
 
 - ~60% reduction in API calls through intelligent batching and deduplication
-- **Persistent localStorage caching** of all static data (items, colors, skins, material categories, titles) with automatic cache version management
+- **Complete dataset fetching** for colors, material categories, and home data eliminates incremental fetching overhead
+- **Version-aware cache management** ensures users automatically get updated data formats without manual cache clearing
+- **Persistent localStorage caching** of all static data (items, colors, skins, material categories, titles, currencies, outfits, home nodes/cats) with automatic cache version management
 - Better global state management with proper React Context patterns
 - Cleaner public APIs with read-only interfaces
 - Improved maintainability through consolidated static data management
