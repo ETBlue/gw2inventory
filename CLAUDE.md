@@ -36,6 +36,59 @@ npm run format:check    # Check code formatting without changes
 npm run prepare         # Setup git hooks (husky)
 ```
 
+## Commit Quality Standards for AI Agents
+
+**IMPORTANT**: All AI agents working on this codebase must follow this comprehensive quality check process before making any commits. This ensures consistent code quality, documentation accuracy, and proper change tracking.
+
+### Pre-Commit Quality Pipeline
+
+**1. Code Quality Checks (Required - All Must Pass):**
+
+```bash
+npm run test:run        # Ensure all tests pass
+npm run typecheck       # Verify TypeScript compilation
+npm run format          # Apply Prettier formatting
+npm run lint            # Run ESLint analysis
+npm run build           # Verify production build works
+```
+
+**2. Documentation Review (Required):**
+
+- Review `CLAUDE.md` for necessary updates
+- Update architecture descriptions if patterns/approaches change
+- Add significant changes to "Recent Major Refactoring" section with timestamps (YYYY-MM-DD format)
+- Update hook lists, API patterns, or architectural principles if modified
+- Document new benefits, performance improvements, or efficiency gains
+- Ensure feature additions are reflected in routing structure or code organization sections
+
+**3. Commit Standards (Required):**
+
+- Use descriptive commit messages following established format
+- Include specific technical changes and their benefits
+- Add Claude Code signature: `🤖 Generated with [Claude Code](https://claude.ai/code)`
+- Add co-authorship: `Co-Authored-By: Claude <noreply@anthropic.com>`
+- Reference relevant file locations and line numbers when helpful
+
+**4. Process Verification:**
+
+- All quality checks must pass before staging files
+- Documentation must be updated in the same commit when relevant
+- Working tree must be clean after commit
+- No regressions or broken functionality allowed
+
+**Example Workflow:**
+
+```bash
+# 1. Make code changes
+# 2. Run complete quality pipeline
+npm run test:run && npm run typecheck && npm run format && npm run lint && npm run build
+# 3. Update documentation if needed
+# 4. Stage and commit changes
+git add . && git commit -m "descriptive message with Claude signature"
+```
+
+This process ensures: ✅ Code quality ✅ No regressions ✅ Current documentation ✅ Clear change history ✅ Consistent standards
+
 ## Architecture
 
 ### State Management
