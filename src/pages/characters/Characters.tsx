@@ -1,8 +1,15 @@
-import { Link, useNavigate, useParams, useSearchParams } from "react-router"
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+  useLocation,
+} from "react-router"
 import { format, formatDistance } from "date-fns"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { FaCheck, FaMinus } from "react-icons/fa"
 import { MdSearch } from "react-icons/md"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import {
   Tabs,
   TabList,
@@ -17,12 +24,20 @@ import {
   List,
   ListItem,
   ListIcon,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react"
 
 import { getQueryString } from "helpers/url"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
-import SortableTable, { Column } from "components/SortableTable"
+import { compare } from "pages/items/helpers/compare"
+import { PatchedItem } from "~/types/items"
+import css from "~/styles/shared-table.module.css"
 
 const PROFESSIONS = [
   "Elementalist",
@@ -35,6 +50,14 @@ const PROFESSIONS = [
   "Guardian",
   "Revenant",
 ]
+
+interface Column {
+  key: string
+  title: string
+  render:
+    | ((data: Character) => React.JSX.Element | string)
+    | ((data: PatchedItem) => React.JSX.Element | string)
+}
 
 const COLUMNS: Column[] = [
   {
@@ -114,17 +137,41 @@ const COLUMNS: Column[] = [
 function Characters() {
   const { hasToken, characters, isFetching } = useCharacters()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const { profession } = useParams<{ profession?: string }>()
 
   const [searchParams] = useSearchParams()
   const keyword = searchParams.get("keyword")
+  const sortBy = searchParams.get("sortBy")
+  const order = searchParams.get("order")
   const queryString = searchParams.toString()
+
+  // Sorting state
+  const defaultSortBy = "name"
+  const defaultOrder = "asc"
+  const activeSort = sortBy || defaultSortBy
+  const activeOrder = order || defaultOrder
 
   // Convert profession param to match the format used in filtering (capitalized)
   const activeProfession = profession
     ? profession.charAt(0).toUpperCase() + profession.slice(1)
     : undefined
 
+  // Handle sorting
+  const handleSort = (column: string) => {
+    const newUrl = `${pathname}?${
+      activeSort === column
+        ? getQueryString(
+            "order",
+            activeOrder === "asc" ? "dsc" : "",
+            queryString,
+          )
+        : getQueryString("sortBy", column, queryString)
+    }`
+    navigate(newUrl)
+  }
+
+  // Filter and sort characters
   const visibleCharacters = characters
     ?.filter(
       (character: Character) =>
@@ -135,6 +182,13 @@ function Characters() {
         ? JSON.stringify(character).match(new RegExp(keyword, "i"))
         : true,
     )
+    .sort((a, b) => {
+      // Type-safe property access using keyof operator
+      const aValue = activeSort in a ? (a as any)[activeSort] : ""
+      const bValue = activeSort in b ? (b as any)[activeSort] : ""
+      const number = compare(aValue, bValue)
+      return activeOrder === "asc" ? number : number * -1
+    })
 
   const getActiveTabIndex = (): number => {
     if (!activeProfession) return 0 // "All" tab
@@ -197,12 +251,40 @@ function Characters() {
             />
           </InputGroup>
         </TabList>
-        <SortableTable
-          columns={COLUMNS}
-          rows={visibleCharacters}
-          defaultSortBy="name"
-          defaultOrder="asc"
-        />
+        <Table className={css.table}>
+          <Thead>
+            <Tr>
+              {COLUMNS.map((col) => (
+                <Th
+                  key={col.key}
+                  cursor="pointer"
+                  onClick={() => handleSort(col.title)}
+                  className={`${css.title} ${
+                    activeSort === col.title ? css.active : ""
+                  }`}
+                >
+                  {col.title}
+                  {activeSort === col.title ? (
+                    activeOrder === "asc" ? (
+                      <CgArrowDown />
+                    ) : (
+                      <CgArrowUp />
+                    )
+                  ) : null}
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {visibleCharacters?.map((row) => (
+              <Tr key={row.name}>
+                {COLUMNS.map((column: Column) => (
+                  <Td key={column.key}>{column.render(row as any)}</Td>
+                ))}
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
       </div>
       {isFetching ? (
         <Center>
