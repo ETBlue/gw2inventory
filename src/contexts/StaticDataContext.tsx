@@ -819,7 +819,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_HOME_NODES_FETCHING", fetching: true })
 
     try {
-      const data = await fetchGW2<string[]>("home/nodes", "ids=all")
+      const data = await fetchGW2<string[]>("home/nodes")
       if (data) {
         dispatch({ type: "ADD_HOME_NODES", homeNodes: data })
         cacheUtils.saveHomeNodes(data)
