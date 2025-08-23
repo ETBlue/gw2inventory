@@ -35,7 +35,7 @@ import {
 import { getQueryString } from "helpers/url"
 import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
-import { compare } from "pages/items/helpers/compare"
+import { compare } from "~/helpers/compare"
 import { PatchedItem } from "~/types/items"
 import css from "~/styles/shared-table.module.css"
 

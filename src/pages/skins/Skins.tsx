@@ -31,7 +31,7 @@ import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
 import { PAGINATION } from "~/constants"
 import sharedTextCss from "~/styles/shared-text.module.css"
-import { compareRarity } from "~/pages/items/helpers/compare"
+import { compareRarity } from "~/helpers/compare"
 
 type SkinType = "All" | "Armor" | "Weapon" | "Back" | "Gathering"
 type SkinSort =

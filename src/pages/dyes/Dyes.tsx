@@ -27,7 +27,7 @@ import {
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
 import { useDyes } from "~/hooks/useDyes"
-import { compareRarity } from "~/pages/items/helpers/compare"
+import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
