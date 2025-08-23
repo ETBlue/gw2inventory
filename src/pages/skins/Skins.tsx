@@ -1,37 +1,41 @@
-import { useState, useMemo, useEffect } from "react"
-import { chunk } from "lodash"
-import { useNavigate, useParams, Link, useSearchParams } from "react-router"
-import { getQueryString } from "~/helpers/url"
+import { useEffect, useMemo, useState } from "react"
+
 import {
-  Center,
-  Spinner,
-  Image,
   Box,
+  Center,
+  Grid,
+  Heading,
+  Image,
   Input,
   InputGroup,
   InputLeftElement,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Tag,
-  Heading,
-  Grid,
-  Tabs,
-  TabList,
-  Tab,
   Spacer,
+  Spinner,
+  Tab,
+  TabList,
+  Table,
+  Tabs,
+  Tag,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react"
-import { MdSearch } from "react-icons/md"
+
+import { chunk } from "lodash"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { useSkins } from "~/hooks/useSkins"
+import { MdSearch } from "react-icons/md"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router"
+
 import Pagination from "~/components/Pagination"
-import css from "./Skins.module.css"
 import { PAGINATION } from "~/constants"
-import sharedTextCss from "~/styles/shared-text.module.css"
 import { compareRarity } from "~/helpers/compare"
+import { getQueryString } from "~/helpers/url"
+import { useSkins } from "~/hooks/useSkins"
+import sharedTextCss from "~/styles/shared-text.module.css"
+
+import css from "./Skins.module.css"
 
 type SkinType = "All" | "Armor" | "Weapon" | "Back" | "Gathering"
 type SkinSort =

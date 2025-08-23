@@ -1,21 +1,22 @@
 import {
+  Box,
   Center,
+  Divider,
   Grid,
   Heading,
+  List,
+  ListIcon,
+  ListItem,
   SimpleGrid,
   Spinner,
-  Text,
-  Box,
-  List,
-  ListItem,
-  ListIcon,
-  Divider,
   Tag,
+  Text,
 } from "@chakra-ui/react"
+
 import { FaCheck, FaMinus } from "react-icons/fa"
 
-import useHomeNodes from "~/hooks/useHomeNodes"
 import useHomeCats from "~/hooks/useHomeCats"
+import useHomeNodes from "~/hooks/useHomeNodes"
 
 export default function Home() {
   const {

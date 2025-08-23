@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { screen, fireEvent } from "@testing-library/react"
-import { render } from "~/test/utils"
-import Dyes from "./Dyes"
+import { fireEvent, screen } from "@testing-library/react"
+
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { useDyes } from "~/hooks/useDyes"
+import { render } from "~/test/utils"
+
+import Dyes from "./Dyes"
+
 // API reference for `/v2/account/dyes`: https://wiki.guildwars2.com/wiki/API:2/account/dyes
 // API reference for `/v2/colors`: https://wiki.guildwars2.com/wiki/API:2/colors
 

@@ -1,12 +1,14 @@
 import Overview from "~/pages/account/Overview"
 import Wallet from "~/pages/account/Wallet"
-import Outfits from "./Outfits"
+
 import Home from "./Home"
+import Outfits from "./Outfits"
+
 /* 
-import Achievements from "pages/account/Achievements"
-import Masteries from "pages/account/Masteries"
-import Recipes from "pages/account/Recipes"
-import Legendaries from "pages/account/Legendaries"
+import Achievements from "~/pages/account/Achievements"
+import Masteries from "~/pages/account/Masteries"
+import Recipes from "~/pages/account/Recipes"
+import Legendaries from "~/pages/account/Legendaries"
 */
 
 export const MENU_ITEMS = [

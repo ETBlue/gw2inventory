@@ -1,10 +1,12 @@
+import { Tab, TabList, Tabs, Tag } from "@chakra-ui/react"
+
+import { isNumber } from "lodash"
 import { NavLink, Route, Routes, useLocation } from "react-router"
-import { Tabs, TabList, Tab, Tag } from "@chakra-ui/react"
+
+import { useOutfits } from "~/hooks/useOutfits"
+import { useWallet } from "~/hooks/useWallet"
 
 import { MENU_ITEMS } from "./contants"
-import { useWallet } from "~/hooks/useWallet"
-import { useOutfits } from "~/hooks/useOutfits"
-import { isNumber } from "lodash"
 
 function Account() {
   const location = useLocation()

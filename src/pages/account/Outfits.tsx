@@ -8,6 +8,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react"
+
 import { useOutfits } from "~/hooks/useOutfits"
 
 export default function Outfits() {

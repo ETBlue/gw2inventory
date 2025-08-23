@@ -1,10 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { renderHook, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { renderHook, waitFor } from "@testing-library/react"
+
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import * as staticDataContext from "~/contexts/StaticDataContext"
+import * as apiHelpers from "~/helpers/api"
+
 import { useSkins } from "./useSkins"
 import * as tokenHook from "./useToken"
-import * as apiHelpers from "~/helpers/api"
-import * as staticDataContext from "~/contexts/StaticDataContext"
 
 // Mock dependencies
 vi.mock("./useToken")

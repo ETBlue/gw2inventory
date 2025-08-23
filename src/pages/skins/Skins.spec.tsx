@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { screen, cleanup, fireEvent } from "@testing-library/react"
-import { render } from "~/test/utils"
-import Skins from "./Skins"
+import { cleanup, fireEvent, screen } from "@testing-library/react"
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+
 import { useSkins } from "~/hooks/useSkins"
+import { render } from "~/test/utils"
+
+import Skins from "./Skins"
+
 // API reference for `/v2/account/skins`: https://wiki.guildwars2.com/wiki/API:2/account/skins
 // API reference for `/v2/skins`: https://wiki.guildwars2.com/wiki/API:2/skins
 

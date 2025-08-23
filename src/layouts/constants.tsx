@@ -1,8 +1,8 @@
-import Account from "pages/account"
-import Characters from "pages/characters"
-import Items from "pages/items"
-import Skins from "pages/skins"
-import Dyes from "pages/dyes"
+import Account from "~/pages/account"
+import Characters from "~/pages/characters"
+import Dyes from "~/pages/dyes"
+import Items from "~/pages/items"
+import Skins from "~/pages/skins"
 
 export const LEVEL_ONE_MENU_ITEMS = [
   { to: "/account", text: "Account", path: "/account/*", element: <Account /> },

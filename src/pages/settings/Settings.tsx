@@ -1,11 +1,13 @@
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
-import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
 
-import { queryFunction } from "helpers/api"
-import { useToken } from "hooks/useToken"
-import { UsedAccount } from "contexts/types/TokenContext"
+import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
+
+import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
+
+import { UsedAccount } from "~/contexts/types/TokenContext"
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
 
 function Settings() {
   const {

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useToken } from "~/hooks/useToken"
 import { useStaticData } from "~/contexts/StaticDataContext"
 import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
 
 export default function useHomeCats() {
   const { currentAccount } = useToken()

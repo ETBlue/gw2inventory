@@ -1,43 +1,44 @@
 import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-  useLocation,
-} from "react-router"
-import { format, formatDistance } from "date-fns"
-import { GiFemale, GiMale } from "react-icons/gi"
-import { FaCheck, FaMinus } from "react-icons/fa"
-import { MdSearch } from "react-icons/md"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import {
-  Tabs,
-  TabList,
-  Tab,
   Center,
-  Spinner,
-  Tag,
-  Spacer,
   Input,
   InputGroup,
   InputLeftElement,
   List,
-  ListItem,
   ListIcon,
+  ListItem,
+  Spacer,
+  Spinner,
+  Tab,
+  TabList,
   Table,
-  Thead,
+  Tabs,
+  Tag,
   Tbody,
-  Tr,
-  Th,
   Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react"
-
-import { getQueryString } from "helpers/url"
-import { useCharacters } from "hooks/useCharacters"
 import type { Character } from "@gw2api/types/data/character"
+
+import { format, formatDistance } from "date-fns"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
+import { FaCheck, FaMinus } from "react-icons/fa"
+import { GiFemale, GiMale } from "react-icons/gi"
+import { MdSearch } from "react-icons/md"
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router"
+
 import { compare } from "~/helpers/compare"
-import { PatchedItem } from "~/types/items"
+import { getQueryString } from "~/helpers/url"
+import { useCharacters } from "~/hooks/useCharacters"
 import css from "~/styles/shared-table.module.css"
+import { PatchedItem } from "~/types/items"
 
 const PROFESSIONS = [
   "Elementalist",

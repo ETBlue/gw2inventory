@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
-import { useToken } from "~/hooks/useToken"
-import { queryFunction } from "~/helpers/api"
-import { AccountDyesData, DyesData } from "~/types/dyes"
+
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
+import { AccountDyesData, DyesData } from "~/types/dyes"
 
 /**
  * Custom hook to fetch account dyes and color details

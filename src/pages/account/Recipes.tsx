@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { queryFunction } from "helpers/api"
-import { useToken } from "hooks/useToken"
+
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
 
 function Recipes() {
   const { currentAccount } = useToken()

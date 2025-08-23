@@ -1,6 +1,5 @@
 // Guild Wars 2 API Wallet types
 // Based on API:2/account/wallet and API:2/currencies endpoints
-
 import type { AccountWallet } from "@gw2api/types/data/account-wallet"
 import type { Currency } from "@gw2api/types/data/currency"
 

@@ -1,8 +1,7 @@
 /**
  * Custom error classes and error handling utilities for the GW2 API
  */
-
-import { HTTP_STATUS } from "constants"
+import { HTTP_STATUS } from "~/constants"
 
 export class GW2ApiError extends Error {
   constructor(

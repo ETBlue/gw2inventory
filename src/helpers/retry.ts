@@ -1,5 +1,6 @@
-import { isNotFoundError, isGW2ApiError, RateLimitError } from "./errors"
-import { API_CONSTANTS, HTTP_STATUS } from "constants"
+import { API_CONSTANTS, HTTP_STATUS } from "~/constants"
+
+import { RateLimitError, isGW2ApiError, isNotFoundError } from "./errors"
 
 export interface RetryOptions {
   maxRetries?: number

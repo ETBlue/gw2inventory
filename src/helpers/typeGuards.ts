@@ -2,8 +2,7 @@
  * Type guards for runtime type validation
  * These help ensure type safety when dealing with unknown data
  */
-
-import { UsedAccount } from "contexts/types/TokenContext"
+import { UsedAccount } from "~/contexts/types/TokenContext"
 
 /**
  * Type guard to check if value is a valid UsedAccount

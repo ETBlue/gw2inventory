@@ -1,14 +1,16 @@
 import { useEffect } from "react"
+
+import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react"
+
 import {
   CgChevronDoubleLeft,
   CgChevronDoubleRight,
   CgChevronLeft,
   CgChevronRight,
 } from "react-icons/cg"
-import { Flex, Button, ButtonGroup, IconButton } from "@chakra-ui/react"
 
-import { UserItemInList } from "types/items"
-import { PAGINATION } from "constants"
+import { PAGINATION } from "~/constants"
+import { UserItemInList } from "~/types/items"
 
 interface Props<T = UserItemInList> {
   pageIndex: number

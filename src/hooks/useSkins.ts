@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { useToken } from "~/hooks/useToken"
-import { queryFunction } from "~/helpers/api"
-import { AccountSkins } from "~/types/skins"
+
+import { useQuery } from "@tanstack/react-query"
+
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
+import { AccountSkins } from "~/types/skins"
 
 /**
  * Custom hook to fetch account skins and skin details

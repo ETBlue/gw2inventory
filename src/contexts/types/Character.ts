@@ -1,9 +1,7 @@
 // This file now only contains custom types that extend the official GW2 API types
 // For Character types, import directly from "@gw2api/types/data/character"
-
-import type { ItemStack } from "@gw2api/types/data/item"
-
 import { CharacterEquipmentEntry } from "@gw2api/types/data/character"
+import type { ItemStack } from "@gw2api/types/data/item"
 
 // Character bag item type with your custom extensions
 export interface CharacterBagItem extends ItemStack {

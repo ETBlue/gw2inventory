@@ -1,24 +1,28 @@
 import { useMemo } from "react"
-import { useNavigate, useSearchParams } from "react-router"
+
 import {
   Center,
-  Spinner,
-  Image,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Heading,
   Grid,
+  Heading,
+  Image,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { useWallet } from "~/hooks/useWallet"
-import { getQueryString } from "~/helpers/url"
-import sharedTableCss from "~/styles/shared-table.module.css"
+
 import { BsQuestionOctagonFill } from "react-icons/bs"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
+import { useNavigate, useSearchParams } from "react-router"
+
+import { getQueryString } from "~/helpers/url"
+import { useWallet } from "~/hooks/useWallet"
+import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
+
 type WalletSort = "name" | "value"
 type WalletOrder = "asc" | "desc"
 

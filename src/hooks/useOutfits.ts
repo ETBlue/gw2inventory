@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { useToken } from "~/hooks/useToken"
-import { queryFunction } from "~/helpers/api"
-import { AccountOutfits } from "~/types/outfits"
+
+import { useQuery } from "@tanstack/react-query"
+
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
+import { AccountOutfits } from "~/types/outfits"
 
 /**
  * Custom hook to fetch account outfits and outfit details

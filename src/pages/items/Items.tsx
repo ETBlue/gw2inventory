@@ -1,52 +1,53 @@
-import { useState, useMemo, useCallback } from "react"
+import { useCallback, useMemo, useState } from "react"
+
 import {
-  NavLink,
-  useLocation,
-  useParams,
-  useSearchParams,
-  useNavigate,
-} from "react-router"
-import { chunk, findIndex } from "lodash"
-import { MdSearch } from "react-icons/md"
-import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import {
-  Tabs,
-  TabList,
-  Tab,
+  Center,
+  Grid,
   Input,
   InputGroup,
   InputLeftElement,
   Spacer,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Tag,
-  Center,
   Spinner,
-  Grid,
+  Tab,
+  TabList,
+  Table,
+  Tabs,
+  Tag,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react"
 
-import { PAGINATION } from "~/constants"
-import { useItemsData } from "hooks/useItemsData"
-import { useCharacters } from "hooks/useCharacters"
-import { PatchedItem, UserItemInList } from "types/items"
-import Pagination from "components/Pagination"
-import { getQueryString } from "helpers/url"
+import { chunk, findIndex } from "lodash"
+import { CgArrowDown, CgArrowUp } from "react-icons/cg"
+import { MdSearch } from "react-icons/md"
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router"
 
-import SubMenuItem from "./SubMenuItem"
+import Pagination from "~/components/Pagination"
+import { PAGINATION } from "~/constants"
+import { compare, compareRarity } from "~/helpers/compare"
+import { getQueryString } from "~/helpers/url"
+import { useCharacters } from "~/hooks/useCharacters"
+import { useItemsData } from "~/hooks/useItemsData"
+import sharedTableCss from "~/styles/shared-table.module.css"
+import { PatchedItem, UserItemInList } from "~/types/items"
+
 import Item from "./Item"
+import SubMenuItem from "./SubMenuItem"
+import { MENU_ITEMS } from "./constants"
 import {
   getTypedItemLength,
   isItemInCategory,
   isItemInTypes,
 } from "./helpers/count"
-import { compare, compareRarity } from "~/helpers/compare"
-
-import { Sort, Order } from "./types"
-import sharedTableCss from "~/styles/shared-table.module.css"
-import { MENU_ITEMS } from "./constants"
+import { Order, Sort } from "./types"
 
 const TABLE_HEADERS = [
   "rarity",

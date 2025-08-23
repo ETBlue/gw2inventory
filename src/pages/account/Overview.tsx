@@ -1,6 +1,5 @@
-import { GiCheckMark } from "react-icons/gi"
 import { Fragment, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
+
 import {
   Badge,
   Center,
@@ -11,14 +10,18 @@ import {
   ListItem,
   Spinner,
 } from "@chakra-ui/react"
-import { useToken } from "~/hooks/useToken"
-import { useTitles } from "~/hooks/useTitles"
 import { Account } from "@gw2api/types/data/account"
-import { queryFunction } from "~/helpers/api"
+import { useQuery } from "@tanstack/react-query"
+
 import { format } from "date-fns"
-import sharedTextCss from "~/styles/shared-text.module.css"
-import sharedLayoutCss from "~/styles/shared-layout.module.css"
 import { FaCrown } from "react-icons/fa"
+import { GiCheckMark } from "react-icons/gi"
+
+import { queryFunction } from "~/helpers/api"
+import { useTitles } from "~/hooks/useTitles"
+import { useToken } from "~/hooks/useToken"
+import sharedLayoutCss from "~/styles/shared-layout.module.css"
+import sharedTextCss from "~/styles/shared-text.module.css"
 
 function formatAccessText(text: string): string {
   return text

@@ -45,7 +45,20 @@
     "tabWidth": 2,
     "semi": false,
     "singleQuote": false,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+      "^react$",
+      "^react/(.*)$",
+      "^@(.*)$",
+      "<THIRD_PARTY_MODULES>",
+      "^~/(.*)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
   },
   "browserslist": {
     "production": [
@@ -64,6 +77,7 @@
     "@testing-library/jest-dom": "^6.7.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/lodash": "^4.17.20",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

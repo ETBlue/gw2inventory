@@ -1,10 +1,11 @@
 import type { Character } from "@gw2api/types/data/character"
-import { CharacterItemInList } from "contexts/types/CharacterContext"
+
 import {
   CharacterBag,
   CharacterBagItem,
   CharacterEquipmentItem,
-} from "contexts/types/Character"
+} from "~/contexts/types/Character"
+import { CharacterItemInList } from "~/contexts/types/CharacterContext"
 
 /**
  * Processes character data into a flat list of character items

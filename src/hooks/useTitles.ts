@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
-import { useToken } from "~/hooks/useToken"
-import { queryFunction } from "~/helpers/api"
-import { AccountTitles } from "~/types/titles"
+
 import { useStaticData } from "~/contexts/StaticDataContext"
+import { queryFunction } from "~/helpers/api"
+import { useToken } from "~/hooks/useToken"
+import { AccountTitles } from "~/types/titles"
 
 /**
  * Custom hook to fetch account titles and their details

@@ -1,21 +1,23 @@
-import { Link, NavLink } from "react-router"
 import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Button,
-  SimpleGrid,
   Flex,
   Image,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  SimpleGrid,
 } from "@chakra-ui/react"
+
 import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
+import { Link, NavLink } from "react-router"
 
+import { COLORS, COMPONENT_THEME, LAYOUT } from "~/constants"
 import { APP_CONFIG } from "~/constants"
-import { useToken } from "hooks/useToken"
-import { COLORS, COMPONENT_THEME, LAYOUT } from "constants"
-import { UsedAccount } from "contexts/types/TokenContext"
+import { UsedAccount } from "~/contexts/types/TokenContext"
+import { useToken } from "~/hooks/useToken"
+
 import { LEVEL_ONE_MENU_ITEMS } from "./constants"
 
 function Header() {

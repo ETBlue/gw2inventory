@@ -1,34 +1,37 @@
 import { useMemo } from "react"
-import { useNavigate, useParams, Link, useSearchParams } from "react-router"
+
 import {
-  Center,
-  Spinner,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Heading,
   Box,
+  Center,
   Grid,
-  Tabs,
-  TabList,
-  Tab,
-  Tag,
-  Spacer,
+  Heading,
   Input,
   InputGroup,
   InputLeftElement,
   /* disable tooltip for now
-  Tooltip,
-  */
+Tooltip,
+*/
+  Spacer,
+  Spinner,
+  Tab,
+  TabList,
+  Table,
+  Tabs,
+  Tag,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react"
+
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
-import { useDyes } from "~/hooks/useDyes"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router"
+
 import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { useDyes } from "~/hooks/useDyes"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 

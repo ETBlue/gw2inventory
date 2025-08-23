@@ -1,6 +1,6 @@
-import Header from "~/layouts/Header"
-
 import { Box, Grid } from "@chakra-ui/react"
+
+import Header from "~/layouts/Header"
 
 interface Props {
   children?: React.ReactNode

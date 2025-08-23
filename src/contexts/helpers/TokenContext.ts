@@ -1,6 +1,6 @@
-import { UsedAccount } from "contexts/types/TokenContext"
-import { parseJsonSafely, isUsedAccountArray } from "helpers/typeGuards"
 import { STORAGE_KEYS } from "~/constants"
+import { UsedAccount } from "~/contexts/types/TokenContext"
+import { isUsedAccountArray, parseJsonSafely } from "~/helpers/typeGuards"
 
 export const getUsedAccounts = (): UsedAccount[] => {
   const storedTokens: UsedAccount[] = readStoredTokens()

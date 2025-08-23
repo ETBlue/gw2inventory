@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { screen, fireEvent } from "@testing-library/react"
-import { render } from "~/test/utils"
-import Wallet from "./Wallet"
+import { fireEvent, screen } from "@testing-library/react"
+
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { useWallet } from "~/hooks/useWallet"
+import { render } from "~/test/utils"
+
+import Wallet from "./Wallet"
+
 // API reference for `/v2/account/wallet`: https://wiki.guildwars2.com/wiki/API:2/account/wallet
 // API reference for `/v2/currencies`: https://wiki.guildwars2.com/wiki/API:2/currencies
 

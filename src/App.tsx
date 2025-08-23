@@ -1,12 +1,13 @@
-import { HashRouter as Router, Navigate, Route, Routes } from "react-router"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ChakraProvider } from "@chakra-ui/react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-import { TokenProvider } from "contexts/TokenContext"
-import { CharacterProvider } from "contexts/CharacterContext"
-import { StaticDataProvider } from "contexts/StaticDataContext"
-import BaseFrame from "layouts/BaseFrame"
-import Settings from "pages/settings"
+import { Navigate, Route, HashRouter as Router, Routes } from "react-router"
+
+import { CharacterProvider } from "~/contexts/CharacterContext"
+import { StaticDataProvider } from "~/contexts/StaticDataContext"
+import { TokenProvider } from "~/contexts/TokenContext"
+import BaseFrame from "~/layouts/BaseFrame"
+import Settings from "~/pages/settings"
 
 import "./App.css"
 import { LEVEL_ONE_MENU_ITEMS } from "./layouts/constants"

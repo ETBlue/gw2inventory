@@ -1,5 +1,5 @@
-import { Items, Materials, PatchedItem, UserItemInList } from "types/items"
 import { MENU_ITEMS } from "~/pages/items/constants"
+import { Items, Materials, PatchedItem, UserItemInList } from "~/types/items"
 
 interface LengthParams {
   types: string[]

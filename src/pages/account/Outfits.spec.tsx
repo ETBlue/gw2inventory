@@ -1,8 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import Outfits from "./Outfits"
+import { render, screen, waitFor } from "@testing-library/react"
+
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import * as useOutfitsModule from "~/hooks/useOutfits"
+
+import Outfits from "./Outfits"
 
 // API reference for `/v2/account/outfits`: https://wiki.guildwars2.com/wiki/API:2/account/outfits
 // API reference for `/v2/outfits`: https://wiki.guildwars2.com/wiki/API:2/outfits
