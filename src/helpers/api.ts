@@ -1,6 +1,6 @@
 import { QueryFunctionContext } from "@tanstack/react-query"
 
-import { API_URL, API_LANG } from "config"
+import { GW2_API } from "~/constants"
 import {
   GW2ApiError,
   NetworkError,
@@ -44,12 +44,12 @@ export const fetchGW2 = async <T = unknown>(
   endpoint: string,
   queryString?: string,
 ): Promise<T | null> => {
-  const url = `${API_URL}/${endpoint}${queryString ? `?${queryString}` : ""}`
+  const url = `${GW2_API.BASE_URL}/${endpoint}${queryString ? `?${queryString}` : ""}`
 
   try {
     const res = await fetch(url, {
       headers: {
-        "Accept-Language": API_LANG,
+        "Accept-Language": GW2_API.LANGUAGE,
       },
     })
 

@@ -29,7 +29,7 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useSkins } from "~/hooks/useSkins"
 import Pagination from "~/components/Pagination"
 import css from "./Skins.module.css"
-import { ITEM_COUNT_PER_PAGE } from "~/config"
+import { PAGINATION } from "~/constants"
 import sharedTextCss from "~/styles/shared-text.module.css"
 import { compareRarity } from "~/pages/items/helpers/compare"
 
@@ -137,7 +137,7 @@ export default function Skins() {
   // Create pages for pagination
   const pages = useMemo(() => {
     if (!filteredSkins) return []
-    return chunk(filteredSkins, ITEM_COUNT_PER_PAGE)
+    return chunk(filteredSkins, PAGINATION.ITEMS_PER_PAGE)
   }, [filteredSkins])
 
   // Reset page index when filters or sorting change

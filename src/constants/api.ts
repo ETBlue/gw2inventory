@@ -3,6 +3,16 @@
  */
 
 /**
+ * GW2 API base configuration
+ */
+export const GW2_API = {
+  /** Base URL for the Guild Wars 2 API */
+  BASE_URL: "https://api.guildwars2.com/v2",
+  /** Default language for API responses */
+  LANGUAGE: "en",
+} as const
+
+/**
  * GW2 API request configuration
  */
 export const API_CONSTANTS = {

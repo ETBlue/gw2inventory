@@ -8,6 +8,18 @@
 export const PAGINATION = {
   /** Number of page buttons to show on each side of current page */
   VISIBLE_PAGE_RANGE: 10,
+  /** Number of items to display per page */
+  ITEMS_PER_PAGE: 100,
+} as const
+
+/**
+ * LocalStorage keys for persisting application data
+ */
+export const STORAGE_KEYS = {
+  /** Legacy storage key (for migration) */
+  LEGACY: "gw2i",
+  /** Current tokens storage key */
+  TOKENS: "gw2iTokens",
 } as const
 
 /**

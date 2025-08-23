@@ -1,5 +1,6 @@
 import { UsedAccount } from "contexts/types/TokenContext"
 import { parseJsonSafely, isUsedAccountArray } from "helpers/typeGuards"
+import { STORAGE_KEYS } from "~/constants"
 
 export const getUsedAccounts = (): UsedAccount[] => {
   const storedTokens: UsedAccount[] = readStoredTokens()
@@ -9,14 +10,14 @@ export const getUsedAccounts = (): UsedAccount[] => {
     ...v1StoredTokens,
   ].filter((item) => item.token)
   if (v1StoredTokens.length > 0) {
-    localStorage.setItem("gw2iTokens", JSON.stringify(usedAccounts))
-    localStorage.removeItem("gw2i")
+    localStorage.setItem(STORAGE_KEYS.TOKENS, JSON.stringify(usedAccounts))
+    localStorage.removeItem(STORAGE_KEYS.LEGACY)
   }
   return usedAccounts
 }
 
 export const readStoredTokens = (): UsedAccount[] => {
-  const storage = localStorage.getItem("gw2iTokens")
+  const storage = localStorage.getItem(STORAGE_KEYS.TOKENS)
   if (storage) {
     const data = parseJsonSafely(storage, isUsedAccountArray)
     if (data) {
@@ -28,7 +29,7 @@ export const readStoredTokens = (): UsedAccount[] => {
 }
 
 export const readV1StoredTokens = (): UsedAccount[] => {
-  const v1Storage = localStorage.getItem("gw2i")
+  const v1Storage = localStorage.getItem(STORAGE_KEYS.LEGACY)
   if (v1Storage) {
     const v1Data = parseJsonSafely(
       v1Storage,

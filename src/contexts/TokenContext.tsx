@@ -2,6 +2,7 @@ import { useState, createContext } from "react"
 
 import { Values, UsedAccount } from "./types/TokenContext"
 import { getUsedAccounts } from "./helpers/TokenContext"
+import { STORAGE_KEYS } from "~/constants"
 
 const TokenContext = createContext<Values>({
   usedAccounts: [],
@@ -17,7 +18,7 @@ function TokenProvider(props: { children: React.ReactNode }) {
   const [currentAccount, setCurrentAccount] = useState<UsedAccount | null>(null)
 
   const updateUsedAccounts = (newUsedAccounts: UsedAccount[]) => {
-    localStorage.setItem("gw2iTokens", JSON.stringify(newUsedAccounts))
+    localStorage.setItem(STORAGE_KEYS.TOKENS, JSON.stringify(newUsedAccounts))
     setUsedAccounts(newUsedAccounts)
   }
 

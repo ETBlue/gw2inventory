@@ -12,7 +12,7 @@ import {
 import { FaCog, FaUser } from "react-icons/fa"
 import { MdExpandMore } from "react-icons/md"
 
-import { APP_NAME, BASE_URL } from "config"
+import { APP_CONFIG } from "~/constants"
 import { useToken } from "hooks/useToken"
 import { COLORS, COMPONENT_THEME, LAYOUT } from "constants"
 import { UsedAccount } from "contexts/types/TokenContext"
@@ -42,9 +42,9 @@ function Header() {
           height="3.5rem"
           marginBottom="-2px"
           alt="logo"
-          src={`${BASE_URL}/favicon.png`}
+          src={`${APP_CONFIG.BASE_URL}/favicon.png`}
         />
-        {APP_NAME}
+        {APP_CONFIG.NAME}
       </Flex>
       <Flex as="nav" justifyContent="center">
         {LEVEL_ONE_MENU_ITEMS.map((item) => (

@@ -19,7 +19,7 @@ import {
   Grid,
 } from "@chakra-ui/react"
 
-import { ITEM_COUNT_PER_PAGE } from "config"
+import { PAGINATION } from "~/constants"
 import { useItemsData } from "hooks/useItemsData"
 import { useCharacters } from "hooks/useCharacters"
 import { PatchedItem, UserItemInList } from "types/items"
@@ -154,7 +154,7 @@ function Items() {
   ])
 
   const pages = useMemo(
-    () => chunk(visibleItems, ITEM_COUNT_PER_PAGE),
+    () => chunk(visibleItems, PAGINATION.ITEMS_PER_PAGE),
     [visibleItems],
   )
   const [pageIndex, setPageIndex] = useState<number>(0)
