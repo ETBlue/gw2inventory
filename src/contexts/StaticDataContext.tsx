@@ -893,7 +893,6 @@ export const useStaticData = (): StaticDataContextType => {
   }
   return context
 }
-
 /**
  * Hook to batch multiple item sources and fetch all unique IDs together
  * More efficient than fetching each source separately as it avoids duplicate API calls

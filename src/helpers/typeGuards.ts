@@ -3,37 +3,7 @@
  * These help ensure type safety when dealing with unknown data
  */
 
-import type { Character } from "@gw2api/types/data/character"
 import { UsedAccount } from "contexts/types/TokenContext"
-import { PatchedItem } from "~/types/items"
-
-/**
- * Type guard to check if value is a valid Item
- */
-export function isItem(value: unknown): value is PatchedItem {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "id" in value &&
-    "name" in value &&
-    typeof (value as any).id === "number" &&
-    typeof (value as any).name === "string"
-  )
-}
-
-/**
- * Type guard to check if value is a valid Character
- */
-export function isCharacter(value: unknown): value is Character {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "name" in value &&
-    "profession" in value &&
-    typeof (value as any).name === "string" &&
-    typeof (value as any).profession === "string"
-  )
-}
 
 /**
  * Type guard to check if value is a valid UsedAccount
@@ -55,7 +25,6 @@ export function isUsedAccount(value: unknown): value is UsedAccount {
 export function isUsedAccountArray(value: unknown): value is UsedAccount[] {
   return Array.isArray(value) && value.every(isUsedAccount)
 }
-
 /**
  * Utility function to safely parse JSON with type validation
  */
