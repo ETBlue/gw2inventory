@@ -1,9 +1,9 @@
 import { createContext, useContext, useState } from "react"
 
 import { STORAGE_KEYS } from "~/constants"
+import { UsedAccount, Values } from "~/types/tokens"
 
 import { getUsedAccounts } from "./helpers/TokenContext"
-import { UsedAccount, Values } from "./types/TokenContext"
 
 const TokenContext = createContext<Values>({
   usedAccounts: [],

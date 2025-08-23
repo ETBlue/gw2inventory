@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
-
-import { Values } from "./types/CharacterContext"
+import { Values } from "~/types/characters"
 
 const CharacterContext = createContext<Values>({
   hasToken: false,

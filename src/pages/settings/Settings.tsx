@@ -6,8 +6,8 @@ import { useQuery } from "@tanstack/react-query"
 import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
 
 import { useToken } from "~/contexts/TokenContext"
-import { UsedAccount } from "~/contexts/types/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { UsedAccount } from "~/types/tokens"
 
 function Settings() {
   const {

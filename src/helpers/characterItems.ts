@@ -4,8 +4,8 @@ import {
   CharacterBag,
   CharacterBagItem,
   CharacterEquipmentItem,
-} from "~/contexts/types/Character"
-import { CharacterItemInList } from "~/contexts/types/CharacterContext"
+} from "~/types/characters"
+import { CharacterItemInList } from "~/types/characters"
 
 /**
  * Processes character data into a flat list of character items

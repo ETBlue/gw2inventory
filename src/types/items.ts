@@ -3,7 +3,7 @@ import type { Item } from "@gw2api/types/data/item"
 import type { ItemStack } from "@gw2api/types/data/item"
 import type { MaterialStack } from "@gw2api/types/data/material"
 
-import { CharacterItemInList } from "~/contexts/types/CharacterContext"
+import { CharacterItemInList } from "~/types/characters"
 
 // Extend the Item type to include missing properties
 export interface PatchedItem extends Omit<Item, "type"> {

@@ -16,7 +16,7 @@ import { Link, NavLink } from "react-router"
 import { COLORS, COMPONENT_THEME, LAYOUT } from "~/constants"
 import { APP_CONFIG } from "~/constants"
 import { useToken } from "~/contexts/TokenContext"
-import { UsedAccount } from "~/contexts/types/TokenContext"
+import { UsedAccount } from "~/types/tokens"
 
 import { LEVEL_ONE_MENU_ITEMS } from "./constants"
 
