@@ -173,7 +173,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Hook Patterns:**
 
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkinsData`, `useDyesData`, `useHomeNodesData`, `useHomeCatsData`) expose read-only data
+- Public hooks (`useItemsData`, `useSkinsData`, `useDyesData`, `useHomeNodesData`, `useHomeCatsData`) and context hooks (`useToken`, `useCharacters`) expose read-only data
 - Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useBatchAutoFetchItems`)
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
@@ -324,6 +324,7 @@ Significant architectural improvements were made to the static data management s
 - **Action Naming Consistency**: Standardized all StaticDataContext reducer actions to use consistent `ADD_*` pattern (changed `SET_HOME_NODES`, `SET_HOME_CATS`, `SET_MATERIAL_CATEGORIES` to `ADD_*` variants) for better code maintainability
 - **Import Path Standardization**: Implemented consistent `~` path alias for all internal imports throughout the entire codebase, configured @trivago/prettier-plugin-sort-imports for automated import organization, and established clear visual distinction between internal project modules and external dependencies (2025-01-23)
 - **Hook Naming Standardization**: Renamed all data fetching hooks to follow consistent `use***Data.ts` naming pattern (useOutfits → useOutfitsData, useSkins → useSkinsData, useTitles → useTitlesData, useWallet → useWalletData, useDyes → useDyesData, useHomeCats → useHomeCatsData, useHomeNodes → useHomeNodesData) with comprehensive import updates across entire codebase for improved naming consistency and better distinction between data fetching hooks and other utilities (2025-01-23)
+- **Context Hook Consolidation**: Merged `useToken.ts` and `useCharacters.ts` hooks directly into their respective context files (`TokenContext.tsx`, `CharacterContext.tsx`) eliminating redundant wrapper files and improving code co-location - hooks now live alongside their contexts and providers for better maintainability and reduced file count (2025-01-23)
 
 **Benefits:**
 
@@ -344,3 +345,4 @@ Significant architectural improvements were made to the static data management s
 - **Reduced technical debt** by eliminating custom URL parameter handling in favor of React Router v7 standards, improving maintainability and compatibility
 - **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
 - **Enhanced naming consistency** with `use***Data.ts` pattern for all data fetching hooks, improving code organization and making it easier to distinguish between different types of hooks
+- **Reduced file count and improved co-location** by merging context hooks directly into their context files, eliminating redundant wrapper files while maintaining clean public APIs
