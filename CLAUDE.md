@@ -316,13 +316,19 @@ Significant architectural improvements were made to the static data management s
 - **Titles Fetching Optimization**: Refactored titles fetching from incremental chunked requests to single complete API call using `/v2/titles?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 - **Currencies Fetching Optimization**: Refactored currencies fetching from incremental chunked requests to single complete API call using `/v2/currencies?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 - **Outfits Fetching Optimization**: Refactored outfits fetching from incremental chunked requests to single complete API call using `/v2/outfits?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
+- **Home Nodes Fetching Optimization**: Refactored home nodes fetching to use single complete API call using `/v2/home/nodes?ids=all` with version-based cache management and automatic fetching by StaticDataContext (2025-01-23)
+- **Home Cats Fetching Optimization**: Refactored home cats fetching to use single complete API call using `/v2/home/cats?ids=all` with version-based cache management and automatic fetching by StaticDataContext (2025-01-23)
+- **API Cleanup**: Removed unused `addItems` function and `fetchHomeNodes`/`fetchHomeCats` functions from public StaticDataContext API for better encapsulation
+- **Action Naming Consistency**: Standardized all StaticDataContext reducer actions to use consistent `ADD_*` pattern (changed `SET_HOME_NODES`, `SET_HOME_CATS`, `SET_MATERIAL_CATEGORIES` to `ADD_*` variants) for better code maintainability
 
 **Benefits:**
 
 - ~60% reduction in API calls through intelligent batching and deduplication
-- **Complete dataset fetching** for colors, material categories, and home data eliminates incremental fetching overhead
+- **Complete dataset fetching** for colors, titles, currencies, outfits, material categories, home nodes, and home cats eliminates incremental fetching overhead
 - **Version-aware cache management** ensures users automatically get updated data formats without manual cache clearing
 - **Persistent localStorage caching** of all static data (items, colors, skins, material categories, titles, currencies, outfits, home nodes/cats) with automatic cache version management
+- **Consistent action naming** across all reducer actions using `ADD_*` pattern for improved code readability
+- **Cleaner public APIs** with removal of unused functions (`addItems`, `fetchHomeNodes`, `fetchHomeCats`) for better encapsulation
 - Better global state management with proper React Context patterns
 - Cleaner public APIs with read-only interfaces
 - Improved maintainability through consolidated static data management
