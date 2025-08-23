@@ -844,6 +844,24 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homeCats.length])
 
+  const fetchMaterialCategories = useCallback(async () => {
+    if (state.materialCategoriesData.length > 0) return
+
+    dispatch({ type: "SET_MATERIAL_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<MaterialCategory[]>("materials", "ids=all")
+      if (data) {
+        dispatch({ type: "SET_MATERIAL_CATEGORIES", materialCategories: data })
+        cacheUtils.saveMaterialCategories(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch material categories:", error)
+    } finally {
+      dispatch({ type: "SET_MATERIAL_FETCHING", fetching: false })
+    }
+  }, [state.materialCategoriesData.length])
+
   // Add functions using useCallback for consistency
   const addItems = useCallback((newItems: PatchedItem[]) => {
     dispatch({ type: "ADD_ITEMS", items: newItems })
@@ -869,23 +887,19 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "ADD_OUTFITS", outfits: newOutfits })
   }, [])
 
-  const fetchMaterialCategories = useCallback(async () => {
-    if (state.materialCategoriesData.length > 0) return
-
-    dispatch({ type: "SET_MATERIAL_FETCHING", fetching: true })
-
-    try {
-      const data = await fetchGW2<MaterialCategory[]>("materials", "ids=all")
-      if (data) {
-        dispatch({ type: "SET_MATERIAL_CATEGORIES", materialCategories: data })
-        cacheUtils.saveMaterialCategories(data)
-      }
-    } catch (error) {
-      console.error("Failed to fetch material categories:", error)
-    } finally {
-      dispatch({ type: "SET_MATERIAL_FETCHING", fetching: false })
+  // Auto-fetch material categories on first use (when empty)
+  useEffect(() => {
+    if (
+      state.materialCategoriesData.length === 0 &&
+      !state.isMaterialFetching
+    ) {
+      fetchMaterialCategories()
     }
-  }, [state.materialCategoriesData.length])
+  }, [
+    state.materialCategoriesData.length,
+    state.isMaterialFetching,
+    fetchMaterialCategories,
+  ])
 
   // Memoize processed material categories data
   const materialCategories = useMemo(

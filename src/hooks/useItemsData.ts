@@ -40,7 +40,6 @@ export const useItemsData = () => {
     materialCategories,
     materials,
     isMaterialFetching,
-    fetchMaterialCategories,
   } = useStaticData()
 
   // Reset items when account changes
@@ -171,13 +170,6 @@ export const useItemsData = () => {
     () => processCharacterItems(characters),
     [characters],
   )
-
-  // Auto-fetch material categories on first use
-  useEffect(() => {
-    if (materialCategories.length === 0 && !isMaterialFetching) {
-      fetchMaterialCategories()
-    }
-  }, [materialCategories.length, isMaterialFetching, fetchMaterialCategories])
 
   // Batch fetch item details for all item sources in a single API call
   // More efficient than fetching each source separately as it avoids duplicate API calls
