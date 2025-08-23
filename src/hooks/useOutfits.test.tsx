@@ -102,10 +102,9 @@ describe("useOutfits", () => {
     expect(result.current.outfits).toBeUndefined()
   })
 
-  it("fetches account outfit IDs and triggers outfit fetching when token is available", async () => {
+  it("fetches account outfit IDs when token is available", async () => {
     const mockToken = "test-token"
     const mockOutfitIds = [1, 2, 3]
-    const mockFetchOutfits = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -143,7 +142,7 @@ describe("useOutfits", () => {
       addCurrencies: vi.fn(),
       outfits: {},
       isOutfitsFetching: false,
-      fetchOutfits: mockFetchOutfits,
+      fetchOutfits: vi.fn(),
       addOutfits: vi.fn(),
       homeNodes: [],
       isHomeNodesFetching: false,
@@ -181,10 +180,6 @@ describe("useOutfits", () => {
 
     await waitFor(() => {
       expect(result.current.accountOutfitIds).toEqual(mockOutfitIds)
-    })
-
-    await waitFor(() => {
-      expect(mockFetchOutfits).toHaveBeenCalledWith(mockOutfitIds)
     })
   })
 
@@ -413,93 +408,5 @@ describe("useOutfits", () => {
     })
 
     expect(result.current.isFetching).toBe(true)
-  })
-
-  it("only fetches uncached outfits", async () => {
-    const mockToken = "test-token"
-    const mockOutfitIds = [1, 2, 3]
-    const mockFetchOutfits = vi.fn()
-    const existingOutfits = {
-      1: { id: 1, name: "Arcane Outfit", icon: "", unlock_items: [] }, // Outfit 1 already cached
-    }
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      addItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materials: {},
-      isMaterialFetching: false,
-      fetchMaterialCategories: vi.fn(),
-      colors: {},
-      isColorsFetching: false,
-      fetchColors: vi.fn(),
-      addColors: vi.fn(),
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      addSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      fetchTitles: vi.fn(),
-      addTitles: vi.fn(),
-      currencies: {},
-      isCurrenciesFetching: false,
-      fetchCurrencies: vi.fn(),
-      addCurrencies: vi.fn(),
-      outfits: existingOutfits,
-      isOutfitsFetching: false,
-      fetchOutfits: mockFetchOutfits,
-      addOutfits: vi.fn(),
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
-      homeCats: [],
-      isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        version: null,
-      })),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint] = queryKey
-      if (endpoint === "account/outfits") {
-        return mockOutfitIds
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useOutfits(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.accountOutfitIds).toEqual(mockOutfitIds)
-    })
-
-    // Should only fetch uncached outfits (2 and 3)
-    await waitFor(() => {
-      expect(mockFetchOutfits).toHaveBeenCalledWith([2, 3])
-    })
   })
 })

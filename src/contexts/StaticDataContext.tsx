@@ -33,6 +33,7 @@ const STORAGE_KEYS = {
   CURRENCIES: "gw2inventory_static_currencies",
   CURRENCIES_VERSION: "gw2inventory_static_currencies_version",
   OUTFITS: "gw2inventory_static_outfits",
+  OUTFITS_VERSION: "gw2inventory_static_outfits_version",
   HOME_NODES: "gw2inventory_static_home_nodes",
   HOME_CATS: "gw2inventory_static_home_cats",
   VERSION: "gw2inventory_cache_version",
@@ -46,6 +47,8 @@ const COLORS_VERSION = "complete-1.0.0"
 const TITLES_VERSION = "complete-1.0.0"
 // Currencies version to handle transition from incremental to complete fetching
 const CURRENCIES_VERSION = "complete-1.0.0"
+// Outfits version to handle transition from incremental to complete fetching
+const OUTFITS_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -127,8 +130,9 @@ const cacheUtils = {
     const currencies = this.checkCurrenciesVersion()
       ? this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
       : {}
-    const outfits =
-      this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
+    const outfits = this.checkOutfitsVersion()
+      ? this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
+      : {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
     const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
 
@@ -219,6 +223,22 @@ const cacheUtils = {
 
   saveOutfits(outfits: Record<number, Outfit>): void {
     this.save(STORAGE_KEYS.OUTFITS, outfits)
+    this.save(STORAGE_KEYS.OUTFITS_VERSION, OUTFITS_VERSION)
+  },
+
+  checkOutfitsVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.OUTFITS_VERSION)
+    if (cachedVersion !== OUTFITS_VERSION) {
+      console.log("Outfits version mismatch, clearing outfits cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.OUTFITS)
+        localStorage.removeItem(STORAGE_KEYS.OUTFITS_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear outfits cache:", error)
+      }
+      return false
+    }
+    return true
   },
 
   saveHomeNodes(homeNodes: string[]): void {
@@ -353,7 +373,7 @@ interface StaticDataContextType {
   addCurrencies: (currencies: Currency[]) => void
   outfits: Record<number, Outfit>
   isOutfitsFetching: boolean
-  fetchOutfits: (outfitIds: number[]) => Promise<void>
+  fetchOutfits: () => Promise<void>
   addOutfits: (outfits: Outfit[]) => void
   homeNodes: string[]
   isHomeNodesFetching: boolean
@@ -741,61 +761,36 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.currencies])
 
-  const fetchOutfits = useCallback(async (newIds: number[]) => {
-    if (newIds.length === 0) return
+  const fetchOutfits = useCallback(async () => {
+    // Only fetch if outfits cache version is outdated or no outfits exist
+    if (
+      cacheUtils.checkOutfitsVersion() &&
+      Object.keys(state.outfits).length > 0
+    )
+      return
 
     dispatch({ type: "SET_OUTFITS_FETCHING", fetching: true })
 
-    // Use ref to access current data without adding to dependencies
-    const currentData = staticDataRef.current.outfits
-    const existingIdSet = new Set(
-      Object.keys(currentData).map((key) => parseInt(key)),
-    )
-    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-    if (idsToFetch.length === 0) {
-      dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
-      return
-    }
-
-    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    let newItems: Outfit[] = []
-    let failedChunks = 0
-
-    for (const chunk of chunks) {
-      try {
-        const data = await fetchGW2<Outfit[]>(
-          "outfits",
-          `ids=${chunk.join(",")}`,
+    try {
+      const data = await fetchGW2<Outfit[]>("outfits", "ids=all")
+      if (data) {
+        dispatch({ type: "ADD_OUTFITS", outfits: data })
+        // Save outfits to cache with version
+        const outfitsRecord = data.reduce(
+          (acc, outfit) => {
+            acc[outfit.id] = outfit
+            return acc
+          },
+          {} as Record<number, Outfit>,
         )
-        if (data) {
-          newItems = [...newItems, ...data]
-        }
-      } catch (error) {
-        console.error("Failed to fetch outfits chunk:", error)
-        failedChunks++
-        // Continue fetching other chunks even if one fails
+        cacheUtils.saveOutfits(outfitsRecord)
       }
+    } catch (error) {
+      console.error("Failed to fetch outfits:", error)
+    } finally {
+      dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
     }
-
-    if (newItems.length > 0) {
-      dispatch({ type: "ADD_OUTFITS", outfits: newItems })
-      // Save updated outfits to cache after adding new ones
-      const updatedOutfits = { ...staticDataRef.current.outfits }
-      newItems.forEach((item) => {
-        updatedOutfits[item.id] = item
-      })
-      cacheUtils.saveOutfits(updatedOutfits)
-    }
-
-    if (failedChunks > 0) {
-      console.warn(
-        `Failed to fetch ${failedChunks} out of ${chunks.length} outfits chunks`,
-      )
-    }
-
-    dispatch({ type: "SET_OUTFITS_FETCHING", fetching: false })
-  }, [])
+  }, [state.outfits])
 
   const fetchHomeNodes = useCallback(async () => {
     if (state.homeNodes.length > 0) return
@@ -927,6 +922,18 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     state.isCurrenciesFetching,
     fetchCurrencies,
   ])
+
+  // Auto-fetch outfits on first use (when version is outdated or no outfits exist)
+  // This handles incomplete outfit data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkOutfitsVersion() ||
+        Object.keys(state.outfits).length === 0) &&
+      !state.isOutfitsFetching
+    ) {
+      fetchOutfits()
+    }
+  }, [Object.keys(state.outfits).length, state.isOutfitsFetching, fetchOutfits])
 
   // Memoize processed material categories data
   const materialCategories = useMemo(

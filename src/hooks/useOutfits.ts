@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import { AccountOutfits } from "~/types/outfits"
@@ -13,7 +13,7 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 export const useOutfits = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { outfits, isOutfitsFetching, fetchOutfits } = useStaticData()
+  const { outfits, isOutfitsFetching } = useStaticData()
 
   // Fetch account outfit IDs
   const {
@@ -26,19 +26,6 @@ export const useOutfits = () => {
     staleTime: Infinity,
     enabled: !!token,
   })
-
-  // Auto-fetch outfit details when account outfit IDs are available
-  useEffect(() => {
-    if (accountOutfitIds && accountOutfitIds.length > 0) {
-      // Only fetch outfits that aren't already cached
-      const uncachedOutfitIds = accountOutfitIds.filter(
-        (outfitId) => !outfits[outfitId],
-      )
-      if (uncachedOutfitIds.length > 0) {
-        fetchOutfits(uncachedOutfitIds)
-      }
-    }
-  }, [accountOutfitIds, outfits, fetchOutfits])
 
   // Extract outfits that are owned by the account
   const accountOutfits = useMemo(() => {
