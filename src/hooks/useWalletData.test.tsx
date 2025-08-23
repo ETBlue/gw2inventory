@@ -10,7 +10,7 @@ import * as apiHelpers from "~/helpers/api"
 import { createTestQueryClient } from "~/test/utils"
 
 import * as tokenHook from "./useToken"
-import { useWallet } from "./useWallet"
+import { useWallet } from "./useWalletData"
 
 // Mock the useToken hook
 vi.mock("./useToken")

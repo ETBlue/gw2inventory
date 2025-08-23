@@ -3,8 +3,8 @@ import { Tab, TabList, Tabs, Tag } from "@chakra-ui/react"
 import { isNumber } from "lodash"
 import { NavLink, Route, Routes, useLocation } from "react-router"
 
-import { useOutfits } from "~/hooks/useOutfits"
-import { useWallet } from "~/hooks/useWallet"
+import { useOutfits } from "~/hooks/useOutfitsData"
+import { useWallet } from "~/hooks/useWalletData"
 
 import { MENU_ITEMS } from "./contants"
 

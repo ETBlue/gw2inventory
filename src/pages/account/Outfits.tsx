@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 
-import { useOutfits } from "~/hooks/useOutfits"
+import { useOutfits } from "~/hooks/useOutfitsData"
 
 export default function Outfits() {
   const { outfits = [], isFetching, error, hasToken } = useOutfits()

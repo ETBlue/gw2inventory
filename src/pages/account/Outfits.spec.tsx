@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import * as useOutfitsModule from "~/hooks/useOutfits"
+import * as useOutfitsModule from "~/hooks/useOutfitsData"
 
 import Outfits from "./Outfits"
 

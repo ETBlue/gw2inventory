@@ -15,8 +15,8 @@ import {
 
 import { FaCheck, FaMinus } from "react-icons/fa"
 
-import useHomeCats from "~/hooks/useHomeCats"
-import useHomeNodes from "~/hooks/useHomeNodes"
+import useHomeCats from "~/hooks/useHomeCatsData"
+import useHomeNodes from "~/hooks/useHomeNodesData"
 
 export default function Home() {
   const {

@@ -18,7 +18,7 @@ import { FaCrown } from "react-icons/fa"
 import { GiCheckMark } from "react-icons/gi"
 
 import { queryFunction } from "~/helpers/api"
-import { useTitles } from "~/hooks/useTitles"
+import { useTitles } from "~/hooks/useTitlesData"
 import { useToken } from "~/hooks/useToken"
 import sharedLayoutCss from "~/styles/shared-layout.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"

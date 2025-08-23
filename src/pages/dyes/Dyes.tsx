@@ -31,7 +31,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router"
 
 import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
-import { useDyes } from "~/hooks/useDyes"
+import { useDyes } from "~/hooks/useDyesData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 

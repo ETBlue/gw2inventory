@@ -32,7 +32,7 @@ import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
 import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
-import { useSkins } from "~/hooks/useSkins"
+import { useSkins } from "~/hooks/useSkinsData"
 import sharedTextCss from "~/styles/shared-text.module.css"
 
 import css from "./Skins.module.css"

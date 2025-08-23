@@ -19,7 +19,7 @@ import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { useNavigate, useSearchParams } from "react-router"
 
 import { getQueryString } from "~/helpers/url"
-import { useWallet } from "~/hooks/useWallet"
+import { useWallet } from "~/hooks/useWalletData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
 

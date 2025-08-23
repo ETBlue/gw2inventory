@@ -2,7 +2,7 @@ import { cleanup, fireEvent, screen } from "@testing-library/react"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useSkins } from "~/hooks/useSkins"
+import { useSkins } from "~/hooks/useSkinsData"
 import { render } from "~/test/utils"
 
 import Skins from "./Skins"
@@ -11,7 +11,7 @@ import Skins from "./Skins"
 // API reference for `/v2/skins`: https://wiki.guildwars2.com/wiki/API:2/skins
 
 // Mock the skins hook
-vi.mock("~/hooks/useSkins")
+vi.mock("~/hooks/useSkinsData")
 
 // Mock react-router hooks
 vi.mock("react-router", async () => {

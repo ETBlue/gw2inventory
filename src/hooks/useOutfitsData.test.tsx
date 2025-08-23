@@ -9,7 +9,7 @@ import * as staticDataContext from "~/contexts/StaticDataContext"
 import * as apiHelpers from "~/helpers/api"
 import { createTestQueryClient } from "~/test/utils"
 
-import { useOutfits } from "./useOutfits"
+import { useOutfits } from "./useOutfitsData"
 import * as tokenHook from "./useToken"
 
 // Mock dependencies

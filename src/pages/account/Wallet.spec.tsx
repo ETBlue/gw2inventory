@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useWallet } from "~/hooks/useWallet"
+import { useWallet } from "~/hooks/useWalletData"
 import { render } from "~/test/utils"
 
 import Wallet from "./Wallet"
@@ -11,7 +11,7 @@ import Wallet from "./Wallet"
 // API reference for `/v2/currencies`: https://wiki.guildwars2.com/wiki/API:2/currencies
 
 // Mock the wallet hook
-vi.mock("~/hooks/useWallet")
+vi.mock("~/hooks/useWalletData")
 
 // Mock react-router hooks
 vi.mock("react-router", async () => {

@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useDyes } from "~/hooks/useDyes"
+import { useDyes } from "~/hooks/useDyesData"
 import { render } from "~/test/utils"
 
 import Dyes from "./Dyes"
@@ -11,7 +11,7 @@ import Dyes from "./Dyes"
 // API reference for `/v2/colors`: https://wiki.guildwars2.com/wiki/API:2/colors
 
 // Mock the dyes hook
-vi.mock("~/hooks/useDyes")
+vi.mock("~/hooks/useDyesData")
 
 // Mock react-router hooks
 const { useParams } = vi.hoisted(() => ({

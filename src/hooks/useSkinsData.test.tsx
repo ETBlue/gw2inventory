@@ -1,5 +1,3 @@
-import { ReactNode } from "react"
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, waitFor } from "@testing-library/react"
 
@@ -8,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import * as staticDataContext from "~/contexts/StaticDataContext"
 import * as apiHelpers from "~/helpers/api"
 
-import { useDyes } from "./useDyes"
+import { useSkins } from "./useSkinsData"
 import * as tokenHook from "./useToken"
 
 // Mock dependencies
@@ -29,78 +27,50 @@ function createWrapper() {
       },
     },
   })
-  const Wrapper = ({ children }: { children: ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
   Wrapper.displayName = "TestWrapper"
   return Wrapper
 }
 
-// Mock color data
-const mockColors = [
+// Mock skin data
+const mockSkins = [
   {
     id: 1,
-    name: "Dye Black",
-    base_rgb: [0, 0, 0] as [number, number, number],
-    categories: ["Gray", "Metal", "Rare"],
-    cloth: {
-      brightness: 0,
-      contrast: 1,
-      hue: 0,
-      saturation: 0,
-      lightness: 0,
-      rgb: [10, 10, 10] as [number, number, number],
+    name: "Test Skin",
+    type: "Armor" as const,
+    rarity: "Exotic" as const,
+    race: ["Human"] as const,
+    description: "Test skin description",
+    details: {
+      type: "Coat" as const,
+      weight_class: "Light" as const,
+      damage_type: undefined,
     },
-    leather: {
-      brightness: 0,
-      contrast: 1,
-      hue: 0,
-      saturation: 0,
-      lightness: 5,
-      rgb: [15, 15, 15] as [number, number, number],
-    },
-    metal: {
-      brightness: 0,
-      contrast: 1.5,
-      hue: 0,
-      saturation: 0,
-      lightness: 10,
-      rgb: [20, 20, 20] as [number, number, number],
-    },
+    icon: "test-icon.png",
+    restrictions: [],
+    flags: [],
   },
   {
     id: 2,
-    name: "Celestial",
-    base_rgb: [255, 255, 255] as [number, number, number],
-    categories: ["Blue", "Vibrant", "Rare"],
-    cloth: {
-      brightness: 15,
-      contrast: 1.25,
-      hue: 200,
-      saturation: 30,
-      lightness: 50,
-      rgb: [128, 191, 255] as [number, number, number],
+    name: "Another Skin",
+    type: "Weapon" as const,
+    rarity: "Rare" as const,
+    race: null,
+    description: "Another test skin",
+    details: {
+      type: "Sword" as const,
+      weight_class: undefined,
+      damage_type: "Physical" as const,
     },
-    leather: {
-      brightness: 10,
-      contrast: 1.2,
-      hue: 200,
-      saturation: 25,
-      lightness: 45,
-      rgb: [120, 180, 240] as [number, number, number],
-    },
-    metal: {
-      brightness: 20,
-      contrast: 1.3,
-      hue: 200,
-      saturation: 35,
-      lightness: 55,
-      rgb: [140, 200, 255] as [number, number, number],
-    },
+    icon: "another-icon.png",
+    restrictions: [],
+    flags: [],
   },
 ]
 
-describe("useDyes", () => {
+describe("useSkins", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -152,19 +122,19 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    const { result } = renderHook(() => useDyes(), {
+    const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
     expect(result.current.hasToken).toBe(false)
-    expect(result.current.dyesData).toBeUndefined()
-    expect(result.current.colors).toEqual([])
-    expect(result.current.dyesWithDetails).toBeUndefined()
+    expect(result.current.accountSkinIds).toBeUndefined()
+    expect(result.current.skins).toBeUndefined()
   })
 
-  it("fetches dye IDs when token is available", async () => {
+  it("fetches account skin IDs and triggers skin fetching with uncached skin IDs when token is available", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = [1, 2]
+    const mockAccountSkinIds = [1, 2]
+    const mockFetchSkins = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -186,7 +156,7 @@ describe("useDyes", () => {
       isColorsFetching: false,
       skins: {},
       isSkinsFetching: false,
-      fetchSkins: vi.fn(),
+      fetchSkins: mockFetchSkins,
       titles: {},
       isTitlesFetching: false,
       currencies: {},
@@ -213,29 +183,34 @@ describe("useDyes", () => {
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
-      if (endpoint === "account/dyes") {
-        return mockDyeIds
+      if (endpoint === "account/skins") {
+        return mockAccountSkinIds
       }
       return null
     })
 
-    const { result } = renderHook(() => useDyes(), {
+    const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
     expect(result.current.hasToken).toBe(true)
 
     await waitFor(() => {
-      expect(result.current.dyesData).toEqual(mockDyeIds)
+      expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
+    })
+
+    // Should call fetchSkins with uncached skin IDs (since skins cache is empty, all are uncached)
+    await waitFor(() => {
+      expect(mockFetchSkins).toHaveBeenCalledWith([1, 2])
     })
   })
 
-  it("combines dye data with color details when both are available", async () => {
+  it("combines account skin IDs with skin details when both are available", async () => {
     const mockToken = "test-token"
-    const mockDyeIds = [1, 2]
-    const mockColorsRecord = {
-      1: mockColors[0],
-      2: mockColors[1],
+    const mockAccountSkinIds = [1, 2]
+    const mockSkinsRecord = {
+      1: mockSkins[0],
+      2: mockSkins[1],
     }
 
     mockUseToken.mockReturnValue({
@@ -246,112 +221,6 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materials: {},
-      isMaterialFetching: false,
-      colors: mockColorsRecord,
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        version: null,
-      })),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint] = queryKey
-      if (endpoint === "account/dyes") {
-        return mockDyeIds
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useDyes(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.dyesData).toEqual(mockDyeIds)
-    })
-
-    await waitFor(() => {
-      expect(result.current.dyesWithDetails).toEqual([
-        { id: 1, color: mockColors[0] },
-        { id: 2, color: mockColors[1] },
-      ])
-    })
-
-    expect(result.current.colors).toEqual(mockColors)
-  })
-
-  it("handles empty dye data gracefully", async () => {
-    const mockToken = "test-token"
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint] = queryKey
-      if (endpoint === "account/dyes") {
-        return []
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useDyes(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.dyesData).toEqual([])
-    })
-
-    expect(result.current.colors).toEqual([])
-    expect(result.current.dyesWithDetails).toBeUndefined()
-  })
-
-  it("aggregates fetching status from account dyes and colors", async () => {
-    const mockToken = "test-token"
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    // Mock colors fetching as true
     mockUseStaticData.mockReturnValue({
       items: {},
       isItemsFetching: false,
@@ -361,8 +230,8 @@ describe("useDyes", () => {
       materials: {},
       isMaterialFetching: false,
       colors: {},
-      isColorsFetching: true,
-      skins: {},
+      isColorsFetching: false,
+      skins: mockSkinsRecord,
       isSkinsFetching: false,
       fetchSkins: vi.fn(),
       titles: {},
@@ -389,16 +258,29 @@ describe("useDyes", () => {
       })),
     })
 
-    const { result } = renderHook(() => useDyes(), {
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account/skins") {
+        return mockAccountSkinIds
+      }
+      return null
+    })
+
+    const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
-    expect(result.current.isFetching).toBe(true)
+    await waitFor(() => {
+      expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
+    })
+
+    await waitFor(() => {
+      expect(result.current.skins).toEqual(mockSkins)
+    })
   })
 
-  it("handles API errors for dye data", async () => {
+  it("handles empty skin data gracefully", async () => {
     const mockToken = "test-token"
-    const mockError = new Error("API Error")
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -408,23 +290,37 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockQueryFunction.mockRejectedValue(mockError)
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account/skins") {
+        return []
+      }
+      return null
+    })
 
-    const { result } = renderHook(() => useDyes(), {
+    const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
     await waitFor(() => {
-      expect(result.current.error).toBe(mockError)
+      expect(result.current.accountSkinIds).toEqual([])
     })
+
+    expect(result.current.skins).toBeUndefined()
   })
 
-  it("converts colors record to array for backward compatibility", () => {
-    const mockColorsRecord = {
-      1: mockColors[0],
-      2: mockColors[1],
-    }
+  it("aggregates fetching status from account skins and skins", async () => {
+    const mockToken = "test-token"
 
+    mockUseToken.mockReturnValue({
+      currentAccount: { token: mockToken, name: "Test Account" },
+      usedAccounts: [],
+      addUsedAccount: vi.fn(),
+      removeUsedAccount: vi.fn(),
+      setCurrentAccount: vi.fn(),
+    })
+
+    // Mock skins fetching as true
     mockUseStaticData.mockReturnValue({
       items: {},
       isItemsFetching: false,
@@ -433,10 +329,10 @@ describe("useDyes", () => {
       materialCategories: [],
       materials: {},
       isMaterialFetching: false,
-      colors: mockColorsRecord,
+      colors: {},
       isColorsFetching: false,
       skins: {},
-      isSkinsFetching: false,
+      isSkinsFetching: true,
       fetchSkins: vi.fn(),
       titles: {},
       isTitlesFetching: false,
@@ -462,18 +358,85 @@ describe("useDyes", () => {
       })),
     })
 
+    const { result } = renderHook(() => useSkins(), {
+      wrapper: createWrapper(),
+    })
+
+    expect(result.current.isFetching).toBe(true)
+  })
+
+  it("calls fetchSkins with only uncached skin IDs when account skin IDs are available", async () => {
+    const mockToken = "test-token"
+    const mockAccountSkinIds = [1, 2, 3]
+    const mockFetchSkins = vi.fn()
+    const existingSkins = {
+      1: mockSkins[0], // Skin 1 already cached
+    }
+
     mockUseToken.mockReturnValue({
-      currentAccount: null,
+      currentAccount: { token: mockToken, name: "Test Account" },
       usedAccounts: [],
       addUsedAccount: vi.fn(),
       removeUsedAccount: vi.fn(),
       setCurrentAccount: vi.fn(),
     })
 
-    const { result } = renderHook(() => useDyes(), {
+    mockUseStaticData.mockReturnValue({
+      items: {},
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: [],
+      materials: {},
+      isMaterialFetching: false,
+      colors: {},
+      isColorsFetching: false,
+      skins: existingSkins,
+      isSkinsFetching: false,
+      fetchSkins: mockFetchSkins,
+      titles: {},
+      isTitlesFetching: false,
+      currencies: {},
+      isCurrenciesFetching: false,
+      outfits: {},
+      isOutfitsFetching: false,
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      homeCats: [],
+      isHomeCatsFetching: false,
+      getCacheInfo: vi.fn(() => ({
+        itemCount: 0,
+        materialCategoryCount: 0,
+        colorCount: 0,
+        skinCount: 0,
+        titleCount: 0,
+        currencyCount: 0,
+        outfitCount: 0,
+        homeNodeCount: 0,
+        homeCatCount: 0,
+        version: null,
+      })),
+    })
+
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account/skins") {
+        return mockAccountSkinIds
+      }
+      return null
+    })
+
+    const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
-    expect(result.current.colors).toEqual(mockColors)
+    await waitFor(() => {
+      expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
+    })
+
+    // Should call fetchSkins with only uncached skin IDs (2 and 3, since 1 is already cached)
+    await waitFor(() => {
+      expect(mockFetchSkins).toHaveBeenCalledWith([2, 3])
+    })
   })
 })
