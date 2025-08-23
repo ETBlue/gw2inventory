@@ -359,7 +359,7 @@ type StaticDataAction =
   | { type: "ADD_ITEMS"; items: PatchedItem[] }
   | { type: "SET_ITEMS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_ITEMS"; items: Record<number, PatchedItem> }
-  | { type: "SET_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
+  | { type: "ADD_MATERIAL_CATEGORIES"; materialCategories: MaterialCategory[] }
   | { type: "SET_MATERIAL_FETCHING"; fetching: boolean }
   | {
       type: "LOAD_CACHED_MATERIAL_CATEGORIES"
@@ -380,10 +380,10 @@ type StaticDataAction =
   | { type: "ADD_OUTFITS"; outfits: Outfit[] }
   | { type: "SET_OUTFITS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_OUTFITS"; outfits: Record<number, Outfit> }
-  | { type: "SET_HOME_NODES"; homeNodes: string[] }
+  | { type: "ADD_HOME_NODES"; homeNodes: string[] }
   | { type: "SET_HOME_NODES_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_HOME_NODES"; homeNodes: string[] }
-  | { type: "SET_HOME_CATS"; homeCats: HomeCat[] }
+  | { type: "ADD_HOME_CATS"; homeCats: HomeCat[] }
   | { type: "SET_HOME_CATS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_HOME_CATS"; homeCats: HomeCat[] }
 
@@ -443,7 +443,7 @@ const staticDataReducer = (
       return { ...state, isItemsFetching: action.fetching }
     case "LOAD_CACHED_ITEMS":
       return { ...state, items: action.items }
-    case "SET_MATERIAL_CATEGORIES":
+    case "ADD_MATERIAL_CATEGORIES":
       return { ...state, materialCategoriesData: action.materialCategories }
     case "SET_MATERIAL_FETCHING":
       return { ...state, isMaterialFetching: action.fetching }
@@ -494,13 +494,13 @@ const staticDataReducer = (
       return { ...state, isOutfitsFetching: action.fetching }
     case "LOAD_CACHED_OUTFITS":
       return { ...state, outfits: action.outfits }
-    case "SET_HOME_NODES":
+    case "ADD_HOME_NODES":
       return { ...state, homeNodes: action.homeNodes }
     case "SET_HOME_NODES_FETCHING":
       return { ...state, isHomeNodesFetching: action.fetching }
     case "LOAD_CACHED_HOME_NODES":
       return { ...state, homeNodes: action.homeNodes }
-    case "SET_HOME_CATS":
+    case "ADD_HOME_CATS":
       return { ...state, homeCats: action.homeCats }
     case "SET_HOME_CATS_FETCHING":
       return { ...state, isHomeCatsFetching: action.fetching }
@@ -821,7 +821,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     try {
       const data = await fetchGW2<string[]>("home/nodes", "ids=all")
       if (data) {
-        dispatch({ type: "SET_HOME_NODES", homeNodes: data })
+        dispatch({ type: "ADD_HOME_NODES", homeNodes: data })
         cacheUtils.saveHomeNodes(data)
       }
     } catch (error) {
@@ -838,7 +838,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     try {
       const data = await fetchGW2<HomeCat[]>("home/cats", "ids=all")
       if (data) {
-        dispatch({ type: "SET_HOME_CATS", homeCats: data })
+        dispatch({ type: "ADD_HOME_CATS", homeCats: data })
         cacheUtils.saveHomeCats(data)
       }
     } catch (error) {
@@ -856,7 +856,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     try {
       const data = await fetchGW2<MaterialCategory[]>("materials", "ids=all")
       if (data) {
-        dispatch({ type: "SET_MATERIAL_CATEGORIES", materialCategories: data })
+        dispatch({ type: "ADD_MATERIAL_CATEGORIES", materialCategories: data })
         cacheUtils.saveMaterialCategories(data)
       }
     } catch (error) {
