@@ -221,11 +221,13 @@ The application uses a hybrid approach with React Context API for global state a
 
 ### Code Style
 
-- Prettier configured:
+- Prettier configured with @trivago/prettier-plugin-sort-imports:
   - Tab width: 2
   - No semicolons
   - Double quotes for strings
   - Trailing commas in multiline
+  - Automated import sorting with precedence: React, @-scoped packages, third-party, ~/internal, relative imports
+  - All internal imports use `~` prefix for src root reference
 - TypeScript strict mode enabled with comprehensive type safety:
   - Explicit return type annotations on all exported functions
   - Generic type parameters for API functions
@@ -320,6 +322,7 @@ Significant architectural improvements were made to the static data management s
 - **Home Cats Fetching Optimization**: Refactored home cats fetching to use single complete API call using `/v2/home/cats?ids=all` with version-based cache management and automatic fetching by StaticDataContext (2025-01-23)
 - **API Cleanup**: Removed unused `addItems` function and `fetchHomeNodes`/`fetchHomeCats` functions from public StaticDataContext API for better encapsulation
 - **Action Naming Consistency**: Standardized all StaticDataContext reducer actions to use consistent `ADD_*` pattern (changed `SET_HOME_NODES`, `SET_HOME_CATS`, `SET_MATERIAL_CATEGORIES` to `ADD_*` variants) for better code maintainability
+- **Import Path Standardization**: Implemented consistent `~` path alias for all internal imports throughout the entire codebase, configured @trivago/prettier-plugin-sort-imports for automated import organization, and established clear visual distinction between internal project modules and external dependencies (2025-01-23)
 
 **Benefits:**
 
@@ -338,3 +341,4 @@ Significant architectural improvements were made to the static data management s
 - **Zero API calls on repeat visits** for previously fetched static data, significantly improving app loading performance
 - Unified item data access point eliminating code duplication between character and account items
 - **Reduced technical debt** by eliminating custom URL parameter handling in favor of React Router v7 standards, improving maintainability and compatibility
+- **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
