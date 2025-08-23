@@ -105,13 +105,13 @@ The application uses a hybrid approach with React Context API for global state a
 **Custom Hooks (replacing previous contexts):**
 
 - `useItemsData` - Manages all item-related data including account items (inventory, bank, materials) and character items with batched fetching (replaced ItemContext and merged useAccountItemsData)
-- `useTitles` - Fetches account titles with title details managed by StaticDataContext for efficient caching
-- `useWallet` - Fetches account wallet with currency details managed by StaticDataContext for efficient caching
-- `useSkins` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
-- `useOutfits` - Fetches account outfits with outfit details managed by StaticDataContext for efficient caching
-- `useDyes` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
-- `useHomeNodes` - Fetches account home instance nodes with home node data managed by StaticDataContext for efficient caching
-- `useHomeCats` - Fetches account home instance cats with home cat data managed by StaticDataContext for efficient caching
+- `useTitlesData` - Fetches account titles with title details managed by StaticDataContext for efficient caching
+- `useWalletData` - Fetches account wallet with currency details managed by StaticDataContext for efficient caching
+- `useSkinsData` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
+- `useOutfitsData` - Fetches account outfits with outfit details managed by StaticDataContext for efficient caching
+- `useDyesData` - Fetches account dyes with color details managed by StaticDataContext for efficient caching
+- `useHomeNodesData` - Fetches account home instance nodes with home node data managed by StaticDataContext for efficient caching
+- `useHomeCatsData` - Fetches account home instance cats with home cat data managed by StaticDataContext for efficient caching
 
 **Architecture Principles:**
 
@@ -173,7 +173,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Hook Patterns:**
 
-- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkins`, `useDyes`, `useHomeNodes`, `useHomeCats`) expose read-only data
+- Public hooks (`useItemsData`, `useToken`, `useCharacters`, `useSkinsData`, `useDyesData`, `useHomeNodesData`, `useHomeCatsData`) expose read-only data
 - Context-based static data management (`StaticDataContext`) with integrated fetching hooks (`useBatchAutoFetchItems`)
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
@@ -308,7 +308,7 @@ Significant architectural improvements were made to the static data management s
 - **Batched Fetching**: Implemented `useBatchAutoFetchItems` for efficient API usage - single request handles all item sources (character, inventory, bank, materials)
 - **Pure Helper Functions**: Extracted `processCharacterItems` to `/src/helpers/characterItems.ts` for better separation of concerns
 - **Hook Consolidation**: Merged `useAccountItemsData` into `useItemsData` for unified item management (2025-01-21)
-- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyes`, skin management from `useSkins`, title management from `useTitles`, currency management from `useWallet`, and outfit management from `useOutfits` to StaticDataContext with individual useCallback functions to comply with React Hook rules
+- **Code Consolidation**: Merged and removed redundant hooks (`useItemFetching`, `useBatchItemFetching`, `useMaterialCategoriesData`) into the context, moved color management from `useDyesData`, skin management from `useSkinsData`, title management from `useTitlesData`, currency management from `useWalletData`, and outfit management from `useOutfitsData` to StaticDataContext with individual useCallback functions to comply with React Hook rules
 - **LocalStorage Caching**: Implemented persistent caching of all static data (items, material categories, colors, skins, titles, currencies, outfits) with cache versioning system to prevent stale data across app updates
 - **React Router v7 Migration**: Replaced custom `useSearchParams` hook with React Router v7's built-in implementation, eliminating 159 lines of custom URL parameter handling code (2025-01-22)
 - **URL Parameter Handling**: Improved search input with direct URLSearchParams usage and useCallback optimization for better performance
@@ -323,6 +323,7 @@ Significant architectural improvements were made to the static data management s
 - **API Cleanup**: Removed unused `addItems` function and `fetchHomeNodes`/`fetchHomeCats` functions from public StaticDataContext API for better encapsulation
 - **Action Naming Consistency**: Standardized all StaticDataContext reducer actions to use consistent `ADD_*` pattern (changed `SET_HOME_NODES`, `SET_HOME_CATS`, `SET_MATERIAL_CATEGORIES` to `ADD_*` variants) for better code maintainability
 - **Import Path Standardization**: Implemented consistent `~` path alias for all internal imports throughout the entire codebase, configured @trivago/prettier-plugin-sort-imports for automated import organization, and established clear visual distinction between internal project modules and external dependencies (2025-01-23)
+- **Hook Naming Standardization**: Renamed all data fetching hooks to follow consistent `use***Data.ts` naming pattern (useOutfits → useOutfitsData, useSkins → useSkinsData, useTitles → useTitlesData, useWallet → useWalletData, useDyes → useDyesData, useHomeCats → useHomeCatsData, useHomeNodes → useHomeNodesData) with comprehensive import updates across entire codebase for improved naming consistency and better distinction between data fetching hooks and other utilities (2025-01-23)
 
 **Benefits:**
 
@@ -342,3 +343,4 @@ Significant architectural improvements were made to the static data management s
 - Unified item data access point eliminating code duplication between character and account items
 - **Reduced technical debt** by eliminating custom URL parameter handling in favor of React Router v7 standards, improving maintainability and compatibility
 - **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
+- **Enhanced naming consistency** with `use***Data.ts` pattern for all data fetching hooks, improving code organization and making it easier to distinguish between different types of hooks
