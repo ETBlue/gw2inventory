@@ -26,6 +26,7 @@ const STORAGE_KEYS = {
   ITEMS: "gw2inventory_static_items",
   MATERIAL_CATEGORIES: "gw2inventory_static_material_categories",
   COLORS: "gw2inventory_static_colors",
+  COLORS_VERSION: "gw2inventory_static_colors_version",
   SKINS: "gw2inventory_static_skins",
   TITLES: "gw2inventory_static_titles",
   CURRENCIES: "gw2inventory_static_currencies",
@@ -37,6 +38,8 @@ const STORAGE_KEYS = {
 
 // Cache version for invalidating old cache data
 const CACHE_VERSION = "1.0.0"
+// Colors version to handle transition from incremental to complete fetching
+const COLORS_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -108,7 +111,9 @@ const cacheUtils = {
       this.load<Record<number, PatchedItem>>(STORAGE_KEYS.ITEMS) || {}
     const materialCategories =
       this.load<MaterialCategory[]>(STORAGE_KEYS.MATERIAL_CATEGORIES) || []
-    const colors = this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
+    const colors = this.checkColorsVersion()
+      ? this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
+      : {}
     const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
     const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
     const currencies =
@@ -141,6 +146,22 @@ const cacheUtils = {
 
   saveColors(colors: Record<number, Color>): void {
     this.save(STORAGE_KEYS.COLORS, colors)
+    this.save(STORAGE_KEYS.COLORS_VERSION, COLORS_VERSION)
+  },
+
+  checkColorsVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.COLORS_VERSION)
+    if (cachedVersion !== COLORS_VERSION) {
+      console.log("Colors version mismatch, clearing colors cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.COLORS)
+        localStorage.removeItem(STORAGE_KEYS.COLORS_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear colors cache:", error)
+      }
+      return false
+    }
+    return true
   },
 
   saveSkins(skins: Record<number, Skin>): void {
@@ -275,7 +296,7 @@ interface StaticDataContextType {
   fetchMaterialCategories: () => Promise<void>
   colors: Record<number, Color>
   isColorsFetching: boolean
-  fetchColors: (colorIds: number[]) => Promise<void>
+  fetchColors: () => Promise<void>
   addColors: (colors: Color[]) => void
   skins: Record<number, Skin>
   isSkinsFetching: boolean
@@ -539,58 +560,33 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_ITEMS_FETCHING", fetching: false })
   }, [])
 
-  const fetchColors = useCallback(async (newIds: number[]) => {
-    if (newIds.length === 0) return
+  const fetchColors = useCallback(async () => {
+    // Only fetch if colors cache version is outdated or no colors exist
+    if (cacheUtils.checkColorsVersion() && Object.keys(state.colors).length > 0)
+      return
 
     dispatch({ type: "SET_COLORS_FETCHING", fetching: true })
 
-    // Use ref to access current data without adding to dependencies
-    const currentData = staticDataRef.current.colors
-    const existingIdSet = new Set(
-      Object.keys(currentData).map((key) => parseInt(key)),
-    )
-    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-    if (idsToFetch.length === 0) {
-      dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
-      return
-    }
-
-    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    let newItems: Color[] = []
-    let failedChunks = 0
-
-    for (const chunk of chunks) {
-      try {
-        const data = await fetchGW2<Color[]>("colors", `ids=${chunk.join(",")}`)
-        if (data) {
-          newItems = [...newItems, ...data]
-        }
-      } catch (error) {
-        console.error("Failed to fetch colors chunk:", error)
-        failedChunks++
-        // Continue fetching other chunks even if one fails
+    try {
+      const data = await fetchGW2<Color[]>("colors", "ids=all")
+      if (data) {
+        dispatch({ type: "ADD_COLORS", colors: data })
+        // Save colors to cache with version
+        const colorsRecord = data.reduce(
+          (acc, color) => {
+            acc[color.id] = color
+            return acc
+          },
+          {} as Record<number, Color>,
+        )
+        cacheUtils.saveColors(colorsRecord)
       }
+    } catch (error) {
+      console.error("Failed to fetch colors:", error)
+    } finally {
+      dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
     }
-
-    if (newItems.length > 0) {
-      dispatch({ type: "ADD_COLORS", colors: newItems })
-      // Save updated colors to cache after adding new ones
-      const updatedColors = { ...staticDataRef.current.colors }
-      newItems.forEach((item) => {
-        updatedColors[item.id] = item
-      })
-      cacheUtils.saveColors(updatedColors)
-    }
-
-    if (failedChunks > 0) {
-      console.warn(
-        `Failed to fetch ${failedChunks} out of ${chunks.length} colors chunks`,
-      )
-    }
-
-    dispatch({ type: "SET_COLORS_FETCHING", fetching: false })
-  }, [])
+  }, [state.colors])
 
   const fetchSkins = useCallback(async (newIds: number[]) => {
     if (newIds.length === 0) return
@@ -900,6 +896,18 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     state.isMaterialFetching,
     fetchMaterialCategories,
   ])
+
+  // Auto-fetch colors on first use (when version is outdated or no colors exist)
+  // This handles incomplete color data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkColorsVersion() ||
+        Object.keys(state.colors).length === 0) &&
+      !state.isColorsFetching
+    ) {
+      fetchColors()
+    }
+  }, [Object.keys(state.colors).length, state.isColorsFetching, fetchColors])
 
   // Memoize processed material categories data
   const materialCategories = useMemo(

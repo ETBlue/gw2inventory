@@ -171,10 +171,9 @@ describe("useDyes", () => {
     expect(result.current.dyesWithDetails).toBeUndefined()
   })
 
-  it("fetches dye IDs and triggers color fetching when token is available", async () => {
+  it("fetches dye IDs when token is available", async () => {
     const mockToken = "test-token"
     const mockDyeIds = [1, 2]
-    const mockFetchColors = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -196,7 +195,7 @@ describe("useDyes", () => {
       fetchMaterialCategories: vi.fn(),
       colors: {},
       isColorsFetching: false,
-      fetchColors: mockFetchColors,
+      fetchColors: vi.fn(),
       addColors: vi.fn(),
       skins: {},
       isSkinsFetching: false,
@@ -250,10 +249,6 @@ describe("useDyes", () => {
 
     await waitFor(() => {
       expect(result.current.dyesData).toEqual(mockDyeIds)
-    })
-
-    await waitFor(() => {
-      expect(mockFetchColors).toHaveBeenCalledWith(mockDyeIds)
     })
   })
 
@@ -469,94 +464,6 @@ describe("useDyes", () => {
 
     await waitFor(() => {
       expect(result.current.error).toBe(mockError)
-    })
-  })
-
-  it("only fetches uncached colors", async () => {
-    const mockToken = "test-token"
-    const mockDyeIds = [1, 2, 3]
-    const mockFetchColors = vi.fn()
-    const existingColors = {
-      1: mockColors[0], // Color 1 already cached
-    }
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      addItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materials: {},
-      isMaterialFetching: false,
-      fetchMaterialCategories: vi.fn(),
-      colors: existingColors,
-      isColorsFetching: false,
-      fetchColors: mockFetchColors,
-      addColors: vi.fn(),
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      addSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      fetchTitles: vi.fn(),
-      addTitles: vi.fn(),
-      currencies: {},
-      isCurrenciesFetching: false,
-      fetchCurrencies: vi.fn(),
-      addCurrencies: vi.fn(),
-      outfits: {},
-      isOutfitsFetching: false,
-      fetchOutfits: vi.fn(),
-      addOutfits: vi.fn(),
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      fetchHomeNodes: vi.fn(),
-      homeCats: [],
-      isHomeCatsFetching: false,
-      fetchHomeCats: vi.fn(),
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        version: null,
-      })),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint] = queryKey
-      if (endpoint === "account/dyes") {
-        return mockDyeIds
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useDyes(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.dyesData).toEqual(mockDyeIds)
-    })
-
-    // Should only fetch uncached colors (2 and 3)
-    await waitFor(() => {
-      expect(mockFetchColors).toHaveBeenCalledWith([2, 3])
     })
   })
 

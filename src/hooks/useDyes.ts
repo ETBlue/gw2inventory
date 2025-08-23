@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import { AccountDyesData, DyesData } from "~/types/dyes"
@@ -12,7 +11,7 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 export const useDyes = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { colors, isColorsFetching, fetchColors } = useStaticData()
+  const { colors, isColorsFetching } = useStaticData()
 
   // Fetch account dyes data
   const {
@@ -25,17 +24,6 @@ export const useDyes = () => {
     staleTime: Infinity,
     enabled: !!token,
   })
-
-  // Auto-fetch colors when dyes data is available
-  useEffect(() => {
-    if (dyesData && dyesData.length > 0) {
-      // Only fetch colors that aren't already cached
-      const uncachedColorIds = dyesData.filter((dyeId) => !colors[dyeId])
-      if (uncachedColorIds.length > 0) {
-        fetchColors(uncachedColorIds)
-      }
-    }
-  }, [dyesData, colors, fetchColors])
 
   // Convert colors record to array for backward compatibility
   const colorsArray = Object.values(colors)
