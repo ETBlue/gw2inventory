@@ -84,7 +84,6 @@ describe("useItemsData", () => {
       items: mockItems,
       isItemsFetching: false,
       fetchItems: vi.fn(),
-      addItems: vi.fn(),
       materials: mockMaterials,
       materialCategories: mockMaterialCategories,
       isMaterialFetching: false,
@@ -177,7 +176,6 @@ describe("useItemsData", () => {
       items: mockItems,
       isItemsFetching: true, // Set to true
       fetchItems: vi.fn(),
-      addItems: vi.fn(),
       materials: mockMaterials,
       materialCategories: mockMaterialCategories,
       isMaterialFetching: false,

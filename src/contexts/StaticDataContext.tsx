@@ -391,7 +391,6 @@ interface StaticDataContextType {
   items: Record<number, PatchedItem>
   isItemsFetching: boolean
   fetchItems: (itemIds: number[]) => Promise<void>
-  addItems: (items: PatchedItem[]) => void
   materialCategoriesData: MaterialCategory[]
   materialCategories: string[]
   materials: Record<number, string>
@@ -867,11 +866,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.materialCategoriesData.length])
 
-  // Add functions using useCallback for consistency
-  const addItems = useCallback((newItems: PatchedItem[]) => {
-    dispatch({ type: "ADD_ITEMS", items: newItems })
-  }, [])
-
   // Auto-fetch material categories on first use (when empty)
   useEffect(() => {
     if (
@@ -992,7 +986,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       items: state.items,
       isItemsFetching: state.isItemsFetching,
       fetchItems,
-      addItems,
       materialCategoriesData: state.materialCategoriesData,
       materialCategories,
       materials,
@@ -1034,7 +1027,6 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.homeCats,
       state.isHomeCatsFetching,
       fetchItems,
-      addItems,
       materialCategories,
       materials,
       fetchSkins,

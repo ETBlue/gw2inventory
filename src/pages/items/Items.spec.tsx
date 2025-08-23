@@ -38,7 +38,6 @@ vi.mock("~/contexts/StaticDataContext", () => ({
     items: {},
     isItemsFetching: false,
     fetchItems: vi.fn(),
-    addItems: vi.fn(),
     materialCategoriesData: [],
     materialCategories: [],
     materials: {},
