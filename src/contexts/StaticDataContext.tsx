@@ -29,6 +29,7 @@ const STORAGE_KEYS = {
   COLORS_VERSION: "gw2inventory_static_colors_version",
   SKINS: "gw2inventory_static_skins",
   TITLES: "gw2inventory_static_titles",
+  TITLES_VERSION: "gw2inventory_static_titles_version",
   CURRENCIES: "gw2inventory_static_currencies",
   OUTFITS: "gw2inventory_static_outfits",
   HOME_NODES: "gw2inventory_static_home_nodes",
@@ -40,6 +41,8 @@ const STORAGE_KEYS = {
 const CACHE_VERSION = "1.0.0"
 // Colors version to handle transition from incremental to complete fetching
 const COLORS_VERSION = "complete-1.0.0"
+// Titles version to handle transition from incremental to complete fetching
+const TITLES_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -115,7 +118,9 @@ const cacheUtils = {
       ? this.load<Record<number, Color>>(STORAGE_KEYS.COLORS) || {}
       : {}
     const skins = this.load<Record<number, Skin>>(STORAGE_KEYS.SKINS) || {}
-    const titles = this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
+    const titles = this.checkTitlesVersion()
+      ? this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
+      : {}
     const currencies =
       this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
     const outfits =
@@ -170,6 +175,22 @@ const cacheUtils = {
 
   saveTitles(titles: Record<number, Title>): void {
     this.save(STORAGE_KEYS.TITLES, titles)
+    this.save(STORAGE_KEYS.TITLES_VERSION, TITLES_VERSION)
+  },
+
+  checkTitlesVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.TITLES_VERSION)
+    if (cachedVersion !== TITLES_VERSION) {
+      console.log("Titles version mismatch, clearing titles cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.TITLES)
+        localStorage.removeItem(STORAGE_KEYS.TITLES_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear titles cache:", error)
+      }
+      return false
+    }
+    return true
   },
 
   saveCurrencies(currencies: Record<number, Currency>): void {
@@ -304,7 +325,7 @@ interface StaticDataContextType {
   addSkins: (skins: Skin[]) => void
   titles: Record<number, Title>
   isTitlesFetching: boolean
-  fetchTitles: (titleIds: number[]) => Promise<void>
+  fetchTitles: () => Promise<void>
   addTitles: (titles: Title[]) => void
   currencies: Record<number, Currency>
   isCurrenciesFetching: boolean
@@ -641,58 +662,33 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     dispatch({ type: "SET_SKINS_FETCHING", fetching: false })
   }, [])
 
-  const fetchTitles = useCallback(async (newIds: number[]) => {
-    if (newIds.length === 0) return
+  const fetchTitles = useCallback(async () => {
+    // Only fetch if titles cache version is outdated or no titles exist
+    if (cacheUtils.checkTitlesVersion() && Object.keys(state.titles).length > 0)
+      return
 
     dispatch({ type: "SET_TITLES_FETCHING", fetching: true })
 
-    // Use ref to access current data without adding to dependencies
-    const currentData = staticDataRef.current.titles
-    const existingIdSet = new Set(
-      Object.keys(currentData).map((key) => parseInt(key)),
-    )
-    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-    if (idsToFetch.length === 0) {
-      dispatch({ type: "SET_TITLES_FETCHING", fetching: false })
-      return
-    }
-
-    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    let newItems: Title[] = []
-    let failedChunks = 0
-
-    for (const chunk of chunks) {
-      try {
-        const data = await fetchGW2<Title[]>("titles", `ids=${chunk.join(",")}`)
-        if (data) {
-          newItems = [...newItems, ...data]
-        }
-      } catch (error) {
-        console.error("Failed to fetch titles chunk:", error)
-        failedChunks++
-        // Continue fetching other chunks even if one fails
+    try {
+      const data = await fetchGW2<Title[]>("titles", "ids=all")
+      if (data) {
+        dispatch({ type: "ADD_TITLES", titles: data })
+        // Save titles to cache with version
+        const titlesRecord = data.reduce(
+          (acc, title) => {
+            acc[title.id] = title
+            return acc
+          },
+          {} as Record<number, Title>,
+        )
+        cacheUtils.saveTitles(titlesRecord)
       }
+    } catch (error) {
+      console.error("Failed to fetch titles:", error)
+    } finally {
+      dispatch({ type: "SET_TITLES_FETCHING", fetching: false })
     }
-
-    if (newItems.length > 0) {
-      dispatch({ type: "ADD_TITLES", titles: newItems })
-      // Save updated titles to cache after adding new ones
-      const updatedTitles = { ...staticDataRef.current.titles }
-      newItems.forEach((item) => {
-        updatedTitles[item.id] = item
-      })
-      cacheUtils.saveTitles(updatedTitles)
-    }
-
-    if (failedChunks > 0) {
-      console.warn(
-        `Failed to fetch ${failedChunks} out of ${chunks.length} titles chunks`,
-      )
-    }
-
-    dispatch({ type: "SET_TITLES_FETCHING", fetching: false })
-  }, [])
+  }, [state.titles])
 
   const fetchCurrencies = useCallback(async (newIds: number[]) => {
     if (newIds.length === 0) return
@@ -908,6 +904,18 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       fetchColors()
     }
   }, [Object.keys(state.colors).length, state.isColorsFetching, fetchColors])
+
+  // Auto-fetch titles on first use (when version is outdated or no titles exist)
+  // This handles incomplete title data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkTitlesVersion() ||
+        Object.keys(state.titles).length === 0) &&
+      !state.isTitlesFetching
+    ) {
+      fetchTitles()
+    }
+  }, [Object.keys(state.titles).length, state.isTitlesFetching, fetchTitles])
 
   // Memoize processed material categories data
   const materialCategories = useMemo(

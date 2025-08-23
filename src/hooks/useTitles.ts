@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import { AccountTitles } from "~/types/titles"
@@ -13,7 +12,7 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 export const useTitles = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { titles, isTitlesFetching, fetchTitles } = useStaticData()
+  const { titles, isTitlesFetching } = useStaticData()
 
   // Fetch account title IDs
   const {
@@ -26,19 +25,6 @@ export const useTitles = () => {
     staleTime: Infinity,
     enabled: !!token,
   })
-
-  // Auto-fetch titles when account title IDs are available
-  useEffect(() => {
-    if (accountTitleIds && accountTitleIds.length > 0) {
-      // Only fetch titles that aren't already cached
-      const uncachedTitleIds = accountTitleIds.filter(
-        (titleId) => !titles[titleId],
-      )
-      if (uncachedTitleIds.length > 0) {
-        fetchTitles(uncachedTitleIds)
-      }
-    }
-  }, [accountTitleIds, titles, fetchTitles])
 
   // Filter titles to only include those owned by the account
   const accountTitles = accountTitleIds
