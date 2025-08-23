@@ -31,6 +31,7 @@ const STORAGE_KEYS = {
   TITLES: "gw2inventory_static_titles",
   TITLES_VERSION: "gw2inventory_static_titles_version",
   CURRENCIES: "gw2inventory_static_currencies",
+  CURRENCIES_VERSION: "gw2inventory_static_currencies_version",
   OUTFITS: "gw2inventory_static_outfits",
   HOME_NODES: "gw2inventory_static_home_nodes",
   HOME_CATS: "gw2inventory_static_home_cats",
@@ -43,6 +44,8 @@ const CACHE_VERSION = "1.0.0"
 const COLORS_VERSION = "complete-1.0.0"
 // Titles version to handle transition from incremental to complete fetching
 const TITLES_VERSION = "complete-1.0.0"
+// Currencies version to handle transition from incremental to complete fetching
+const CURRENCIES_VERSION = "complete-1.0.0"
 
 // Local storage cache utilities
 const cacheUtils = {
@@ -121,8 +124,9 @@ const cacheUtils = {
     const titles = this.checkTitlesVersion()
       ? this.load<Record<number, Title>>(STORAGE_KEYS.TITLES) || {}
       : {}
-    const currencies =
-      this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
+    const currencies = this.checkCurrenciesVersion()
+      ? this.load<Record<number, Currency>>(STORAGE_KEYS.CURRENCIES) || {}
+      : {}
     const outfits =
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
@@ -195,6 +199,22 @@ const cacheUtils = {
 
   saveCurrencies(currencies: Record<number, Currency>): void {
     this.save(STORAGE_KEYS.CURRENCIES, currencies)
+    this.save(STORAGE_KEYS.CURRENCIES_VERSION, CURRENCIES_VERSION)
+  },
+
+  checkCurrenciesVersion(): boolean {
+    const cachedVersion = this.load<string>(STORAGE_KEYS.CURRENCIES_VERSION)
+    if (cachedVersion !== CURRENCIES_VERSION) {
+      console.log("Currencies version mismatch, clearing currencies cache")
+      try {
+        localStorage.removeItem(STORAGE_KEYS.CURRENCIES)
+        localStorage.removeItem(STORAGE_KEYS.CURRENCIES_VERSION)
+      } catch (error) {
+        console.warn("Failed to clear currencies cache:", error)
+      }
+      return false
+    }
+    return true
   },
 
   saveOutfits(outfits: Record<number, Outfit>): void {
@@ -329,7 +349,7 @@ interface StaticDataContextType {
   addTitles: (titles: Title[]) => void
   currencies: Record<number, Currency>
   isCurrenciesFetching: boolean
-  fetchCurrencies: (currencyIds: number[]) => Promise<void>
+  fetchCurrencies: () => Promise<void>
   addCurrencies: (currencies: Currency[]) => void
   outfits: Record<number, Outfit>
   isOutfitsFetching: boolean
@@ -690,61 +710,36 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.titles])
 
-  const fetchCurrencies = useCallback(async (newIds: number[]) => {
-    if (newIds.length === 0) return
+  const fetchCurrencies = useCallback(async () => {
+    // Only fetch if currencies cache version is outdated or no currencies exist
+    if (
+      cacheUtils.checkCurrenciesVersion() &&
+      Object.keys(state.currencies).length > 0
+    )
+      return
 
     dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: true })
 
-    // Use ref to access current data without adding to dependencies
-    const currentData = staticDataRef.current.currencies
-    const existingIdSet = new Set(
-      Object.keys(currentData).map((key) => parseInt(key)),
-    )
-    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-    if (idsToFetch.length === 0) {
-      dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: false })
-      return
-    }
-
-    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    let newItems: Currency[] = []
-    let failedChunks = 0
-
-    for (const chunk of chunks) {
-      try {
-        const data = await fetchGW2<Currency[]>(
-          "currencies",
-          `ids=${chunk.join(",")}`,
+    try {
+      const data = await fetchGW2<Currency[]>("currencies", "ids=all")
+      if (data) {
+        dispatch({ type: "ADD_CURRENCIES", currencies: data })
+        // Save currencies to cache with version
+        const currenciesRecord = data.reduce(
+          (acc, currency) => {
+            acc[currency.id] = currency
+            return acc
+          },
+          {} as Record<number, Currency>,
         )
-        if (data) {
-          newItems = [...newItems, ...data]
-        }
-      } catch (error) {
-        console.error("Failed to fetch currencies chunk:", error)
-        failedChunks++
-        // Continue fetching other chunks even if one fails
+        cacheUtils.saveCurrencies(currenciesRecord)
       }
+    } catch (error) {
+      console.error("Failed to fetch currencies:", error)
+    } finally {
+      dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: false })
     }
-
-    if (newItems.length > 0) {
-      dispatch({ type: "ADD_CURRENCIES", currencies: newItems })
-      // Save updated currencies to cache after adding new ones
-      const updatedCurrencies = { ...staticDataRef.current.currencies }
-      newItems.forEach((item) => {
-        updatedCurrencies[item.id] = item
-      })
-      cacheUtils.saveCurrencies(updatedCurrencies)
-    }
-
-    if (failedChunks > 0) {
-      console.warn(
-        `Failed to fetch ${failedChunks} out of ${chunks.length} currencies chunks`,
-      )
-    }
-
-    dispatch({ type: "SET_CURRENCIES_FETCHING", fetching: false })
-  }, [])
+  }, [state.currencies])
 
   const fetchOutfits = useCallback(async (newIds: number[]) => {
     if (newIds.length === 0) return
@@ -916,6 +911,22 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       fetchTitles()
     }
   }, [Object.keys(state.titles).length, state.isTitlesFetching, fetchTitles])
+
+  // Auto-fetch currencies on first use (when version is outdated or no currencies exist)
+  // This handles incomplete currency data from older versions
+  useEffect(() => {
+    if (
+      (!cacheUtils.checkCurrenciesVersion() ||
+        Object.keys(state.currencies).length === 0) &&
+      !state.isCurrenciesFetching
+    ) {
+      fetchCurrencies()
+    }
+  }, [
+    Object.keys(state.currencies).length,
+    state.isCurrenciesFetching,
+    fetchCurrencies,
+  ])
 
   // Memoize processed material categories data
   const materialCategories = useMemo(

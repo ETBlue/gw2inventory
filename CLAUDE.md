@@ -100,7 +100,7 @@ The application uses a hybrid approach with React Context API for global state a
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
 - `CharacterContext` - Handles character data and crafting
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/material categories/home data, chunked fetching for items/skins/titles/currencies/outfits)
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data, chunked fetching for items/skins/outfits)
 
 **Custom Hooks (replacing previous contexts):**
 
@@ -313,6 +313,8 @@ Significant architectural improvements were made to the static data management s
 - **Type Safety**: Updated from `Item` to `PatchedItem` type throughout the codebase to support extended item properties ("Relic", "Trait")
 - **Comprehensive Item Extraction**: All item sources (character bags, equipped items, bank, shared inventory) now extract and include nested upgrades and infusions as separate items
 - **Colors Fetching Optimization**: Refactored colors fetching from incremental chunked requests to single complete API call using `/v2/colors?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
+- **Titles Fetching Optimization**: Refactored titles fetching from incremental chunked requests to single complete API call using `/v2/titles?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
+- **Currencies Fetching Optimization**: Refactored currencies fetching from incremental chunked requests to single complete API call using `/v2/currencies?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 
 **Benefits:**
 

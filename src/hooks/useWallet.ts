@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { useToken } from "~/hooks/useToken"
 import { queryFunction } from "~/helpers/api"
 import { AccountWalletData, WalletData } from "~/types/wallet"
@@ -13,7 +13,7 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 export const useWallet = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { currencies, isCurrenciesFetching, fetchCurrencies } = useStaticData()
+  const { currencies, isCurrenciesFetching } = useStaticData()
 
   // Fetch account wallet data
   const {
@@ -26,21 +26,6 @@ export const useWallet = () => {
     staleTime: Infinity,
     enabled: !!token,
   })
-
-  // Auto-fetch currencies when wallet data is available
-  useEffect(() => {
-    if (walletData && walletData.length > 0) {
-      // Extract currency IDs from wallet data
-      const currencyIds = walletData.map((entry) => entry.id)
-      // Only fetch currencies that aren't already cached
-      const uncachedCurrencyIds = currencyIds.filter(
-        (currencyId) => !currencies[currencyId],
-      )
-      if (uncachedCurrencyIds.length > 0) {
-        fetchCurrencies(uncachedCurrencyIds)
-      }
-    }
-  }, [walletData, currencies, fetchCurrencies])
 
   // Combine wallet data with currency details
   const walletWithDetails: WalletData | undefined = useMemo(() => {
