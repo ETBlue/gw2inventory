@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from "react"
 
 import {
+  Button,
   Center,
+  Flex,
   Grid,
   Input,
   InputGroup,
@@ -23,6 +25,7 @@ import { chunk, findIndex } from "lodash"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
 import {
+  Link,
   NavLink,
   useLocation,
   useNavigate,
@@ -33,19 +36,18 @@ import {
 import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
 import { useCharacters } from "~/contexts/CharacterContext"
+import { useStaticData } from "~/contexts/StaticDataContext"
 import { compare, compareRarity } from "~/helpers/compare"
-import {
-  getTypedItemLength,
-  isItemInCategory,
-  isItemInTypes,
-} from "~/helpers/itemFiltering"
 import { getQueryString } from "~/helpers/url"
 import { useItemsData } from "~/hooks/useItemsData"
 import sharedTableCss from "~/styles/shared-table.module.css"
-import { PatchedItem, UserItemInList } from "~/types/items"
+import {
+  PatchedItem,
+  UserItemInList,
+  materialCategoryAliases,
+} from "~/types/items"
 
 import Item from "./Item"
-import SubMenuItem from "./SubMenuItem"
 import { MENU_ITEMS } from "./constants"
 import { Order, Sort } from "./types"
 
@@ -61,10 +63,13 @@ const TABLE_HEADERS = [
 
 function Items() {
   const {
-    hasToken,
     items,
-    materials,
     materialCategories,
+    materialIdToCategoryIdMap,
+    materialCategoryIdToNameMap,
+  } = useStaticData()
+  const {
+    hasToken,
     characterItems,
     inventoryItems,
     bankItems,
@@ -80,9 +85,9 @@ function Items() {
   const keyword = searchParams.get("keyword")
   const sortBy = searchParams.get("sortBy")
   const order = searchParams.get("order")
-  const activeType = searchParams.get("type")
-  const activeSort: Sort = (sortBy as Sort) || "location"
-  const activeOrder: Order = (order as Order) || "asc"
+  const itemTypeFilter = searchParams.get("type")
+  const columnForItemsSorting: Sort = (sortBy as Sort) || "location"
+  const itemsSortingOrder: Order = (order as Order) || "asc"
 
   // Query string without 'type' parameter for navigation
   const navigationQueryString = useMemo(() => {
@@ -97,17 +102,23 @@ function Items() {
     (column: string) => {
       const queryString = searchParams.toString()
       const newUrl = `${pathname}?${
-        activeSort === column
+        columnForItemsSorting === column
           ? getQueryString(
               "order",
-              activeOrder === "asc" ? "dsc" : "",
+              itemsSortingOrder === "asc" ? "dsc" : "",
               queryString,
             )
           : getQueryString("sortBy", column, queryString)
       }`
       navigate(newUrl)
     },
-    [pathname, activeSort, activeOrder, searchParams, navigate],
+    [
+      pathname,
+      columnForItemsSorting,
+      itemsSortingOrder,
+      searchParams,
+      navigate,
+    ],
   )
 
   // Update search keyword in URL
@@ -129,6 +140,7 @@ function Items() {
     [setSearchParams],
   )
 
+  // item filtering by category and type
   const allItems = useMemo(
     () => [
       ...characterItems,
@@ -138,60 +150,105 @@ function Items() {
     ],
     [characterItems, inventoryItems, bankItems, materialItems],
   )
+  const getVisibleTypesForCategoryFiltering = useCallback(
+    (category: string | undefined): string[] | undefined => {
+      if (!category) return undefined
 
-  const visibleItems = useMemo(() => {
-    return allItems
-      .filter((userItem: UserItemInList) => {
-        if (activeType) {
-          return isItemInTypes({
-            types:
-              activeType === "CraftingMaterial"
-                ? materialCategories
-                : [activeType],
-            userItem,
-            items,
-            materials,
-            pathname,
-          })
-        } else if (category) {
-          return isItemInCategory({
-            userItem,
-            category,
-            items,
-            pathname,
-          })
+      return MENU_ITEMS.find((menuItem) => menuItem.to === `/items/${category}`)
+        ?.showOnly
+    },
+    [],
+  )
+  const getItemsByCategoryAndType = useCallback(
+    (category: string | undefined, type?: string): UserItemInList[] => {
+      if (!category) return allItems
+
+      const itemsInCategory = allItems.filter((userItem: UserItemInList) => {
+        const itemData: PatchedItem = items[userItem.id]
+        if (!itemData) {
+          console.warn("Item data not found for item ID:", userItem.id)
+        }
+
+        const visibleTypesInCategory =
+          getVisibleTypesForCategoryFiltering(category) ?? []
+
+        return visibleTypesInCategory.includes(itemData.type)
+      })
+
+      if (!type) return itemsInCategory
+
+      const itemsInType = itemsInCategory.filter((userItem: UserItemInList) => {
+        const itemData: PatchedItem = items[userItem.id]
+        if (!itemData) {
+          console.warn("Item data not found for item ID:", userItem.id)
+        }
+        if (category === "material") {
+          const categoryId = materialIdToCategoryIdMap[userItem.id]
+          const categoryName = materialCategoryIdToNameMap[categoryId]
+          const categoryShortName =
+            categoryName && materialCategoryAliases[categoryName]
+          return type === categoryShortName
         } else {
-          return true
+          return type === itemData.type
         }
       })
+
+      return itemsInType
+    },
+    [
+      allItems,
+      items,
+      materialIdToCategoryIdMap,
+      materialCategoryIdToNameMap,
+      getVisibleTypesForCategoryFiltering,
+    ],
+  )
+  const visibleItems = useMemo(() => {
+    return getItemsByCategoryAndType(category, itemTypeFilter ?? undefined)
       .filter((userItem: UserItemInList) => {
         if (!keyword) return true
-        const itemRaw: PatchedItem = items[userItem.id]
-        const item = { ...userItem, ...itemRaw }
+        const itemData: PatchedItem = items[userItem.id]
+        const item = { ...userItem, ...itemData }
         return JSON.stringify(item).match(new RegExp(keyword, "i"))
       })
       .sort((_a: UserItemInList, _b: UserItemInList) => {
         const a = { ..._a, ...items[_a.id] }
         const b = { ..._b, ...items[_b.id] }
         const number =
-          activeSort === "rarity"
+          columnForItemsSorting === "rarity"
             ? compareRarity(a.rarity, b.rarity)
-            : compare((a as any)[activeSort], (b as any)[activeSort])
-        return activeOrder === "asc" ? number : number * -1
+            : compare(
+                (a as any)[columnForItemsSorting],
+                (b as any)[columnForItemsSorting],
+              )
+        return itemsSortingOrder === "asc" ? number : number * -1
       })
   }, [
-    allItems,
-    activeType,
-    materialCategories,
+    itemTypeFilter,
     items,
-    materials,
-    pathname,
     category,
     keyword,
-    activeSort,
-    activeOrder,
+    columnForItemsSorting,
+    itemsSortingOrder,
+    getItemsByCategoryAndType,
   ])
 
+  // submenu
+  const getVisibleTypesForSubmenuRendering = useCallback(
+    (category: string | undefined) => {
+      if (category === "material") {
+        return materialCategories
+      }
+      return getVisibleTypesForCategoryFiltering(category)
+    },
+    [getVisibleTypesForCategoryFiltering, materialCategories],
+  )
+  const visibleSubmenuTypes = useMemo(
+    () => getVisibleTypesForSubmenuRendering(category),
+    [getVisibleTypesForSubmenuRendering, category],
+  )
+
+  // pagination
   const pages = useMemo(
     () => chunk(visibleItems, PAGINATION.ITEMS_PER_PAGE),
     [visibleItems],
@@ -218,16 +275,11 @@ function Items() {
             >
               {item.text}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {getTypedItemLength({
-                  types:
-                    item.to === "/items/material"
-                      ? materialCategories
-                      : item.showOnly,
-                  userItems: allItems,
-                  items,
-                  materials,
-                  pathname: item.to,
-                })}
+                {
+                  getItemsByCategoryAndType(
+                    item.to.replace("/items", "").replace("/", ""),
+                  ).length
+                }
               </Tag>
             </Tab>
           ))}
@@ -243,7 +295,30 @@ function Items() {
             />
           </InputGroup>
         </TabList>
-        <SubMenuItem userItems={allItems} />
+        {visibleSubmenuTypes && (
+          <Flex
+            justifyContent="center"
+            margin="0 auto"
+            borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
+          >
+            {visibleSubmenuTypes.map((type: string) => (
+              <Button
+                key={type}
+                as={Link}
+                variant="ghost"
+                fontWeight="normal"
+                borderRadius={0}
+                isActive={type === itemTypeFilter}
+                to={`${pathname}?${getQueryString("type", type, searchParams.toString())}`}
+              >
+                {type}{" "}
+                <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                  {getItemsByCategoryAndType(category, type).length}
+                </Tag>
+              </Button>
+            ))}
+          </Flex>
+        )}
         <Pagination
           pageIndex={pageIndex}
           setPageIndex={setPageIndex}
@@ -257,11 +332,11 @@ function Items() {
                   key={title}
                   cursor="pointer"
                   onClick={() => handleSort(title)}
-                  className={`${sharedTableCss.title} ${activeSort === title ? sharedTableCss.active : ""}`}
+                  className={`${sharedTableCss.title} ${columnForItemsSorting === title ? sharedTableCss.active : ""}`}
                 >
                   {title}
-                  {activeSort === title ? (
-                    activeOrder === "asc" ? (
+                  {columnForItemsSorting === title ? (
+                    itemsSortingOrder === "asc" ? (
                       <CgArrowDown />
                     ) : (
                       <CgArrowUp />
@@ -275,13 +350,26 @@ function Items() {
             {pages[pageIndex]?.map(
               (userItem: UserItemInList, index: number) => {
                 const item: PatchedItem = items[userItem.id]
-                const materialCategory = materials[(userItem as any).category]
+                const materialStackCategoryName =
+                  "category" in userItem && userItem.category
+                    ? materialCategoryIdToNameMap[userItem.category]
+                    : undefined
+                const materialCategoryId =
+                  materialIdToCategoryIdMap[userItem.id]
+                const materialCategoryName =
+                  materialCategoryIdToNameMap[materialCategoryId]
                 return (
                   <Item
                     key={index}
                     item={item}
                     userItem={userItem}
-                    materialCategory={materialCategory}
+                    materialStackCategory={
+                      materialStackCategoryName &&
+                      materialCategoryAliases[materialStackCategoryName]
+                    }
+                    materialCategory={
+                      materialCategoryAliases[materialCategoryName]
+                    }
                   />
                 )
               },

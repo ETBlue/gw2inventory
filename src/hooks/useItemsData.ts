@@ -36,13 +36,7 @@ export const useItemsData = () => {
   const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
 
   // Use StaticDataContext for static item data
-  const {
-    items,
-    isItemsFetching,
-    materialCategories,
-    materials,
-    isMaterialFetching,
-  } = useStaticData()
+  const { isItemsFetching, isMaterialFetching } = useStaticData()
 
   // Reset items when account changes
   useEffect(() => {
@@ -155,6 +149,7 @@ export const useItemsData = () => {
   // Process material storage items
   useEffect(() => {
     if (!materialItemsData) return
+
     const materialItems: MaterialItemInList[] = materialItemsData.reduce(
       (prev: MaterialItemInList[], curr: MaterialStack) => {
         if (curr.count > 0) {
@@ -195,9 +190,6 @@ export const useItemsData = () => {
 
   return {
     hasToken: !!currentAccount?.token,
-    items,
-    materials,
-    materialCategories,
     characterItems,
     inventoryItems,
     bankItems,

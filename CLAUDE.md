@@ -104,7 +104,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Custom Hooks (replacing previous contexts):**
 
-- `useItemsData` - Manages all item-related data including account items (inventory, bank, materials) and character items with batched fetching (replaced ItemContext and merged useAccountItemsData)
+- `useItemsData` - Manages account-specific item data (inventory, bank, materials, character items) with batched fetching optimization. Returns only user's item arrays without static data (replaced ItemContext and merged useAccountItemsData)
 - `useTitlesData` - Fetches account titles with title details managed by StaticDataContext for efficient caching
 - `useWalletData` - Fetches account wallet with currency details managed by StaticDataContext for efficient caching
 - `useSkinsData` - Fetches account skins with skin details managed by StaticDataContext for efficient caching
@@ -115,6 +115,7 @@ The application uses a hybrid approach with React Context API for global state a
 
 **Architecture Principles:**
 
+- **Clear separation of concerns**: Static data (items metadata, categories) managed by `useStaticData()`, account-specific data managed by individual hooks (`useItemsData`, `useTitlesData`, etc.)
 - Prefer custom hooks over React Context when data is used in limited components
 - Reactive patterns where hooks automatically respond to dependency changes
 - Public vs Internal API design for proper encapsulation
@@ -318,6 +319,7 @@ Significant architectural improvements were made to the static data management s
 - **Titles Fetching Optimization**: Refactored titles fetching from incremental chunked requests to single complete API call using `/v2/titles?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 - **Currencies Fetching Optimization**: Refactored currencies fetching from incremental chunked requests to single complete API call using `/v2/currencies?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
 - **Outfits Fetching Optimization**: Refactored outfits fetching from incremental chunked requests to single complete API call using `/v2/outfits?ids=all` with version-based cache management to handle migration from legacy data (2025-01-23)
+- **Data Separation Architecture**: Refined separation of concerns between static data and account data - `useItemsData` now returns only account-specific item arrays, while static data (items metadata, material categories) is accessed via `useStaticData()` for cleaner component architecture (2025-01-24)
 - **Home Nodes Fetching Optimization**: Refactored home nodes fetching to use single complete API call using `/v2/home/nodes?ids=all` with version-based cache management and automatic fetching by StaticDataContext (2025-01-23)
 - **Home Cats Fetching Optimization**: Refactored home cats fetching to use single complete API call using `/v2/home/cats?ids=all` with version-based cache management and automatic fetching by StaticDataContext (2025-01-23)
 - **API Cleanup**: Removed unused `addItems` function and `fetchHomeNodes`/`fetchHomeCats` functions from public StaticDataContext API for better encapsulation
@@ -343,6 +345,7 @@ Significant architectural improvements were made to the static data management s
 - **Zero API calls on repeat visits** for previously fetched static data, significantly improving app loading performance
 - Unified item data access point eliminating code duplication between character and account items
 - **Reduced technical debt** by eliminating custom URL parameter handling in favor of React Router v7 standards, improving maintainability and compatibility
+- **Improved architecture clarity** through refined separation of static data and account data, making component dependencies more explicit and easier to test
 - **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
 - **Enhanced naming consistency** with `use***Data.ts` pattern for all data fetching hooks, improving code organization and making it easier to distinguish between different types of hooks
 - **Reduced file count and improved co-location** by merging context hooks directly into their context files, eliminating redundant wrapper files while maintaining clean public APIs

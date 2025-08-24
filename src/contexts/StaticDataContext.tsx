@@ -271,7 +271,8 @@ interface StaticDataContextType {
   fetchItems: (itemIds: number[]) => Promise<void>
   materialCategoriesData: MaterialCategory[]
   materialCategories: string[]
-  materials: Record<number, string>
+  materialIdToCategoryIdMap: Record<number, number>
+  materialCategoryIdToNameMap: Record<number, string>
   isMaterialFetching: boolean
   colors: Record<number, Color>
   isColorsFetching: boolean
@@ -753,14 +754,14 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     if (Object.keys(state.colors).length === 0 && !state.isColorsFetching) {
       fetchColors()
     }
-  }, [Object.keys(state.colors).length, state.isColorsFetching, fetchColors])
+  }, [state.colors, state.isColorsFetching, fetchColors])
 
   // Auto-fetch titles on first use when no titles exist
   useEffect(() => {
     if (Object.keys(state.titles).length === 0 && !state.isTitlesFetching) {
       fetchTitles()
     }
-  }, [Object.keys(state.titles).length, state.isTitlesFetching, fetchTitles])
+  }, [state.titles, state.isTitlesFetching, fetchTitles])
 
   // Auto-fetch currencies on first use when no currencies exist
   useEffect(() => {
@@ -770,18 +771,14 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     ) {
       fetchCurrencies()
     }
-  }, [
-    Object.keys(state.currencies).length,
-    state.isCurrenciesFetching,
-    fetchCurrencies,
-  ])
+  }, [state.currencies, state.isCurrenciesFetching, fetchCurrencies])
 
   // Auto-fetch outfits on first use when no outfits exist
   useEffect(() => {
     if (Object.keys(state.outfits).length === 0 && !state.isOutfitsFetching) {
       fetchOutfits()
     }
-  }, [Object.keys(state.outfits).length, state.isOutfitsFetching, fetchOutfits])
+  }, [state.outfits, state.isOutfitsFetching, fetchOutfits])
 
   // Auto-fetch home nodes on first use when no home nodes exist
   useEffect(() => {
@@ -808,13 +805,28 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     [state.materialCategoriesData],
   )
 
-  // Memoize materials lookup map
-  const materials = useMemo(
+  const materialIdToCategoryIdMap = useMemo(
+    () =>
+      state.materialCategoriesData.length > 0
+        ? state.materialCategoriesData.reduce(
+            (prev: Record<number, number>, curr: MaterialCategory) => {
+              for (const id of curr.items) {
+                prev[id] = curr.id
+              }
+              return prev
+            },
+            {},
+          )
+        : {},
+    [state.materialCategoriesData],
+  )
+
+  const materialCategoryIdToNameMap = useMemo(
     () =>
       state.materialCategoriesData.length > 0
         ? state.materialCategoriesData.reduce(
             (prev: Record<number, string>, curr: MaterialCategory) => {
-              prev[curr.id] = materialCategoryAliases[curr.name]
+              prev[curr.id] = curr.name
               return prev
             },
             {},
@@ -831,7 +843,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       fetchItems,
       materialCategoriesData: state.materialCategoriesData,
       materialCategories,
-      materials,
+      materialCategoryIdToNameMap,
+      materialIdToCategoryIdMap,
       isMaterialFetching: state.isMaterialFetching,
       colors: state.colors,
       isColorsFetching: state.isColorsFetching,
@@ -871,7 +884,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isHomeCatsFetching,
       fetchItems,
       materialCategories,
-      materials,
+      materialIdToCategoryIdMap,
+      materialCategoryIdToNameMap,
       fetchSkins,
       getCacheInfo,
     ],

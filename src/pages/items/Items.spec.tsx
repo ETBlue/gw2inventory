@@ -43,9 +43,26 @@ vi.mock("~/contexts/StaticDataContext", () => ({
     isItemsFetching: false,
     fetchItems: vi.fn(),
     materialCategoriesData: [],
-    materialCategories: [],
-    materials: {},
+    materialCategories: ["Wood"],
+    materialIdToCategoryIdMap: {},
+    materialCategoryIdToNameMap: {},
     isMaterialFetching: false,
+    colors: {},
+    isColorsFetching: false,
+    skins: {},
+    isSkinsFetching: false,
+    fetchSkins: vi.fn(),
+    titles: {},
+    isTitlesFetching: false,
+    currencies: {},
+    isCurrenciesFetching: false,
+    outfits: {},
+    isOutfitsFetching: false,
+    homeNodes: [],
+    isHomeNodesFetching: false,
+    homeCats: [],
+    isHomeCatsFetching: false,
+    getCacheInfo: vi.fn(),
   })),
   StaticDataProvider: ({ children }: { children: React.ReactNode }) => children,
 }))
@@ -59,13 +76,19 @@ const mockUseParams = vi.mocked(useParams)
 const mockUseLocation = vi.mocked(useLocation)
 const mockUseSearchParams = vi.mocked(useSearchParams)
 
+// Get StaticDataContext mock
+const { useStaticData: mockUseStaticData } = await import(
+  "~/contexts/StaticDataContext"
+)
+const mockedUseStaticData = vi.mocked(mockUseStaticData)
+
 // Mock data
 const mockItems = {
   1: {
     id: 1,
     name: "Iron Sword",
-    type: "Weapon",
-    rarity: "Fine",
+    type: "Weapon" as const,
+    rarity: "Fine" as const,
     level: 10,
     vendor_value: 100,
     icon: "https://example.com/sword.png",
@@ -78,8 +101,8 @@ const mockItems = {
   2: {
     id: 2,
     name: "Copper Ore",
-    type: "CraftingMaterial",
-    rarity: "Basic",
+    type: "CraftingMaterial" as const,
+    rarity: "Basic" as const,
     level: 0,
     vendor_value: 50,
     icon: "https://example.com/ore.png",
@@ -92,8 +115,8 @@ const mockItems = {
   3: {
     id: 3,
     name: "Trophy Item",
-    type: "Trophy",
-    rarity: "Rare",
+    type: "Trophy" as const,
+    rarity: "Rare" as const,
     level: 0,
     vendor_value: 200,
     icon: "https://example.com/trophy.png",
@@ -110,10 +133,6 @@ const mockUserItems = [
   { id: 2, count: 5, location: "bank", category: 5 }, // Add category for material items
   { id: 3, count: 2, location: "inventory" },
 ]
-
-const mockMaterials = {
-  5: "Wood", // Category 5 is Wood
-}
 
 const mockMaterialCategories = ["Wood"]
 
@@ -148,9 +167,6 @@ describe("Items", () => {
   it("renders category tabs regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: {},
-      materials: {},
-      materialCategories: [],
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -171,9 +187,6 @@ describe("Items", () => {
   it("renders the pagination menu regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: {},
-      materials: {},
-      materialCategories: [],
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -193,9 +206,6 @@ describe("Items", () => {
   it("renders a table regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: {},
-      materials: {},
-      materialCategories: [],
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -218,9 +228,6 @@ describe("Items", () => {
   it("renders an empty table and a corresponding state message when no items are present", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: {},
-      materials: {},
-      materialCategories: [],
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -234,11 +241,36 @@ describe("Items", () => {
   })
 
   it("filters items based on the selected category, e.g. `Equipable`, `Consumable`, `Material`, `Trophy`", () => {
+    // Mock StaticDataContext to return items
+    mockedUseStaticData.mockReturnValue({
+      items: mockItems,
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: mockMaterialCategories,
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
+      colors: {},
+      isColorsFetching: false,
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      currencies: {},
+      isCurrenciesFetching: false,
+      outfits: {},
+      isOutfitsFetching: false,
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      homeCats: [],
+      isHomeCatsFetching: false,
+      getCacheInfo: vi.fn(),
+    })
+
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: mockItems,
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -285,11 +317,36 @@ describe("Items", () => {
   })
 
   it("filters items based on the search input", () => {
+    // Mock StaticDataContext to return items
+    mockedUseStaticData.mockReturnValue({
+      items: mockItems,
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: mockMaterialCategories,
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
+      colors: {},
+      isColorsFetching: false,
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      currencies: {},
+      isCurrenciesFetching: false,
+      outfits: {},
+      isOutfitsFetching: false,
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      homeCats: [],
+      isHomeCatsFetching: false,
+      getCacheInfo: vi.fn(),
+    })
+
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: mockItems,
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -326,11 +383,36 @@ describe("Items", () => {
   })
 
   it("sorts items based on the selected table column", () => {
+    // Mock StaticDataContext to return items
+    mockedUseStaticData.mockReturnValue({
+      items: mockItems,
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: mockMaterialCategories,
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
+      colors: {},
+      isColorsFetching: false,
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      currencies: {},
+      isCurrenciesFetching: false,
+      outfits: {},
+      isOutfitsFetching: false,
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      homeCats: [],
+      isHomeCatsFetching: false,
+      getCacheInfo: vi.fn(),
+    })
+
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: mockItems,
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -357,11 +439,36 @@ describe("Items", () => {
   })
 
   it("preserves query string parameters when navigating between category tabs", () => {
+    // Mock StaticDataContext to return items
+    mockedUseStaticData.mockReturnValue({
+      items: mockItems,
+      isItemsFetching: false,
+      fetchItems: vi.fn(),
+      materialCategoriesData: [],
+      materialCategories: mockMaterialCategories,
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
+      colors: {},
+      isColorsFetching: false,
+      skins: {},
+      isSkinsFetching: false,
+      fetchSkins: vi.fn(),
+      titles: {},
+      isTitlesFetching: false,
+      currencies: {},
+      isCurrenciesFetching: false,
+      outfits: {},
+      isOutfitsFetching: false,
+      homeNodes: [],
+      isHomeNodesFetching: false,
+      homeCats: [],
+      isHomeCatsFetching: false,
+      getCacheInfo: vi.fn(),
+    })
+
     mockUseItemsData.mockReturnValue({
       hasToken: true,
-      items: mockItems,
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
       characterItems: mockUserItems,
       inventoryItems: mockUserItems,
       bankItems: [],

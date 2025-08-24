@@ -9,11 +9,12 @@ import { PatchedItem, UserItemInList } from "~/types/items"
 interface Props {
   item: PatchedItem
   userItem: UserItemInList
+  materialStackCategory?: string
   materialCategory?: string
 }
 
 function Item(props: Props) {
-  const { item, userItem, materialCategory } = props
+  const { item, userItem, materialStackCategory, materialCategory } = props
   return (
     <Tr>
       <Td className={sharedTableCss.iconCell}>
@@ -90,6 +91,12 @@ function Item(props: Props) {
         {item?.details?.type && (
           <div className={sharedTextCss.secondary}>{item?.details?.type}</div>
         )}
+        {materialStackCategory !== materialCategory &&
+          materialStackCategory && (
+            <div className={sharedTextCss.secondary}>
+              {materialStackCategory}
+            </div>
+          )}
         {materialCategory && (
           <div className={sharedTextCss.secondary}>{materialCategory}</div>
         )}

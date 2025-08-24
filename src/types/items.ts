@@ -14,15 +14,7 @@ export interface Items {
   [key: number]: PatchedItem
 }
 
-export interface Materials {
-  [key: number]: string
-}
-
-export interface MaterialCategoryAliases {
-  [key: string]: string
-}
-
-export const materialCategoryAliases: MaterialCategoryAliases = {
+export const materialCategoryAliases: { [key: string]: string } = {
   "Cooking Materials": "Cooking",
   "Basic Crafting Materials": "Basic",
   "Intermediate Crafting Materials": "Intermediate",

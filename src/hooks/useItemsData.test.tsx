@@ -54,10 +54,7 @@ const mockCharacterItems = [
   { id: 456, location: "TestChar" }, // Mock character item
 ] as any[]
 
-const mockItems = {} as any
-
-const mockMaterials = { 1: "Wood", 2: "Metal" }
-const mockMaterialCategories = ["Wood", "Metal"]
+// Removed unused mock data as useItemsData no longer returns static data properties
 
 const mockInventoryItems = [{ id: 999, count: 10 }]
 const mockBankItems = [{ id: 888, count: 3 }]
@@ -85,13 +82,14 @@ describe("useItemsData", () => {
     mockProcessCharacterItems.mockReturnValue(mockCharacterItems)
 
     mockUseStaticData.mockReturnValue({
-      items: mockItems,
+      items: {},
       isItemsFetching: false,
       fetchItems: vi.fn(),
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
-      isMaterialFetching: false,
       materialCategoriesData: [],
+      materialCategories: [],
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
       colors: {},
       isColorsFetching: false,
       skins: {},
@@ -165,25 +163,25 @@ describe("useItemsData", () => {
     )
   })
 
-  it("preserves item cache across account changes", () => {
+  it("preserves character items across account changes", () => {
     const { result } = renderHook(() => useItemsData(), {
       wrapper: createWrapper(),
     })
 
-    // Item cache should remain stable
-    expect(result.current.items).toEqual(mockItems)
+    // Character items should be processed correctly
     expect(result.current.characterItems).toEqual(mockCharacterItems)
   })
 
   it("aggregates fetching status from all sources", () => {
     mockUseStaticData.mockReturnValue({
-      items: mockItems,
+      items: {},
       isItemsFetching: true, // Set to true
       fetchItems: vi.fn(),
-      materials: mockMaterials,
-      materialCategories: mockMaterialCategories,
-      isMaterialFetching: false,
       materialCategoriesData: [],
+      materialCategories: [],
+      materialIdToCategoryIdMap: {},
+      materialCategoryIdToNameMap: {},
+      isMaterialFetching: false,
       colors: {},
       isColorsFetching: false,
       skins: {},
@@ -241,16 +239,15 @@ describe("useItemsData", () => {
     expect(result2.current.hasToken).toBe(false)
   })
 
-  it("maintains item cache stability across re-renders", () => {
+  it("maintains character items stability across re-renders", () => {
     const { result } = renderHook(() => useItemsData(), {
       wrapper: createWrapper(),
     })
 
-    const initialItems = result.current.items
+    const initialCharacterItems = result.current.characterItems
 
-    // Force a re-render by updating characters
-    // Items cache should be stable since it's managed by StaticDataContext
-    expect(result.current.items).toBe(initialItems)
+    // Character items should remain stable across re-renders
+    expect(result.current.characterItems).toBe(initialCharacterItems)
   })
 
   it("returns all required data and functions", () => {
@@ -259,9 +256,6 @@ describe("useItemsData", () => {
     })
 
     expect(result.current).toHaveProperty("hasToken")
-    expect(result.current).toHaveProperty("items")
-    expect(result.current).toHaveProperty("materials")
-    expect(result.current).toHaveProperty("materialCategories")
     expect(result.current).toHaveProperty("characterItems")
     expect(result.current).toHaveProperty("inventoryItems")
     expect(result.current).toHaveProperty("bankItems")
