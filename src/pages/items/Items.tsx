@@ -172,7 +172,7 @@ function Items() {
         const visibleTypesInCategory =
           getVisibleTypesForCategoryFiltering(category) ?? []
 
-        return visibleTypesInCategory.includes(itemData.type)
+        return visibleTypesInCategory.includes(itemData?.type)
       })
 
       if (!type) return itemsInCategory
@@ -189,7 +189,7 @@ function Items() {
             categoryName && materialCategoryAliases[categoryName]
           return type === categoryShortName
         } else {
-          return type === itemData.type
+          return type === itemData?.type
         }
       })
 
