@@ -48,6 +48,9 @@ next-env.d.ts
 .c9/
 *.sublime-workspace
 
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
 # OS files
 Thumbs.db
 Thumbs.db:encryptable
