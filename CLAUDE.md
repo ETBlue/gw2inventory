@@ -349,3 +349,12 @@ Significant architectural improvements were made to the static data management s
 - **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
 - **Enhanced naming consistency** with `use***Data.ts` pattern for all data fetching hooks, improving code organization and making it easier to distinguish between different types of hooks
 - **Reduced file count and improved co-location** by merging context hooks directly into their context files, eliminating redundant wrapper files while maintaining clean public APIs
+
+## Active Technologies
+
+- TypeScript 5.x with React 19 + React, Chakra UI v2.10, React Router v7, @gw2api/types (006-character-specializations)
+- localStorage for static data caching (specializations, traits metadata) (006-character-specializations)
+
+## Recent Changes
+
+- 006-character-specializations: Added TypeScript 5.x with React 19 + React, Chakra UI v2.10, React Router v7, @gw2api/types
