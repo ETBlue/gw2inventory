@@ -1,5 +1,9 @@
+import { useState } from "react"
+
 import {
+  Box,
   Center,
+  Collapse,
   Input,
   InputGroup,
   InputLeftElement,
@@ -23,7 +27,7 @@ import type { Character } from "@gw2api/types/data/character"
 
 import { format, formatDistance } from "date-fns"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { FaCheck, FaMinus } from "react-icons/fa"
+import { FaCheck, FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { MdSearch } from "react-icons/md"
 import {
@@ -37,6 +41,7 @@ import {
 import { useCharacters } from "~/contexts/CharacterContext"
 import { compare } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { CharacterSpecializations } from "~/pages/characters/CharacterSpecializations"
 import css from "~/styles/shared-table.module.css"
 import { PatchedItem } from "~/types/items"
 
@@ -146,6 +151,18 @@ function Characters() {
   const sortBy = searchParams.get("sortBy")
   const order = searchParams.get("order")
   const queryString = searchParams.toString()
+
+  // Expanded character state - tracks which character's specializations are visible
+  const [expandedCharacter, setExpandedCharacter] = useState<string | null>(
+    null,
+  )
+
+  // Toggle expand/collapse for a character
+  const handleToggleExpand = (characterName: string) => {
+    setExpandedCharacter((prev) =>
+      prev === characterName ? null : characterName,
+    )
+  }
 
   // Sorting state
   const defaultSortBy = "name"
@@ -277,13 +294,45 @@ function Characters() {
             </Tr>
           </Thead>
           <Tbody>
-            {visibleCharacters?.map((row) => (
-              <Tr key={row.name}>
-                {COLUMNS.map((column: Column) => (
-                  <Td key={column.key}>{column.render(row as any)}</Td>
-                ))}
-              </Tr>
-            ))}
+            {visibleCharacters?.map((row) => {
+              const isExpanded = expandedCharacter === row.name
+              return (
+                <>
+                  <Tr key={row.name}>
+                    {COLUMNS.map((column: Column, index: number) =>
+                      index === 0 ? (
+                        <Td
+                          key={column.key}
+                          cursor="pointer"
+                          onClick={() => handleToggleExpand(row.name)}
+                          _hover={{ bg: "gray.50" }}
+                        >
+                          <Box display="flex" alignItems="center" gap={2}>
+                            {isExpanded ? (
+                              <FaChevronDown size={12} />
+                            ) : (
+                              <FaChevronRight size={12} />
+                            )}
+                            {column.render(row as any)}
+                          </Box>
+                        </Td>
+                      ) : (
+                        <Td key={column.key}>{column.render(row as any)}</Td>
+                      ),
+                    )}
+                  </Tr>
+                  {isExpanded && (
+                    <Tr key={`${row.name}-expanded`}>
+                      <Td colSpan={COLUMNS.length} bg="gray.50" p={0}>
+                        <Collapse in={isExpanded} animateOpacity>
+                          <CharacterSpecializations characterName={row.name} />
+                        </Collapse>
+                      </Td>
+                    </Tr>
+                  )}
+                </>
+              )
+            })}
           </Tbody>
         </Table>
       </div>

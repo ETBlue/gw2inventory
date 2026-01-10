@@ -266,6 +266,11 @@ describe("Items", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -342,6 +347,11 @@ describe("Items", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -408,6 +418,11 @@ describe("Items", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -464,6 +479,11 @@ describe("Items", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 

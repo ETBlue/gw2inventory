@@ -20,6 +20,7 @@ import { HomeCat } from "~/types/homeCats"
 import { PatchedItem, materialCategoryAliases } from "~/types/items"
 import { Outfit } from "~/types/outfits"
 import { Skin } from "~/types/skins"
+import type { Specialization, Trait } from "~/types/specializations"
 import { Title } from "~/types/titles"
 import { Currency } from "~/types/wallet"
 
@@ -35,6 +36,8 @@ const STORAGE_KEYS = {
   OUTFITS: "gw2inventory_static_outfits",
   HOME_NODES: "gw2inventory_static_home_nodes",
   HOME_CATS: "gw2inventory_static_home_cats",
+  SPECIALIZATIONS: "gw2inventory_static_specializations",
+  TRAITS: "gw2inventory_static_traits",
 }
 
 // Cache version for invalidating old cache data
@@ -91,6 +94,8 @@ const cacheUtils = {
     outfits: Record<number, Outfit>
     homeNodes: string[]
     homeCats: HomeCat[]
+    specializations: Record<number, Specialization>
+    traits: Record<number, Trait>
   } {
     if (!this.checkVersion()) {
       return {
@@ -103,6 +108,8 @@ const cacheUtils = {
         outfits: {},
         homeNodes: [],
         homeCats: [],
+        specializations: {},
+        traits: {},
       }
     }
 
@@ -119,6 +126,10 @@ const cacheUtils = {
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
     const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
+    const specializations =
+      this.load<Record<number, Specialization>>(STORAGE_KEYS.SPECIALIZATIONS) ||
+      {}
+    const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
 
     return {
       items,
@@ -130,6 +141,8 @@ const cacheUtils = {
       outfits,
       homeNodes,
       homeCats,
+      specializations,
+      traits,
     }
   },
 
@@ -169,6 +182,14 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.HOME_CATS, homeCats)
   },
 
+  saveSpecializations(specializations: Record<number, Specialization>): void {
+    this.save(STORAGE_KEYS.SPECIALIZATIONS, specializations)
+  },
+
+  saveTraits(traits: Record<number, Trait>): void {
+    this.save(STORAGE_KEYS.TRAITS, traits)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -179,6 +200,8 @@ const cacheUtils = {
     outfitCount: number
     homeNodeCount: number
     homeCatCount: number
+    specializationCount: number
+    traitCount: number
     version: string | null
   } {
     const items =
@@ -194,6 +217,10 @@ const cacheUtils = {
       this.load<Record<number, Outfit>>(STORAGE_KEYS.OUTFITS) || {}
     const homeNodes = this.load<string[]>(STORAGE_KEYS.HOME_NODES) || []
     const homeCats = this.load<HomeCat[]>(STORAGE_KEYS.HOME_CATS) || []
+    const specializations =
+      this.load<Record<number, Specialization>>(STORAGE_KEYS.SPECIALIZATIONS) ||
+      {}
+    const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -206,6 +233,8 @@ const cacheUtils = {
       outfitCount: Object.keys(outfits).length,
       homeNodeCount: homeNodes.length,
       homeCatCount: homeCats.length,
+      specializationCount: Object.keys(specializations).length,
+      traitCount: Object.keys(traits).length,
       version,
     }
   },
@@ -231,6 +260,10 @@ interface StaticDataState {
   isHomeNodesFetching: boolean
   homeCats: HomeCat[]
   isHomeCatsFetching: boolean
+  specializations: Record<number, Specialization>
+  isSpecializationsFetching: boolean
+  traits: Record<number, Trait>
+  isTraitsFetching: boolean
 }
 
 type StaticDataAction =
@@ -264,6 +297,15 @@ type StaticDataAction =
   | { type: "ADD_HOME_CATS"; homeCats: HomeCat[] }
   | { type: "SET_HOME_CATS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_HOME_CATS"; homeCats: HomeCat[] }
+  | { type: "ADD_SPECIALIZATIONS"; specializations: Specialization[] }
+  | { type: "SET_SPECIALIZATIONS_FETCHING"; fetching: boolean }
+  | {
+      type: "LOAD_CACHED_SPECIALIZATIONS"
+      specializations: Record<number, Specialization>
+    }
+  | { type: "ADD_TRAITS"; traits: Trait[] }
+  | { type: "SET_TRAITS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_TRAITS"; traits: Record<number, Trait> }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -289,6 +331,11 @@ interface StaticDataContextType {
   isHomeNodesFetching: boolean
   homeCats: HomeCat[]
   isHomeCatsFetching: boolean
+  specializations: Record<number, Specialization>
+  isSpecializationsFetching: boolean
+  traits: Record<number, Trait>
+  isTraitsFetching: boolean
+  fetchTraits: (traitIds: number[]) => Promise<void>
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -385,6 +432,27 @@ const staticDataReducer = (
       return { ...state, isHomeCatsFetching: action.fetching }
     case "LOAD_CACHED_HOME_CATS":
       return { ...state, homeCats: action.homeCats }
+    case "ADD_SPECIALIZATIONS":
+      return {
+        ...state,
+        specializations: addItemsToRecord(
+          state.specializations,
+          action.specializations,
+        ),
+      }
+    case "SET_SPECIALIZATIONS_FETCHING":
+      return { ...state, isSpecializationsFetching: action.fetching }
+    case "LOAD_CACHED_SPECIALIZATIONS":
+      return { ...state, specializations: action.specializations }
+    case "ADD_TRAITS":
+      return {
+        ...state,
+        traits: addItemsToRecord(state.traits, action.traits),
+      }
+    case "SET_TRAITS_FETCHING":
+      return { ...state, isTraitsFetching: action.fetching }
+    case "LOAD_CACHED_TRAITS":
+      return { ...state, traits: action.traits }
     default:
       return state
   }
@@ -424,6 +492,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isHomeNodesFetching: false,
       homeCats: cachedData.homeCats,
       isHomeCatsFetching: false,
+      specializations: cachedData.specializations,
+      isSpecializationsFetching: false,
+      traits: cachedData.traits,
+      isTraitsFetching: false,
     }
   })
 
@@ -435,6 +507,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     titles: {} as Record<number, Title>,
     currencies: {} as Record<number, Currency>,
     outfits: {} as Record<number, Outfit>,
+    specializations: {} as Record<number, Specialization>,
+    traits: {} as Record<number, Trait>,
   })
 
   // Update refs whenever state changes
@@ -444,6 +518,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
   staticDataRef.current.titles = state.titles
   staticDataRef.current.currencies = state.currencies
   staticDataRef.current.outfits = state.outfits
+  staticDataRef.current.specializations = state.specializations
+  staticDataRef.current.traits = state.traits
 
   // Debug function to check cache info
   const getCacheInfo = useCallback(() => {
@@ -463,7 +539,9 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.titleCount > 0 ||
       cacheInfo.currencyCount > 0 ||
       cacheInfo.outfitCount > 0 ||
-      cacheInfo.homeNodeCount > 0
+      cacheInfo.homeNodeCount > 0 ||
+      cacheInfo.specializationCount > 0 ||
+      cacheInfo.traitCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -717,6 +795,94 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homeCats])
 
+  // Fetch all specializations (complete dataset - ~100 items)
+  const fetchSpecializations = useCallback(async () => {
+    // Only fetch if no specializations exist
+    if (Object.keys(state.specializations).length > 0) return
+
+    dispatch({ type: "SET_SPECIALIZATIONS_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<Specialization[]>(
+        "specializations",
+        "ids=all",
+      )
+      if (data) {
+        dispatch({ type: "ADD_SPECIALIZATIONS", specializations: data })
+        // Save specializations to cache
+        const specializationsRecord = data.reduce(
+          (acc, spec) => {
+            acc[spec.id] = spec
+            return acc
+          },
+          {} as Record<number, Specialization>,
+        )
+        cacheUtils.saveSpecializations(specializationsRecord)
+      }
+    } catch (error) {
+      console.error("Failed to fetch specializations:", error)
+    } finally {
+      dispatch({ type: "SET_SPECIALIZATIONS_FETCHING", fetching: false })
+    }
+  }, [state.specializations])
+
+  // Fetch traits by IDs (batched on-demand)
+  const fetchTraits = useCallback(async (newIds: number[]) => {
+    if (newIds.length === 0) return
+
+    dispatch({ type: "SET_TRAITS_FETCHING", fetching: true })
+
+    // Use ref to access current data without adding to dependencies
+    const currentData = staticDataRef.current.traits
+    const existingIdSet = new Set(
+      Object.keys(currentData).map((key) => parseInt(key)),
+    )
+    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
+
+    if (idsToFetch.length === 0) {
+      dispatch({ type: "SET_TRAITS_FETCHING", fetching: false })
+      return
+    }
+
+    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+    let newTraits: Trait[] = []
+    let failedChunks = 0
+
+    for (const chunkIds of chunks) {
+      try {
+        const data = await fetchGW2<Trait[]>(
+          "traits",
+          `ids=${chunkIds.join(",")}`,
+        )
+        if (data) {
+          newTraits = [...newTraits, ...data]
+        }
+      } catch (error) {
+        console.error("Failed to fetch traits chunk:", error)
+        failedChunks++
+        // Continue fetching other chunks even if one fails
+      }
+    }
+
+    if (newTraits.length > 0) {
+      dispatch({ type: "ADD_TRAITS", traits: newTraits })
+      // Save updated traits to cache after adding new ones
+      const updatedTraits = { ...staticDataRef.current.traits }
+      newTraits.forEach((trait) => {
+        updatedTraits[trait.id] = trait
+      })
+      cacheUtils.saveTraits(updatedTraits)
+    }
+
+    if (failedChunks > 0) {
+      console.warn(
+        `Failed to fetch ${failedChunks} out of ${chunks.length} traits chunks`,
+      )
+    }
+
+    dispatch({ type: "SET_TRAITS_FETCHING", fetching: false })
+  }, [])
+
   const fetchMaterialCategories = useCallback(async () => {
     if (state.materialCategoriesData.length > 0) return
 
@@ -794,6 +960,20 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homeCats.length, state.isHomeCatsFetching, fetchHomeCats])
 
+  // Auto-fetch specializations on first use when no specializations exist
+  useEffect(() => {
+    if (
+      Object.keys(state.specializations).length === 0 &&
+      !state.isSpecializationsFetching
+    ) {
+      fetchSpecializations()
+    }
+  }, [
+    state.specializations,
+    state.isSpecializationsFetching,
+    fetchSpecializations,
+  ])
+
   // Memoize processed material categories data
   const materialCategories = useMemo(
     () =>
@@ -861,6 +1041,11 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isHomeNodesFetching: state.isHomeNodesFetching,
       homeCats: state.homeCats,
       isHomeCatsFetching: state.isHomeCatsFetching,
+      specializations: state.specializations,
+      isSpecializationsFetching: state.isSpecializationsFetching,
+      traits: state.traits,
+      isTraitsFetching: state.isTraitsFetching,
+      fetchTraits,
       getCacheInfo,
     }),
     [
@@ -882,11 +1067,16 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isHomeNodesFetching,
       state.homeCats,
       state.isHomeCatsFetching,
+      state.specializations,
+      state.isSpecializationsFetching,
+      state.traits,
+      state.isTraitsFetching,
       fetchItems,
       materialCategories,
       materialIdToCategoryIdMap,
       materialCategoryIdToNameMap,
       fetchSkins,
+      fetchTraits,
       getCacheInfo,
     ],
   )
