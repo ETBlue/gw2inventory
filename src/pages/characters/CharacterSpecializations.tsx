@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import {
   Box,
@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 
-import { useSpecializationsData } from "~/hooks/useSpecializationsData"
+import { useCharacters } from "~/contexts/CharacterContext"
 import {
   GAME_MODES,
   GAME_MODE_LABELS,
@@ -36,20 +36,15 @@ export function CharacterSpecializations({
 
   const {
     getCharacterSpecializations,
-    fetchCharacterSpecializations,
-    isLoading,
-    getError,
+    isSpecsLoading,
+    getSpecsError,
     getEnrichedSpecializations,
     hasSpecsForMode,
-  } = useSpecializationsData()
+  } = useCharacters()
 
-  // Fetch specializations when component mounts or character changes
-  useEffect(() => {
-    fetchCharacterSpecializations(characterName)
-  }, [characterName, fetchCharacterSpecializations])
-
-  const loading = isLoading(characterName)
-  const error = getError(characterName)
+  // Specs are automatically prefetched by CharacterContext when characters load
+  const loading = isSpecsLoading(characterName)
+  const error = getSpecsError(characterName)
   const characterSpecs = getCharacterSpecializations(characterName)
   const hasSpecs = hasSpecsForMode(characterName, gameMode)
   const enrichedSpecs = getEnrichedSpecializations(characterName, gameMode)

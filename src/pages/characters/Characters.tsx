@@ -153,6 +153,7 @@ function Characters() {
   const queryString = searchParams.toString()
 
   // Expanded character state - tracks which character's specializations are visible
+  // Note: Character specs prefetching is handled automatically by CharacterContext
   const [expandedCharacter, setExpandedCharacter] = useState<string | null>(
     null,
   )

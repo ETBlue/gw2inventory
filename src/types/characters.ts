@@ -1,14 +1,6 @@
 // Character-related types for both context and general usage
-import type { Character } from "@gw2api/types/data/character"
 import { CharacterEquipmentEntry } from "@gw2api/types/data/character"
 import type { ItemStack } from "@gw2api/types/data/item"
-
-// Character context values interface
-export interface Values {
-  hasToken: boolean
-  characters: Character[]
-  isFetching: boolean
-}
 
 // Character bag item type with custom extensions
 export interface CharacterBagItem extends ItemStack {

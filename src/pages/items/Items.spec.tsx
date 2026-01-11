@@ -156,8 +156,15 @@ describe("Items", () => {
 
     // Default mock for useCharacters
     mockUseCharacters.mockReturnValue({
+      hasToken: true,
+      characters: [],
       isFetching: false,
-    } as ReturnType<typeof useCharacters>)
+      getCharacterSpecializations: vi.fn(() => null),
+      isSpecsLoading: vi.fn(() => false),
+      getSpecsError: vi.fn(() => null),
+      getEnrichedSpecializations: vi.fn(() => []),
+      hasSpecsForMode: vi.fn(() => false),
+    })
   })
 
   afterEach(() => {

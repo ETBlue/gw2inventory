@@ -77,6 +77,11 @@ describe("useItemsData", () => {
       hasToken: true,
       characters: null as any,
       isFetching: false,
+      getCharacterSpecializations: vi.fn(() => null),
+      isSpecsLoading: vi.fn(() => false),
+      getSpecsError: vi.fn(() => null),
+      getEnrichedSpecializations: vi.fn(() => []),
+      hasSpecsForMode: vi.fn(() => false),
     })
 
     mockProcessCharacterItems.mockReturnValue(mockCharacterItems)
