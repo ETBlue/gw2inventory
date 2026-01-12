@@ -307,6 +307,8 @@ function Characters() {
                           cursor="pointer"
                           onClick={() => handleToggleExpand(row.name)}
                           _hover={{ bg: "gray.50" }}
+                          bgColor={isExpanded ? "gray.100" : ""}
+                          borderColor={isExpanded ? "gray.300" : "gray.100"}
                         >
                           <Box display="flex" alignItems="center" gap={2}>
                             {isExpanded ? (
@@ -318,13 +320,23 @@ function Characters() {
                           </Box>
                         </Td>
                       ) : (
-                        <Td key={column.key}>{column.render(row as any)}</Td>
+                        <Td
+                          key={column.key}
+                          borderColor={isExpanded ? "gray.300" : "gray.100"}
+                        >
+                          {column.render(row as any)}
+                        </Td>
                       ),
                     )}
                   </Tr>
                   {isExpanded && (
                     <Tr key={`${row.name}-expanded`}>
-                      <Td colSpan={COLUMNS.length} bg="gray.50" p={0}>
+                      <Td
+                        colSpan={COLUMNS.length}
+                        backgroundColor="gray.100"
+                        borderColor="gray.300"
+                        style={{ padding: 0 }}
+                      >
                         <Collapse in={isExpanded} animateOpacity>
                           <CharacterSpecializations characterName={row.name} />
                         </Collapse>

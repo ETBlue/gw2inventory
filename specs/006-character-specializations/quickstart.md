@@ -12,16 +12,16 @@ This guide provides the essential information to implement character specializat
 - StaticDataContext operational with caching patterns
 - Valid GW2 API token with character permissions
 
-## Key Files to Modify
+## Key Files Modified
 
-| File                                                | Action | Purpose                              |
-| --------------------------------------------------- | ------ | ------------------------------------ |
-| `src/contexts/StaticDataContext.tsx`                | MODIFY | Add specializations + traits caching |
-| `src/types/specializations.ts`                      | CREATE | Type definitions                     |
-| `src/hooks/useSpecializationsData.ts`               | CREATE | Character specialization data hook   |
-| `src/pages/characters/Characters.tsx`               | MODIFY | Add expandable row functionality     |
-| `src/pages/characters/CharacterSpecializations.tsx` | CREATE | Expandable content component         |
-| `src/helpers/specializations.ts`                    | CREATE | Pure helper functions                |
+| File                                                | Action | Purpose                                       |
+| --------------------------------------------------- | ------ | --------------------------------------------- |
+| `src/contexts/StaticDataContext.tsx`                | MODIFY | Add specializations + traits caching          |
+| `src/contexts/CharacterContext.tsx`                 | MODIFY | Add character specs prefetching and access    |
+| `src/types/specializations.ts`                      | CREATE | Type definitions                              |
+| `src/pages/characters/Characters.tsx`               | MODIFY | Add expandable row functionality              |
+| `src/pages/characters/CharacterSpecializations.tsx` | CREATE | Expandable content component                  |
+| `src/helpers/specializations.ts`                    | CREATE | Pure helper functions for data transformation |
 
 ## Implementation Order
 
@@ -78,16 +78,27 @@ fetchAllSpecializations: () => Promise<void> // Called on init
 fetchTraits: (ids: number[]) => Promise<void> // Called on-demand
 ```
 
-### 3. useSpecializationsData Hook
+### 3. CharacterContext Extensions
+
+The specialization data is now integrated into CharacterContext (consolidated from useSpecializationsData hook):
 
 ```typescript
-interface UseSpecializationsDataReturn {
-  getCharacterSpecializations: (name: string) => CharacterSpecializations | null
-  fetchCharacterSpecializations: (name: string) => Promise<void>
-  isLoading: (name: string) => boolean
-  error: (name: string) => Error | null
+interface CharacterContextType {
+  // ... existing character list fields ...
+  getCharacterSpecializations: (
+    characterName: string,
+  ) => CharacterSpecializations | null
+  isSpecsLoading: (characterName: string) => boolean
+  getSpecsError: (characterName: string) => Error | null
+  getEnrichedSpecializations: (
+    characterName: string,
+    mode: GameMode,
+  ) => SpecializationWithDetails[]
+  hasSpecsForMode: (characterName: string, mode: GameMode) => boolean
 }
 ```
+
+Specializations are prefetched in parallel using React Query's `useQueries` when characters are loaded.
 
 ### 4. Characters.tsx Modifications
 
@@ -125,16 +136,19 @@ Props:
 ```typescript
 interface CharacterSpecializationsProps {
   characterName: string
+  initialGameMode?: GameMode
 }
 ```
 
 Features:
 
-- Game mode tabs (PvE/PvP/WvW)
-- Loading state handling
-- Error state handling
-- Empty state for unconfigured modes
-- Specialization cards with traits
+- Vertical game mode tabs (PvE/PvP/WvW) on the left side
+- Loading state handling with spinner
+- Error state handling with error message
+- Empty state for unconfigured modes (inline message)
+- Specialization cards with icon, name, and elite badge
+- Grid layout for traits with tier labels, icons, and names
+- Data fetched from CharacterContext (prefetched on character load)
 
 ## API Endpoints Used
 
@@ -146,16 +160,16 @@ Features:
 
 ## Testing Checklist
 
-- [ ] Clicking character name expands specializations
-- [ ] Clicking again collapses
-- [ ] PvE shown by default
-- [ ] Mode tabs switch content
-- [ ] Elite specs visually distinct
-- [ ] Empty slots handled gracefully
-- [ ] Loading states display correctly
-- [ ] Errors display user-friendly message
-- [ ] Multiple characters can be expanded (or single-only per design)
-- [ ] Static data cached across expansions
+- [x] Clicking character name expands specializations
+- [x] Clicking again collapses
+- [x] PvE shown by default
+- [x] Mode tabs switch content (vertical tabs on left)
+- [x] Elite specs visually distinct (purple badge)
+- [x] Empty slots handled gracefully (null traits filtered out)
+- [x] Loading states display correctly (spinner with message)
+- [x] Errors display user-friendly message
+- [x] Single character expanded at a time (per design)
+- [x] Static data cached across expansions via React Query
 
 ## Performance Targets
 

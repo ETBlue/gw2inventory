@@ -1,6 +1,7 @@
-import { useState } from "react"
+import React, { useState } from "react"
 
 import {
+  Badge,
   Box,
   Center,
   Spinner,
@@ -87,95 +88,89 @@ export function CharacterSpecializations({
     )
   }
 
-  // No specializations configured for this mode
-  if (!hasSpecs) {
-    return (
-      <Center py={4}>
-        <Text color="gray.500">
-          No {GAME_MODE_LABELS[gameMode]} specializations configured
-        </Text>
-      </Center>
-    )
-  }
-
   return (
-    <Box py={4} px={2}>
-      {/* Game mode tabs */}
-      <Tabs index={getTabIndex()} onChange={handleTabChange} size="sm" mb={4}>
-        <TabList>
+    <Box display="flex">
+      {/* Game mode tabs - vertical menu */}
+      <Tabs
+        index={getTabIndex()}
+        onChange={handleTabChange}
+        size="sm"
+        orientation="vertical"
+      >
+        <TabList borderInlineStart="none">
           {GAME_MODES.map((mode) => (
-            <Tab key={mode}>{GAME_MODE_LABELS[mode]}</Tab>
+            <Tab
+              key={mode}
+              borderInlineEnd="2px solid"
+              borderColor="gray.100"
+              bgColor={gameMode === mode ? "gray.200" : ""}
+            >
+              {GAME_MODE_LABELS[mode]}
+            </Tab>
           ))}
         </TabList>
       </Tabs>
 
       {/* Specialization content */}
       {!hasSpecs ? (
-        <Center py={4}>
-          <Text color="gray.500">
+        <Center py={4} flex={1}>
+          <Text color="gray.500" fontSize="sm">
             No {GAME_MODE_LABELS[gameMode]} specializations configured
           </Text>
         </Center>
       ) : (
-        <Box display="flex" gap={4} flexWrap="wrap">
+        <Box display="flex" flexWrap="wrap" flex={1}>
           {enrichedSpecs.map((spec, index) => (
             <Box
               key={index}
-              border="1px solid"
-              borderColor={
-                spec.specialization?.elite ? "purple.200" : "gray.200"
-              }
-              borderRadius="md"
+              borderLeft="1px solid"
+              borderColor="gray.300"
               p={3}
               minWidth="200px"
-              bg={spec.specialization?.elite ? "purple.50" : "white"}
             >
               {spec.specialization ? (
-                <>
-                  <Box display="flex" alignItems="center" gap={2} mb={2}>
+                <Box display="flex" gap={2} alignItems="flex-start">
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    flexDirection="column"
+                  >
                     {spec.specialization.icon && (
                       <Box
                         as="img"
                         src={spec.specialization.icon}
                         alt={spec.specialization.name}
-                        width="32px"
-                        height="32px"
+                        width="3rem"
+                        height="3rem"
                       />
                     )}
-                    <Text fontWeight="medium">{spec.specialization.name}</Text>
+                    <Text fontWeight="medium" fontSize="sm">
+                      {spec.specialization.name}
+                    </Text>
                     {spec.specialization.elite && (
-                      <Text
-                        fontSize="xs"
-                        color="purple.600"
-                        fontWeight="bold"
-                        bg="purple.100"
-                        px={1.5}
-                        py={0.5}
-                        borderRadius="sm"
-                      >
+                      <Badge color="purple.600" bg="purple.100" fontSize="xs">
                         Elite
-                      </Text>
+                      </Badge>
                     )}
                   </Box>
-                  <Box display="flex" flexDirection="column" gap={1}>
-                    {spec.selectedTraits.map((trait, traitIndex) => (
-                      <Box
-                        key={traitIndex}
-                        display="flex"
-                        alignItems="center"
-                        gap={2}
-                        fontSize="sm"
-                      >
-                        {trait ? (
-                          <>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="auto auto auto"
+                    alignItems="center"
+                    gap={1}
+                  >
+                    {spec.selectedTraits.map(
+                      (trait, traitIndex) =>
+                        trait && (
+                          <React.Fragment key={traitIndex}>
                             <Text
                               fontSize="xs"
                               color="gray.500"
                               minWidth="70px"
                             >
-                              {TRAIT_TIER_LABELS[trait.tier + 1] || ""}
+                              {TRAIT_TIER_LABELS[trait.tier] || ""}
                             </Text>
-                            {trait.icon && (
+                            {trait.icon ? (
                               <Box
                                 as="img"
                                 src={trait.icon}
@@ -183,18 +178,19 @@ export function CharacterSpecializations({
                                 width="24px"
                                 height="24px"
                               />
+                            ) : (
+                              <span />
                             )}
-                            <Text>{trait.name}</Text>
-                          </>
-                        ) : (
-                          <Text color="gray.400">Empty slot</Text>
-                        )}
-                      </Box>
-                    ))}
+                            <Text fontSize="sm">{trait.name}</Text>
+                          </React.Fragment>
+                        ),
+                    )}
                   </Box>
-                </>
+                </Box>
               ) : (
-                <Text color="gray.400">Empty specialization slot</Text>
+                <Text color="gray.400" fontSize={"sm"}>
+                  Empty specialization slot
+                </Text>
               )}
             </Box>
           ))}
