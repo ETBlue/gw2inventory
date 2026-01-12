@@ -57,12 +57,10 @@
 
 ### Tests for User Story 1
 
-> **Note**: Tests deferred - implementation completed without TDD. Tests can be added later if needed.
-
 - [~] T012 [P] [US1] Write test: clicking character name expands specialization row in src/pages/characters/Characters.spec.tsx
 - [~] T013 [P] [US1] Write test: clicking expanded character name collapses row in src/pages/characters/Characters.spec.tsx
-- [~] T014 [P] [US1] Write test: expanded section shows specialization names and icons in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T015 [P] [US1] Write test: PvE mode displayed by default when expanding in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T014 [P] [US1] Write test: expanded section shows specialization names and icons in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T015 [P] [US1] Write test: PvE mode displayed by default when expanding in src/pages/characters/CharacterSpecializations.spec.tsx
 
 ### Implementation for User Story 1
 
@@ -87,11 +85,9 @@
 
 ### Tests for User Story 2
 
-> **Note**: Tests deferred - implementation completed without TDD. Tests can be added later if needed.
-
-- [~] T024 [P] [US2] Write test: each specialization displays three traits in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T025 [P] [US2] Write test: traits show name and icon in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T026 [P] [US2] Write test: trait tiers are visually distinguishable in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T024 [P] [US2] Write test: each specialization displays three traits in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T025 [P] [US2] Write test: traits show name and icon in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T026 [P] [US2] Write test: trait tiers are visually distinguishable in src/pages/characters/CharacterSpecializations.spec.tsx
 
 ### Implementation for User Story 2
 
@@ -113,11 +109,9 @@
 
 ### Tests for User Story 3
 
-> **Note**: Tests deferred - implementation completed without TDD. Tests can be added later if needed.
-
-- [~] T032 [P] [US3] Write test: mode tabs (PvE/PvP/WvW) are visible when expanded in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T033 [P] [US3] Write test: clicking PvP tab shows PvP specializations in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T034 [P] [US3] Write test: empty mode shows "not configured" message in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T032 [P] [US3] Write test: mode tabs (PvE/PvP/WvW) are visible when expanded in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T033 [P] [US3] Write test: clicking PvP tab shows PvP specializations in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T034 [P] [US3] Write test: empty mode shows "not configured" message in src/pages/characters/CharacterSpecializations.spec.tsx
 
 ### Implementation for User Story 3
 
@@ -139,10 +133,8 @@
 
 ### Tests for User Story 4
 
-> **Note**: Tests deferred - implementation completed without TDD. Tests can be added later if needed.
-
-- [~] T040 [P] [US4] Write test: elite specializations have visual distinction in src/pages/characters/CharacterSpecializations.spec.tsx
-- [~] T041 [P] [US4] Write test: core and elite specs are clearly different in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T040 [P] [US4] Write test: elite specializations have visual distinction in src/pages/characters/CharacterSpecializations.spec.tsx
+- [x] T041 [P] [US4] Write test: core and elite specs are clearly different in src/pages/characters/CharacterSpecializations.spec.tsx
 
 ### Implementation for User Story 4
 
