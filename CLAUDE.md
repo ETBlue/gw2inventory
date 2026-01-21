@@ -98,9 +98,9 @@ The application uses a hybrid approach with React Context API for global state a
 **Active Contexts:**
 
 - `TokenContext` - Manages API tokens stored in localStorage and account switching
-- `CharacterContext` - Handles character data and crafting
+- `CharacterContext` - Handles character list data and specializations via React Query. Automatically prefetches all character specializations when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions for components to access spec data
 - `SkillContext` - Manages skill data
-- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, and home cats) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data, chunked fetching for items/skins/outfits)
+- `StaticDataContext` - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, specializations, and traits) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/specializations, chunked fetching for items/skins/outfits/traits)
 
 **Custom Hooks (replacing previous contexts):**
 
@@ -135,7 +135,7 @@ The application uses a hybrid approach with React Context API for global state a
 - Uses HashRouter for GitHub Pages compatibility
 - Main routes:
   - `/` → redirects to `/characters`
-  - `/characters/:profession?` - Character overview and management with optional profession filtering
+  - `/characters/:profession?` - Character overview and management with optional profession filtering, expandable rows showing character builds (specializations and traits) with game mode tabs (PvE/PvP/WvW)
   - `/items/:category?` - Item inventory with optional category filtering
   - `/skins/:skinType?` - Skins management with pathname-based type filtering (armor, weapon, back, gathering), search, filtering, and sorting
   - `/dyes/:hue?` - Dyes management with hue filtering, search functionality, sortable table and color swatches
@@ -326,6 +326,19 @@ Significant architectural improvements were made to the static data management s
 - **Action Naming Consistency**: Standardized all StaticDataContext reducer actions to use consistent `ADD_*` pattern (changed `SET_HOME_NODES`, `SET_HOME_CATS`, `SET_MATERIAL_CATEGORIES` to `ADD_*` variants) for better code maintainability
 - **Import Path Standardization**: Implemented consistent `~` path alias for all internal imports throughout the entire codebase, configured @trivago/prettier-plugin-sort-imports for automated import organization, and established clear visual distinction between internal project modules and external dependencies (2025-01-23)
 - **Hook Naming Standardization**: Renamed all data fetching hooks to follow consistent `use***Data.ts` naming pattern (useOutfits → useOutfitsData, useSkins → useSkinsData, useTitles → useTitlesData, useWallet → useWalletData, useDyes → useDyesData, useHomeCats → useHomeCatsData, useHomeNodes → useHomeNodesData) with comprehensive import updates across entire codebase for improved naming consistency and better distinction between data fetching hooks and other utilities (2025-01-23)
+- **Character Specializations Feature**: Added expandable character rows on the Characters page showing equipped builds with specializations and traits (2025-01-10):
+  - Extended `StaticDataContext` with specializations (complete fetch) and traits (batched on-demand) caching
+  - Added pure helper functions in `src/helpers/specializations.ts` for data transformation
+  - Implemented `CharacterSpecializations` component with game mode tabs (PvE/PvP/WvW), tier labels (Adept/Master/Grandmaster), and visual distinction for elite specializations
+  - Used Chakra UI Collapse component for smooth expand/collapse animation
+- **Character Specializations Consolidated in CharacterContext** (2025-01-11):
+  - `CharacterContext` now handles both character list and specialization data via React Query
+  - Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions
+  - Automatic prefetching of all character specs when characters load using `useQueries` for parallel fetching
+  - Traits are batch-fetched after specs are loaded using useEffect dependency on query results
+  - Removed standalone `useSpecializationsData` hook - data access now via `useCharacters()` context hook
+  - Query key generation via `getCharacterSpecsQueryKey` function exported from `CharacterContext.tsx`
+  - Benefits: Zero loading spinners when expanding character rows, centralized character data management, reduced hook count
 - **Context Hook Consolidation**: Merged `useToken.ts` and `useCharacters.ts` hooks directly into their respective context files (`TokenContext.tsx`, `CharacterContext.tsx`) eliminating redundant wrapper files and improving code co-location - hooks now live alongside their contexts and providers for better maintainability and reduced file count (2025-01-23)
 
 **Benefits:**
@@ -349,3 +362,15 @@ Significant architectural improvements were made to the static data management s
 - **Improved code maintainability** through standardized `~` import paths with automated sorting, providing clear distinction between internal modules and external libraries for better developer experience
 - **Enhanced naming consistency** with `use***Data.ts` pattern for all data fetching hooks, improving code organization and making it easier to distinguish between different types of hooks
 - **Reduced file count and improved co-location** by merging context hooks directly into their context files, eliminating redundant wrapper files while maintaining clean public APIs
+
+## Active Technologies
+
+- TypeScript 5.x with React 18 + React, Chakra UI, @tanstack/react-query, @gw2api/types (007-cache-specialization-data)
+- In-memory React state (no localStorage required per spec assumptions) (007-cache-specialization-data)
+
+- TypeScript 5.x with React 19 + React, Chakra UI v2.10, React Router v7, @gw2api/types (006-character-specializations)
+- localStorage for static data caching (specializations, traits metadata) (006-character-specializations)
+
+## Recent Changes
+
+- 006-character-specializations: Added TypeScript 5.x with React 19 + React, Chakra UI v2.10, React Router v7, @gw2api/types

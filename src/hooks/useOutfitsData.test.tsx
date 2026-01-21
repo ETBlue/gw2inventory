@@ -61,6 +61,11 @@ describe("useOutfits", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -71,6 +76,8 @@ describe("useOutfits", () => {
         outfitCount: 0,
         homeNodeCount: 0,
         homeCatCount: 0,
+        specializationCount: 0,
+        traitCount: 0,
         version: null,
       })),
     })
@@ -130,6 +137,11 @@ describe("useOutfits", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -140,6 +152,8 @@ describe("useOutfits", () => {
         outfitCount: 0,
         homeNodeCount: 0,
         homeCatCount: 0,
+        specializationCount: 0,
+        traitCount: 0,
         version: null,
       })),
     })
@@ -224,6 +238,11 @@ describe("useOutfits", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -234,6 +253,8 @@ describe("useOutfits", () => {
         outfitCount: 0,
         homeNodeCount: 0,
         homeCatCount: 0,
+        specializationCount: 0,
+        traitCount: 0,
         version: null,
       })),
     })
@@ -345,6 +366,11 @@ describe("useOutfits", () => {
       isHomeNodesFetching: false,
       homeCats: [],
       isHomeCatsFetching: false,
+      specializations: {},
+      isSpecializationsFetching: false,
+      traits: {},
+      isTraitsFetching: false,
+      fetchTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -355,6 +381,8 @@ describe("useOutfits", () => {
         outfitCount: 0,
         homeNodeCount: 0,
         homeCatCount: 0,
+        specializationCount: 0,
+        traitCount: 0,
         version: null,
       })),
     })
