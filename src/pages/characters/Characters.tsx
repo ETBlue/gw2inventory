@@ -4,6 +4,7 @@ import {
   Box,
   Center,
   Collapse,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -19,6 +20,7 @@ import {
   Tag,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -27,7 +29,13 @@ import type { Character } from "@gw2api/types/data/character"
 
 import { format, formatDistance } from "date-fns"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import { FaCheck, FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa"
+import {
+  FaCheck,
+  FaChevronDown,
+  FaChevronRight,
+  FaChevronUp,
+  FaMinus,
+} from "react-icons/fa"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { MdSearch } from "react-icons/md"
 import {
@@ -152,18 +160,27 @@ function Characters() {
   const order = searchParams.get("order")
   const queryString = searchParams.toString()
 
-  // Expanded character state - tracks which character's specializations are visible
+  // Expanded characters state - tracks which characters' specializations are visible
   // Note: Character specs prefetching is handled automatically by CharacterContext
-  const [expandedCharacter, setExpandedCharacter] = useState<string | null>(
-    null,
+  const [expandedCharacters, setExpandedCharacters] = useState<Set<string>>(
+    new Set(),
   )
 
   // Toggle expand/collapse for a character
   const handleToggleExpand = (characterName: string) => {
-    setExpandedCharacter((prev) =>
-      prev === characterName ? null : characterName,
-    )
+    setExpandedCharacters((prev) => {
+      const next = new Set(prev)
+      if (next.has(characterName)) {
+        next.delete(characterName)
+      } else {
+        next.add(characterName)
+      }
+      return next
+    })
   }
+
+  // Check if a character is expanded
+  const isExpanded = (name: string) => expandedCharacters.has(name)
 
   // Sorting state
   const defaultSortBy = "name"
@@ -208,6 +225,18 @@ function Characters() {
       const number = compare(aValue, bValue)
       return activeOrder === "asc" ? number : number * -1
     })
+
+  // Expand all visible characters
+  const handleExpandAll = () => {
+    if (visibleCharacters) {
+      setExpandedCharacters(new Set(visibleCharacters.map((c) => c.name)))
+    }
+  }
+
+  // Collapse all characters
+  const handleCollapseAll = () => {
+    setExpandedCharacters(new Set())
+  }
 
   const getActiveTabIndex = (): number => {
     if (!activeProfession) return 0 // "All" tab
@@ -273,30 +302,69 @@ function Characters() {
         <Table className={css.table}>
           <Thead>
             <Tr>
-              {COLUMNS.map((col) => (
-                <Th
-                  key={col.key}
-                  cursor="pointer"
-                  onClick={() => handleSort(col.title)}
-                  className={`${css.title} ${
-                    activeSort === col.title ? css.active : ""
-                  }`}
-                >
-                  {col.title}
-                  {activeSort === col.title ? (
-                    activeOrder === "asc" ? (
-                      <CgArrowDown />
-                    ) : (
-                      <CgArrowUp />
-                    )
-                  ) : null}
-                </Th>
-              ))}
+              {COLUMNS.map((col, index) =>
+                index === 0 ? (
+                  <Th
+                    key={col.key}
+                    className={`${css.title} ${
+                      activeSort === col.title ? css.active : ""
+                    }`}
+                  >
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <IconButton
+                        aria-label="Expand all"
+                        icon={<FaChevronDown />}
+                        size="xs"
+                        variant="ghost"
+                        onClick={handleExpandAll}
+                      />
+                      <IconButton
+                        aria-label="Collapse all"
+                        icon={<FaChevronUp />}
+                        size="xs"
+                        variant="ghost"
+                        onClick={handleCollapseAll}
+                      />
+                      <Text
+                        cursor="pointer"
+                        onClick={() => handleSort(col.title)}
+                      >
+                        {col.title}
+                        {activeSort === col.title ? (
+                          activeOrder === "asc" ? (
+                            <CgArrowDown />
+                          ) : (
+                            <CgArrowUp />
+                          )
+                        ) : null}
+                      </Text>
+                    </Box>
+                  </Th>
+                ) : (
+                  <Th
+                    key={col.key}
+                    cursor="pointer"
+                    onClick={() => handleSort(col.title)}
+                    className={`${css.title} ${
+                      activeSort === col.title ? css.active : ""
+                    }`}
+                  >
+                    {col.title}
+                    {activeSort === col.title ? (
+                      activeOrder === "asc" ? (
+                        <CgArrowDown />
+                      ) : (
+                        <CgArrowUp />
+                      )
+                    ) : null}
+                  </Th>
+                ),
+              )}
             </Tr>
           </Thead>
           <Tbody>
             {visibleCharacters?.map((row) => {
-              const isExpanded = expandedCharacter === row.name
+              const rowExpanded = isExpanded(row.name)
               return (
                 <>
                   <Tr key={row.name}>
@@ -307,11 +375,11 @@ function Characters() {
                           cursor="pointer"
                           onClick={() => handleToggleExpand(row.name)}
                           _hover={{ bg: "gray.50" }}
-                          bgColor={isExpanded ? "gray.100" : ""}
-                          borderColor={isExpanded ? "gray.300" : "gray.100"}
+                          bgColor={rowExpanded ? "gray.100" : ""}
+                          borderColor={rowExpanded ? "gray.300" : "gray.100"}
                         >
                           <Box display="flex" alignItems="center" gap={2}>
-                            {isExpanded ? (
+                            {rowExpanded ? (
                               <FaChevronDown size={12} />
                             ) : (
                               <FaChevronRight size={12} />
@@ -322,14 +390,14 @@ function Characters() {
                       ) : (
                         <Td
                           key={column.key}
-                          borderColor={isExpanded ? "gray.300" : "gray.100"}
+                          borderColor={rowExpanded ? "gray.300" : "gray.100"}
                         >
                           {column.render(row as any)}
                         </Td>
                       ),
                     )}
                   </Tr>
-                  {isExpanded && (
+                  {rowExpanded && (
                     <Tr key={`${row.name}-expanded`}>
                       <Td
                         colSpan={COLUMNS.length}
@@ -337,7 +405,7 @@ function Characters() {
                         borderColor="gray.300"
                         style={{ padding: 0 }}
                       >
-                        <Collapse in={isExpanded} animateOpacity>
+                        <Collapse in={rowExpanded} animateOpacity>
                           <CharacterSpecializations characterName={row.name} />
                         </Collapse>
                       </Td>
