@@ -7,11 +7,13 @@ This document outlines the migration plan for upgrading from Chakra UI v2.10.9 t
 ## Current State Analysis
 
 ### Version Information
+
 - **Current Version**: @chakra-ui/react v2.10.9
 - **Target Version**: @chakra-ui/react v3.24.0
 - **React Version**: v19.1.1 (compatible with Chakra v3)
 
 ### Impact Assessment
+
 - **Total Files Affected**: 18 files
 - **Components Used**: 30+ different Chakra components
 - **Estimated Effort**: 2-3 days for migration + testing
@@ -21,11 +23,13 @@ This document outlines the migration plan for upgrading from Chakra UI v2.10.9 t
 ### Phase 1: Preparation (Day 1 Morning)
 
 #### 1.1 Create Migration Branch
+
 ```bash
 git checkout -b feature/chakra-ui-v3-migration
 ```
 
 #### 1.2 Backup Current State
+
 - Create a comprehensive test suite if not already present
 - Document current UI behavior with screenshots
 - Note any custom theme configurations
@@ -33,6 +37,7 @@ git checkout -b feature/chakra-ui-v3-migration
 ### Phase 2: Package Updates (Day 1 Afternoon)
 
 #### 2.1 Update Dependencies
+
 ```bash
 # Remove old dependencies
 npm uninstall @emotion/styled framer-motion
@@ -45,13 +50,16 @@ npm install @emotion/react@latest
 ```
 
 #### 2.2 Update Package.json
+
 Remove from dependencies:
+
 - `@emotion/styled`
 - `framer-motion`
 
 ### Phase 3: Core Application Updates (Day 1 Afternoon)
 
 #### 3.1 Update Provider (App.tsx)
+
 ```tsx
 // Before
 import { ChakraProvider } from "@chakra-ui/react"
@@ -69,6 +77,7 @@ const system = createSystem(defaultConfig)
 ```
 
 #### 3.2 Update Test Utils (test-utils.tsx)
+
 ```tsx
 // Update theme imports and provider setup
 import { Provider, createSystem, defaultConfig } from "@chakra-ui/react"
@@ -78,7 +87,8 @@ import { Provider, createSystem, defaultConfig } from "@chakra-ui/react"
 
 #### 4.1 Tabs Component Updates
 
-**Files affected**: 
+**Files affected**:
+
 - src/pages/account/Account.tsx
 - src/pages/characters/Characters.tsx
 
@@ -110,17 +120,18 @@ import { Provider, createSystem, defaultConfig } from "@chakra-ui/react"
 
 Update all boolean props across the codebase:
 
-| v2 Prop | v3 Equivalent |
-|---------|---------------|
-| `isActive` | `active` |
-| `isDisabled` | `disabled` |
-| `isLoading` | `loading` |
-| `isExternal` | `external` |
-| `isAttached` | `attached` |
-| `isInvalid` | `invalid` |
-| `isRequired` | `required` |
+| v2 Prop      | v3 Equivalent |
+| ------------ | ------------- |
+| `isActive`   | `active`      |
+| `isDisabled` | `disabled`    |
+| `isLoading`  | `loading`     |
+| `isExternal` | `external`    |
+| `isAttached` | `attached`    |
+| `isInvalid`  | `invalid`     |
+| `isRequired` | `required`    |
 
 **Files with boolean props**:
+
 - src/components/Pagination.tsx (isDisabled)
 - src/pages/items/SubMenuItem.tsx (isActive)
 - src/blocks/Header.tsx (isExternal)
@@ -139,6 +150,7 @@ Convert Chakra style props to CSS prop:
 ```
 
 **Priority files for style prop updates**:
+
 1. src/blocks/Header.tsx (extensive style props)
 2. src/pages/items/Items.tsx
 3. src/pages/settings/Settings.tsx
@@ -147,6 +159,7 @@ Convert Chakra style props to CSS prop:
 #### 4.4 ColorModeSwitcher Updates
 
 Update color mode API usage:
+
 ```tsx
 // Check for API changes in useColorMode and useColorModeValue
 // Update IconButton props
@@ -155,16 +168,19 @@ Update color mode API usage:
 ### Phase 5: Component-Specific Updates (Day 2 Afternoon)
 
 #### 5.1 Table Components
+
 Files: src/components/SortableTable.tsx
 
 Verify Table component structure remains compatible or update as needed.
 
 #### 5.2 Menu Components
+
 Files: src/blocks/Header.tsx
 
 Check for Menu, MenuButton, MenuList, MenuItem API changes.
 
 #### 5.3 Form Components
+
 Files: src/pages/settings/Settings.tsx, src/pages/items/Items.tsx
 
 Update Input components and form-related props.
@@ -172,6 +188,7 @@ Update Input components and form-related props.
 ### Phase 6: Testing & Validation (Day 3)
 
 #### 6.1 Functional Testing
+
 - [ ] Color mode switching works correctly
 - [ ] All navigation tabs function properly
 - [ ] Table sorting and pagination work
@@ -180,12 +197,14 @@ Update Input components and form-related props.
 - [ ] All modals and overlays function
 
 #### 6.2 Visual Testing
+
 - [ ] Compare UI with screenshots from Phase 1
 - [ ] Verify spacing and layout consistency
 - [ ] Check theme colors apply correctly
 - [ ] Validate icon rendering
 
 #### 6.3 Performance Testing
+
 - [ ] Bundle size comparison
 - [ ] Initial load time
 - [ ] Component render performance
@@ -193,11 +212,13 @@ Update Input components and form-related props.
 ### Phase 7: Cleanup & Documentation
 
 #### 7.1 Code Cleanup
+
 - Remove any v2 compatibility code
 - Update comments and documentation
 - Clean up unused imports
 
 #### 7.2 Update Documentation
+
 - Update README.md with new Chakra version
 - Document any custom workarounds needed
 - Update CLAUDE.md with migration notes
@@ -226,16 +247,19 @@ If critical issues arise during migration:
 ## Risk Assessment
 
 ### High Risk Areas
+
 - Tabs component (major structural changes)
 - Theme system (if custom theme is used)
 - ColorModeSwitcher (API changes)
 
-### Medium Risk Areas  
+### Medium Risk Areas
+
 - Boolean props throughout codebase
 - Style props conversion
 - Menu components
 
 ### Low Risk Areas
+
 - Basic components (Box, Flex, Grid)
 - Simple buttons and inputs
 - Static layout components
@@ -249,6 +273,7 @@ If critical issues arise during migration:
 ## Decision Checklist
 
 Before proceeding with migration, ensure:
+
 - [ ] Team is aligned on the effort required
 - [ ] Testing strategy is in place
 - [ ] Rollback plan is understood
