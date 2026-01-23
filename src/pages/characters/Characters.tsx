@@ -29,13 +29,7 @@ import type { Character } from "@gw2api/types/data/character"
 
 import { format, formatDistance } from "date-fns"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
-import {
-  FaCheck,
-  FaChevronDown,
-  FaChevronRight,
-  FaChevronUp,
-  FaMinus,
-} from "react-icons/fa"
+import { FaCheck, FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa"
 import { GiFemale, GiMale } from "react-icons/gi"
 import { MdSearch } from "react-icons/md"
 import {
@@ -310,7 +304,12 @@ function Characters() {
                       activeSort === col.title ? css.active : ""
                     }`}
                   >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={1}
+                      marginLeft="-.75rem"
+                    >
                       <IconButton
                         aria-label="Expand all"
                         icon={<FaChevronDown />}
@@ -320,7 +319,7 @@ function Characters() {
                       />
                       <IconButton
                         aria-label="Collapse all"
-                        icon={<FaChevronUp />}
+                        icon={<FaChevronRight />}
                         size="xs"
                         variant="ghost"
                         onClick={handleCollapseAll}
