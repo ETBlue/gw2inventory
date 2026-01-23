@@ -335,7 +335,7 @@ interface StaticDataContextType {
   isSpecializationsFetching: boolean
   traits: Record<number, Trait>
   isTraitsFetching: boolean
-  fetchTraits: (traitIds: number[]) => Promise<void>
+  fetchAllTraits: () => Promise<void>
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -826,62 +826,33 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.specializations])
 
-  // Fetch traits by IDs (batched on-demand)
-  const fetchTraits = useCallback(async (newIds: number[]) => {
-    if (newIds.length === 0) return
+  // Fetch all traits at once
+  const fetchAllTraits = useCallback(async () => {
+    // Only fetch if no traits exist and not already fetching
+    if (Object.keys(state.traits).length > 0 || state.isTraitsFetching) return
 
     dispatch({ type: "SET_TRAITS_FETCHING", fetching: true })
 
-    // Use ref to access current data without adding to dependencies
-    const currentData = staticDataRef.current.traits
-    const existingIdSet = new Set(
-      Object.keys(currentData).map((key) => parseInt(key)),
-    )
-    const idsToFetch = newIds.filter((id) => !existingIdSet.has(id))
-
-    if (idsToFetch.length === 0) {
-      dispatch({ type: "SET_TRAITS_FETCHING", fetching: false })
-      return
-    }
-
-    const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-    let newTraits: Trait[] = []
-    let failedChunks = 0
-
-    for (const chunkIds of chunks) {
-      try {
-        const data = await fetchGW2<Trait[]>(
-          "traits",
-          `ids=${chunkIds.join(",")}`,
+    try {
+      const data = await fetchGW2<Trait[]>("traits", "ids=all")
+      if (data) {
+        dispatch({ type: "ADD_TRAITS", traits: data })
+        // Save traits to cache
+        const traitsRecord = data.reduce(
+          (acc, trait) => {
+            acc[trait.id] = trait
+            return acc
+          },
+          {} as Record<number, Trait>,
         )
-        if (data) {
-          newTraits = [...newTraits, ...data]
-        }
-      } catch (error) {
-        console.error("Failed to fetch traits chunk:", error)
-        failedChunks++
-        // Continue fetching other chunks even if one fails
+        cacheUtils.saveTraits(traitsRecord)
       }
+    } catch (error) {
+      console.error("Failed to fetch traits:", error)
+    } finally {
+      dispatch({ type: "SET_TRAITS_FETCHING", fetching: false })
     }
-
-    if (newTraits.length > 0) {
-      dispatch({ type: "ADD_TRAITS", traits: newTraits })
-      // Save updated traits to cache after adding new ones
-      const updatedTraits = { ...staticDataRef.current.traits }
-      newTraits.forEach((trait) => {
-        updatedTraits[trait.id] = trait
-      })
-      cacheUtils.saveTraits(updatedTraits)
-    }
-
-    if (failedChunks > 0) {
-      console.warn(
-        `Failed to fetch ${failedChunks} out of ${chunks.length} traits chunks`,
-      )
-    }
-
-    dispatch({ type: "SET_TRAITS_FETCHING", fetching: false })
-  }, [])
+  }, [state.traits, state.isTraitsFetching])
 
   const fetchMaterialCategories = useCallback(async () => {
     if (state.materialCategoriesData.length > 0) return
@@ -1045,7 +1016,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isSpecializationsFetching: state.isSpecializationsFetching,
       traits: state.traits,
       isTraitsFetching: state.isTraitsFetching,
-      fetchTraits,
+      fetchAllTraits,
       getCacheInfo,
     }),
     [
@@ -1076,7 +1047,7 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       materialIdToCategoryIdMap,
       materialCategoryIdToNameMap,
       fetchSkins,
-      fetchTraits,
+      fetchAllTraits,
       getCacheInfo,
     ],
   )

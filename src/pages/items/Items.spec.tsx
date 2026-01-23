@@ -277,7 +277,7 @@ describe("Items", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -358,7 +358,7 @@ describe("Items", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -429,7 +429,7 @@ describe("Items", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 
@@ -490,7 +490,7 @@ describe("Items", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(),
     })
 

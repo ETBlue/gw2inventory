@@ -3,7 +3,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
 } from "react"
 
@@ -14,7 +13,6 @@ import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { fetchGW2, queryFunction } from "~/helpers/api"
 import {
-  extractTraitIds,
   getGameModeSpecializations,
   hasSpecializationsForMode,
 } from "~/helpers/specializations"
@@ -82,7 +80,7 @@ interface CharacterProviderProps {
 function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { specializations, traits, fetchTraits } = useStaticData()
+  const { specializations, traits } = useStaticData()
 
   // Character list query
   const { data: characters = [], isFetching } = useQuery({
@@ -114,22 +112,6 @@ function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
       enabled: !!token,
     })),
   })
-
-  // After specs are fetched, extract and fetch all required traits
-  useEffect(() => {
-    const allTraitIds = new Set<number>()
-
-    specsResults.forEach((result) => {
-      if (result.data) {
-        const traitIds = extractTraitIds(result.data)
-        traitIds.forEach((id) => allTraitIds.add(id))
-      }
-    })
-
-    if (allTraitIds.size > 0) {
-      fetchTraits(Array.from(allTraitIds))
-    }
-  }, [specsResults, fetchTraits])
 
   // Create a map from character name to spec result index for quick lookup
   const characterNameToIndex = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import {
   Box,
@@ -41,6 +41,7 @@ import {
 } from "react-router"
 
 import { useCharacters } from "~/contexts/CharacterContext"
+import { useStaticData } from "~/contexts/StaticDataContext"
 import { compare } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import { CharacterSpecializations } from "~/pages/characters/CharacterSpecializations"
@@ -144,6 +145,7 @@ const COLUMNS: Column[] = [
 
 function Characters() {
   const { hasToken, characters, isFetching } = useCharacters()
+  const { fetchAllTraits } = useStaticData()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { profession } = useParams<{ profession?: string }>()
@@ -159,6 +161,11 @@ function Characters() {
   const [expandedCharacters, setExpandedCharacters] = useState<Set<string>>(
     new Set(),
   )
+
+  // Fetch all traits when the Characters page loads
+  useEffect(() => {
+    fetchAllTraits()
+  }, [fetchAllTraits])
 
   // Toggle expand/collapse for a character
   const handleToggleExpand = (characterName: string) => {

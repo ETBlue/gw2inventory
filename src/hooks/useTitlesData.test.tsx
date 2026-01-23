@@ -68,7 +68,7 @@ describe("useTitles", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -185,7 +185,7 @@ describe("useTitles", () => {
       isSpecializationsFetching: false,
       traits: {},
       isTraitsFetching: false,
-      fetchTraits: vi.fn(),
+      fetchAllTraits: vi.fn(),
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
