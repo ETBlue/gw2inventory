@@ -232,6 +232,21 @@ function Characters() {
     setExpandedCharacters(new Set())
   }
 
+  // Check if all visible characters are expanded
+  const allExpanded =
+    visibleCharacters &&
+    visibleCharacters.length > 0 &&
+    visibleCharacters.every((c) => expandedCharacters.has(c.name))
+
+  // Toggle expand/collapse all
+  const handleToggleAll = () => {
+    if (allExpanded) {
+      handleCollapseAll()
+    } else {
+      handleExpandAll()
+    }
+  }
+
   const getActiveTabIndex = (): number => {
     if (!activeProfession) return 0 // "All" tab
     const professionIndex = PROFESSIONS.findIndex((p) => p === activeProfession)
@@ -304,25 +319,17 @@ function Characters() {
                       activeSort === col.title ? css.active : ""
                     }`}
                   >
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                      marginLeft="-.75rem"
-                    >
+                    <Box display="flex" alignItems="center" gap={1}>
                       <IconButton
-                        aria-label="Expand all"
-                        icon={<FaChevronDown />}
+                        aria-label={allExpanded ? "Collapse all" : "Expand all"}
+                        icon={
+                          allExpanded ? <FaChevronDown /> : <FaChevronRight />
+                        }
                         size="xs"
                         variant="ghost"
-                        onClick={handleExpandAll}
-                      />
-                      <IconButton
-                        aria-label="Collapse all"
-                        icon={<FaChevronRight />}
-                        size="xs"
-                        variant="ghost"
-                        onClick={handleCollapseAll}
+                        onClick={handleToggleAll}
+                        marginLeft="-.75rem"
+                        marginRight=".25rem"
                       />
                       <Text
                         cursor="pointer"
