@@ -282,4 +282,192 @@ describe("Overview Component", () => {
     expect(screen.getByText("1")).toBeInTheDocument()
     expect(screen.getByText("Test Title")).toBeInTheDocument()
   })
+
+  it("displays guilds with full data when level and influence are available", async () => {
+    const mockAccount = {
+      name: "Test Account",
+      created: "2023-01-01T00:00:00Z",
+      access: ["GuildWars2"],
+      wvw_rank: 100,
+      fractal_level: 50,
+      guilds: ["guild-id-1", "guild-id-2"],
+    }
+
+    const mockProgression: { id: string; value: number }[] = []
+
+    const mockGuilds = [
+      {
+        id: "guild-id-1",
+        name: "Test Guild",
+        tag: "TG",
+        level: 42,
+        influence: 12345,
+      },
+      {
+        id: "guild-id-2",
+        name: "Another Guild",
+        tag: "AG",
+        level: 10,
+        influence: 500,
+      },
+    ]
+
+    mockUseToken.mockReturnValue({
+      currentAccount: { token: "test-token", name: "Test Account" },
+      usedAccounts: [],
+      addUsedAccount: vi.fn(),
+      removeUsedAccount: vi.fn(),
+      setCurrentAccount: vi.fn(),
+    })
+
+    mockUseTitles.mockReturnValue({
+      accountTitleIds: [],
+      titles: [],
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    })
+
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account") {
+        return mockAccount
+      }
+      if (endpoint === "account/progression") {
+        return mockProgression
+      }
+      if (endpoint === "guild/guild-id-1") {
+        return mockGuilds[0]
+      }
+      if (endpoint === "guild/guild-id-2") {
+        return mockGuilds[1]
+      }
+      return null
+    })
+
+    render(<Overview />)
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Account")).toBeInTheDocument()
+    })
+
+    // Check guilds section exists
+    expect(screen.getByText("Guilds")).toBeInTheDocument()
+
+    // Check guild entries with full format: [tag] name Lv## (influence)
+    expect(screen.getByText(/\[TG\] Test Guild/)).toBeInTheDocument()
+    expect(screen.getByText(/Lv42/)).toBeInTheDocument()
+    expect(screen.getByText(/12,345/)).toBeInTheDocument()
+
+    expect(screen.getByText(/\[AG\] Another Guild/)).toBeInTheDocument()
+    expect(screen.getByText(/Lv10/)).toBeInTheDocument()
+    expect(screen.getByText(/500/)).toBeInTheDocument()
+  })
+
+  it("displays guilds with partial data when level and influence are unavailable", async () => {
+    const mockAccount = {
+      name: "Test Account",
+      created: "2023-01-01T00:00:00Z",
+      access: ["GuildWars2"],
+      wvw_rank: 100,
+      fractal_level: 50,
+      guilds: ["guild-id-1"],
+    }
+
+    const mockProgression: { id: string; value: number }[] = []
+
+    mockUseToken.mockReturnValue({
+      currentAccount: { token: "test-token", name: "Test Account" },
+      usedAccounts: [],
+      addUsedAccount: vi.fn(),
+      removeUsedAccount: vi.fn(),
+      setCurrentAccount: vi.fn(),
+    })
+
+    mockUseTitles.mockReturnValue({
+      accountTitleIds: [],
+      titles: [],
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    })
+
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account") {
+        return mockAccount
+      }
+      if (endpoint === "account/progression") {
+        return mockProgression
+      }
+      if (endpoint === "guild/guild-id-1") {
+        // Return guild without level/influence (user lacks guilds scope)
+        return { id: "guild-id-1", name: "Limited Guild", tag: "LG" }
+      }
+      return null
+    })
+
+    render(<Overview />)
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Account")).toBeInTheDocument()
+    })
+
+    // Check guild displays without level/influence
+    expect(screen.getByText("Guilds")).toBeInTheDocument()
+    expect(screen.getByText(/\[LG\] Limited Guild/)).toBeInTheDocument()
+
+    // Should NOT show Lv or influence for this guild
+    const guildText = screen.getByText(/\[LG\] Limited Guild/).textContent
+    expect(guildText).not.toContain("Lv")
+  })
+
+  it("displays 'None' when account has no guilds", async () => {
+    const mockAccount = {
+      name: "Test Account",
+      created: "2023-01-01T00:00:00Z",
+      access: ["GuildWars2"],
+      wvw_rank: 100,
+      fractal_level: 50,
+      guilds: [],
+    }
+
+    const mockProgression: { id: string; value: number }[] = []
+
+    mockUseToken.mockReturnValue({
+      currentAccount: { token: "test-token", name: "Test Account" },
+      usedAccounts: [],
+      addUsedAccount: vi.fn(),
+      removeUsedAccount: vi.fn(),
+      setCurrentAccount: vi.fn(),
+    })
+
+    mockUseTitles.mockReturnValue({
+      accountTitleIds: [],
+      titles: [],
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    })
+
+    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
+      const [endpoint] = queryKey
+      if (endpoint === "account") {
+        return mockAccount
+      }
+      if (endpoint === "account/progression") {
+        return mockProgression
+      }
+      return null
+    })
+
+    render(<Overview />)
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Account")).toBeInTheDocument()
+    })
+
+    expect(screen.getByText("Guilds")).toBeInTheDocument()
+    expect(screen.getByText("None")).toBeInTheDocument()
+  })
 })
