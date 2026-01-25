@@ -17,6 +17,7 @@ import { FaCheck, FaMinus } from "react-icons/fa"
 
 import useHomeCats from "~/hooks/useHomeCatsData"
 import useHomeNodes from "~/hooks/useHomeNodesData"
+import useHomesteadGlyphs from "~/hooks/useHomesteadGlyphsData"
 
 export default function Home() {
   const {
@@ -35,11 +36,18 @@ export default function Home() {
     error: accountCatsError,
   } = useHomeCats()
 
-  const isFetching = isNodesFetching || isCatsFetching
+  const {
+    homesteadGlyphs,
+    accountGlyphIds,
+    isFetching: isGlyphsFetching,
+    error: accountGlyphsError,
+  } = useHomesteadGlyphs()
+
+  const isFetching = isNodesFetching || isCatsFetching || isGlyphsFetching
 
   return (
     <Grid gridTemplateRows={"auto 1fr"}>
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap={"1rem"}>
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={"1rem"}>
         <Box padding={"1rem"}>
           <Heading
             as="h3"
@@ -114,6 +122,43 @@ export default function Home() {
               })}
           </List>
         </Box>
+        <Box padding={"1rem"}>
+          <Heading
+            as="h3"
+            size="sm"
+            display={"flex"}
+            alignItems={"center"}
+            gap={"0.5rem"}
+          >
+            Glyphs
+            <Tag>
+              {accountGlyphIds?.length ?? 0} / {homesteadGlyphs.length}
+            </Tag>
+          </Heading>
+          <Divider margin={"0.5rem 0"} />
+          <List>
+            {accountGlyphIds &&
+              homesteadGlyphs.map((glyph) => {
+                const isUnlocked = accountGlyphIds.includes(glyph.id)
+                return (
+                  <ListItem key={glyph.id} padding={"0.125rem 0"}>
+                    <ListIcon
+                      as={isUnlocked ? FaCheck : FaMinus}
+                      color={isUnlocked ? "green" : "lightgray"}
+                      opacity={isUnlocked ? 1 : 0.5}
+                    />
+                    <Text
+                      as={"span"}
+                      textTransform={"capitalize"}
+                      opacity={isUnlocked ? 1 : 0.5}
+                    >
+                      {glyph.id.replace(/_/g, " ")}
+                    </Text>
+                  </ListItem>
+                )
+              })}
+          </List>
+        </Box>
       </SimpleGrid>
       {isFetching ? (
         <Center>
@@ -121,13 +166,21 @@ export default function Home() {
         </Center>
       ) : !hasToken ? (
         <Center>No account selected</Center>
-      ) : homeNodes.length === 0 && homeCats.length === 0 ? (
+      ) : homeNodes.length === 0 &&
+        homeCats.length === 0 &&
+        homesteadGlyphs.length === 0 ? (
         <Center>No home data found</Center>
-      ) : accountHomeNodesError || accountCatsError ? (
+      ) : accountHomeNodesError || accountCatsError || accountGlyphsError ? (
         <Center>
           <Text color="red.500">
             Error loading home data:{" "}
-            {((accountHomeNodesError || accountCatsError) as Error).message}
+            {
+              (
+                (accountHomeNodesError ||
+                  accountCatsError ||
+                  accountGlyphsError) as Error
+              ).message
+            }
           </Text>
         </Center>
       ) : null}

@@ -9,6 +9,7 @@ import React, {
   useRef,
 } from "react"
 
+import type { HomesteadGlyph } from "@gw2api/types/data/homestead"
 import type { MaterialCategory } from "@gw2api/types/data/material"
 
 import { chunk, sortBy } from "lodash"
@@ -38,6 +39,7 @@ const STORAGE_KEYS = {
   HOME_CATS: "gw2inventory_static_home_cats",
   SPECIALIZATIONS: "gw2inventory_static_specializations",
   TRAITS: "gw2inventory_static_traits",
+  HOMESTEAD_GLYPHS: "gw2inventory_static_homestead_glyphs",
 }
 
 // Cache version for invalidating old cache data
@@ -96,6 +98,7 @@ const cacheUtils = {
     homeCats: HomeCat[]
     specializations: Record<number, Specialization>
     traits: Record<number, Trait>
+    homesteadGlyphs: HomesteadGlyph[]
   } {
     if (!this.checkVersion()) {
       return {
@@ -110,6 +113,7 @@ const cacheUtils = {
         homeCats: [],
         specializations: {},
         traits: {},
+        homesteadGlyphs: [],
       }
     }
 
@@ -130,6 +134,8 @@ const cacheUtils = {
       this.load<Record<number, Specialization>>(STORAGE_KEYS.SPECIALIZATIONS) ||
       {}
     const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
+    const homesteadGlyphs =
+      this.load<HomesteadGlyph[]>(STORAGE_KEYS.HOMESTEAD_GLYPHS) || []
 
     return {
       items,
@@ -143,6 +149,7 @@ const cacheUtils = {
       homeCats,
       specializations,
       traits,
+      homesteadGlyphs,
     }
   },
 
@@ -190,6 +197,10 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.TRAITS, traits)
   },
 
+  saveHomesteadGlyphs(homesteadGlyphs: HomesteadGlyph[]): void {
+    this.save(STORAGE_KEYS.HOMESTEAD_GLYPHS, homesteadGlyphs)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -202,6 +213,7 @@ const cacheUtils = {
     homeCatCount: number
     specializationCount: number
     traitCount: number
+    homesteadGlyphCount: number
     version: string | null
   } {
     const items =
@@ -221,6 +233,8 @@ const cacheUtils = {
       this.load<Record<number, Specialization>>(STORAGE_KEYS.SPECIALIZATIONS) ||
       {}
     const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
+    const homesteadGlyphs =
+      this.load<HomesteadGlyph[]>(STORAGE_KEYS.HOMESTEAD_GLYPHS) || []
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -235,6 +249,7 @@ const cacheUtils = {
       homeCatCount: homeCats.length,
       specializationCount: Object.keys(specializations).length,
       traitCount: Object.keys(traits).length,
+      homesteadGlyphCount: homesteadGlyphs.length,
       version,
     }
   },
@@ -264,6 +279,8 @@ interface StaticDataState {
   isSpecializationsFetching: boolean
   traits: Record<number, Trait>
   isTraitsFetching: boolean
+  homesteadGlyphs: HomesteadGlyph[]
+  isHomesteadGlyphsFetching: boolean
 }
 
 type StaticDataAction =
@@ -306,6 +323,9 @@ type StaticDataAction =
   | { type: "ADD_TRAITS"; traits: Trait[] }
   | { type: "SET_TRAITS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_TRAITS"; traits: Record<number, Trait> }
+  | { type: "ADD_HOMESTEAD_GLYPHS"; homesteadGlyphs: HomesteadGlyph[] }
+  | { type: "SET_HOMESTEAD_GLYPHS_FETCHING"; fetching: boolean }
+  | { type: "LOAD_CACHED_HOMESTEAD_GLYPHS"; homesteadGlyphs: HomesteadGlyph[] }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -336,6 +356,8 @@ interface StaticDataContextType {
   traits: Record<number, Trait>
   isTraitsFetching: boolean
   fetchAllTraits: () => Promise<void>
+  homesteadGlyphs: HomesteadGlyph[]
+  isHomesteadGlyphsFetching: boolean
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -453,6 +475,12 @@ const staticDataReducer = (
       return { ...state, isTraitsFetching: action.fetching }
     case "LOAD_CACHED_TRAITS":
       return { ...state, traits: action.traits }
+    case "ADD_HOMESTEAD_GLYPHS":
+      return { ...state, homesteadGlyphs: action.homesteadGlyphs }
+    case "SET_HOMESTEAD_GLYPHS_FETCHING":
+      return { ...state, isHomesteadGlyphsFetching: action.fetching }
+    case "LOAD_CACHED_HOMESTEAD_GLYPHS":
+      return { ...state, homesteadGlyphs: action.homesteadGlyphs }
     default:
       return state
   }
@@ -496,6 +524,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isSpecializationsFetching: false,
       traits: cachedData.traits,
       isTraitsFetching: false,
+      homesteadGlyphs: cachedData.homesteadGlyphs,
+      isHomesteadGlyphsFetching: false,
     }
   })
 
@@ -541,7 +571,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.outfitCount > 0 ||
       cacheInfo.homeNodeCount > 0 ||
       cacheInfo.specializationCount > 0 ||
-      cacheInfo.traitCount > 0
+      cacheInfo.traitCount > 0 ||
+      cacheInfo.homesteadGlyphCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -854,6 +885,25 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.traits, state.isTraitsFetching])
 
+  const fetchHomesteadGlyphs = useCallback(async () => {
+    if (state.homesteadGlyphs.length > 0) return
+    dispatch({ type: "SET_HOMESTEAD_GLYPHS_FETCHING", fetching: true })
+    try {
+      const data = await fetchGW2<HomesteadGlyph[]>(
+        "homestead/glyphs",
+        "ids=all",
+      )
+      if (data) {
+        dispatch({ type: "ADD_HOMESTEAD_GLYPHS", homesteadGlyphs: data })
+        cacheUtils.saveHomesteadGlyphs(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch homestead glyphs:", error)
+    } finally {
+      dispatch({ type: "SET_HOMESTEAD_GLYPHS_FETCHING", fetching: false })
+    }
+  }, [state.homesteadGlyphs.length])
+
   const fetchMaterialCategories = useCallback(async () => {
     if (state.materialCategoriesData.length > 0) return
 
@@ -945,6 +995,20 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     fetchSpecializations,
   ])
 
+  // Auto-fetch homestead glyphs on first use when no glyphs exist
+  useEffect(() => {
+    if (
+      state.homesteadGlyphs.length === 0 &&
+      !state.isHomesteadGlyphsFetching
+    ) {
+      fetchHomesteadGlyphs()
+    }
+  }, [
+    state.homesteadGlyphs.length,
+    state.isHomesteadGlyphsFetching,
+    fetchHomesteadGlyphs,
+  ])
+
   // Memoize processed material categories data
   const materialCategories = useMemo(
     () =>
@@ -1017,6 +1081,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       traits: state.traits,
       isTraitsFetching: state.isTraitsFetching,
       fetchAllTraits,
+      homesteadGlyphs: state.homesteadGlyphs,
+      isHomesteadGlyphsFetching: state.isHomesteadGlyphsFetching,
       getCacheInfo,
     }),
     [
@@ -1042,6 +1108,8 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isSpecializationsFetching,
       state.traits,
       state.isTraitsFetching,
+      state.homesteadGlyphs,
+      state.isHomesteadGlyphsFetching,
       fetchItems,
       materialCategories,
       materialIdToCategoryIdMap,
