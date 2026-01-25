@@ -11,7 +11,7 @@ import {
   Spinner,
 } from "@chakra-ui/react"
 import { Account } from "@gw2api/types/data/account"
-import { useQuery } from "@tanstack/react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 
 import { format } from "date-fns"
 import { FaCrown } from "react-icons/fa"
@@ -22,6 +22,7 @@ import { queryFunction } from "~/helpers/api"
 import { useTitles } from "~/hooks/useTitlesData"
 import sharedLayoutCss from "~/styles/shared-layout.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
+import type { Guild } from "~/types/guilds"
 
 function formatAccessText(text: string): string {
   return text
@@ -52,6 +53,24 @@ function Overview() {
 
   const { titles, isFetching: isTitlesFetching } = useTitles()
 
+  // Fetch guild data for each guild ID in the account
+  const guildIds = account?.guilds ?? []
+
+  const guildQueries = useQueries({
+    queries: guildIds.map((id) => ({
+      queryKey: [`guild/${id}`, token] as const,
+      queryFn: queryFunction as typeof queryFunction,
+      staleTime: Infinity,
+      enabled: !!token && !!account,
+    })),
+  })
+
+  const guilds = guildQueries
+    .filter((q) => q.isSuccess && q.data)
+    .map((q) => q.data as Guild)
+
+  const isGuildsFetching = guildQueries.some((q) => q.isFetching)
+
   // Sort titles alphabetically by name for consistent display
   const sortedTitles = useMemo(() => {
     if (!titles) return undefined
@@ -60,7 +79,12 @@ function Overview() {
 
   if (!token) return <Center>No account selected</Center>
 
-  if (isAccountFetching || isProgressionFetching || isTitlesFetching)
+  if (
+    isAccountFetching ||
+    isProgressionFetching ||
+    isTitlesFetching ||
+    isGuildsFetching
+  )
     return (
       <Center>
         <Spinner />
@@ -113,6 +137,23 @@ function Overview() {
         ))}
         <dt>Titles</dt>
         <dd>{sortedTitles?.length || 0}</dd>
+        <dt>Guilds</dt>
+        <dd>
+          {guilds.length === 0
+            ? "None"
+            : guilds.map((guild) => (
+                <div key={guild.id}>
+                  {guild.name} [{guild.tag}]
+                  {guild.level !== undefined &&
+                    guild.influence !== undefined && (
+                      <span className={sharedTextCss.secondary}>
+                        {" "}
+                        Lv{guild.level} ({guild.influence.toLocaleString()})
+                      </span>
+                    )}
+                </div>
+              ))}
+        </dd>
       </dl>
       <Divider border={"none"} margin={"0.5rem 0"} />
       <List>
