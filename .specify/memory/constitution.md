@@ -1,30 +1,25 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 → 1.1.0 (major refactor to reference /docs/standards.md)
+Version change: 1.1.0 → 1.2.0 (MINOR - new type sourcing principle added)
 
 Modified principles:
-- All principles now reference /docs/standards.md instead of duplicating content
-
-Modified sections:
-- Core Principles: Now brief summaries with reference to standards.md
-- Quality Standards: Now reference to standards.md
-- Development Workflow: Now reference to standards.md
-- Governance: Retained spec-kit-specific amendment process
+- Principle 1 "Type Safety & Code Quality" expanded to include @gw2api/types preference
 
 Added sections: None
 
-Removed sections:
-- Detailed principle content (moved to /docs/standards.md)
-- Detailed quality pipeline (moved to /docs/standards.md)
-- Detailed workflow requirements (moved to /docs/standards.md)
+Removed sections: None
 
 Templates requiring updates:
-- .specify/templates/plan-template.md ✅ (updated /specs/ → /docs/specs/)
-- .specify/templates/spec-template.md ✅ (no path references affected)
-- .specify/templates/tasks-template.md ✅ (updated /specs/ → /docs/specs/)
+- .specify/templates/plan-template.md ✅ (no changes needed - generic)
+- .specify/templates/spec-template.md ✅ (no changes needed - generic)
+- .specify/templates/tasks-template.md ✅ (no changes needed - generic)
 
 Follow-up TODOs: None
+
+Rationale: User requested principle to prefer @gw2api/types over custom types.
+This aligns with existing project practice (already imports from @gw2api/types)
+and reduces maintenance burden by leveraging community-maintained type definitions.
 -->
 
 # GW2 Inventory Constitution
@@ -41,7 +36,7 @@ All detailed rules, quality checks, and workflow requirements are documented in
 The project adheres to five core principles. See [Coding Standards](/docs/standards.md)
 for detailed requirements and rationale.
 
-1. **Type Safety & Code Quality** - TypeScript strict mode, explicit types, no `any` without justification
+1. **Type Safety & Code Quality** - TypeScript strict mode, explicit types, no `any` without justification. MUST use type definitions from `@gw2api/types` instead of defining custom GW2 API types; custom types are only permitted for app-specific extensions (e.g., adding `location` property to items)
 2. **Test-First Development** - Tests before implementation when practical, mock external dependencies
 3. **Architecture & Separation of Concerns** - Static vs account data separation, single responsibility
 4. **Performance & Caching** - localStorage caching, batched API calls, proper memoization
@@ -74,6 +69,6 @@ This constitution supersedes conflicting practices elsewhere in the codebase.
 
 - All PRs SHOULD verify adherence to constitution principles
 - Violations MUST be documented and justified if unavoidable
-- Runtime guidance: `CLAUDE.md` (quick reference) → `/docs/standards.md` (detailed rules) → `/docs/architecture.md` (patterns)
+- Runtime guidance: `CLAUDE.md` → `/docs/standards.md` → `/docs/architecture.md`
 
-**Version**: 1.1.0 | **Ratified**: 2025-01-09 | **Last Amended**: 2026-01-23
+**Version**: 1.2.0 | **Ratified**: 2025-01-09 | **Last Amended**: 2026-01-26

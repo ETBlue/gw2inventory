@@ -2,7 +2,7 @@
 
 This document defines the coding standards, quality requirements, and development workflow for the GW2 Inventory project. All contributors (human and AI) must follow these guidelines.
 
-**Version**: 1.0.0 | **Last Updated**: 2026-01-23
+**Version**: 1.1.0 | **Last Updated**: 2026-01-26
 
 ---
 
@@ -17,8 +17,10 @@ All code MUST adhere to TypeScript strict mode with comprehensive type safety:
 - Type guards for runtime validation of external data sources
 - Discriminated unions for reducer actions and complex state
 - No use of `any` type without explicit justification in code comments
+- **MUST use type definitions from `@gw2api/types`** instead of defining custom GW2 API types
+- Custom types are only permitted for app-specific extensions (e.g., adding `location` property to base types)
 
-**Rationale**: Type safety prevents runtime errors and improves developer experience through IDE support and self-documenting code. The GW2 API returns complex nested data that requires careful type handling.
+**Rationale**: Type safety prevents runtime errors and improves developer experience through IDE support and self-documenting code. The GW2 API returns complex nested data that requires careful type handling. Using `@gw2api/types` ensures consistency with the official API schema and reduces maintenance burden by leveraging community-maintained definitions.
 
 ### II. Test-First Development
 
