@@ -119,7 +119,7 @@ export function CharacterSpecializations({
           </Text>
         </Center>
       ) : (
-        <Box display="flex" flexWrap="wrap" flex={1}>
+        <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" flex={1}>
           {enrichedSpecs.map((spec, index) => (
             <Box
               key={index}
@@ -129,11 +129,17 @@ export function CharacterSpecializations({
               minWidth="200px"
             >
               {spec.specialization ? (
-                <Box display="flex" gap={2} alignItems="flex-start">
+                <Box
+                  display="grid"
+                  gap={2}
+                  alignItems="flex-start"
+                  gridTemplateColumns="6rem 1fr"
+                >
                   <Box
                     display="flex"
                     alignItems="center"
                     flexDirection="column"
+                    textAlign="center"
                   >
                     {spec.specialization.icon && (
                       <Box
@@ -155,7 +161,7 @@ export function CharacterSpecializations({
                   </Box>
                   <Box
                     display="grid"
-                    gridTemplateColumns="auto auto auto"
+                    gridTemplateColumns="5rem 2rem 1fr"
                     alignItems="center"
                     gap={1}
                   >
