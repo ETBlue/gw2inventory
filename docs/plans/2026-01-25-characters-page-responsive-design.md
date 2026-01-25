@@ -72,23 +72,21 @@ When a character row is expanded on tablet, show:
 
 - Change `gridTemplateColumns="1fr 1fr 1fr"` to `gridTemplateColumns={{ base: "1fr", lg: "1fr 1fr 1fr" }}`
 
-### 4. Profession Tabs with Horizontal Scroll
+### 4. Profession Tabs with Wrap
 
 **Desktop:** Full row of tabs
-**Tablet:** Horizontally scrollable
+**Tablet:** Wrap to multiple rows
 
 **Implementation:**
 
-- Add `overflowX="auto"` to TabList container
-- Add `flexWrap="nowrap"` to prevent wrapping
-- Hide scrollbar for cleaner look
+- Add `flexWrap="wrap"` to TabList container
 
 ## File Changes
 
-| File                                                | Changes                                                                    |
-| --------------------------------------------------- | -------------------------------------------------------------------------- |
-| `src/pages/characters/Characters.tsx`               | Responsive column display, hidden details in expanded row, scrollable tabs |
-| `src/pages/characters/CharacterSpecializations.tsx` | Responsive grid for specializations                                        |
+| File                                                | Changes                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| `src/pages/characters/Characters.tsx`               | Responsive column display, hidden details in expanded row, wrapping tabs |
+| `src/pages/characters/CharacterSpecializations.tsx` | Responsive grid for specializations                                      |
 
 ## Summary Table
 
@@ -97,4 +95,4 @@ When a character row is expanded on tablet, show:
 | Table columns   | All 9 visible    | 4 visible (name, race, profession, level) |
 | Hidden details  | N/A              | Shown in expanded row                     |
 | Specializations | 3-column grid    | Single column stack                       |
-| Profession tabs | Full row         | Horizontal scroll                         |
+| Profession tabs | Full row         | Wrap to multiple rows                     |
