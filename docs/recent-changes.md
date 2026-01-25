@@ -4,6 +4,15 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-25: Homestead Glyphs Feature
+
+- Added Glyphs column to `/account/home` page
+- New static data: `homesteadGlyphs` in StaticDataContext
+- New hook: `useHomesteadGlyphsData`
+- Uses `@gw2api/types/data/homestead` for type definitions
+
+---
+
 ## Major Refactoring (2025-01)
 
 Significant architectural improvements were made to the static data management system:
