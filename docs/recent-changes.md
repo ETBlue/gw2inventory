@@ -8,7 +8,7 @@ This document tracks significant architectural improvements and refactoring effo
 
 - Added `Guild` type in `src/types/guilds.ts`
 - Display user's guilds in Account Overview page
-- Format: `name [tag] Lv## (influence)` or `name [tag]` if limited access
+- Format: `[tag] name Lv## (influence)` or `[tag] name` if limited access
 - Uses `useQueries` for parallel guild data fetching
 
 ---

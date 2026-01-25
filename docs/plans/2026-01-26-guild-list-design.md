@@ -10,8 +10,8 @@ Add a guilds section to the Account Overview page displaying the user's guild me
 ## Requirements
 
 - Display guilds in the existing definition list after "Titles"
-- Format: `name [tag] Lv123 (influence)` when full data available
-- Format: `name [tag]` when level/influence unavailable (user lacks `guilds` scope)
+- Format: `[tag] name Lv123 (influence)` when full data available
+- Format: `[tag] name` when level/influence unavailable (user lacks `guilds` scope)
 - Each guild on its own line
 - No icons - keep it simple
 
@@ -74,7 +74,7 @@ Add after "Titles" dt/dd pair:
   ) : (
     guilds.map((guild) => (
       <div key={guild.id}>
-        {guild.name} [{guild.tag}]
+        [{guild.tag}] {guild.name}
         {guild.level !== undefined && guild.influence !== undefined && (
           <span className={sharedTextCss.secondary}>
             {" "}Lv{guild.level} ({guild.influence.toLocaleString()})
@@ -100,7 +100,7 @@ if (isAccountFetching || isProgressionFetching || isTitlesFetching || isGuildsFe
 | ------------------------- | ------------------------------------------ |
 | Account has no guilds     | Displays "None"                            |
 | Some guild fetches fail   | Shows only successful ones                 |
-| User lacks `guilds` scope | Shows `name [tag]` without level/influence |
+| User lacks `guilds` scope | Shows `[tag] name` without level/influence |
 | All guild fetches fail    | Displays "None"                            |
 
 ## Files Changed

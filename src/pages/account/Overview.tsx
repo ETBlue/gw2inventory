@@ -142,8 +142,8 @@ function Overview() {
           {guilds.length === 0
             ? "None"
             : guilds.map((guild) => (
-                <div key={guild.id}>
-                  {guild.name} [{guild.tag}]
+                <div key={guild.id} style={{ fontSize: "0.875rem" }}>
+                  [{guild.tag}] {guild.name}
                   {guild.level !== undefined &&
                     guild.influence !== undefined && (
                       <span className={sharedTextCss.secondary}>

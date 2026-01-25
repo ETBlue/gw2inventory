@@ -354,12 +354,12 @@ describe("Overview Component", () => {
     // Check guilds section exists
     expect(screen.getByText("Guilds")).toBeInTheDocument()
 
-    // Check guild entries with full format: name [tag] Lv## (influence)
-    expect(screen.getByText(/Test Guild \[TG\]/)).toBeInTheDocument()
+    // Check guild entries with full format: [tag] name Lv## (influence)
+    expect(screen.getByText(/\[TG\] Test Guild/)).toBeInTheDocument()
     expect(screen.getByText(/Lv42/)).toBeInTheDocument()
     expect(screen.getByText(/12,345/)).toBeInTheDocument()
 
-    expect(screen.getByText(/Another Guild \[AG\]/)).toBeInTheDocument()
+    expect(screen.getByText(/\[AG\] Another Guild/)).toBeInTheDocument()
     expect(screen.getByText(/Lv10/)).toBeInTheDocument()
     expect(screen.getByText(/500/)).toBeInTheDocument()
   })
@@ -415,10 +415,10 @@ describe("Overview Component", () => {
 
     // Check guild displays without level/influence
     expect(screen.getByText("Guilds")).toBeInTheDocument()
-    expect(screen.getByText(/Limited Guild \[LG\]/)).toBeInTheDocument()
+    expect(screen.getByText(/\[LG\] Limited Guild/)).toBeInTheDocument()
 
     // Should NOT show Lv or influence for this guild
-    const guildText = screen.getByText(/Limited Guild \[LG\]/).textContent
+    const guildText = screen.getByText(/\[LG\] Limited Guild/).textContent
     expect(guildText).not.toContain("Lv")
   })
 
