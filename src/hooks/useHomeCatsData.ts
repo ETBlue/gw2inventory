@@ -16,7 +16,7 @@ export default function useHomeCats() {
     data: accountCatIds,
     isLoading: isAccountCatsLoading,
     error: accountCatsError,
-  } = useQuery<{ id: number }[]>({
+  } = useQuery<number[]>({
     queryKey: ["account/home/cats", currentAccount?.token],
     queryFn: queryFunction as any,
     enabled: !!currentAccount?.token,
@@ -24,13 +24,11 @@ export default function useHomeCats() {
 
   const hasToken = !!currentAccount?.token
   const isFetching = isHomeCatsFetching || isAccountCatsLoading
-  const accountHomeCatIds =
-    accountCatIds && accountCatIds.map((cat: { id: number }) => cat.id)
 
   return {
     hasToken,
     homeCats,
-    accountHomeCatIds,
+    accountHomeCatIds: accountCatIds,
     isFetching,
     error: accountCatsError,
   }
