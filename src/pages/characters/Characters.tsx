@@ -367,7 +367,6 @@ function Characters() {
                           cursor="pointer"
                           onClick={() => handleToggleExpand(row.name)}
                           _hover={{ bg: "gray.50" }}
-                          bgColor={rowExpanded ? "gray.100" : ""}
                           borderColor={rowExpanded ? "gray.300" : "gray.100"}
                         >
                           <Box display="flex" alignItems="center" gap={2}>
