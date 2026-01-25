@@ -5,22 +5,22 @@
 
 ## Goal
 
-Make the Characters page responsive, supporting both tablet (≥768px) and desktop viewports.
+Make the Characters page responsive, supporting both tablet (≥992px) and desktop viewports.
 
 ## Breakpoint
 
-- **Tablet**: < 768px (Chakra UI `base`)
-- **Desktop**: ≥ 768px (Chakra UI `md`)
+- **Tablet**: < 992px (Chakra UI `base`)
+- **Desktop**: ≥ 992px (Chakra UI `lg`)
 
 ## Design Decisions
 
 ### 1. Responsive Table Columns
 
-**Desktop (≥768px):** All 9 columns visible
+**Desktop (≥992px):** All 9 columns visible
 
 | name | gender | race | profession | level | crafting | created | age | deaths |
 
-**Tablet (<768px):** 4 columns visible
+**Tablet (<992px):** 4 columns visible
 
 | name | race | profession | level |
 
@@ -29,7 +29,7 @@ Hidden columns (gender, crafting, created, age, deaths) appear in the expanded r
 **Implementation:**
 
 - Use Chakra UI responsive `display` prop on `<Th>` and `<Td>` elements
-- `display={{ base: "none", md: "table-cell" }}` for hidden columns
+- `display={{ base: "none", lg: "table-cell" }}` for hidden columns
 
 ### 2. Expanded Row Layout (Tablet)
 
@@ -60,7 +60,7 @@ When a character row is expanded on tablet, show:
 
 **Implementation:**
 
-- Add `HiddenColumnDetails` section in expanded row with `display={{ base: "block", md: "none" }}`
+- Add `HiddenColumnDetails` section in expanded row with `display={{ base: "block", lg: "none" }}`
 - Pass character data to render hidden columns
 
 ### 3. Specializations Grid (Tablet)
@@ -70,7 +70,7 @@ When a character row is expanded on tablet, show:
 
 **Implementation:**
 
-- Change `gridTemplateColumns="1fr 1fr 1fr"` to `gridTemplateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }}`
+- Change `gridTemplateColumns="1fr 1fr 1fr"` to `gridTemplateColumns={{ base: "1fr", lg: "1fr 1fr 1fr" }}`
 
 ### 4. Profession Tabs with Horizontal Scroll
 
@@ -92,7 +92,7 @@ When a character row is expanded on tablet, show:
 
 ## Summary Table
 
-| Element         | Desktop (≥768px) | Tablet (<768px)                           |
+| Element         | Desktop (≥992px) | Tablet (<992px)                           |
 | --------------- | ---------------- | ----------------------------------------- |
 | Table columns   | All 9 visible    | 4 visible (name, race, profession, level) |
 | Hidden details  | N/A              | Shown in expanded row                     |

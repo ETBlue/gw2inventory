@@ -4,14 +4,11 @@ import {
   Box,
   Center,
   Collapse,
+  Flex,
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   List,
   ListIcon,
   ListItem,
-  Spacer,
   Spinner,
   Tab,
   TabList,
@@ -31,7 +28,6 @@ import { format, formatDistance } from "date-fns"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { FaCheck, FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa"
 import { GiFemale, GiMale } from "react-icons/gi"
-import { MdSearch } from "react-icons/md"
 import {
   Link,
   useLocation,
@@ -59,6 +55,9 @@ const PROFESSIONS = [
   "Guardian",
   "Revenant",
 ]
+
+// Columns hidden on tablet - shown in expanded row instead
+const HIDDEN_ON_TABLET = ["gender", "crafting", "created", "age", "deaths"]
 
 interface Column {
   key: string
@@ -268,7 +267,7 @@ function Characters() {
       height="100%"
     >
       <div>
-        <TabList>
+        <TabList flexWrap="wrap">
           <Tab as={Link} to={`/characters?${queryString}`}>
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
@@ -289,31 +288,6 @@ function Characters() {
               </Tag>
             </Tab>
           ))}
-          <Spacer />
-          <InputGroup width="20ch">
-            <InputLeftElement>
-              <MdSearch opacity="0.5" />
-            </InputLeftElement>
-            <Input
-              variant="unstyled"
-              value={keyword || ""}
-              onChange={(e) => {
-                const searchValue = e.currentTarget.value
-                const basePath = profession
-                  ? `/characters/${profession}`
-                  : "/characters"
-                const newQueryString = getQueryString(
-                  "keyword",
-                  searchValue,
-                  queryString,
-                )
-                const to = newQueryString
-                  ? `${basePath}?${newQueryString}`
-                  : basePath
-                navigate(to)
-              }}
-            />
-          </InputGroup>
         </TabList>
         <Table className={css.table}>
           <Thead>
@@ -361,6 +335,11 @@ function Characters() {
                     className={`${css.title} ${
                       activeSort === col.title ? css.active : ""
                     }`}
+                    display={
+                      HIDDEN_ON_TABLET.includes(col.key)
+                        ? { base: "none", lg: "table-cell" }
+                        : undefined
+                    }
                   >
                     {col.title}
                     {activeSort === col.title ? (
@@ -404,6 +383,11 @@ function Characters() {
                         <Td
                           key={column.key}
                           borderColor={rowExpanded ? "gray.300" : "gray.100"}
+                          display={
+                            HIDDEN_ON_TABLET.includes(column.key)
+                              ? { base: "none", lg: "table-cell" }
+                              : undefined
+                          }
                         >
                           {column.render(row as any)}
                         </Td>
@@ -419,6 +403,73 @@ function Characters() {
                         style={{ padding: 0 }}
                       >
                         <Collapse in={rowExpanded} animateOpacity>
+                          {/* Hidden column details - tablet only */}
+                          <Box
+                            display={{ base: "block", lg: "none" }}
+                            p={3}
+                            borderBottom="1px solid"
+                            borderColor="gray.300"
+                          >
+                            <Flex columnGap="2rem" fontSize="sm">
+                              <Box>
+                                <Text color="gray.500" fontSize="xs">
+                                  Gender
+                                </Text>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                  {row.gender === "Female" ? (
+                                    <GiFemale />
+                                  ) : (
+                                    <GiMale />
+                                  )}
+                                  {row.gender}
+                                </Box>
+                              </Box>
+                              <Box>
+                                <Text color="gray.500" fontSize="xs">
+                                  Created
+                                </Text>
+                                <Text>
+                                  {format(new Date(row.created), "yyyy-MM-dd")}
+                                </Text>
+                              </Box>
+                              <Box>
+                                <Text color="gray.500" fontSize="xs">
+                                  Age
+                                </Text>
+                                <Text>{formatDistance(0, row.age * 1000)}</Text>
+                              </Box>
+                              <Box>
+                                <Text color="gray.500" fontSize="xs">
+                                  Deaths
+                                </Text>
+                                <Text>{row.deaths}</Text>
+                              </Box>
+                              {row.crafting.length > 0 && (
+                                <Box gridColumn="span 2">
+                                  <Text color="gray.500" fontSize="xs">
+                                    Crafting
+                                  </Text>
+                                  <Box display="flex" flexWrap="wrap" gap={2}>
+                                    {row.crafting.map((crafting) => (
+                                      <Box
+                                        key={crafting.discipline}
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={1}
+                                      >
+                                        {crafting.active ? (
+                                          <FaCheck size={10} />
+                                        ) : (
+                                          <FaMinus size={10} />
+                                        )}
+                                        {crafting.discipline} {crafting.rating}
+                                      </Box>
+                                    ))}
+                                  </Box>
+                                </Box>
+                              )}
+                            </Flex>
+                          </Box>
                           <CharacterSpecializations characterName={row.name} />
                         </Collapse>
                       </Td>

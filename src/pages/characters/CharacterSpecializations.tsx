@@ -119,7 +119,11 @@ export function CharacterSpecializations({
           </Text>
         </Center>
       ) : (
-        <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" flex={1}>
+        <Box
+          display="grid"
+          gridTemplateColumns={{ base: "1fr", lg: "1fr 1fr 1fr" }}
+          flex={1}
+        >
           {enrichedSpecs.map((spec, index) => (
             <Box
               key={index}
