@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useHomeCatsQuery } from "~/hooks/useStaticData"
 
 export default function useHomeCats() {
   const { currentAccount } = useToken()
-  const { homeCats, isHomeCatsFetching } = useStaticData()
+  const { data: homeCats = [], isLoading: isHomeCatsFetching } =
+    useHomeCatsQuery()
 
   // Note: All home cats are now fetched automatically by StaticDataContext
   // No manual fetching needed here

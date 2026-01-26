@@ -2,9 +2,9 @@ import { useMemo } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useCurrenciesQuery } from "~/hooks/useStaticData"
 import { AccountWalletData, WalletData } from "~/types/wallet"
 
 /**
@@ -15,7 +15,8 @@ import { AccountWalletData, WalletData } from "~/types/wallet"
 export const useWallet = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { currencies, isCurrenciesFetching } = useStaticData()
+  const { data: currencies = {}, isLoading: isCurrenciesFetching } =
+    useCurrenciesQuery()
 
   // Fetch account wallet data
   const {

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useTitlesQuery } from "~/hooks/useStaticData"
 import { AccountTitles } from "~/types/titles"
 
 /**
@@ -13,7 +13,7 @@ import { AccountTitles } from "~/types/titles"
 export const useTitles = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { titles, isTitlesFetching } = useStaticData()
+  const { data: titles = {}, isLoading: isTitlesFetching } = useTitlesQuery()
 
   // Fetch account title IDs
   const {

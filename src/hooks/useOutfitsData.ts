@@ -2,9 +2,9 @@ import { useMemo } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useOutfitsQuery } from "~/hooks/useStaticData"
 import { AccountOutfits } from "~/types/outfits"
 
 /**
@@ -15,7 +15,7 @@ import { AccountOutfits } from "~/types/outfits"
 export const useOutfits = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { outfits, isOutfitsFetching } = useStaticData()
+  const { data: outfits = {}, isLoading: isOutfitsFetching } = useOutfitsQuery()
 
   // Fetch account outfit IDs
   const {

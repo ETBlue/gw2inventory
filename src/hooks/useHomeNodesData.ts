@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useHomeNodesQuery } from "~/hooks/useStaticData"
 
 export default function useHomeNodes() {
   const { currentAccount } = useToken()
-  const { homeNodes, isHomeNodesFetching } = useStaticData()
+  const { data: homeNodes = [], isLoading: isHomeNodesFetching } =
+    useHomeNodesQuery()
 
   // Note: All home nodes are now fetched automatically by StaticDataContext
   // No manual fetching needed here

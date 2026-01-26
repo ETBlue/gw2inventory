@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useHomesteadGlyphsQuery } from "~/hooks/useStaticData"
 
 export default function useHomesteadGlyphs() {
   const { currentAccount } = useToken()
-  const { homesteadGlyphs, isHomesteadGlyphsFetching } = useStaticData()
+  const { data: homesteadGlyphs = [], isLoading: isHomesteadGlyphsFetching } =
+    useHomesteadGlyphsQuery()
 
   const {
     data: accountGlyphIds,

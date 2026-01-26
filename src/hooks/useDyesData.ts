@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useColorsQuery } from "~/hooks/useStaticData"
 import { AccountDyesData, DyesData } from "~/types/dyes"
 
 /**
@@ -12,7 +12,7 @@ import { AccountDyesData, DyesData } from "~/types/dyes"
 export const useDyes = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { colors, isColorsFetching } = useStaticData()
+  const { data: colors = {}, isLoading: isColorsFetching } = useColorsQuery()
 
   // Fetch account dyes data
   const {
