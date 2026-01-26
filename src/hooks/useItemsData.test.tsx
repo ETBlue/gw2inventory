@@ -85,6 +85,9 @@ describe("useItemsData", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     mockProcessCharacterItems.mockReturnValue(mockCharacterItems)

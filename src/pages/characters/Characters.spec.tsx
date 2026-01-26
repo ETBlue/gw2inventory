@@ -32,6 +32,9 @@ describe("Characters Page", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     // Set up default StaticDataContext mock
@@ -121,6 +124,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)
@@ -141,6 +147,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)
@@ -158,6 +167,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)

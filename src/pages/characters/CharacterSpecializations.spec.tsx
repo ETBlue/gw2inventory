@@ -130,6 +130,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => mockEnrichedSpecs),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -156,6 +159,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: mockGetEnrichedSpecs,
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -180,6 +186,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => mockEnrichedSpecs),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -212,6 +221,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => mockEnrichedSpecs),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -233,6 +245,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => mockEnrichedSpecs),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -259,6 +274,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: mockGetEnrichedSpecs,
       hasSpecsForMode: mockHasSpecsForMode,
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -281,6 +299,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn((_, mode) => mode !== "pvp"), // PvP has no specs
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(
@@ -306,6 +327,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => mockEnrichedSpecs),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -324,6 +348,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -341,6 +368,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => new Error("API Error")),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -360,6 +390,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
@@ -386,6 +419,9 @@ describe("CharacterSpecializations Component", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => specsWithEmptySlot),
       hasSpecsForMode: vi.fn(() => true),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     render(<CharacterSpecializations characterName="TestChar" />)
