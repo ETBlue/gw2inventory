@@ -11,6 +11,7 @@ This document tracks significant architectural improvements and refactoring effo
 - Added backstory questions and answers to StaticDataContext with complete dataset fetching and localStorage caching
 - CharacterContext prefetches backstory for all characters using the same `useQueries` parallel pattern as specializations
 - New types in `src/types/backstory.ts`, helper in `src/helpers/backstory.ts`, and component in `src/pages/characters/CharacterBackstory.tsx`
+- Refactored expanded row details (backstory and tablet-only hidden columns) to use horizontal inline Flex layout with tighter spacing
 
 ---
 
