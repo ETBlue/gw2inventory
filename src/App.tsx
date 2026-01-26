@@ -6,6 +6,7 @@ import { Navigate, Route, HashRouter as Router, Routes } from "react-router"
 import { CharacterProvider } from "~/contexts/CharacterContext"
 import { StaticDataProvider } from "~/contexts/StaticDataContext"
 import { TokenProvider } from "~/contexts/TokenContext"
+import { setupPersistence } from "~/hooks/useStaticData/persistence"
 import BaseFrame from "~/layouts/BaseFrame"
 import Settings from "~/pages/settings"
 
@@ -20,6 +21,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+setupPersistence(queryClient)
 
 const Content = () => {
   return (
