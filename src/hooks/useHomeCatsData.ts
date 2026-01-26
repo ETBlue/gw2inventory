@@ -9,7 +9,7 @@ export default function useHomeCats() {
   const { data: homeCats = [], isLoading: isHomeCatsFetching } =
     useHomeCatsQuery()
 
-  // Note: All home cats are now fetched automatically by StaticDataContext
+  // Note: All home cats are fetched via React Query hook
   // No manual fetching needed here
 
   // Fetch account's unlocked cat IDs

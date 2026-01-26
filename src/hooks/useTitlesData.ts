@@ -7,7 +7,7 @@ import { AccountTitles } from "~/types/titles"
 
 /**
  * Custom hook to fetch account titles and their details
- * Uses StaticDataContext for title data caching
+ * Uses React Query for title data caching
  * Returns only titles that are owned by the current account
  */
 export const useTitles = () => {

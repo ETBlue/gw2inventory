@@ -9,7 +9,7 @@ export default function useHomeNodes() {
   const { data: homeNodes = [], isLoading: isHomeNodesFetching } =
     useHomeNodesQuery()
 
-  // Note: All home nodes are now fetched automatically by StaticDataContext
+  // Note: All home nodes are fetched via React Query hook
   // No manual fetching needed here
 
   // Fetch account's enabled home nodes

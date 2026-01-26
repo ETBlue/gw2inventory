@@ -7,7 +7,7 @@ import { AccountDyesData, DyesData } from "~/types/dyes"
 
 /**
  * Custom hook to fetch account dyes and color details
- * Uses StaticDataContext for color data caching
+ * Uses React Query for color data caching
  */
 export const useDyes = () => {
   const { currentAccount } = useToken()

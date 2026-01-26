@@ -9,7 +9,7 @@ import { AccountOutfits } from "~/types/outfits"
 
 /**
  * Custom hook to fetch account outfits and outfit details
- * Uses StaticDataContext for outfit data caching
+ * Uses React Query for outfit data caching
  * Returns account outfits with outfit details
  */
 export const useOutfits = () => {

@@ -9,7 +9,7 @@ import { AccountWalletData, WalletData } from "~/types/wallet"
 
 /**
  * Custom hook to fetch account wallet and currency details
- * Uses StaticDataContext for currency data caching
+ * Uses React Query for currency data caching
  * Returns wallet data enriched with currency details
  */
 export const useWallet = () => {
