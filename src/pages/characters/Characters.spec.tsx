@@ -32,6 +32,9 @@ describe("Characters Page", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
 
     // Set up default StaticDataContext mock
@@ -66,6 +69,10 @@ describe("Characters Page", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: mockFetchAllTraits,
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -79,6 +86,8 @@ describe("Characters Page", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })
@@ -115,6 +124,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)
@@ -135,6 +147,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)
@@ -152,6 +167,9 @@ describe("Characters Page", () => {
         getSpecsError: vi.fn(() => null),
         getEnrichedSpecializations: vi.fn(() => []),
         hasSpecsForMode: vi.fn(() => false),
+        getCharacterBackstory: vi.fn(() => null),
+        getEnrichedBackstory: vi.fn(() => []),
+        isBackstoryLoading: vi.fn(() => false),
       })
 
       render(<Characters />)

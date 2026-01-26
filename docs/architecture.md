@@ -11,9 +11,9 @@ The application uses a hybrid approach with React Context API for global state a
 ### Active Contexts
 
 - **TokenContext** - Manages API tokens stored in localStorage and account switching
-- **CharacterContext** - Handles character list data and specializations via React Query. Automatically prefetches all character specializations when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions. Note: Trait fetching is triggered by the Characters page, not CharacterContext
+- **CharacterContext** - Handles character list data, specializations, and backstory via React Query. Automatically prefetches all character specializations and backstory when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions for specializations, and `getCharacterBackstory`, `getEnrichedBackstory`, and `isBackstoryLoading` functions for backstory. Note: Trait fetching is triggered by the Characters page, not CharacterContext
 - **SkillContext** - Manages skill data
-- **StaticDataContext** - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, and traits) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits, chunked fetching for items/skins/outfits)
+- **StaticDataContext** - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits)
 
 ### Custom Hooks
 
@@ -49,7 +49,7 @@ These hooks replace previous contexts and manage account-specific data:
 
 - **Purpose**: Manages static GW2 API data caching
 - **Responsibilities**:
-  - Fetch and cache items, colors, skins, titles, currencies, outfits, homestead glyphs, specializations, traits
+  - Fetch and cache items, colors, skins, titles, currencies, outfits, homestead glyphs, specializations, traits, backstory questions, backstory answers
   - Provide version-aware localStorage persistence
   - Expose fetch functions for on-demand data loading
 - **What it should NOT do**: Handle account-specific data

@@ -16,6 +16,7 @@ import { chunk, sortBy } from "lodash"
 
 import { API_CONSTANTS } from "~/constants"
 import { fetchGW2 } from "~/helpers/api"
+import type { BackstoryAnswer, BackstoryQuestion } from "~/types/backstory"
 import { Color } from "~/types/dyes"
 import { HomeCat } from "~/types/homeCats"
 import { PatchedItem, materialCategoryAliases } from "~/types/items"
@@ -40,6 +41,8 @@ const STORAGE_KEYS = {
   SPECIALIZATIONS: "gw2inventory_static_specializations",
   TRAITS: "gw2inventory_static_traits",
   HOMESTEAD_GLYPHS: "gw2inventory_static_homestead_glyphs",
+  BACKSTORY_QUESTIONS: "gw2inventory_static_backstory_questions",
+  BACKSTORY_ANSWERS: "gw2inventory_static_backstory_answers",
 }
 
 // Cache version for invalidating old cache data
@@ -99,6 +102,8 @@ const cacheUtils = {
     specializations: Record<number, Specialization>
     traits: Record<number, Trait>
     homesteadGlyphs: HomesteadGlyph[]
+    backstoryQuestions: Record<number, BackstoryQuestion>
+    backstoryAnswers: Record<string, BackstoryAnswer>
   } {
     if (!this.checkVersion()) {
       return {
@@ -114,6 +119,8 @@ const cacheUtils = {
         specializations: {},
         traits: {},
         homesteadGlyphs: [],
+        backstoryQuestions: {},
+        backstoryAnswers: {},
       }
     }
 
@@ -136,6 +143,14 @@ const cacheUtils = {
     const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
     const homesteadGlyphs =
       this.load<HomesteadGlyph[]>(STORAGE_KEYS.HOMESTEAD_GLYPHS) || []
+    const backstoryQuestions =
+      this.load<Record<number, BackstoryQuestion>>(
+        STORAGE_KEYS.BACKSTORY_QUESTIONS,
+      ) || {}
+    const backstoryAnswers =
+      this.load<Record<string, BackstoryAnswer>>(
+        STORAGE_KEYS.BACKSTORY_ANSWERS,
+      ) || {}
 
     return {
       items,
@@ -150,6 +165,8 @@ const cacheUtils = {
       specializations,
       traits,
       homesteadGlyphs,
+      backstoryQuestions,
+      backstoryAnswers,
     }
   },
 
@@ -201,6 +218,18 @@ const cacheUtils = {
     this.save(STORAGE_KEYS.HOMESTEAD_GLYPHS, homesteadGlyphs)
   },
 
+  saveBackstoryQuestions(
+    backstoryQuestions: Record<number, BackstoryQuestion>,
+  ): void {
+    this.save(STORAGE_KEYS.BACKSTORY_QUESTIONS, backstoryQuestions)
+  },
+
+  saveBackstoryAnswers(
+    backstoryAnswers: Record<string, BackstoryAnswer>,
+  ): void {
+    this.save(STORAGE_KEYS.BACKSTORY_ANSWERS, backstoryAnswers)
+  },
+
   getCacheInfo(): {
     itemCount: number
     materialCategoryCount: number
@@ -214,6 +243,8 @@ const cacheUtils = {
     specializationCount: number
     traitCount: number
     homesteadGlyphCount: number
+    backstoryQuestionCount: number
+    backstoryAnswerCount: number
     version: string | null
   } {
     const items =
@@ -235,6 +266,14 @@ const cacheUtils = {
     const traits = this.load<Record<number, Trait>>(STORAGE_KEYS.TRAITS) || {}
     const homesteadGlyphs =
       this.load<HomesteadGlyph[]>(STORAGE_KEYS.HOMESTEAD_GLYPHS) || []
+    const backstoryQuestions =
+      this.load<Record<number, BackstoryQuestion>>(
+        STORAGE_KEYS.BACKSTORY_QUESTIONS,
+      ) || {}
+    const backstoryAnswers =
+      this.load<Record<string, BackstoryAnswer>>(
+        STORAGE_KEYS.BACKSTORY_ANSWERS,
+      ) || {}
     const version = this.load<string>(STORAGE_KEYS.VERSION)
 
     return {
@@ -250,6 +289,8 @@ const cacheUtils = {
       specializationCount: Object.keys(specializations).length,
       traitCount: Object.keys(traits).length,
       homesteadGlyphCount: homesteadGlyphs.length,
+      backstoryQuestionCount: Object.keys(backstoryQuestions).length,
+      backstoryAnswerCount: Object.keys(backstoryAnswers).length,
       version,
     }
   },
@@ -281,6 +322,10 @@ interface StaticDataState {
   isTraitsFetching: boolean
   homesteadGlyphs: HomesteadGlyph[]
   isHomesteadGlyphsFetching: boolean
+  backstoryQuestions: Record<number, BackstoryQuestion>
+  isBackstoryQuestionsFetching: boolean
+  backstoryAnswers: Record<string, BackstoryAnswer>
+  isBackstoryAnswersFetching: boolean
 }
 
 type StaticDataAction =
@@ -326,6 +371,21 @@ type StaticDataAction =
   | { type: "ADD_HOMESTEAD_GLYPHS"; homesteadGlyphs: HomesteadGlyph[] }
   | { type: "SET_HOMESTEAD_GLYPHS_FETCHING"; fetching: boolean }
   | { type: "LOAD_CACHED_HOMESTEAD_GLYPHS"; homesteadGlyphs: HomesteadGlyph[] }
+  | {
+      type: "ADD_BACKSTORY_QUESTIONS"
+      backstoryQuestions: BackstoryQuestion[]
+    }
+  | { type: "SET_BACKSTORY_QUESTIONS_FETCHING"; fetching: boolean }
+  | {
+      type: "LOAD_CACHED_BACKSTORY_QUESTIONS"
+      backstoryQuestions: Record<number, BackstoryQuestion>
+    }
+  | { type: "ADD_BACKSTORY_ANSWERS"; backstoryAnswers: BackstoryAnswer[] }
+  | { type: "SET_BACKSTORY_ANSWERS_FETCHING"; fetching: boolean }
+  | {
+      type: "LOAD_CACHED_BACKSTORY_ANSWERS"
+      backstoryAnswers: Record<string, BackstoryAnswer>
+    }
 
 interface StaticDataContextType {
   items: Record<number, PatchedItem>
@@ -358,6 +418,10 @@ interface StaticDataContextType {
   fetchAllTraits: () => Promise<void>
   homesteadGlyphs: HomesteadGlyph[]
   isHomesteadGlyphsFetching: boolean
+  backstoryQuestions: Record<number, BackstoryQuestion>
+  isBackstoryQuestionsFetching: boolean
+  backstoryAnswers: Record<string, BackstoryAnswer>
+  isBackstoryAnswersFetching: boolean
   getCacheInfo: () => ReturnType<typeof cacheUtils.getCacheInfo>
 }
 
@@ -481,6 +545,28 @@ const staticDataReducer = (
       return { ...state, isHomesteadGlyphsFetching: action.fetching }
     case "LOAD_CACHED_HOMESTEAD_GLYPHS":
       return { ...state, homesteadGlyphs: action.homesteadGlyphs }
+    case "ADD_BACKSTORY_QUESTIONS": {
+      const newQuestions = { ...state.backstoryQuestions }
+      action.backstoryQuestions.forEach((question) => {
+        newQuestions[question.id] = question
+      })
+      return { ...state, backstoryQuestions: newQuestions }
+    }
+    case "SET_BACKSTORY_QUESTIONS_FETCHING":
+      return { ...state, isBackstoryQuestionsFetching: action.fetching }
+    case "LOAD_CACHED_BACKSTORY_QUESTIONS":
+      return { ...state, backstoryQuestions: action.backstoryQuestions }
+    case "ADD_BACKSTORY_ANSWERS": {
+      const newAnswers = { ...state.backstoryAnswers }
+      action.backstoryAnswers.forEach((answer) => {
+        newAnswers[answer.id] = answer
+      })
+      return { ...state, backstoryAnswers: newAnswers }
+    }
+    case "SET_BACKSTORY_ANSWERS_FETCHING":
+      return { ...state, isBackstoryAnswersFetching: action.fetching }
+    case "LOAD_CACHED_BACKSTORY_ANSWERS":
+      return { ...state, backstoryAnswers: action.backstoryAnswers }
     default:
       return state
   }
@@ -526,6 +612,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       isTraitsFetching: false,
       homesteadGlyphs: cachedData.homesteadGlyphs,
       isHomesteadGlyphsFetching: false,
+      backstoryQuestions: cachedData.backstoryQuestions,
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: cachedData.backstoryAnswers,
+      isBackstoryAnswersFetching: false,
     }
   })
 
@@ -572,7 +662,9 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       cacheInfo.homeNodeCount > 0 ||
       cacheInfo.specializationCount > 0 ||
       cacheInfo.traitCount > 0 ||
-      cacheInfo.homesteadGlyphCount > 0
+      cacheInfo.homesteadGlyphCount > 0 ||
+      cacheInfo.backstoryQuestionCount > 0 ||
+      cacheInfo.backstoryAnswerCount > 0
     ) {
       console.log(
         "StaticDataContext: Loaded cached data on initialization",
@@ -904,6 +996,76 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     }
   }, [state.homesteadGlyphs.length])
 
+  // Fetch all backstory questions (complete dataset)
+  const fetchBackstoryQuestions = useCallback(async () => {
+    // Only fetch if no backstory questions exist and not already fetching
+    if (
+      Object.keys(state.backstoryQuestions).length > 0 ||
+      state.isBackstoryQuestionsFetching
+    )
+      return
+
+    dispatch({ type: "SET_BACKSTORY_QUESTIONS_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<BackstoryQuestion[]>(
+        "backstory/questions",
+        "ids=all",
+      )
+      if (data) {
+        dispatch({ type: "ADD_BACKSTORY_QUESTIONS", backstoryQuestions: data })
+        // Save backstory questions to cache
+        const questionsRecord = data.reduce(
+          (acc, question) => {
+            acc[question.id] = question
+            return acc
+          },
+          {} as Record<number, BackstoryQuestion>,
+        )
+        cacheUtils.saveBackstoryQuestions(questionsRecord)
+      }
+    } catch (error) {
+      console.error("Failed to fetch backstory questions:", error)
+    } finally {
+      dispatch({ type: "SET_BACKSTORY_QUESTIONS_FETCHING", fetching: false })
+    }
+  }, [state.backstoryQuestions, state.isBackstoryQuestionsFetching])
+
+  // Fetch all backstory answers (complete dataset)
+  const fetchBackstoryAnswers = useCallback(async () => {
+    // Only fetch if no backstory answers exist and not already fetching
+    if (
+      Object.keys(state.backstoryAnswers).length > 0 ||
+      state.isBackstoryAnswersFetching
+    )
+      return
+
+    dispatch({ type: "SET_BACKSTORY_ANSWERS_FETCHING", fetching: true })
+
+    try {
+      const data = await fetchGW2<BackstoryAnswer[]>(
+        "backstory/answers",
+        "ids=all",
+      )
+      if (data) {
+        dispatch({ type: "ADD_BACKSTORY_ANSWERS", backstoryAnswers: data })
+        // Save backstory answers to cache
+        const answersRecord = data.reduce(
+          (acc, answer) => {
+            acc[answer.id] = answer
+            return acc
+          },
+          {} as Record<string, BackstoryAnswer>,
+        )
+        cacheUtils.saveBackstoryAnswers(answersRecord)
+      }
+    } catch (error) {
+      console.error("Failed to fetch backstory answers:", error)
+    } finally {
+      dispatch({ type: "SET_BACKSTORY_ANSWERS_FETCHING", fetching: false })
+    }
+  }, [state.backstoryAnswers, state.isBackstoryAnswersFetching])
+
   const fetchMaterialCategories = useCallback(async () => {
     if (state.materialCategoriesData.length > 0) return
 
@@ -1009,6 +1171,34 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
     fetchHomesteadGlyphs,
   ])
 
+  // Auto-fetch backstory questions on first use when no questions exist
+  useEffect(() => {
+    if (
+      Object.keys(state.backstoryQuestions).length === 0 &&
+      !state.isBackstoryQuestionsFetching
+    ) {
+      fetchBackstoryQuestions()
+    }
+  }, [
+    state.backstoryQuestions,
+    state.isBackstoryQuestionsFetching,
+    fetchBackstoryQuestions,
+  ])
+
+  // Auto-fetch backstory answers on first use when no answers exist
+  useEffect(() => {
+    if (
+      Object.keys(state.backstoryAnswers).length === 0 &&
+      !state.isBackstoryAnswersFetching
+    ) {
+      fetchBackstoryAnswers()
+    }
+  }, [
+    state.backstoryAnswers,
+    state.isBackstoryAnswersFetching,
+    fetchBackstoryAnswers,
+  ])
+
   // Memoize processed material categories data
   const materialCategories = useMemo(
     () =>
@@ -1083,6 +1273,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       fetchAllTraits,
       homesteadGlyphs: state.homesteadGlyphs,
       isHomesteadGlyphsFetching: state.isHomesteadGlyphsFetching,
+      backstoryQuestions: state.backstoryQuestions,
+      isBackstoryQuestionsFetching: state.isBackstoryQuestionsFetching,
+      backstoryAnswers: state.backstoryAnswers,
+      isBackstoryAnswersFetching: state.isBackstoryAnswersFetching,
       getCacheInfo,
     }),
     [
@@ -1110,6 +1304,10 @@ export const StaticDataProvider: React.FC<StaticDataProviderProps> = ({
       state.isTraitsFetching,
       state.homesteadGlyphs,
       state.isHomesteadGlyphsFetching,
+      state.backstoryQuestions,
+      state.isBackstoryQuestionsFetching,
+      state.backstoryAnswers,
+      state.isBackstoryAnswersFetching,
       fetchItems,
       materialCategories,
       materialIdToCategoryIdMap,

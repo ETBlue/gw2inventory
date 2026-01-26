@@ -12,10 +12,12 @@ import { useQueries, useQuery } from "@tanstack/react-query"
 import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { fetchGW2, queryFunction } from "~/helpers/api"
+import { enrichBackstory } from "~/helpers/backstory"
 import {
   getGameModeSpecializations,
   hasSpecializationsForMode,
 } from "~/helpers/specializations"
+import type { EnrichedBackstoryItem } from "~/types/backstory"
 import type {
   CharacterSpecializations,
   GameMode,
@@ -53,6 +55,12 @@ interface CharacterContextType {
   ) => SpecializationWithDetails[]
   /** Check if a character has specializations configured for a mode */
   hasSpecsForMode: (characterName: string, mode: GameMode) => boolean
+  /** Get cached backstory answer IDs for a character */
+  getCharacterBackstory: (characterName: string) => string[] | null
+  /** Get enriched backstory items for a character */
+  getEnrichedBackstory: (characterName: string) => EnrichedBackstoryItem[]
+  /** Check if a character's backstory is currently loading */
+  isBackstoryLoading: (characterName: string) => boolean
 }
 
 const CharacterContext = createContext<CharacterContextType>({
@@ -64,6 +72,9 @@ const CharacterContext = createContext<CharacterContextType>({
   getSpecsError: () => null,
   getEnrichedSpecializations: () => [],
   hasSpecsForMode: () => false,
+  getCharacterBackstory: () => null,
+  getEnrichedBackstory: () => [],
+  isBackstoryLoading: () => false,
 })
 
 interface CharacterProviderProps {
@@ -80,7 +91,8 @@ interface CharacterProviderProps {
 function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { specializations, traits } = useStaticData()
+  const { specializations, traits, backstoryQuestions, backstoryAnswers } =
+    useStaticData()
 
   // Character list query
   const { data: characters = [], isFetching } = useQuery({
@@ -107,6 +119,23 @@ function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
           `access_token=${token}`,
         )
         return data
+      },
+      staleTime: Infinity,
+      enabled: !!token,
+    })),
+  })
+
+  // Prefetch all character backstories in parallel using useQueries
+  const backstoryResults = useQueries({
+    queries: characterNames.map((characterName) => ({
+      queryKey: ["characterBackstory", characterName, token] as const,
+      queryFn: async () => {
+        if (!token) return null
+        const data = await fetchGW2<{ backstory: string[] }>(
+          `characters/${encodeURIComponent(characterName)}/backstory`,
+          `access_token=${token}`,
+        )
+        return data?.backstory ?? null
       },
       staleTime: Infinity,
       enabled: !!token,
@@ -173,6 +202,36 @@ function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
     [getCharacterSpecializations],
   )
 
+  // Get cached backstory answer IDs for a character
+  const getCharacterBackstory = useCallback(
+    (characterName: string): string[] | null => {
+      const index = characterNameToIndex.get(characterName)
+      if (index === undefined) return null
+      return backstoryResults[index]?.data ?? null
+    },
+    [characterNameToIndex, backstoryResults],
+  )
+
+  // Get enriched backstory items for a character
+  const getEnrichedBackstory = useCallback(
+    (characterName: string): EnrichedBackstoryItem[] => {
+      const answerIds = getCharacterBackstory(characterName)
+      if (!answerIds) return []
+      return enrichBackstory(answerIds, backstoryQuestions, backstoryAnswers)
+    },
+    [getCharacterBackstory, backstoryQuestions, backstoryAnswers],
+  )
+
+  // Check if character backstory is loading
+  const isBackstoryLoading = useCallback(
+    (characterName: string): boolean => {
+      const index = characterNameToIndex.get(characterName)
+      if (index === undefined) return false
+      return backstoryResults[index]?.isPending ?? false
+    },
+    [characterNameToIndex, backstoryResults],
+  )
+
   return (
     <CharacterContext.Provider
       value={{
@@ -184,6 +243,9 @@ function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
         getSpecsError,
         getEnrichedSpecializations,
         hasSpecsForMode,
+        getCharacterBackstory,
+        getEnrichedBackstory,
+        isBackstoryLoading,
       }}
     >
       {children}

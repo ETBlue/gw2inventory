@@ -166,6 +166,9 @@ describe("Items", () => {
       getSpecsError: vi.fn(() => null),
       getEnrichedSpecializations: vi.fn(() => []),
       hasSpecsForMode: vi.fn(() => false),
+      getCharacterBackstory: vi.fn(() => null),
+      getEnrichedBackstory: vi.fn(() => []),
+      isBackstoryLoading: vi.fn(() => false),
     })
   })
 
@@ -286,6 +289,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -370,6 +377,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -444,6 +455,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -508,6 +523,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
