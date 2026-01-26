@@ -40,6 +40,7 @@ import { useCharacters } from "~/contexts/CharacterContext"
 import { useStaticData } from "~/contexts/StaticDataContext"
 import { compare } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { CharacterBackstory } from "~/pages/characters/CharacterBackstory"
 import { CharacterSpecializations } from "~/pages/characters/CharacterSpecializations"
 import css from "~/styles/shared-table.module.css"
 import { PatchedItem } from "~/types/items"
@@ -469,6 +470,7 @@ function Characters() {
                               )}
                             </Flex>
                           </Box>
+                          <CharacterBackstory characterName={row.name} />
                           <CharacterSpecializations characterName={row.name} />
                         </Collapse>
                       </Td>
