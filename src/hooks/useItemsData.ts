@@ -6,14 +6,11 @@ import type { MaterialStack } from "@gw2api/types/data/material"
 import { useQuery } from "@tanstack/react-query"
 
 import { useCharacters } from "~/contexts/CharacterContext"
-import {
-  useBatchAutoFetchItems,
-  useStaticData,
-} from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
 import { processCharacterItems } from "~/helpers/characterItems"
 import { useGuildsData } from "~/hooks/useGuildsData"
+import { useItemsQuery } from "~/hooks/useStaticData"
 import {
   BankItemInList,
   InventoryItemInList,
@@ -38,9 +35,6 @@ export const useItemsData = () => {
 
   // Get guild vault items
   const { guildVaultItems, isFetching: isGuildsFetching } = useGuildsData()
-
-  // Use StaticDataContext for static item data
-  const { isItemsFetching, isMaterialFetching } = useStaticData()
 
   // Reset items when account changes
   useEffect(() => {
@@ -172,22 +166,36 @@ export const useItemsData = () => {
     [characters],
   )
 
-  // Batch fetch item details for all item sources in a single API call
-  // More efficient than fetching each source separately as it avoids duplicate API calls
-  useBatchAutoFetchItems(
-    {
+  // Collect all unique item IDs from all sources
+  const allItemIds = useMemo(() => {
+    const ids = new Set<number>()
+    const sources = [
       characterItems,
       inventoryItems,
       bankItems,
       materialItems,
       guildVaultItems,
-    },
-    true,
-  )
+    ]
+    for (const items of sources) {
+      if (items) {
+        for (const item of items) {
+          if (item?.id != null) ids.add(item.id)
+        }
+      }
+    }
+    return Array.from(ids)
+  }, [
+    characterItems,
+    inventoryItems,
+    bankItems,
+    materialItems,
+    guildVaultItems,
+  ])
+
+  const { isLoading: isItemsFetching } = useItemsQuery(allItemIds)
 
   const isFetching =
     isItemsFetching ||
-    isMaterialFetching ||
     isInventoryFetching ||
     isBankFetching ||
     isMaterialsFetching ||
