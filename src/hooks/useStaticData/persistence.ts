@@ -1,10 +1,10 @@
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister"
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister"
 import type { QueryClient } from "@tanstack/react-query"
 import { persistQueryClient } from "@tanstack/react-query-persist-client"
 
 const CACHE_VERSION = "3.0.0"
 
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: window.localStorage,
   key: "gw2inventory_static_cache",
 })
