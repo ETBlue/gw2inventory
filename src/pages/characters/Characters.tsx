@@ -310,8 +310,8 @@ function Characters() {
                         size="xs"
                         variant="ghost"
                         onClick={handleToggleAll}
-                        marginLeft="-.75rem"
-                        marginRight=".25rem"
+                        marginLeft="-.875rem"
+                        marginRight="-0.125rem"
                       />
                       <Text
                         cursor="pointer"
@@ -370,7 +370,12 @@ function Characters() {
                           _hover={{ bg: "gray.50" }}
                           borderColor={rowExpanded ? "gray.300" : "gray.100"}
                         >
-                          <Box display="flex" alignItems="center" gap={2}>
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            marginLeft="-0.5rem"
+                          >
                             {rowExpanded ? (
                               <FaChevronDown size={12} />
                             ) : (
@@ -406,67 +411,69 @@ function Characters() {
                           {/* Hidden column details - tablet only */}
                           <Box
                             display={{ base: "block", lg: "none" }}
-                            p={3}
+                            p="0.5rem 1rem"
                             borderBottom="1px solid"
                             borderColor="gray.300"
                           >
-                            <Flex columnGap="2rem" fontSize="sm">
-                              <Box>
+                            <Flex
+                              columnGap="1rem"
+                              fontSize="sm"
+                              flexWrap="wrap"
+                            >
+                              <Flex columnGap="0.5rem">
                                 <Text color="gray.500" fontSize="xs">
                                   Gender
                                 </Text>
-                                <Box display="flex" alignItems="center" gap={1}>
+                                <Flex alignItems="center" gap="0.25rem">
                                   {row.gender === "Female" ? (
                                     <GiFemale />
                                   ) : (
                                     <GiMale />
                                   )}
                                   {row.gender}
-                                </Box>
-                              </Box>
-                              <Box>
+                                </Flex>
+                              </Flex>
+                              <Flex columnGap="0.5rem">
                                 <Text color="gray.500" fontSize="xs">
                                   Created
                                 </Text>
                                 <Text>
                                   {format(new Date(row.created), "yyyy-MM-dd")}
                                 </Text>
-                              </Box>
-                              <Box>
+                              </Flex>
+                              <Flex columnGap="0.5rem">
                                 <Text color="gray.500" fontSize="xs">
                                   Age
                                 </Text>
                                 <Text>{formatDistance(0, row.age * 1000)}</Text>
-                              </Box>
-                              <Box>
+                              </Flex>
+                              <Flex columnGap="0.5rem">
                                 <Text color="gray.500" fontSize="xs">
                                   Deaths
                                 </Text>
                                 <Text>{row.deaths}</Text>
-                              </Box>
+                              </Flex>
                               {row.crafting.length > 0 && (
-                                <Box gridColumn="span 2">
+                                <Flex columnGap="0.5rem">
                                   <Text color="gray.500" fontSize="xs">
                                     Crafting
                                   </Text>
-                                  <Box display="flex" flexWrap="wrap" gap={2}>
-                                    {row.crafting.map((crafting) => (
-                                      <Box
-                                        key={crafting.discipline}
-                                        display="flex"
-                                        alignItems="center"
-                                        gap={1}
-                                      >
-                                        {crafting.active ? (
-                                          <FaCheck size={10} />
-                                        ) : (
-                                          <FaMinus size={10} />
-                                        )}
-                                        {crafting.discipline} {crafting.rating}
-                                      </Box>
-                                    ))}
-                                  </Box>
-                                </Box>
+                                  {row.crafting.map((crafting) => (
+                                    <Flex
+                                      key={crafting.discipline}
+                                      display="flex"
+                                      alignItems="center"
+                                      gap={1}
+                                    >
+                                      {crafting.active ? (
+                                        <FaCheck size={10} />
+                                      ) : (
+                                        <FaMinus size={10} />
+                                      )}
+                                      {crafting.discipline} {crafting.rating}
+                                    </Flex>
+                                  ))}
+                                </Flex>
                               )}
                             </Flex>
                           </Box>

@@ -25,15 +25,15 @@ export function CharacterBackstory({
   }
 
   return (
-    <Box p={3} borderBottom="1px solid" borderColor="gray.300">
-      <Flex columnGap="2rem" fontSize="sm" flexWrap="wrap">
+    <Box p="0.5rem 1rem" borderBottom="1px solid" borderColor="gray.300">
+      <Flex columnGap="1rem" fontSize="sm" flexWrap="wrap">
         {enrichedBackstory.map((item) => (
-          <Box key={item.answer.id}>
+          <Flex key={item.answer.id} columnGap="0.5rem">
             <Text color="gray.500" fontSize="xs">
               {item.question.title}
             </Text>
             <Text>{item.answer.title}</Text>
-          </Box>
+          </Flex>
         ))}
       </Flex>
     </Box>
