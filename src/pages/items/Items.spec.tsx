@@ -40,7 +40,6 @@ vi.mock("react-router", async () => {
 
 const mockUseItemsData = vi.mocked(useItemsData)
 const mockUseCharacters = vi.mocked(useCharacters)
-const mockUseItemsQuery = vi.mocked(staticDataHooks.useItemsQuery)
 const mockUseMaterialCategoriesQuery = vi.mocked(
   staticDataHooks.useMaterialCategoriesQuery,
 )
@@ -135,11 +134,6 @@ describe("Items", () => {
     })
 
     // Default mocks for static data hooks
-    mockUseItemsQuery.mockReturnValue({
-      data: {},
-      isLoading: false,
-    } as any)
-
     mockUseMaterialCategoriesQuery.mockReturnValue({
       data: [],
       isLoading: false,
@@ -153,6 +147,7 @@ describe("Items", () => {
   it("renders category tabs regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: {},
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -174,6 +169,7 @@ describe("Items", () => {
   it("renders the pagination menu regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: {},
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -194,6 +190,7 @@ describe("Items", () => {
   it("renders a table regardless of the data fetching state", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: {},
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -217,6 +214,7 @@ describe("Items", () => {
   it("renders an empty table and a corresponding state message when no items are present", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: {},
       characterItems: [],
       inventoryItems: [],
       bankItems: [],
@@ -231,19 +229,9 @@ describe("Items", () => {
   })
 
   it("filters items based on the selected category, e.g. `Equipable`, `Consumable`, `Material`, `Trophy`", () => {
-    // Mock static data hooks to return items
-    mockUseItemsQuery.mockReturnValue({
-      data: mockItems,
-      isLoading: false,
-    } as any)
-
-    mockUseMaterialCategoriesQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any)
-
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: mockItems,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -291,19 +279,9 @@ describe("Items", () => {
   })
 
   it("filters items based on the search input", () => {
-    // Mock static data hooks to return items
-    mockUseItemsQuery.mockReturnValue({
-      data: mockItems,
-      isLoading: false,
-    } as any)
-
-    mockUseMaterialCategoriesQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any)
-
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: mockItems,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -341,19 +319,9 @@ describe("Items", () => {
   })
 
   it("sorts items based on the selected table column", () => {
-    // Mock static data hooks to return items
-    mockUseItemsQuery.mockReturnValue({
-      data: mockItems,
-      isLoading: false,
-    } as any)
-
-    mockUseMaterialCategoriesQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any)
-
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: mockItems,
       characterItems: [],
       inventoryItems: [
         { id: 1, count: 1, location: "inventory" },
@@ -381,19 +349,9 @@ describe("Items", () => {
   })
 
   it("preserves query string parameters when navigating between category tabs", () => {
-    // Mock static data hooks to return items
-    mockUseItemsQuery.mockReturnValue({
-      data: mockItems,
-      isLoading: false,
-    } as any)
-
-    mockUseMaterialCategoriesQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any)
-
     mockUseItemsData.mockReturnValue({
       hasToken: true,
+      items: mockItems,
       characterItems: mockUserItems,
       inventoryItems: mockUserItems,
       bankItems: [],

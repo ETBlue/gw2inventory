@@ -40,10 +40,7 @@ import { useCharacters } from "~/contexts/CharacterContext"
 import { compare, compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import { useItemsData } from "~/hooks/useItemsData"
-import {
-  useItemsQuery,
-  useMaterialCategoriesQuery,
-} from "~/hooks/useStaticData"
+import { useMaterialCategoriesQuery } from "~/hooks/useStaticData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import {
   PatchedItem,
@@ -66,7 +63,6 @@ const TABLE_HEADERS = [
 ]
 
 function Items() {
-  const { data: items = {} } = useItemsQuery([])
   const { data: materialCategoriesData = [] } = useMaterialCategoriesQuery()
 
   const materialCategories = useMemo(
@@ -106,6 +102,7 @@ function Items() {
   )
   const {
     hasToken,
+    items = {},
     characterItems,
     inventoryItems,
     bankItems,

@@ -192,7 +192,7 @@ export const useItemsData = () => {
     guildVaultItems,
   ])
 
-  const { isLoading: isItemsFetching } = useItemsQuery(allItemIds)
+  const { data: items, isLoading: isItemsFetching } = useItemsQuery(allItemIds)
 
   const isFetching =
     isItemsFetching ||
@@ -204,6 +204,7 @@ export const useItemsData = () => {
 
   return {
     hasToken: !!currentAccount?.token,
+    items,
     characterItems,
     inventoryItems,
     bankItems,
