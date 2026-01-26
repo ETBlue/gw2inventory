@@ -359,14 +359,17 @@ describe("Overview Component", () => {
     // Check guilds section exists
     expect(screen.getByText("Guilds")).toBeInTheDocument()
 
-    // Check guild entries with full format: [tag] name Lv## (influence)
-    expect(screen.getByText(/\[TG\] Test Guild/)).toBeInTheDocument()
-    expect(screen.getByText(/Lv42/)).toBeInTheDocument()
-    expect(screen.getByText(/12,345/)).toBeInTheDocument()
+    // Check guild entries displayed in grid columns: [tag] | name | Level badge | Influence badge
+    expect(screen.getByText("[TG]")).toBeInTheDocument()
+    expect(screen.getByText("Test Guild")).toBeInTheDocument()
+    expect(screen.getByText("12,345")).toBeInTheDocument()
 
-    expect(screen.getByText(/\[AG\] Another Guild/)).toBeInTheDocument()
-    expect(screen.getByText(/Lv10/)).toBeInTheDocument()
-    expect(screen.getByText(/500/)).toBeInTheDocument()
+    expect(screen.getByText("[AG]")).toBeInTheDocument()
+    expect(screen.getByText("Another Guild")).toBeInTheDocument()
+
+    // Check Level and Influence badges are present
+    expect(screen.getAllByText("Level")).toHaveLength(2)
+    expect(screen.getAllByText("Influence")).toHaveLength(2)
   })
 
   it("displays guilds with partial data when level and influence are unavailable", async () => {
@@ -421,11 +424,12 @@ describe("Overview Component", () => {
 
     // Check guild displays without level/influence
     expect(screen.getByText("Guilds")).toBeInTheDocument()
-    expect(screen.getByText(/\[LG\] Limited Guild/)).toBeInTheDocument()
+    expect(screen.getByText("[LG]")).toBeInTheDocument()
+    expect(screen.getByText("Limited Guild")).toBeInTheDocument()
 
-    // Should NOT show Lv or influence for this guild
-    const guildText = screen.getByText(/\[LG\] Limited Guild/).textContent
-    expect(guildText).not.toContain("Lv")
+    // Should NOT show Level or Influence badges for this guild
+    expect(screen.queryByText("Level")).not.toBeInTheDocument()
+    expect(screen.queryByText("Influence")).not.toBeInTheDocument()
   })
 
   it("displays 'None' when account has no guilds", async () => {

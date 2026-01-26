@@ -4,11 +4,14 @@ import {
   Badge,
   Center,
   Divider,
+  Flex,
+  Grid,
   Heading,
   List,
   ListIcon,
   ListItem,
   Spinner,
+  Text,
 } from "@chakra-ui/react"
 import { Account } from "@gw2api/types/data/account"
 import { useQuery } from "@tanstack/react-query"
@@ -123,20 +126,51 @@ function Overview() {
         <dd>{sortedTitles?.length || 0}</dd>
         <dt>Guilds</dt>
         <dd>
-          {guilds.length === 0
-            ? "None"
-            : guilds.map((guild) => (
-                <div key={guild.id} style={{ fontSize: "0.875rem" }}>
-                  [{guild.tag}] {guild.name}
-                  {guild.level !== undefined &&
-                    guild.influence !== undefined && (
-                      <span className={sharedTextCss.secondary}>
-                        {" "}
-                        Lv{guild.level} ({guild.influence.toLocaleString()})
-                      </span>
-                    )}
-                </div>
+          {guilds.length === 0 ? (
+            "None"
+          ) : (
+            <Grid
+              display="inline-grid"
+              gridTemplateColumns="repeat(4, auto)"
+              columnGap="0.5rem"
+              fontSize="sm"
+            >
+              {guilds.map((guild) => (
+                <Fragment key={guild.id}>
+                  <Text>[{guild.tag}]</Text>
+                  <Text>{guild.name}</Text>
+                  {guild.level !== undefined ? (
+                    <Flex
+                      alignItems="center"
+                      gap="0.5rem"
+                      className={sharedTextCss.secondary}
+                    >
+                      <Badge size="sm" fontWeight="normal">
+                        Level
+                      </Badge>
+                      {guild.level}
+                    </Flex>
+                  ) : (
+                    <div />
+                  )}
+                  {guild.influence !== undefined ? (
+                    <Flex
+                      alignItems="center"
+                      gap="0.5rem"
+                      className={sharedTextCss.secondary}
+                    >
+                      <Badge size="sm" fontWeight="normal">
+                        Influence
+                      </Badge>
+                      {guild.influence.toLocaleString()}
+                    </Flex>
+                  ) : (
+                    <div />
+                  )}
+                </Fragment>
               ))}
+            </Grid>
+          )}
         </dd>
       </dl>
       <Divider border={"none"} margin={"0.5rem 0"} />
