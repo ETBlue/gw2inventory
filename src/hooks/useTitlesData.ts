@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useTitlesQuery } from "~/hooks/useStaticData"
 import { AccountTitles } from "~/types/titles"
 
 /**
  * Custom hook to fetch account titles and their details
- * Uses StaticDataContext for title data caching
+ * Uses React Query for title data caching
  * Returns only titles that are owned by the current account
  */
 export const useTitles = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { titles, isTitlesFetching } = useStaticData()
+  const { data: titles = {}, isLoading: isTitlesFetching } = useTitlesQuery()
 
   // Fetch account title IDs
   const {

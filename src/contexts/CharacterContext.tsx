@@ -9,7 +9,6 @@ import {
 import type { Character } from "@gw2api/types/data/character"
 import { useQueries, useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { fetchGW2, queryFunction } from "~/helpers/api"
 import { enrichBackstory } from "~/helpers/backstory"
@@ -17,6 +16,12 @@ import {
   getGameModeSpecializations,
   hasSpecializationsForMode,
 } from "~/helpers/specializations"
+import {
+  useBackstoryAnswersQuery,
+  useBackstoryQuestionsQuery,
+  useSpecializationsQuery,
+  useTraitsQuery,
+} from "~/hooks/useStaticData"
 import type { EnrichedBackstoryItem } from "~/types/backstory"
 import type {
   CharacterSpecializations,
@@ -91,8 +96,10 @@ interface CharacterProviderProps {
 function CharacterProvider({ children }: CharacterProviderProps): ReactNode {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { specializations, traits, backstoryQuestions, backstoryAnswers } =
-    useStaticData()
+  const { data: specializations = {} } = useSpecializationsQuery()
+  const { data: traits = {} } = useTraitsQuery()
+  const { data: backstoryQuestions = {} } = useBackstoryQuestionsQuery()
+  const { data: backstoryAnswers = {} } = useBackstoryAnswersQuery()
 
   // Character list query
   const { data: characters = [], isFetching } = useQuery({

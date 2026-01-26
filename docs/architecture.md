@@ -13,7 +13,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **TokenContext** - Manages API tokens stored in localStorage and account switching
 - **CharacterContext** - Handles character list data, specializations, and backstory via React Query. Automatically prefetches all character specializations and backstory when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions for specializations, and `getCharacterBackstory`, `getEnrichedBackstory`, and `isBackstoryLoading` functions for backstory. Note: Trait fetching is triggered by the Characters page, not CharacterContext
 - **SkillContext** - Manages skill data
-- **StaticDataContext** - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits)
+- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with localStorage persistence via `@tanstack/react-query-persist-client` and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits)
 
 ### Custom Hooks
 
@@ -21,14 +21,14 @@ These hooks replace previous contexts and manage account-specific data:
 
 - `useItemsData` - Manages account-specific item data (inventory, bank, materials, character items, guild vault items) with batched fetching optimization. Returns only user's item arrays without static data
 - `useGuildsData` - Fetches guild info and vault contents for the current account. Shared between Overview page (guild display) and Items page (vault items). Silently skips guilds where user lacks vault access (403)
-- `useTitlesData` - Fetches account titles with title details managed by StaticDataContext
-- `useWalletData` - Fetches account wallet with currency details managed by StaticDataContext
-- `useSkinsData` - Fetches account skins with skin details managed by StaticDataContext
-- `useOutfitsData` - Fetches account outfits with outfit details managed by StaticDataContext
-- `useDyesData` - Fetches account dyes with color details managed by StaticDataContext
-- `useHomeNodesData` - Fetches account home instance nodes with home node data managed by StaticDataContext
-- `useHomeCatsData` - Fetches account home instance cats with home cat data managed by StaticDataContext
-- `useHomesteadGlyphsData` - Fetches account homestead glyphs with glyph data managed by StaticDataContext
+- `useTitlesData` - Fetches account titles with title details managed by React Query static data hooks
+- `useWalletData` - Fetches account wallet with currency details managed by React Query static data hooks
+- `useSkinsData` - Fetches account skins with skin details managed by React Query static data hooks
+- `useOutfitsData` - Fetches account outfits with outfit details managed by React Query static data hooks
+- `useDyesData` - Fetches account dyes with color details managed by React Query static data hooks
+- `useHomeNodesData` - Fetches account home instance nodes with home node data managed by React Query static data hooks
+- `useHomeCatsData` - Fetches account home instance cats with home cat data managed by React Query static data hooks
+- `useHomesteadGlyphsData` - Fetches account homestead glyphs with glyph data managed by React Query static data hooks
 
 ---
 
@@ -45,13 +45,13 @@ These hooks replace previous contexts and manage account-specific data:
   - Provide account switching functionality
 - **What it should NOT do**: Directly manipulate other contexts' data
 
-#### StaticDataContext
+#### Static Data Hooks (`src/hooks/useStaticData/`)
 
-- **Purpose**: Manages static GW2 API data caching
+- **Purpose**: Manages static GW2 API data caching via React Query
 - **Responsibilities**:
   - Fetch and cache items, colors, skins, titles, currencies, outfits, homestead glyphs, specializations, traits, backstory questions, backstory answers
-  - Provide version-aware localStorage persistence
-  - Expose fetch functions for on-demand data loading
+  - Provide localStorage persistence via `@tanstack/react-query-persist-client`
+  - Expose individual `useQuery` hooks for each data type
 - **What it should NOT do**: Handle account-specific data
 
 #### Account Data Hooks (useItemsData, etc.)
@@ -114,7 +114,7 @@ export const useItemsInternal = () => {
 
 ### Directory Structure
 
-- `/src/contexts/` - React Context providers for global state (Token, Character, Skill, StaticData)
+- `/src/contexts/` - React Context providers for global state (Token, Character, Skill)
 - `/src/types/` - TypeScript type definitions organized by domain
 - `/src/pages/` - Route components
 - `/src/components/` - Reusable UI components (Pagination, SortableTable)
@@ -128,7 +128,7 @@ export const useItemsInternal = () => {
 ### Hook Patterns
 
 - Public hooks (`useItemsData`, `useSkinsData`, etc.) and context hooks (`useToken`, `useCharacters`) expose read-only data
-- Context-based static data management (`StaticDataContext`) with integrated fetching hooks
+- React Query-based static data management (`src/hooks/useStaticData/`) with individual query hooks per data type
 - Internal state management with no exposed setter functions for better encapsulation
 - Pure helper functions for data transformation preferred over custom hooks when no state is needed
 - Direct hook usage preferred over context when data is component-specific

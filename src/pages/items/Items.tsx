@@ -20,8 +20,9 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react"
+import type { MaterialCategory } from "@gw2api/types/data/material"
 
-import { chunk, findIndex } from "lodash"
+import { chunk, findIndex, sortBy as lodashSortBy } from "lodash"
 import { CgArrowDown, CgArrowUp } from "react-icons/cg"
 import { MdSearch } from "react-icons/md"
 import {
@@ -36,10 +37,10 @@ import {
 import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
 import { useCharacters } from "~/contexts/CharacterContext"
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { compare, compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
 import { useItemsData } from "~/hooks/useItemsData"
+import { useMaterialCategoriesQuery } from "~/hooks/useStaticData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import {
   PatchedItem,
@@ -62,14 +63,46 @@ const TABLE_HEADERS = [
 ]
 
 function Items() {
-  const {
-    items,
-    materialCategories,
-    materialIdToCategoryIdMap,
-    materialCategoryIdToNameMap,
-  } = useStaticData()
+  const { data: materialCategoriesData = [] } = useMaterialCategoriesQuery()
+
+  const materialCategories = useMemo(
+    () =>
+      materialCategoriesData.length > 0
+        ? lodashSortBy(materialCategoriesData, ["order"]).map(
+            (item: MaterialCategory) => materialCategoryAliases[item.name],
+          )
+        : [],
+    [materialCategoriesData],
+  )
+
+  const materialIdToCategoryIdMap = useMemo(
+    () =>
+      materialCategoriesData.reduce(
+        (prev: Record<number, number>, curr: MaterialCategory) => {
+          for (const id of curr.items) {
+            prev[id] = curr.id
+          }
+          return prev
+        },
+        {},
+      ),
+    [materialCategoriesData],
+  )
+
+  const materialCategoryIdToNameMap = useMemo(
+    () =>
+      materialCategoriesData.reduce(
+        (prev: Record<number, string>, curr: MaterialCategory) => {
+          prev[curr.id] = curr.name
+          return prev
+        },
+        {},
+      ),
+    [materialCategoriesData],
+  )
   const {
     hasToken,
+    items = {},
     characterItems,
     inventoryItems,
     bankItems,

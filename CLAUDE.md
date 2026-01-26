@@ -71,7 +71,7 @@ npm run test:run && npm run typecheck && npm run format && npm run lint && npm r
 
 - **TokenContext** - API tokens and account switching
 - **CharacterContext** - Character list and specializations (React Query)
-- **StaticDataContext** - Cached static GW2 API data (items, colors, skins, etc.)
+- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, colors, skins, etc.) with localStorage persistence
 - **Custom hooks** (`useItemsData`, `useTitlesData`, etc.) - Account-specific data
 
 ### Key Patterns

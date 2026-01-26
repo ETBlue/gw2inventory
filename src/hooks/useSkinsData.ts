@@ -1,21 +1,18 @@
-import { useEffect } from "react"
-
 import { useQuery } from "@tanstack/react-query"
 
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useSkinsQuery } from "~/hooks/useStaticData"
 import { AccountSkins } from "~/types/skins"
 
 /**
  * Custom hook to fetch account skins and skin details
- * Uses StaticDataContext for skin data caching
+ * Uses React Query for skin data caching
  * Returns only skins that are owned by the current account
  */
 export const useSkins = () => {
   const { currentAccount } = useToken()
   const token = currentAccount?.token
-  const { skins, isSkinsFetching, fetchSkins } = useStaticData()
 
   // Fetch account skin IDs
   const {
@@ -29,16 +26,10 @@ export const useSkins = () => {
     enabled: !!token,
   })
 
-  // Auto-fetch skins when account skin IDs are available
-  useEffect(() => {
-    if (accountSkinIds && accountSkinIds.length > 0) {
-      // Only fetch skins that aren't already cached
-      const uncachedSkinIds = accountSkinIds.filter((skinId) => !skins[skinId])
-      if (uncachedSkinIds.length > 0) {
-        fetchSkins(uncachedSkinIds)
-      }
-    }
-  }, [accountSkinIds, skins, fetchSkins])
+  // Fetch skin details for owned skins — useSkinsQuery handles chunking and dedup
+  const { data: skins = {}, isLoading: isSkinsFetching } = useSkinsQuery(
+    accountSkinIds ?? [],
+  )
 
   // Filter skins to only include those owned by the account
   const accountSkins = accountSkinIds

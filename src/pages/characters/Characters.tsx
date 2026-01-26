@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import {
   Box,
@@ -37,9 +37,9 @@ import {
 } from "react-router"
 
 import { useCharacters } from "~/contexts/CharacterContext"
-import { useStaticData } from "~/contexts/StaticDataContext"
 import { compare } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { useTraitsQuery } from "~/hooks/useStaticData"
 import { CharacterBackstory } from "~/pages/characters/CharacterBackstory"
 import { CharacterSpecializations } from "~/pages/characters/CharacterSpecializations"
 import css from "~/styles/shared-table.module.css"
@@ -145,7 +145,7 @@ const COLUMNS: Column[] = [
 
 function Characters() {
   const { hasToken, characters, isFetching } = useCharacters()
-  const { fetchAllTraits } = useStaticData()
+  useTraitsQuery()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { profession } = useParams<{ profession?: string }>()
@@ -161,11 +161,6 @@ function Characters() {
   const [expandedCharacters, setExpandedCharacters] = useState<Set<string>>(
     new Set(),
   )
-
-  // Fetch all traits when the Characters page loads
-  useEffect(() => {
-    fetchAllTraits()
-  }, [fetchAllTraits])
 
   // Toggle expand/collapse for a character
   const handleToggleExpand = (characterName: string) => {
@@ -310,8 +305,8 @@ function Characters() {
                         size="xs"
                         variant="ghost"
                         onClick={handleToggleAll}
-                        marginLeft="-.875rem"
-                        marginRight="-0.125rem"
+                        marginLeft="-1.25rem"
+                        marginRight="0.25rem"
                       />
                       <Text
                         cursor="pointer"

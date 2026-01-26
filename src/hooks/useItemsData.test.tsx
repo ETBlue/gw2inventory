@@ -9,26 +9,23 @@ import * as charactersHook from "~/contexts/CharacterContext"
 import * as tokenHook from "~/contexts/TokenContext"
 import { createTestQueryClient } from "~/test/utils"
 
-import * as staticDataContext from "../contexts/StaticDataContext"
 import * as apiHelpers from "../helpers/api"
 import * as characterItemsHelper from "../helpers/characterItems"
+import * as staticDataHooks from "../hooks/useStaticData"
 import * as guildsDataHook from "./useGuildsData"
 import { useItemsData } from "./useItemsData"
 
 // Mock all dependencies
 vi.mock("~/contexts/TokenContext")
 vi.mock("~/contexts/CharacterContext")
-vi.mock("../contexts/StaticDataContext")
+vi.mock("../hooks/useStaticData")
 vi.mock("../helpers/characterItems")
 vi.mock("../helpers/api")
 vi.mock("./useGuildsData")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockUseCharacters = vi.mocked(charactersHook.useCharacters)
-const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
-const mockUseBatchAutoFetchItems = vi.mocked(
-  staticDataContext.useBatchAutoFetchItems,
-)
+const mockUseItemsQuery = vi.mocked(staticDataHooks.useItemsQuery)
 const mockProcessCharacterItems = vi.mocked(
   characterItemsHelper.processCharacterItems,
 )
@@ -92,59 +89,10 @@ describe("useItemsData", () => {
 
     mockProcessCharacterItems.mockReturnValue(mockCharacterItems)
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialIdToCategoryIdMap: {},
-      materialCategoryIdToNameMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseItemsQuery.mockReturnValue({
+      data: {},
+      isLoading: false,
+    } as any)
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
@@ -159,8 +107,6 @@ describe("useItemsData", () => {
       }
       return []
     })
-
-    mockUseBatchAutoFetchItems.mockImplementation(() => {})
 
     mockUseGuildsData.mockReturnValue({
       guilds: [],
@@ -179,24 +125,6 @@ describe("useItemsData", () => {
     expect(result.current.characterItems).toHaveLength(2)
   })
 
-  it("batches all item sources for efficient fetching using useBatchAutoFetchItems", () => {
-    renderHook(() => useItemsData(), {
-      wrapper: createWrapper(),
-    })
-
-    // Verify that useBatchAutoFetchItems is called with all item sources batched together
-    expect(mockUseBatchAutoFetchItems).toHaveBeenCalledWith(
-      {
-        characterItems: expect.any(Array),
-        inventoryItems: expect.any(Array),
-        bankItems: expect.any(Array),
-        materialItems: expect.any(Array),
-        guildVaultItems: expect.any(Array),
-      },
-      true,
-    )
-  })
-
   it("preserves character items across account changes", () => {
     const { result } = renderHook(() => useItemsData(), {
       wrapper: createWrapper(),
@@ -207,59 +135,10 @@ describe("useItemsData", () => {
   })
 
   it("aggregates fetching status from all sources", () => {
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: true, // Set to true
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialIdToCategoryIdMap: {},
-      materialCategoryIdToNameMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseItemsQuery.mockReturnValue({
+      data: {},
+      isLoading: true,
+    } as any)
 
     const { result } = renderHook(() => useItemsData(), {
       wrapper: createWrapper(),
@@ -306,6 +185,7 @@ describe("useItemsData", () => {
     })
 
     expect(result.current).toHaveProperty("hasToken")
+    expect(result.current).toHaveProperty("items")
     expect(result.current).toHaveProperty("characterItems")
     expect(result.current).toHaveProperty("inventoryItems")
     expect(result.current).toHaveProperty("bankItems")
@@ -318,5 +198,24 @@ describe("useItemsData", () => {
     expect(result.current).not.toHaveProperty("setBankItems")
     expect(result.current).not.toHaveProperty("setMaterialItems")
     expect(result.current).not.toHaveProperty("setCharacterItems")
+  })
+
+  it("returns items data from useItemsQuery so consumers don't need to call useItemsQuery separately", () => {
+    const mockItemsRecord = {
+      100: { id: 100, name: "Test Item", type: "Weapon" },
+      200: { id: 200, name: "Another Item", type: "Armor" },
+    }
+
+    mockUseItemsQuery.mockReturnValue({
+      data: mockItemsRecord,
+      isLoading: false,
+    } as any)
+
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
+
+    // items should be the exact data returned by useItemsQuery
+    expect(result.current.items).toBe(mockItemsRecord)
   })
 })

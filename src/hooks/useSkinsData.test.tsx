@@ -3,20 +3,20 @@ import { renderHook, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import * as staticDataContext from "~/contexts/StaticDataContext"
 import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataHooks from "~/hooks/useStaticData"
 
 import { useSkins } from "./useSkinsData"
 
 // Mock dependencies
 vi.mock("~/contexts/TokenContext")
 vi.mock("~/helpers/api")
-vi.mock("~/contexts/StaticDataContext")
+vi.mock("~/hooks/useStaticData")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
-const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
+const mockUseSkinsQuery = vi.mocked(staticDataHooks.useSkinsQuery)
 
 // Test wrapper with QueryClient
 function createWrapper() {
@@ -74,60 +74,11 @@ describe("useSkins", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Set up default StaticDataContext mock
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    // Set up default useSkinsQuery mock
+    mockUseSkinsQuery.mockReturnValue({
+      data: {},
+      isLoading: false,
+    } as any)
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -148,10 +99,9 @@ describe("useSkins", () => {
     expect(result.current.skins).toBeUndefined()
   })
 
-  it("fetches account skin IDs and triggers skin fetching with uncached skin IDs when token is available", async () => {
+  it("fetches account skin IDs when token is available", async () => {
     const mockToken = "test-token"
     const mockAccountSkinIds = [1, 2]
-    const mockFetchSkins = vi.fn()
 
     mockUseToken.mockReturnValue({
       currentAccount: { token: mockToken, name: "Test Account" },
@@ -161,59 +111,10 @@ describe("useSkins", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: mockFetchSkins,
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseSkinsQuery.mockReturnValue({
+      data: {},
+      isLoading: false,
+    } as any)
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
@@ -231,11 +132,6 @@ describe("useSkins", () => {
 
     await waitFor(() => {
       expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
-    })
-
-    // Should call fetchSkins with uncached skin IDs (since skins cache is empty, all are uncached)
-    await waitFor(() => {
-      expect(mockFetchSkins).toHaveBeenCalledWith([1, 2])
     })
   })
 
@@ -255,59 +151,10 @@ describe("useSkins", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: mockSkinsRecord,
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseSkinsQuery.mockReturnValue({
+      data: mockSkinsRecord,
+      isLoading: false,
+    } as any)
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
@@ -372,156 +219,15 @@ describe("useSkins", () => {
     })
 
     // Mock skins fetching as true
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: true,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseSkinsQuery.mockReturnValue({
+      data: {},
+      isLoading: true,
+    } as any)
 
     const { result } = renderHook(() => useSkins(), {
       wrapper: createWrapper(),
     })
 
     expect(result.current.isFetching).toBe(true)
-  })
-
-  it("calls fetchSkins with only uncached skin IDs when account skin IDs are available", async () => {
-    const mockToken = "test-token"
-    const mockAccountSkinIds = [1, 2, 3]
-    const mockFetchSkins = vi.fn()
-    const existingSkins = {
-      1: mockSkins[0], // Skin 1 already cached
-    }
-
-    mockUseToken.mockReturnValue({
-      currentAccount: { token: mockToken, name: "Test Account" },
-      usedAccounts: [],
-      addUsedAccount: vi.fn(),
-      removeUsedAccount: vi.fn(),
-      setCurrentAccount: vi.fn(),
-    })
-
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: existingSkins,
-      isSkinsFetching: false,
-      fetchSkins: mockFetchSkins,
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
-
-    mockQueryFunction.mockImplementation(async ({ queryKey }) => {
-      const [endpoint] = queryKey
-      if (endpoint === "account/skins") {
-        return mockAccountSkinIds
-      }
-      return null
-    })
-
-    const { result } = renderHook(() => useSkins(), {
-      wrapper: createWrapper(),
-    })
-
-    await waitFor(() => {
-      expect(result.current.accountSkinIds).toEqual(mockAccountSkinIds)
-    })
-
-    // Should call fetchSkins with only uncached skin IDs (2 and 3, since 1 is already cached)
-    await waitFor(() => {
-      expect(mockFetchSkins).toHaveBeenCalledWith([2, 3])
-    })
   })
 })
