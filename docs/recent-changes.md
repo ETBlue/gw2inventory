@@ -4,6 +4,17 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-26: Migrated StaticDataContext to React Query
+
+- Replaced 1,400-line StaticDataContext (useReducer + manual localStorage) with React Query hooks
+- Added `@tanstack/react-query-persist-client` for localStorage persistence of static data
+- Each static data type is now a standalone `useQuery` hook in `src/hooks/useStaticData/`
+- Removed 42 action types, 14 fetch callbacks, 12 auto-fetch effects, 250 lines of manual cache utils
+- Consumer hooks (useDyesData, useTitlesData, etc.) now import individual query hooks
+- Net reduction of ~1,100 lines of code
+
+---
+
 ## 2026-01-26: Character Backstory Display
 
 - Added backstory display in expanded character rows on the Characters page, showing Q&A pairs from the character's backstory choices
