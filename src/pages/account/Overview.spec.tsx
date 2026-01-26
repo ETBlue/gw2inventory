@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
+import * as guildsHook from "~/hooks/useGuildsData"
 import * as titlesHook from "~/hooks/useTitlesData"
 import { render } from "~/test/utils"
 
@@ -11,16 +12,22 @@ import Overview from "./Overview"
 
 // Mock all the hooks
 vi.mock("~/contexts/TokenContext")
+vi.mock("~/hooks/useGuildsData")
 vi.mock("~/hooks/useTitlesData")
 vi.mock("~/helpers/api")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
+const mockUseGuilds = vi.mocked(guildsHook.useGuilds)
 const mockUseTitles = vi.mocked(titlesHook.useTitles)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
 
 describe("Overview Component", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseGuilds.mockReturnValue({
+      guilds: [],
+      isFetching: false,
+    })
   })
 
   it("shows 'No account selected' when no token is available", () => {
@@ -290,7 +297,6 @@ describe("Overview Component", () => {
       access: ["GuildWars2"],
       wvw_rank: 100,
       fractal_level: 50,
-      guilds: ["guild-id-1", "guild-id-2"],
     }
 
     const mockProgression: { id: string; value: number }[] = []
@@ -328,6 +334,11 @@ describe("Overview Component", () => {
       hasToken: true,
     })
 
+    mockUseGuilds.mockReturnValue({
+      guilds: mockGuilds,
+      isFetching: false,
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
       if (endpoint === "account") {
@@ -335,12 +346,6 @@ describe("Overview Component", () => {
       }
       if (endpoint === "account/progression") {
         return mockProgression
-      }
-      if (endpoint === "guild/guild-id-1") {
-        return mockGuilds[0]
-      }
-      if (endpoint === "guild/guild-id-2") {
-        return mockGuilds[1]
       }
       return null
     })
@@ -371,7 +376,6 @@ describe("Overview Component", () => {
       access: ["GuildWars2"],
       wvw_rank: 100,
       fractal_level: 50,
-      guilds: ["guild-id-1"],
     }
 
     const mockProgression: { id: string; value: number }[] = []
@@ -392,6 +396,12 @@ describe("Overview Component", () => {
       hasToken: true,
     })
 
+    // Return guild without level/influence (user lacks guilds scope)
+    mockUseGuilds.mockReturnValue({
+      guilds: [{ id: "guild-id-1", name: "Limited Guild", tag: "LG" }],
+      isFetching: false,
+    })
+
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
       if (endpoint === "account") {
@@ -399,10 +409,6 @@ describe("Overview Component", () => {
       }
       if (endpoint === "account/progression") {
         return mockProgression
-      }
-      if (endpoint === "guild/guild-id-1") {
-        // Return guild without level/influence (user lacks guilds scope)
-        return { id: "guild-id-1", name: "Limited Guild", tag: "LG" }
       }
       return null
     })
@@ -429,7 +435,6 @@ describe("Overview Component", () => {
       access: ["GuildWars2"],
       wvw_rank: 100,
       fractal_level: 50,
-      guilds: [],
     }
 
     const mockProgression: { id: string; value: number }[] = []
@@ -448,6 +453,12 @@ describe("Overview Component", () => {
       isFetching: false,
       error: null,
       hasToken: true,
+    })
+
+    // useGuilds returns empty array (already set in beforeEach, but explicit here)
+    mockUseGuilds.mockReturnValue({
+      guilds: [],
+      isFetching: false,
     })
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {

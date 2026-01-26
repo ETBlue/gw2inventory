@@ -11,7 +11,7 @@ import {
   Spinner,
 } from "@chakra-ui/react"
 import { Account } from "@gw2api/types/data/account"
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 
 import { format } from "date-fns"
 import { FaCrown } from "react-icons/fa"
@@ -19,10 +19,10 @@ import { GiCheckMark } from "react-icons/gi"
 
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { useGuilds } from "~/hooks/useGuildsData"
 import { useTitles } from "~/hooks/useTitlesData"
 import sharedLayoutCss from "~/styles/shared-layout.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
-import type { Guild } from "~/types/guilds"
 
 function formatAccessText(text: string): string {
   return text
@@ -53,23 +53,7 @@ function Overview() {
 
   const { titles, isFetching: isTitlesFetching } = useTitles()
 
-  // Fetch guild data for each guild ID in the account
-  const guildIds = account?.guilds ?? []
-
-  const guildQueries = useQueries({
-    queries: guildIds.map((id) => ({
-      queryKey: [`guild/${id}`, token] as const,
-      queryFn: queryFunction as typeof queryFunction,
-      staleTime: Infinity,
-      enabled: !!token && !!account,
-    })),
-  })
-
-  const guilds = guildQueries
-    .filter((q) => q.isSuccess && q.data)
-    .map((q) => q.data as Guild)
-
-  const isGuildsFetching = guildQueries.some((q) => q.isFetching)
+  const { guilds, isFetching: isGuildsFetching } = useGuilds()
 
   // Sort titles alphabetically by name for consistent display
   const sortedTitles = useMemo(() => {
