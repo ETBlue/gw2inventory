@@ -106,6 +106,10 @@ describe("useSkins", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -119,6 +123,8 @@ describe("useSkins", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })
@@ -186,6 +192,10 @@ describe("useSkins", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -199,6 +209,8 @@ describe("useSkins", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })
@@ -274,6 +286,10 @@ describe("useSkins", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -287,6 +303,8 @@ describe("useSkins", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })
@@ -385,6 +403,10 @@ describe("useSkins", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -398,6 +420,8 @@ describe("useSkins", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })
@@ -456,6 +480,10 @@ describe("useSkins", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(() => ({
         itemCount: 0,
         materialCategoryCount: 0,
@@ -469,6 +497,8 @@ describe("useSkins", () => {
         homesteadGlyphCount: 0,
         specializationCount: 0,
         traitCount: 0,
+        backstoryQuestionCount: 0,
+        backstoryAnswerCount: 0,
         version: null,
       })),
     })

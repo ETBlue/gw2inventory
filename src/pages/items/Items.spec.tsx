@@ -286,6 +286,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -370,6 +374,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -444,6 +452,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
@@ -508,6 +520,10 @@ describe("Items", () => {
       traits: {},
       isTraitsFetching: false,
       fetchAllTraits: vi.fn(),
+      backstoryQuestions: {},
+      isBackstoryQuestionsFetching: false,
+      backstoryAnswers: {},
+      isBackstoryAnswersFetching: false,
       getCacheInfo: vi.fn(),
     })
 
