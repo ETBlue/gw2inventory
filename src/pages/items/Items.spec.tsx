@@ -228,6 +228,56 @@ describe("Items", () => {
     expect(screen.getByText("No item found")).toBeInTheDocument()
   })
 
+  it("renders item details using items data from useItemsData, not from a separate useItemsQuery call", () => {
+    // This test prevents a regression where Items.tsx called useItemsQuery([])
+    // directly, creating a separate instance with its own empty ref, causing
+    // items not to render even though useItemsData had the actual data.
+    mockUseItemsData.mockReturnValue({
+      hasToken: true,
+      items: mockItems,
+      characterItems: [],
+      inventoryItems: [
+        { id: 1, count: 1, location: "inventory" },
+        { id: 3, count: 2, location: "inventory" },
+      ],
+      bankItems: [],
+      materialItems: [],
+      guildVaultItems: [],
+      isFetching: false,
+    } as ReturnType<typeof useItemsData>)
+
+    render(<Items />)
+
+    // Item names should render because items data is provided via useItemsData
+    expect(screen.getByText("Iron Sword")).toBeInTheDocument()
+    expect(screen.getByText("Trophy Item")).toBeInTheDocument()
+  })
+
+  it("does not render item details when items data from useItemsData is empty", () => {
+    // Even with user items present, item names should not appear if the items
+    // lookup record is empty. This guards against introducing a separate data
+    // source for item details (e.g. calling useItemsQuery directly in the component).
+    mockUseItemsData.mockReturnValue({
+      hasToken: true,
+      items: {},
+      characterItems: [],
+      inventoryItems: [
+        { id: 1, count: 1, location: "inventory" },
+        { id: 3, count: 2, location: "inventory" },
+      ],
+      bankItems: [],
+      materialItems: [],
+      guildVaultItems: [],
+      isFetching: false,
+    } as ReturnType<typeof useItemsData>)
+
+    render(<Items />)
+
+    // Item names should NOT appear because items lookup is empty
+    expect(screen.queryByText("Iron Sword")).not.toBeInTheDocument()
+    expect(screen.queryByText("Trophy Item")).not.toBeInTheDocument()
+  })
+
   it("filters items based on the selected category, e.g. `Equipable`, `Consumable`, `Material`, `Trophy`", () => {
     mockUseItemsData.mockReturnValue({
       hasToken: true,

@@ -185,6 +185,7 @@ describe("useItemsData", () => {
     })
 
     expect(result.current).toHaveProperty("hasToken")
+    expect(result.current).toHaveProperty("items")
     expect(result.current).toHaveProperty("characterItems")
     expect(result.current).toHaveProperty("inventoryItems")
     expect(result.current).toHaveProperty("bankItems")
@@ -197,5 +198,24 @@ describe("useItemsData", () => {
     expect(result.current).not.toHaveProperty("setBankItems")
     expect(result.current).not.toHaveProperty("setMaterialItems")
     expect(result.current).not.toHaveProperty("setCharacterItems")
+  })
+
+  it("returns items data from useItemsQuery so consumers don't need to call useItemsQuery separately", () => {
+    const mockItemsRecord = {
+      100: { id: 100, name: "Test Item", type: "Weapon" },
+      200: { id: 200, name: "Another Item", type: "Armor" },
+    }
+
+    mockUseItemsQuery.mockReturnValue({
+      data: mockItemsRecord,
+      isLoading: false,
+    } as any)
+
+    const { result } = renderHook(() => useItemsData(), {
+      wrapper: createWrapper(),
+    })
+
+    // items should be the exact data returned by useItemsQuery
+    expect(result.current.items).toBe(mockItemsRecord)
   })
 })
