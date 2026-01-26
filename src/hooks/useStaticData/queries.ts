@@ -1,12 +1,19 @@
+import { useMemo, useRef } from "react"
+
 import type { HomesteadGlyph } from "@gw2api/types/data/homestead"
 import type { MaterialCategory } from "@gw2api/types/data/material"
 import { useQuery } from "@tanstack/react-query"
 
+import { chunk } from "lodash"
+
+import { API_CONSTANTS } from "~/constants"
 import { fetchGW2 } from "~/helpers/api"
 import type { BackstoryAnswer, BackstoryQuestion } from "~/types/backstory"
 import type { Color } from "~/types/dyes"
 import type { HomeCat } from "~/types/homeCats"
+import type { PatchedItem } from "~/types/items"
 import type { Outfit } from "~/types/outfits"
+import type { Skin } from "~/types/skins"
 import type { Specialization, Trait } from "~/types/specializations"
 import type { Title } from "~/types/titles"
 import type { Currency } from "~/types/wallet"
@@ -185,3 +192,107 @@ export const useHomesteadGlyphsQuery = () =>
     },
     ...STATIC_QUERY_OPTIONS,
   })
+
+// --- Pattern B: Fetch by IDs hooks ---
+
+/**
+ * Fetches items by IDs with chunking and deduplication.
+ * Merges newly fetched items into the accumulated record.
+ * Consumers pass in all item IDs they need; the hook handles caching internally.
+ */
+export const useItemsQuery = (ids: number[]) => {
+  const accumulatedItems = useRef<Record<number, PatchedItem>>({})
+
+  const stableIds = useMemo(() => {
+    return [...new Set(ids)].sort((a, b) => a - b)
+  }, [ids])
+
+  const idsToFetch = useMemo(() => {
+    return stableIds.filter((id) => !accumulatedItems.current[id])
+  }, [stableIds])
+
+  const query = useQuery({
+    queryKey: staticKeys.items(idsToFetch),
+    queryFn: async () => {
+      if (idsToFetch.length === 0) return {}
+
+      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+      let newItems: PatchedItem[] = []
+
+      for (const c of chunks) {
+        try {
+          const data = await fetchGW2<PatchedItem[]>(
+            "items",
+            `ids=${c.join(",")}`,
+          )
+          if (data) {
+            newItems = [...newItems, ...data]
+          }
+        } catch (error) {
+          console.error("Failed to fetch items chunk:", error)
+        }
+      }
+
+      const newRecord = toRecord(newItems)
+      accumulatedItems.current = {
+        ...accumulatedItems.current,
+        ...newRecord,
+      }
+      return accumulatedItems.current
+    },
+    ...STATIC_QUERY_OPTIONS,
+    enabled: idsToFetch.length > 0,
+  })
+
+  return {
+    ...query,
+    data: accumulatedItems.current,
+  }
+}
+
+export const useSkinsQuery = (ids: number[]) => {
+  const accumulatedSkins = useRef<Record<number, Skin>>({})
+
+  const stableIds = useMemo(() => {
+    return [...new Set(ids)].sort((a, b) => a - b)
+  }, [ids])
+
+  const idsToFetch = useMemo(() => {
+    return stableIds.filter((id) => !accumulatedSkins.current[id])
+  }, [stableIds])
+
+  const query = useQuery({
+    queryKey: staticKeys.skins(idsToFetch),
+    queryFn: async () => {
+      if (idsToFetch.length === 0) return {}
+
+      const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
+      let newItems: Skin[] = []
+
+      for (const c of chunks) {
+        try {
+          const data = await fetchGW2<Skin[]>("skins", `ids=${c.join(",")}`)
+          if (data) {
+            newItems = [...newItems, ...data]
+          }
+        } catch (error) {
+          console.error("Failed to fetch skins chunk:", error)
+        }
+      }
+
+      const newRecord = toRecord(newItems)
+      accumulatedSkins.current = {
+        ...accumulatedSkins.current,
+        ...newRecord,
+      }
+      return accumulatedSkins.current
+    },
+    ...STATIC_QUERY_OPTIONS,
+    enabled: idsToFetch.length > 0,
+  })
+
+  return {
+    ...query,
+    data: accumulatedSkins.current,
+  }
+}
