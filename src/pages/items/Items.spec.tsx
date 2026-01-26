@@ -180,6 +180,7 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
+      guildVaultItems: [],
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -200,6 +201,7 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
+      guildVaultItems: [],
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -219,6 +221,7 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
+      guildVaultItems: [],
       isFetching: true,
     } as ReturnType<typeof useItemsData>)
 
@@ -241,6 +244,7 @@ describe("Items", () => {
       inventoryItems: [],
       bankItems: [],
       materialItems: [],
+      guildVaultItems: [],
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -294,6 +298,7 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
+      guildVaultItems: [],
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -377,6 +382,7 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
+      guildVaultItems: [],
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -450,6 +456,7 @@ describe("Items", () => {
       ],
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
+      guildVaultItems: [],
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 
@@ -510,6 +517,7 @@ describe("Items", () => {
       inventoryItems: mockUserItems,
       bankItems: [],
       materialItems: [{ id: 2, count: 5, location: "bank", category: 5 }],
+      guildVaultItems: [],
       isFetching: false,
     } as ReturnType<typeof useItemsData>)
 

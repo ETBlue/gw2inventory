@@ -4,12 +4,22 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-26: Guild Vault Items in Items Page
+
+- Added vault types (`GuildVaultSection`, `GuildVaultSlot`, `GuildVaultItemInList`) to `src/types/guilds.ts`
+- Created `useGuildsData` hook in `src/hooks/useGuildsData.ts` for shared guild data
+- Refactored Overview.tsx to use `useGuildsData` hook
+- Display guild vault items in `/items` page with `[TAG] Vault` location
+- Silently skip guilds where user is not leader (403 errors)
+
+---
+
 ## 2026-01-26: Guild List in Account Overview
 
 - Added `Guild` type in `src/types/guilds.ts`
 - Display user's guilds in Account Overview page
 - Format: `[tag] name Lv## (influence)` or `[tag] name` if limited access
-- Uses `useQueries` for parallel guild data fetching
+- Uses `useGuildsData` hook for guild data fetching (shared with Items page)
 
 ---
 
