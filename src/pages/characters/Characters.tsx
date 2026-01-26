@@ -305,8 +305,8 @@ function Characters() {
                         size="xs"
                         variant="ghost"
                         onClick={handleToggleAll}
-                        marginLeft="-.875rem"
-                        marginRight="-0.125rem"
+                        marginLeft="-1.25rem"
+                        marginRight="0.25rem"
                       />
                       <Text
                         cursor="pointer"
