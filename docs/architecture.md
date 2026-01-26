@@ -13,13 +13,14 @@ The application uses a hybrid approach with React Context API for global state a
 - **TokenContext** - Manages API tokens stored in localStorage and account switching
 - **CharacterContext** - Handles character list data and specializations via React Query. Automatically prefetches all character specializations when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions. Note: Trait fetching is triggered by the Characters page, not CharacterContext
 - **SkillContext** - Manages skill data
-- **StaticDataContext** - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, specializations, and traits) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/specializations/traits, chunked fetching for items/skins/outfits)
+- **StaticDataContext** - Manages static GW2 API data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, and traits) with global caching, localStorage persistence, version-aware cache management, and optimized fetching strategies (complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits, chunked fetching for items/skins/outfits)
 
 ### Custom Hooks
 
 These hooks replace previous contexts and manage account-specific data:
 
-- `useItemsData` - Manages account-specific item data (inventory, bank, materials, character items) with batched fetching optimization. Returns only user's item arrays without static data
+- `useItemsData` - Manages account-specific item data (inventory, bank, materials, character items, guild vault items) with batched fetching optimization. Returns only user's item arrays without static data
+- `useGuildsData` - Fetches guild info and vault contents for the current account. Shared between Overview page (guild display) and Items page (vault items). Silently skips guilds where user lacks vault access (403)
 - `useTitlesData` - Fetches account titles with title details managed by StaticDataContext
 - `useWalletData` - Fetches account wallet with currency details managed by StaticDataContext
 - `useSkinsData` - Fetches account skins with skin details managed by StaticDataContext
@@ -27,6 +28,7 @@ These hooks replace previous contexts and manage account-specific data:
 - `useDyesData` - Fetches account dyes with color details managed by StaticDataContext
 - `useHomeNodesData` - Fetches account home instance nodes with home node data managed by StaticDataContext
 - `useHomeCatsData` - Fetches account home instance cats with home cat data managed by StaticDataContext
+- `useHomesteadGlyphsData` - Fetches account homestead glyphs with glyph data managed by StaticDataContext
 
 ---
 
@@ -47,7 +49,7 @@ These hooks replace previous contexts and manage account-specific data:
 
 - **Purpose**: Manages static GW2 API data caching
 - **Responsibilities**:
-  - Fetch and cache items, colors, skins, titles, currencies, outfits, specializations, traits
+  - Fetch and cache items, colors, skins, titles, currencies, outfits, homestead glyphs, specializations, traits
   - Provide version-aware localStorage persistence
   - Expose fetch functions for on-demand data loading
 - **What it should NOT do**: Handle account-specific data
