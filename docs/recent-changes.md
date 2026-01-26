@@ -4,6 +4,16 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-26: Character Backstory Display
+
+- Added backstory display in expanded character rows on the Characters page, showing Q&A pairs from the character's backstory choices
+- Uses three GW2 API endpoints: `/v2/characters/:name/backstory`, `/v2/backstory/questions`, and `/v2/backstory/answers`
+- Added backstory questions and answers to StaticDataContext with complete dataset fetching and localStorage caching
+- CharacterContext prefetches backstory for all characters using the same `useQueries` parallel pattern as specializations
+- New types in `src/types/backstory.ts`, helper in `src/helpers/backstory.ts`, and component in `src/pages/characters/CharacterBackstory.tsx`
+
+---
+
 ## 2026-01-26: Guild Vault Items in Items Page
 
 - Added vault types (`GuildVaultSection`, `GuildVaultSlot`, `GuildVaultItemInList`) to `src/types/guilds.ts`
