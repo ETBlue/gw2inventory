@@ -5,20 +5,22 @@ import { renderHook, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import * as staticDataContext from "~/contexts/StaticDataContext"
 import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataHooks from "~/hooks/useStaticData"
 import { createTestQueryClient } from "~/test/utils"
 
 import useHomesteadGlyphs from "./useHomesteadGlyphsData"
 
 vi.mock("~/contexts/TokenContext")
 vi.mock("~/helpers/api")
-vi.mock("~/contexts/StaticDataContext")
+vi.mock("~/hooks/useStaticData")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
-const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
+const mockUseHomesteadGlyphsQuery = vi.mocked(
+  staticDataHooks.useHomesteadGlyphsQuery,
+)
 
 const createWrapper = () => {
   const queryClient = createTestQueryClient()
@@ -30,64 +32,15 @@ const createWrapper = () => {
   return Wrapper
 }
 
-const defaultStaticDataMock = {
-  items: {},
-  isItemsFetching: false,
-  fetchItems: vi.fn(),
-  materialCategoriesData: [],
-  materialCategories: [],
-  materialCategoryIdToNameMap: {},
-  materialIdToCategoryIdMap: {},
-  isMaterialFetching: false,
-  colors: {},
-  isColorsFetching: false,
-  skins: {},
-  isSkinsFetching: false,
-  fetchSkins: vi.fn(),
-  titles: {},
-  isTitlesFetching: false,
-  currencies: {},
-  isCurrenciesFetching: false,
-  outfits: {},
-  isOutfitsFetching: false,
-  homeNodes: [],
-  isHomeNodesFetching: false,
-  homeCats: [],
-  isHomeCatsFetching: false,
-  homesteadGlyphs: [],
-  isHomesteadGlyphsFetching: false,
-  specializations: {},
-  isSpecializationsFetching: false,
-  traits: {},
-  isTraitsFetching: false,
-  fetchAllTraits: vi.fn(),
-  backstoryQuestions: {},
-  isBackstoryQuestionsFetching: false,
-  backstoryAnswers: {},
-  isBackstoryAnswersFetching: false,
-  getCacheInfo: vi.fn(() => ({
-    itemCount: 0,
-    materialCategoryCount: 0,
-    colorCount: 0,
-    skinCount: 0,
-    titleCount: 0,
-    currencyCount: 0,
-    outfitCount: 0,
-    homeNodeCount: 0,
-    homeCatCount: 0,
-    homesteadGlyphCount: 0,
-    specializationCount: 0,
-    traitCount: 0,
-    backstoryQuestionCount: 0,
-    backstoryAnswerCount: 0,
-    version: null,
-  })),
-}
-
 describe("useHomesteadGlyphs", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseStaticData.mockReturnValue(defaultStaticDataMock)
+
+    // Set up default useHomesteadGlyphsQuery mock
+    mockUseHomesteadGlyphsQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as any)
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -138,7 +91,7 @@ describe("useHomesteadGlyphs", () => {
     })
   })
 
-  it("returns static homestead glyphs from context", () => {
+  it("returns static homestead glyphs from query", () => {
     const mockGlyphs = [
       {
         id: "volatility_harvesting",
@@ -156,10 +109,10 @@ describe("useHomesteadGlyphs", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      ...defaultStaticDataMock,
-      homesteadGlyphs: mockGlyphs,
-    })
+    mockUseHomesteadGlyphsQuery.mockReturnValue({
+      data: mockGlyphs,
+      isLoading: false,
+    } as any)
 
     const { result } = renderHook(() => useHomesteadGlyphs(), {
       wrapper: createWrapper(),
@@ -177,10 +130,10 @@ describe("useHomesteadGlyphs", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      ...defaultStaticDataMock,
-      isHomesteadGlyphsFetching: true,
-    })
+    mockUseHomesteadGlyphsQuery.mockReturnValue({
+      data: [],
+      isLoading: true,
+    } as any)
 
     const { result } = renderHook(() => useHomesteadGlyphs(), {
       wrapper: createWrapper(),

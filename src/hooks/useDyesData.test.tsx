@@ -5,20 +5,20 @@ import { renderHook, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import * as staticDataContext from "~/contexts/StaticDataContext"
 import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
+import * as staticDataHooks from "~/hooks/useStaticData"
 
 import { useDyes } from "./useDyesData"
 
 // Mock dependencies
 vi.mock("~/contexts/TokenContext")
 vi.mock("~/helpers/api")
-vi.mock("~/contexts/StaticDataContext")
+vi.mock("~/hooks/useStaticData")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
-const mockUseStaticData = vi.mocked(staticDataContext.useStaticData)
+const mockUseColorsQuery = vi.mocked(staticDataHooks.useColorsQuery)
 
 // Test wrapper with QueryClient
 function createWrapper() {
@@ -104,60 +104,11 @@ describe("useDyes", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Set up default StaticDataContext mock
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    // Set up default useColorsQuery mock
+    mockUseColorsQuery.mockReturnValue({
+      data: {},
+      isLoading: false,
+    } as any)
   })
 
   it("returns hasToken false when no token is available", () => {
@@ -191,59 +142,10 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseColorsQuery.mockReturnValue({
+      data: {},
+      isLoading: false,
+    } as any)
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
@@ -280,59 +182,10 @@ describe("useDyes", () => {
       setCurrentAccount: vi.fn(),
     })
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: mockColorsRecord,
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseColorsQuery.mockReturnValue({
+      data: mockColorsRecord,
+      isLoading: false,
+    } as any)
 
     mockQueryFunction.mockImplementation(async ({ queryKey }) => {
       const [endpoint] = queryKey
@@ -403,59 +256,10 @@ describe("useDyes", () => {
     })
 
     // Mock colors fetching as true
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: {},
-      isColorsFetching: true,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseColorsQuery.mockReturnValue({
+      data: {},
+      isLoading: true,
+    } as any)
 
     const { result } = renderHook(() => useDyes(), {
       wrapper: createWrapper(),
@@ -493,59 +297,10 @@ describe("useDyes", () => {
       2: mockColors[1],
     }
 
-    mockUseStaticData.mockReturnValue({
-      items: {},
-      isItemsFetching: false,
-      fetchItems: vi.fn(),
-      materialCategoriesData: [],
-      materialCategories: [],
-      materialCategoryIdToNameMap: {},
-      materialIdToCategoryIdMap: {},
-      isMaterialFetching: false,
-      colors: mockColorsRecord,
-      isColorsFetching: false,
-      skins: {},
-      isSkinsFetching: false,
-      fetchSkins: vi.fn(),
-      titles: {},
-      isTitlesFetching: false,
-      currencies: {},
-      isCurrenciesFetching: false,
-      outfits: {},
-      isOutfitsFetching: false,
-      homeNodes: [],
-      isHomeNodesFetching: false,
-      homeCats: [],
-      isHomeCatsFetching: false,
-      homesteadGlyphs: [],
-      isHomesteadGlyphsFetching: false,
-      specializations: {},
-      isSpecializationsFetching: false,
-      traits: {},
-      isTraitsFetching: false,
-      fetchAllTraits: vi.fn(),
-      backstoryQuestions: {},
-      isBackstoryQuestionsFetching: false,
-      backstoryAnswers: {},
-      isBackstoryAnswersFetching: false,
-      getCacheInfo: vi.fn(() => ({
-        itemCount: 0,
-        materialCategoryCount: 0,
-        colorCount: 0,
-        skinCount: 0,
-        titleCount: 0,
-        currencyCount: 0,
-        outfitCount: 0,
-        homeNodeCount: 0,
-        homeCatCount: 0,
-        homesteadGlyphCount: 0,
-        specializationCount: 0,
-        traitCount: 0,
-        backstoryQuestionCount: 0,
-        backstoryAnswerCount: 0,
-        version: null,
-      })),
-    })
+    mockUseColorsQuery.mockReturnValue({
+      data: mockColorsRecord,
+      isLoading: false,
+    } as any)
 
     mockUseToken.mockReturnValue({
       currentAccount: null,
