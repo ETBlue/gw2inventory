@@ -13,6 +13,7 @@ import {
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
 import { processCharacterItems } from "~/helpers/characterItems"
+import { useGuildsData } from "~/hooks/useGuildsData"
 import {
   BankItemInList,
   InventoryItemInList,
@@ -34,6 +35,9 @@ export const useItemsData = () => {
   )
   const [bankItems, setBankItems] = useState<BankItemInList[]>([])
   const [materialItems, setMaterialItems] = useState<MaterialItemInList[]>([])
+
+  // Get guild vault items
+  const { guildVaultItems, isFetching: isGuildsFetching } = useGuildsData()
 
   // Use StaticDataContext for static item data
   const { isItemsFetching, isMaterialFetching } = useStaticData()
@@ -176,6 +180,7 @@ export const useItemsData = () => {
       inventoryItems,
       bankItems,
       materialItems,
+      guildVaultItems,
     },
     true,
   )
@@ -186,7 +191,8 @@ export const useItemsData = () => {
     isInventoryFetching ||
     isBankFetching ||
     isMaterialsFetching ||
-    isCharactersFetching
+    isCharactersFetching ||
+    isGuildsFetching
 
   return {
     hasToken: !!currentAccount?.token,
@@ -194,6 +200,7 @@ export const useItemsData = () => {
     inventoryItems,
     bankItems,
     materialItems,
+    guildVaultItems,
     isFetching,
   }
 }

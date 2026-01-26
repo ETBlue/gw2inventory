@@ -12,6 +12,7 @@ import { createTestQueryClient } from "~/test/utils"
 import * as staticDataContext from "../contexts/StaticDataContext"
 import * as apiHelpers from "../helpers/api"
 import * as characterItemsHelper from "../helpers/characterItems"
+import * as guildsDataHook from "./useGuildsData"
 import { useItemsData } from "./useItemsData"
 
 // Mock all dependencies
@@ -20,6 +21,7 @@ vi.mock("~/contexts/CharacterContext")
 vi.mock("../contexts/StaticDataContext")
 vi.mock("../helpers/characterItems")
 vi.mock("../helpers/api")
+vi.mock("./useGuildsData")
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 const mockUseCharacters = vi.mocked(charactersHook.useCharacters)
@@ -31,6 +33,7 @@ const mockProcessCharacterItems = vi.mocked(
   characterItemsHelper.processCharacterItems,
 )
 const mockQueryFunction = vi.mocked(apiHelpers.queryFunction)
+const mockUseGuildsData = vi.mocked(guildsDataHook.useGuildsData)
 
 // Create a wrapper component for React Query using shared test utility
 const createWrapper = () => {
@@ -149,6 +152,12 @@ describe("useItemsData", () => {
     })
 
     mockUseBatchAutoFetchItems.mockImplementation(() => {})
+
+    mockUseGuildsData.mockReturnValue({
+      guilds: [],
+      guildVaultItems: [],
+      isFetching: false,
+    })
   })
 
   it("processes character items using helper function", () => {
@@ -173,6 +182,7 @@ describe("useItemsData", () => {
         inventoryItems: expect.any(Array),
         bankItems: expect.any(Array),
         materialItems: expect.any(Array),
+        guildVaultItems: expect.any(Array),
       },
       true,
     )
@@ -285,6 +295,7 @@ describe("useItemsData", () => {
     expect(result.current).toHaveProperty("inventoryItems")
     expect(result.current).toHaveProperty("bankItems")
     expect(result.current).toHaveProperty("materialItems")
+    expect(result.current).toHaveProperty("guildVaultItems")
     expect(result.current).toHaveProperty("isFetching")
 
     // Setter functions are no longer exposed as they are internal implementation details
