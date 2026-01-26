@@ -74,6 +74,7 @@ function Items() {
     inventoryItems,
     bankItems,
     materialItems,
+    guildVaultItems,
     isFetching: isItemsFetching,
   } = useItemsData()
   const { isFetching: isCharactersFetching } = useCharacters()
@@ -147,8 +148,9 @@ function Items() {
       ...inventoryItems,
       ...bankItems,
       ...materialItems,
+      ...guildVaultItems,
     ],
-    [characterItems, inventoryItems, bankItems, materialItems],
+    [characterItems, inventoryItems, bankItems, materialItems, guildVaultItems],
   )
   const getVisibleTypesForCategoryFiltering = useCallback(
     (category: string | undefined): string[] | undefined => {
