@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as tokenHook from "~/contexts/TokenContext"
 import * as apiHelpers from "~/helpers/api"
+import { AuthenticationError } from "~/helpers/errors"
 import { createTestQueryClient } from "~/test/utils"
 
 import { useGuildsData } from "./useGuildsData"
@@ -145,7 +146,10 @@ describe("useGuildsData", () => {
       if (endpoint === "account") return mockAccount
       if (endpoint === "guild/guild-1") return mockGuild
       if (endpoint === "guild/guild-1/stash") {
-        throw new Error("403 Forbidden")
+        throw new AuthenticationError(
+          "access restricted to guild leaders",
+          "guild/guild-1/stash",
+        )
       }
       return null
     })

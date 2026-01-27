@@ -5,6 +5,7 @@ import { useQueries, useQuery } from "@tanstack/react-query"
 
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
+import { AuthenticationError } from "~/helpers/errors"
 import { Guild, GuildVaultItemInList, GuildVaultSection } from "~/types/guilds"
 
 /**
@@ -47,15 +48,25 @@ export const useGuildsData = () => {
 
   const isGuildsFetching = guildQueries.some((q) => q.isFetching)
 
-  // Fetch vault for each guild (skip 403 errors silently)
+  // Fetch vault for each guild — 403 "access restricted to guild leaders" is
+  // treated as an empty vault (success state) so React Query caches it normally
+  // and does not refetch on remount.
   const vaultQueries = useQueries({
     queries: guilds.map((guild) => ({
       queryKey: [`guild/${guild.id}/stash`, token] as const,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queryFn: queryFunction as any,
+      queryFn: async (context: Parameters<typeof queryFunction>[0]) => {
+        try {
+          return await queryFunction(context)
+        } catch (error) {
+          if (error instanceof AuthenticationError) {
+            return []
+          }
+          throw error
+        }
+      },
       staleTime: Infinity,
       enabled: !!token && !!guild,
-      retry: false, // Don't retry 403 errors
+      retry: false,
     })),
   })
 
