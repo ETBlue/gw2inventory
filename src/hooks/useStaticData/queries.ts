@@ -1,8 +1,8 @@
-import { useMemo, useRef } from "react"
+import { useMemo } from "react"
 
 import type { HomesteadGlyph } from "@gw2api/types/data/homestead"
 import type { MaterialCategory } from "@gw2api/types/data/material"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { chunk } from "lodash"
 
@@ -32,8 +32,12 @@ export const staticKeys = {
   homeNodes: () => [...staticKeys.all, "homeNodes"] as const,
   homeCats: () => [...staticKeys.all, "homeCats"] as const,
   homesteadGlyphs: () => [...staticKeys.all, "homesteadGlyphs"] as const,
-  items: (ids: number[]) => [...staticKeys.all, "items", ids] as const,
-  skins: (ids: number[]) => [...staticKeys.all, "skins", ids] as const,
+  // Pattern B: stable cache keys (not under "static" — too large for localStorage persistence)
+  itemsCache: ["items-cache"] as const,
+  skinsCache: ["skins-cache"] as const,
+  // Pattern B: batch fetch keys (transient, cleaned up after 5 min)
+  itemsBatch: (ids: number[]) => ["items-batch", ids] as const,
+  skinsBatch: (ids: number[]) => ["skins-batch", ids] as const,
 }
 
 const STATIC_QUERY_OPTIONS = {
@@ -194,28 +198,37 @@ export const useHomesteadGlyphsQuery = () =>
   })
 
 // --- Pattern B: Fetch by IDs hooks ---
+// Uses a stable cache key (survives unmount) + batch fetch keys (transient).
+// Batch results are merged into the stable cache via setQueryData.
 
 /**
  * Fetches items by IDs with chunking and deduplication.
- * Merges newly fetched items into the accumulated record.
- * Consumers pass in all item IDs they need; the hook handles caching internally.
+ * Data is stored in React Query's cache under a stable key,
+ * so it survives component unmount/remount.
  */
 export const useItemsQuery = (ids: number[]) => {
-  const accumulatedItems = useRef<Record<number, PatchedItem>>({})
+  const queryClient = useQueryClient()
 
   const stableIds = useMemo(() => {
     return [...new Set(ids)].sort((a, b) => a - b)
   }, [ids])
 
+  // Stable cache: holds all accumulated items, survives unmount
+  const { data: items = {} } = useQuery<Record<number, PatchedItem>>({
+    queryKey: staticKeys.itemsCache,
+    queryFn: () => ({}),
+    ...STATIC_QUERY_OPTIONS,
+  })
+
+  // Determine which IDs are not yet in the stable cache
   const idsToFetch = useMemo(() => {
-    return stableIds.filter((id) => !accumulatedItems.current[id])
-  }, [stableIds])
+    return stableIds.filter((id) => !items[id])
+  }, [stableIds, items])
 
-  const query = useQuery({
-    queryKey: staticKeys.items(idsToFetch),
+  // Fetch missing IDs and merge into the stable cache
+  const { isLoading } = useQuery({
+    queryKey: staticKeys.itemsBatch(idsToFetch),
     queryFn: async () => {
-      if (idsToFetch.length === 0) return {}
-
       const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
       let newItems: PatchedItem[] = []
 
@@ -234,65 +247,73 @@ export const useItemsQuery = (ids: number[]) => {
       }
 
       const newRecord = toRecord(newItems)
-      accumulatedItems.current = {
-        ...accumulatedItems.current,
-        ...newRecord,
-      }
-      return accumulatedItems.current
+      queryClient.setQueryData<Record<number, PatchedItem>>(
+        staticKeys.itemsCache,
+        (old) => ({ ...(old ?? {}), ...newRecord }),
+      )
+      return newRecord
     },
-    ...STATIC_QUERY_OPTIONS,
+    staleTime: Infinity,
+    gcTime: 5 * 60 * 1000,
     enabled: idsToFetch.length > 0,
   })
 
-  return {
-    ...query,
-    data: accumulatedItems.current,
-  }
+  return { data: items, isLoading }
 }
 
+/**
+ * Fetches skins by IDs with chunking and deduplication.
+ * Data is stored in React Query's cache under a stable key,
+ * so it survives component unmount/remount.
+ */
 export const useSkinsQuery = (ids: number[]) => {
-  const accumulatedSkins = useRef<Record<number, Skin>>({})
+  const queryClient = useQueryClient()
 
   const stableIds = useMemo(() => {
     return [...new Set(ids)].sort((a, b) => a - b)
   }, [ids])
 
+  // Stable cache: holds all accumulated skins, survives unmount
+  const { data: skins = {} } = useQuery<Record<number, Skin>>({
+    queryKey: staticKeys.skinsCache,
+    queryFn: () => ({}),
+    ...STATIC_QUERY_OPTIONS,
+  })
+
+  // Determine which IDs are not yet in the stable cache
   const idsToFetch = useMemo(() => {
-    return stableIds.filter((id) => !accumulatedSkins.current[id])
-  }, [stableIds])
+    return stableIds.filter((id) => !skins[id])
+  }, [stableIds, skins])
 
-  const query = useQuery({
-    queryKey: staticKeys.skins(idsToFetch),
+  // Fetch missing IDs and merge into the stable cache
+  const { isLoading } = useQuery({
+    queryKey: staticKeys.skinsBatch(idsToFetch),
     queryFn: async () => {
-      if (idsToFetch.length === 0) return {}
-
       const chunks = chunk(idsToFetch, API_CONSTANTS.ITEMS_CHUNK_SIZE)
-      let newItems: Skin[] = []
+      let newSkins: Skin[] = []
 
       for (const c of chunks) {
         try {
           const data = await fetchGW2<Skin[]>("skins", `ids=${c.join(",")}`)
           if (data) {
-            newItems = [...newItems, ...data]
+            newSkins = [...newSkins, ...data]
           }
         } catch (error) {
           console.error("Failed to fetch skins chunk:", error)
         }
       }
 
-      const newRecord = toRecord(newItems)
-      accumulatedSkins.current = {
-        ...accumulatedSkins.current,
-        ...newRecord,
-      }
-      return accumulatedSkins.current
+      const newRecord = toRecord(newSkins)
+      queryClient.setQueryData<Record<number, Skin>>(
+        staticKeys.skinsCache,
+        (old) => ({ ...(old ?? {}), ...newRecord }),
+      )
+      return newRecord
     },
-    ...STATIC_QUERY_OPTIONS,
+    staleTime: Infinity,
+    gcTime: 5 * 60 * 1000,
     enabled: idsToFetch.length > 0,
   })
 
-  return {
-    ...query,
-    data: accumulatedSkins.current,
-  }
+  return { data: skins, isLoading }
 }

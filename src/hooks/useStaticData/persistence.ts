@@ -14,7 +14,10 @@ export const setupPersistence = (queryClient: QueryClient) => {
     queryClient,
     persister,
     dehydrateOptions: {
-      shouldDehydrateQuery: (query) => query.queryKey[0] === "static",
+      shouldDehydrateQuery: (query) =>
+        query.state.status === "success" &&
+        query.queryKey[0] === "static" &&
+        query.queryKey.length === 2,
     },
     buster: CACHE_VERSION,
   })
