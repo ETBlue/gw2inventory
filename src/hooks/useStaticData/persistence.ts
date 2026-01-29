@@ -1,6 +1,4 @@
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister"
-import type { QueryClient } from "@tanstack/react-query"
-import { persistQueryClient } from "@tanstack/react-query-persist-client"
 
 import { del, get, set } from "idb-keyval"
 
@@ -16,40 +14,40 @@ const idbStorage = {
   },
 }
 
-const persister = createAsyncStoragePersister({
+export const staticPersister = createAsyncStoragePersister({
   storage: idbStorage,
   key: "gw2inventory_static_cache",
 })
 
-export const setupPersistence = (queryClient: QueryClient) => {
-  // Clean up old localStorage cache from previous versions
-  try {
-    window.localStorage.removeItem("gw2inventory_static_cache")
-  } catch {
-    // Ignore errors — localStorage may be unavailable
-  }
+export const persistOptions = {
+  persister: staticPersister,
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query: {
+      state: { status: string }
+      queryKey: readonly unknown[]
+    }) => {
+      if (query.state.status !== "success") return false
 
-  persistQueryClient({
-    queryClient,
-    persister,
-    dehydrateOptions: {
-      shouldDehydrateQuery: (query) => {
-        if (query.state.status !== "success") return false
+      // Pattern A: ["static", "<type>"]
+      if (query.queryKey[0] === "static" && query.queryKey.length === 2)
+        return true
 
-        // Pattern A: ["static", "<type>"]
-        if (query.queryKey[0] === "static" && query.queryKey.length === 2)
-          return true
+      // Pattern B: ["items-cache"] and ["skins-cache"]
+      if (
+        query.queryKey[0] === "items-cache" ||
+        query.queryKey[0] === "skins-cache"
+      )
+        return true
 
-        // Pattern B: ["items-cache"] and ["skins-cache"]
-        if (
-          query.queryKey[0] === "items-cache" ||
-          query.queryKey[0] === "skins-cache"
-        )
-          return true
-
-        return false
-      },
+      return false
     },
-    buster: CACHE_VERSION,
-  })
+  },
+  buster: CACHE_VERSION,
+}
+
+// Clean up old localStorage cache from previous versions
+try {
+  window.localStorage.removeItem("gw2inventory_static_cache")
+} catch {
+  // Ignore errors — localStorage may be unavailable
 }

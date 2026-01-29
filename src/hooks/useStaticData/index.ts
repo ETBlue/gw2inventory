@@ -15,4 +15,4 @@ export {
   useItemsQuery,
   useSkinsQuery,
 } from "./queries"
-export { setupPersistence } from "./persistence"
+export { persistOptions, staticPersister } from "./persistence"
