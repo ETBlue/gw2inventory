@@ -13,6 +13,7 @@
     "@tanstack/react-query-persist-client": "^5.90.22",
     "date-fns": "^4.1.0",
     "framer-motion": "^4.0.0",
+    "idb-keyval": "^6.2.2",
     "lodash": "^4.17.23",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

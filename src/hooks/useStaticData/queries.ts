@@ -32,7 +32,7 @@ export const staticKeys = {
   homeNodes: () => [...staticKeys.all, "homeNodes"] as const,
   homeCats: () => [...staticKeys.all, "homeCats"] as const,
   homesteadGlyphs: () => [...staticKeys.all, "homesteadGlyphs"] as const,
-  // Pattern B: stable cache keys (not under "static" — too large for localStorage persistence)
+  // Pattern B: stable cache keys (persisted to IndexedDB via persistence.ts)
   itemsCache: ["items-cache"] as const,
   skinsCache: ["skins-cache"] as const,
   // Pattern B: batch fetch keys (transient, cleaned up after 5 min)
