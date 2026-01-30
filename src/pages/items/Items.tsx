@@ -39,6 +39,7 @@ import { PAGINATION } from "~/constants"
 import { useCharacters } from "~/contexts/CharacterContext"
 import { compare, compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { useDebouncedSearch } from "~/hooks/useDebouncedSearch"
 import { useItemsData } from "~/hooks/useItemsData"
 import { useMaterialCategoriesQuery } from "~/hooks/useStaticData"
 import sharedTableCss from "~/styles/shared-table.module.css"
@@ -155,7 +156,7 @@ function Items() {
     ],
   )
 
-  // Update search keyword in URL
+  // Update search keyword in URL (debounced)
   const updateSearch = useCallback(
     (value: string) => {
       setSearchParams(
@@ -172,6 +173,10 @@ function Items() {
       )
     },
     [setSearchParams],
+  )
+  const { searchText, handleChange: handleSearchChange } = useDebouncedSearch(
+    keyword,
+    updateSearch,
   )
 
   // item filtering by category and type
@@ -325,8 +330,8 @@ function Items() {
             </InputLeftElement>
             <Input
               variant="unstyled"
-              value={keyword || ""}
-              onChange={(e) => updateSearch(e.currentTarget.value)}
+              value={searchText}
+              onChange={(e) => handleSearchChange(e.currentTarget.value)}
             />
           </InputGroup>
         </TabList>

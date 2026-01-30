@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   Box,
@@ -32,6 +32,7 @@ import Pagination from "~/components/Pagination"
 import { PAGINATION } from "~/constants"
 import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { useDebouncedSearch } from "~/hooks/useDebouncedSearch"
 import { useSkins } from "~/hooks/useSkinsData"
 import sharedTextCss from "~/styles/shared-text.module.css"
 
@@ -75,6 +76,20 @@ export default function Skins() {
   const selectedType: SkinType = skinType
     ? ((skinType.charAt(0).toUpperCase() + skinType.slice(1)) as SkinType)
     : "All"
+
+  const updateSearch = useCallback(
+    (value: string) => {
+      const basePath = skinType ? `/skins/${skinType}` : "/skins"
+      const newQueryString = getQueryString("keyword", value, queryString)
+      const to = newQueryString ? `${basePath}?${newQueryString}` : basePath
+      navigate(to)
+    },
+    [skinType, queryString, navigate],
+  )
+  const { searchText, handleChange: handleSearchChange } = useDebouncedSearch(
+    keyword,
+    updateSearch,
+  )
 
   // Filter and sort skins based on search query, type, and sort criteria
   const filteredSkins = useMemo(() => {
@@ -202,20 +217,8 @@ export default function Skins() {
             <Input
               variant="unstyled"
               placeholder=""
-              value={keyword || ""}
-              onChange={(e) => {
-                const searchValue = e.currentTarget.value
-                const basePath = skinType ? `/skins/${skinType}` : "/skins"
-                const newQueryString = getQueryString(
-                  "keyword",
-                  searchValue,
-                  queryString,
-                )
-                const to = newQueryString
-                  ? `${basePath}?${newQueryString}`
-                  : basePath
-                navigate(to)
-              }}
+              value={searchText}
+              onChange={(e) => handleSearchChange(e.currentTarget.value)}
             />
           </InputGroup>
         </TabList>
