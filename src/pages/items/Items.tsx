@@ -332,6 +332,7 @@ function Items() {
         </TabList>
         {visibleSubmenuTypes && (
           <Flex
+            flexWrap="wrap"
             justifyContent="center"
             margin="0 auto"
             borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
