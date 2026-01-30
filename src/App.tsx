@@ -1,11 +1,15 @@
 import { ChakraProvider } from "@chakra-ui/react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClient } from "@tanstack/react-query"
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client"
 
 import { Navigate, Route, HashRouter as Router, Routes } from "react-router"
 
 import { CharacterProvider } from "~/contexts/CharacterContext"
 import { TokenProvider } from "~/contexts/TokenContext"
-import { setupPersistence } from "~/hooks/useStaticData/persistence"
+import {
+  persistOptions,
+  staticPersister,
+} from "~/hooks/useStaticData/persistence"
 import BaseFrame from "~/layouts/BaseFrame"
 import Settings from "~/pages/settings"
 
@@ -20,8 +24,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-setupPersistence(queryClient)
 
 const Content = () => {
   return (
@@ -41,13 +43,16 @@ export const App = () => {
   return (
     <ChakraProvider>
       <TokenProvider>
-        <QueryClientProvider client={queryClient}>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ ...persistOptions, persister: staticPersister }}
+        >
           <CharacterProvider>
             <Router>
               <Content />
             </Router>
           </CharacterProvider>
-        </QueryClientProvider>
+        </PersistQueryClientProvider>
       </TokenProvider>
     </ChakraProvider>
   )
