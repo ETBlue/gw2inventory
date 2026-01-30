@@ -71,7 +71,7 @@ npm run test:run && npm run typecheck && npm run format && npm run lint && npm r
 
 - **TokenContext** - API tokens and account switching
 - **CharacterContext** - Character list and specializations (React Query)
-- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, colors, skins, etc.) with localStorage persistence
+- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, colors, skins, etc.) with IndexedDB persistence
 - **Custom hooks** (`useItemsData`, `useTitlesData`, etc.) - Account-specific data
 
 ### Key Patterns
@@ -110,4 +110,4 @@ npm run test:run && npm run typecheck && npm run format && npm run lint && npm r
 
 - TypeScript 5.x, React 19, Chakra UI v2.10, React Router v7
 - @tanstack/react-query, @gw2api/types
-- localStorage for static data caching
+- IndexedDB (via idb-keyval) for static data caching

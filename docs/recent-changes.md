@@ -9,8 +9,10 @@ This document tracks significant architectural improvements and refactoring effo
 - Replaced `window.localStorage` persister with `idb-keyval`-backed IndexedDB persister in `src/hooks/useStaticData/persistence.ts`
 - Pattern B data (items/skins stable caches) now persists across page refreshes via IndexedDB
 - Expanded `shouldDehydrateQuery` to include `items-cache` and `skins-cache` query keys
+- Switched from `persistQueryClient()` + `QueryClientProvider` to `PersistQueryClientProvider` to prevent race condition where queries fire before IndexedDB rehydration completes
 - Bumped cache version to 4.0.0 (old localStorage cache auto-cleaned on first load)
 - Added `idb-keyval` dependency (~600 bytes gzipped)
+- Added 10 regression tests for dehydration logic and provider usage
 
 ---
 
