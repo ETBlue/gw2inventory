@@ -4,6 +4,16 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-30: Fixed search input character loss during fast typing
+
+- Created shared `useDebouncedSearch` hook (`src/hooks/useDebouncedSearch.ts`) that decouples input state from URL params
+- Input reads from local `useState` for instant updates; URL params update after 300ms debounce
+- Applied to Items, Dyes, and Skins pages for consistency
+- Root cause: controlled inputs bound to `searchParams.get("keyword")` lost characters when async URL updates lagged behind rapid keystrokes, especially on pages with expensive re-renders (Items, Dyes)
+- Added 7 regression tests for the debounced search hook
+
+---
+
 ## 2026-01-29: Switched static data persistence from localStorage to IndexedDB
 
 - Replaced `window.localStorage` persister with `idb-keyval`-backed IndexedDB persister in `src/hooks/useStaticData/persistence.ts`

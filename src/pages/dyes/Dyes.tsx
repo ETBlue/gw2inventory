@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import {
   Box,
@@ -31,6 +31,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router"
 
 import { compareRarity } from "~/helpers/compare"
 import { getQueryString } from "~/helpers/url"
+import { useDebouncedSearch } from "~/hooks/useDebouncedSearch"
 import { useDyes } from "~/hooks/useDyesData"
 import sharedTableCss from "~/styles/shared-table.module.css"
 import sharedTextCss from "~/styles/shared-text.module.css"
@@ -141,6 +142,21 @@ export default function Dyes() {
   const selectedHue: DyeHue = hue
     ? ((hue.charAt(0).toUpperCase() + hue.slice(1)) as DyeHue)
     : "All"
+
+  const updateSearch = useCallback(
+    (value: string) => {
+      const basePath =
+        selectedHue === "All" ? "/dyes" : `/dyes/${selectedHue.toLowerCase()}`
+      const newQueryString = getQueryString("keyword", value, queryString)
+      const to = newQueryString ? `${basePath}?${newQueryString}` : basePath
+      navigate(to)
+    },
+    [selectedHue, queryString, navigate],
+  )
+  const { searchText, handleChange: handleSearchChange } = useDebouncedSearch(
+    keyword,
+    updateSearch,
+  )
 
   // Count dyes by hue for tags
   const getDyeCountByHue = (hue: DyeHue): number => {
@@ -297,23 +313,8 @@ export default function Dyes() {
             <Input
               variant="unstyled"
               placeholder=""
-              value={keyword || ""}
-              onChange={(e) => {
-                const searchValue = e.currentTarget.value
-                const basePath =
-                  selectedHue === "All"
-                    ? "/dyes"
-                    : `/dyes/${selectedHue.toLowerCase()}`
-                const newQueryString = getQueryString(
-                  "keyword",
-                  searchValue,
-                  queryString,
-                )
-                const to = newQueryString
-                  ? `${basePath}?${newQueryString}`
-                  : basePath
-                navigate(to)
-              }}
+              value={searchText}
+              onChange={(e) => handleSearchChange(e.currentTarget.value)}
             />
           </InputGroup>
         </TabList>
