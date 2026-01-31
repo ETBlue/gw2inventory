@@ -1,74 +1,67 @@
 import {
   Box,
+  Button,
   Center,
   Divider,
-  Heading,
+  Flex,
+  Grid,
   List,
   ListIcon,
   ListItem,
-  SimpleGrid,
   Spinner,
   Tag,
   Text,
 } from "@chakra-ui/react"
 
 import { FaCheck, FaMinus } from "react-icons/fa"
+import { Link, useSearchParams } from "react-router"
 
-import useMasteriesData from "~/hooks/useMasteriesData"
+import { getQueryString } from "~/helpers/url"
+import useMasteriesData, {
+  type MasteryRegionGroup,
+} from "~/hooks/useMasteriesData"
 
 export default function Masteries() {
   const { hasToken, masteriesByRegion, accountMasteryMap, isFetching, error } =
     useMasteriesData()
 
+  const [searchParams] = useSearchParams()
+  const regionFilter = searchParams.get("region")
+
+  const visibleGroups = regionFilter
+    ? masteriesByRegion.filter((g) => g.region === regionFilter)
+    : masteriesByRegion
+
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={"1rem"}>
-      {masteriesByRegion.map((group) => (
+    <Grid gridTemplateRows={"auto 1fr"}>
+      {masteriesByRegion.length > 0 && (
+        <Flex
+          flexWrap="wrap"
+          justifyContent="center"
+          margin="0 auto"
+          borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
+        >
+          {masteriesByRegion.map((group) => (
+            <Button
+              key={group.region}
+              as={Link}
+              variant="ghost"
+              fontWeight="normal"
+              borderRadius={0}
+              isActive={group.region === regionFilter}
+              to={`/account/masteries?${getQueryString("region", group.region, searchParams.toString())}`}
+            >
+              {group.region}{" "}
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {group.unlockedLevels} / {group.totalLevels}
+              </Tag>
+            </Button>
+          ))}
+        </Flex>
+      )}
+      {visibleGroups.map((group) => (
         <Box key={group.region} padding={"1rem"}>
-          <Heading
-            as="h3"
-            size="sm"
-            display={"flex"}
-            alignItems={"center"}
-            gap={"0.5rem"}
-          >
-            {group.region}
-            <Tag>
-              {group.unlockedLevels} / {group.totalLevels}
-            </Tag>
-          </Heading>
-          <Divider margin={"0.5rem 0"} />
-          {group.tracks.map((track) => {
-            const accountLevel = accountMasteryMap.get(track.id)
-            return (
-              <Box key={track.id} marginBottom={"0.75rem"}>
-                <Text fontWeight={"bold"} fontSize={"sm"}>
-                  {track.name}
-                </Text>
-                <List>
-                  {track.levels.map((level, index) => {
-                    const isUnlocked =
-                      accountLevel !== undefined && index <= accountLevel
-                    return (
-                      <ListItem key={level.name} padding={"0.125rem 0"}>
-                        <ListIcon
-                          as={isUnlocked ? FaCheck : FaMinus}
-                          color={isUnlocked ? "green" : "lightgray"}
-                          opacity={isUnlocked ? 1 : 0.5}
-                        />
-                        <Text
-                          as={"span"}
-                          opacity={isUnlocked ? 1 : 0.5}
-                          fontSize={"sm"}
-                        >
-                          {level.name}
-                        </Text>
-                      </ListItem>
-                    )
-                  })}
-                </List>
-              </Box>
-            )
-          })}
+          {renderTracks(group, accountMasteryMap)}
         </Box>
       ))}
       {isFetching ? (
@@ -86,6 +79,45 @@ export default function Masteries() {
           </Text>
         </Center>
       ) : null}
-    </SimpleGrid>
+    </Grid>
   )
+}
+
+function renderTracks(
+  group: MasteryRegionGroup,
+  accountMasteryMap: Map<number, number>,
+) {
+  return group.tracks.map((track) => {
+    const accountLevel = accountMasteryMap.get(track.id)
+    return (
+      <Box key={track.id} marginBottom={"0.75rem"}>
+        <Text fontWeight={"bold"} fontSize={"sm"}>
+          {track.name}
+        </Text>
+        <List>
+          {track.levels.map((level, index) => {
+            const isUnlocked =
+              accountLevel !== undefined && index <= accountLevel
+            return (
+              <ListItem key={level.name} padding={"0.125rem 0"}>
+                <ListIcon
+                  as={isUnlocked ? FaCheck : FaMinus}
+                  color={isUnlocked ? "green" : "lightgray"}
+                  opacity={isUnlocked ? 1 : 0.5}
+                />
+                <Text
+                  as={"span"}
+                  opacity={isUnlocked ? 1 : 0.5}
+                  fontSize={"sm"}
+                >
+                  {level.name}
+                </Text>
+              </ListItem>
+            )
+          })}
+        </List>
+        <Divider margin={"0.25rem 0"} />
+      </Box>
+    )
+  })
 }
