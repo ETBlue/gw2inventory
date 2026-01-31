@@ -4,6 +4,13 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-01-30: Fixed items submenu horizontal overflow
+
+- Added `flexWrap="wrap"` to the type filter submenu Flex in Items page
+- Submenu buttons now wrap to the next line on narrow viewports instead of causing horizontal scroll
+
+---
+
 ## 2026-01-30: Fixed search input character loss during fast typing
 
 - Created shared `useDebouncedSearch` hook (`src/hooks/useDebouncedSearch.ts`) that decouples input state from URL params
@@ -11,6 +18,13 @@ This document tracks significant architectural improvements and refactoring effo
 - Applied to Items, Dyes, and Skins pages for consistency
 - Root cause: controlled inputs bound to `searchParams.get("keyword")` lost characters when async URL updates lagged behind rapid keystrokes, especially on pages with expensive re-renders (Items, Dyes)
 - Added 7 regression tests for the debounced search hook
+
+---
+
+## 2026-01-30: Fixed guild vault 403 queries refetching on navigation
+
+- Guild vault queries that return 403 (non-leader access) now cache the error and don't refetch on every navigation
+- Prevents unnecessary API calls when navigating between pages
 
 ---
 
@@ -23,6 +37,15 @@ This document tracks significant architectural improvements and refactoring effo
 - Bumped cache version to 4.0.0 (old localStorage cache auto-cleaned on first load)
 - Added `idb-keyval` dependency (~600 bytes gzipped)
 - Added 10 regression tests for dehydration logic and provider usage
+
+---
+
+## 2026-01-27: Fixed static data persistence across navigation
+
+- Replaced `useRef`-based Pattern B storage with React Query stable cache keys (`items-cache`, `skins-cache`)
+- Data now survives unmount/remount during page navigation
+- Added `status === "success"` and `queryKey.length === 2` checks to `shouldDehydrateQuery` to prevent Pattern B from overflowing localStorage
+- Added 4 regression tests for cache persistence across navigation
 
 ---
 
