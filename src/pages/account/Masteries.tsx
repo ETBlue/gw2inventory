@@ -43,14 +43,14 @@ export default function Masteries() {
 
   return (
     <Grid gridTemplateRows={"auto 1fr"}>
-      {masteriesByRegion.length > 0 && (
-        <Flex
-          flexWrap="wrap"
-          justifyContent="center"
-          margin="0 auto"
-          borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
-        >
-          {masteriesByRegion.map((group) => (
+      <Flex
+        flexWrap="wrap"
+        justifyContent="center"
+        margin="0 auto"
+        borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
+      >
+        {masteriesByRegion.length > 0 &&
+          masteriesByRegion.map((group) => (
             <Button
               key={group.region}
               as={Link}
@@ -66,13 +66,14 @@ export default function Masteries() {
               </Tag>
             </Button>
           ))}
-        </Flex>
-      )}
-      {visibleGroups.map((group) => (
-        <Box key={group.region} padding={"1rem"}>
-          {renderTracks(group, accountMasteryMap)}
-        </Box>
-      ))}
+      </Flex>
+      <Flex justifyContent="center">
+        {visibleGroups.map((group) => (
+          <Box key={group.region} padding={"1rem"}>
+            {renderTracks(group, accountMasteryMap)}
+          </Box>
+        ))}
+      </Flex>
       {isFetching ? (
         <Center>
           <Spinner />
