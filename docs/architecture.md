@@ -13,7 +13,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **TokenContext** - Manages API tokens stored in localStorage and account switching
 - **CharacterContext** - Handles character list data, specializations, and backstory via React Query. Automatically prefetches all character specializations and backstory when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions for specializations, and `getCharacterBackstory`, `getEnrichedBackstory`, and `isBackstoryLoading` functions for backstory. Note: Trait fetching is triggered by the Characters page, not CharacterContext
 - **SkillContext** - Manages skill data
-- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, material categories, colors, skins, titles, currencies, outfits, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with IndexedDB persistence via `@tanstack/react-query-persist-client` + `idb-keyval`, using `PersistQueryClientProvider` to prevent refetch race conditions. Optimized fetching strategies: complete datasets for colors/titles/currencies/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits
+- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, material categories, colors, skins, titles, currencies, outfits, masteries, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with IndexedDB persistence via `@tanstack/react-query-persist-client` + `idb-keyval`, using `PersistQueryClientProvider` to prevent refetch race conditions. Optimized fetching strategies: complete datasets for colors/titles/currencies/masteries/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits
 
 ### Custom Hooks
 
@@ -29,6 +29,7 @@ These hooks replace previous contexts and manage account-specific data:
 - `useHomeNodesData` - Fetches account home instance nodes with home node data managed by React Query static data hooks
 - `useHomeCatsData` - Fetches account home instance cats with home cat data managed by React Query static data hooks
 - `useHomesteadGlyphsData` - Fetches account homestead glyphs with glyph data managed by React Query static data hooks
+- `useMasteriesData` - Fetches account masteries with mastery data managed by React Query static data hooks. Groups masteries by region with unlocked/total level counts
 
 ---
 
@@ -49,7 +50,7 @@ These hooks replace previous contexts and manage account-specific data:
 
 - **Purpose**: Manages static GW2 API data caching via React Query
 - **Responsibilities**:
-  - Fetch and cache items, colors, skins, titles, currencies, outfits, homestead glyphs, specializations, traits, backstory questions, backstory answers
+  - Fetch and cache items, colors, skins, titles, currencies, outfits, masteries, homestead glyphs, specializations, traits, backstory questions, backstory answers
   - Provide IndexedDB persistence via `@tanstack/react-query-persist-client` + `idb-keyval`
   - Expose individual `useQuery` hooks for each data type
 - **What it should NOT do**: Handle account-specific data
@@ -189,7 +190,7 @@ export function isValidItem(data: unknown): data is Item {
 
 **Complete Dataset Fetching** (`?ids=all`):
 
-- Used for bounded datasets: colors, titles, currencies, outfits, material categories, home nodes, home cats, specializations, traits
+- Used for bounded datasets: colors, titles, currencies, outfits, masteries, material categories, home nodes, home cats, specializations, traits
 - Single API request, cached in IndexedDB
 
 **Chunked Fetching**:

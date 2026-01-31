@@ -97,7 +97,7 @@ npm run test:run && npm run typecheck && npm run format && npm run lint && npm r
 - `/items/:category?` - Item inventory
 - `/skins/:skinType?` - Skins management
 - `/dyes/:hue?` - Dyes management
-- `/account/*` - Account pages (overview, wallet, outfits, home)
+- `/account/*` - Account pages (overview, wallet, outfits, home, masteries)
 - `/settings` - Token configuration
 
 ### Testing
