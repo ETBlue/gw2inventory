@@ -17,7 +17,10 @@ function Account() {
     const currentPath = location.pathname
       .replace("/account/", "")
       .replace("/account", "")
-    const activeIndex = MENU_ITEMS.findIndex((item) => item.to === currentPath)
+    const activeIndex = MENU_ITEMS.findIndex((item) => {
+      const base = item.to.replace("/*", "")
+      return base === currentPath || currentPath.startsWith(base + "/")
+    })
     return activeIndex >= 0 ? activeIndex : 0
   }
 
@@ -45,7 +48,11 @@ function Account() {
         {MENU_ITEMS.map((item) => {
           const count = getItemCount(item.to)
           return (
-            <Tab key={item.to} as={NavLink} to={`/account/${item.to}`}>
+            <Tab
+              key={item.to}
+              as={NavLink}
+              to={`/account/${item.to.replace("/*", "")}`}
+            >
               {item.text}
               {isNumber(count) && (
                 <Tag size="sm" margin="0 0 -0.1em 0.5em">

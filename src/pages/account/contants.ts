@@ -16,7 +16,7 @@ export const MENU_ITEMS = [
   { to: "wallet", text: "Wallet", component: Wallet },
   { to: "outfits", text: "Outfits", component: Outfits },
   { to: "home", text: "Home", component: Home },
-  { to: "masteries", text: "Masteries", component: Masteries },
+  { to: "masteries/*", text: "Masteries", component: Masteries },
   /*
   {
     to: "achievements",

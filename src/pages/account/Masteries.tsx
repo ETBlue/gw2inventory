@@ -14,9 +14,8 @@ import {
 } from "@chakra-ui/react"
 
 import { FaCheck, FaMinus } from "react-icons/fa"
-import { Link, useSearchParams } from "react-router"
+import { Link, Navigate, useParams } from "react-router"
 
-import { getQueryString } from "~/helpers/url"
 import useMasteriesData, {
   type MasteryRegionGroup,
 } from "~/hooks/useMasteriesData"
@@ -25,8 +24,18 @@ export default function Masteries() {
   const { hasToken, masteriesByRegion, accountMasteryMap, isFetching, error } =
     useMasteriesData()
 
-  const [searchParams] = useSearchParams()
-  const regionFilter = searchParams.get("region")
+  const { "*": regionParam } = useParams()
+  const regionFilter = regionParam ? decodeURIComponent(regionParam) : null
+
+  // Redirect bare /account/masteries to first region once data is loaded
+  if (!regionFilter && masteriesByRegion.length > 0) {
+    return (
+      <Navigate
+        to={`/account/masteries/${encodeURIComponent(masteriesByRegion[0].region)}`}
+        replace
+      />
+    )
+  }
 
   const visibleGroups = regionFilter
     ? masteriesByRegion.filter((g) => g.region === regionFilter)
@@ -49,7 +58,7 @@ export default function Masteries() {
               fontWeight="normal"
               borderRadius={0}
               isActive={group.region === regionFilter}
-              to={`/account/masteries?${getQueryString("region", group.region, searchParams.toString())}`}
+              to={`/account/masteries/${encodeURIComponent(group.region)}`}
             >
               {group.region}{" "}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
