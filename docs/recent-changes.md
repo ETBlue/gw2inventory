@@ -4,6 +4,20 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-02-01: Masteries Page
+
+- Added Masteries tab to the Account page displaying mastery progress grouped by region
+- New types in `src/types/masteries.ts`: `Mastery`, `MasteryLevel`, `AccountMastery`
+- New static data hook `useMasteriesQuery` in `src/hooks/useStaticData/queries.ts` (Pattern A, persisted to IndexedDB)
+- New account hook `useMasteriesData` combining static `/v2/masteries` with account `/v2/account/masteries` data
+- Region submenu with URL path routing (`/account/masteries/:region`), matching Items page submenu style
+- Each mastery track shows levels with check/minus icons (green=unlocked, gray=locked)
+- Region submenu buttons display `unlocked / total` level counts; Masteries tab shows overall count
+- Auto-redirects `/account/masteries` to the first region
+- Added 13 tests: 7 for the hook (grouping, ordering, level counting) and 6 for the component (rendering, filtering, redirect, states)
+
+---
+
 ## 2026-01-30: Fixed items submenu horizontal overflow
 
 - Added `flexWrap="wrap"` to the type filter submenu Flex in Items page
