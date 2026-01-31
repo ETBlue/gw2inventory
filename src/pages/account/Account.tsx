@@ -1,6 +1,5 @@
 import { Tab, TabList, Tabs, Tag } from "@chakra-ui/react"
 
-import { isNumber } from "lodash"
 import { NavLink, Route, Routes, useLocation } from "react-router"
 
 import useMasteriesData from "~/hooks/useMasteriesData"
@@ -26,16 +25,23 @@ function Account() {
     return activeIndex >= 0 ? activeIndex : 0
   }
 
-  const getItemCount = (menuTo: string): number | undefined => {
+  const getTabTag = (menuTo: string): string | undefined => {
     switch (menuTo) {
-      case "":
-        return undefined
       case "wallet":
-        return walletData?.length ?? 0
+        return `${walletData?.length ?? 0}`
       case "outfits":
-        return outfits?.length ?? 0
-      case "masteries/*":
-        return masteriesByRegion.reduce((sum, g) => sum + g.unlockedLevels, 0)
+        return `${outfits?.length ?? 0}`
+      case "masteries/*": {
+        const unlocked = masteriesByRegion.reduce(
+          (sum, g) => sum + g.unlockedLevels,
+          0,
+        )
+        const total = masteriesByRegion.reduce(
+          (sum, g) => sum + g.totalLevels,
+          0,
+        )
+        return `${unlocked} / ${total}`
+      }
       default:
         return undefined
     }
@@ -50,7 +56,7 @@ function Account() {
     >
       <TabList>
         {MENU_ITEMS.map((item) => {
-          const count = getItemCount(item.to)
+          const tag = getTabTag(item.to)
           return (
             <Tab
               key={item.to}
@@ -58,9 +64,9 @@ function Account() {
               to={`/account/${item.to.replace("/*", "")}`}
             >
               {item.text}
-              {isNumber(count) && (
+              {tag !== undefined && (
                 <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                  {count || 0}
+                  {tag}
                 </Tag>
               )}
             </Tab>
