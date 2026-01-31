@@ -3,6 +3,7 @@ import { Tab, TabList, Tabs, Tag } from "@chakra-ui/react"
 import { isNumber } from "lodash"
 import { NavLink, Route, Routes, useLocation } from "react-router"
 
+import useMasteriesData from "~/hooks/useMasteriesData"
 import { useOutfits } from "~/hooks/useOutfitsData"
 import { useWallet } from "~/hooks/useWalletData"
 
@@ -12,6 +13,7 @@ function Account() {
   const location = useLocation()
   const { walletData } = useWallet()
   const { outfits } = useOutfits()
+  const { masteriesByRegion } = useMasteriesData()
 
   const getActiveTabIndex = (): number => {
     const currentPath = location.pathname
@@ -32,6 +34,8 @@ function Account() {
         return walletData?.length ?? 0
       case "outfits":
         return outfits?.length ?? 0
+      case "masteries/*":
+        return masteriesByRegion.reduce((sum, g) => sum + g.unlockedLevels, 0)
       default:
         return undefined
     }
