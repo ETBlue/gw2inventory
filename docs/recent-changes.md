@@ -4,6 +4,18 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-02-01: Account Collectibles (Mounts, Gliders, Mail Carriers)
+
+- Added Mounts tab to the Account page displaying unlocked mount skins from `/v2/account/mounts/skins`
+- Added Gliders tab to the Account page displaying unlocked gliders from `/v2/account/gliders`
+- Added Mail Carriers tab to the Account page displaying unlocked mail carriers from `/v2/account/mailcarriers`
+- New hooks: `useMountSkinsData`, `useGlidersData`, `useMailCarriersData` following existing account data hook patterns
+- New types in `src/types/mounts.ts`, `src/types/gliders.ts`, `src/types/mailcarriers.ts`
+- Each tab shows collectible name and icon with unlocked/total counts
+- Added tests for Mounts, Gliders, and Mail Carriers page components
+
+---
+
 ## 2026-02-01: Masteries Page
 
 - Added Masteries tab to the Account page displaying mastery progress grouped by region
