@@ -2,7 +2,10 @@ import { Tab, TabList, Tabs, Tag } from "@chakra-ui/react"
 
 import { NavLink, Route, Routes, useLocation } from "react-router"
 
+import { useGliders } from "~/hooks/useGlidersData"
+import { useMailCarriers } from "~/hooks/useMailCarriersData"
 import useMasteriesData from "~/hooks/useMasteriesData"
+import { useMountSkins } from "~/hooks/useMountSkinsData"
 import { useOutfits } from "~/hooks/useOutfitsData"
 import { useWallet } from "~/hooks/useWalletData"
 
@@ -12,6 +15,9 @@ function Account() {
   const location = useLocation()
   const { walletData } = useWallet()
   const { outfits } = useOutfits()
+  const { mountSkins } = useMountSkins()
+  const { gliders } = useGliders()
+  const { mailCarriers } = useMailCarriers()
   const { masteriesByRegion } = useMasteriesData()
 
   const getActiveTabIndex = (): number => {
@@ -42,6 +48,12 @@ function Account() {
         )
         return `${unlocked} / ${total}`
       }
+      case "mounts":
+        return `${mountSkins?.length ?? 0}`
+      case "gliders":
+        return `${gliders?.length ?? 0}`
+      case "mailcarriers":
+        return `${mailCarriers?.length ?? 0}`
       default:
         return undefined
     }
