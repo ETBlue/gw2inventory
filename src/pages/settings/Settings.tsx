@@ -148,7 +148,12 @@ function Settings() {
           >
             {showNewToken ? <FaEyeSlash /> : <FaEye />}
           </Button>
-          <Button variant="ghost" isLoading={isFetching} onClick={handleSubmit}>
+          <Button
+            variant="ghost"
+            isLoading={isFetching}
+            isDisabled={!token.trim()}
+            onClick={handleSubmit}
+          >
             <FaSave />
           </Button>
         </Flex>
