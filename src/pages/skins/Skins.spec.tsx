@@ -741,6 +741,207 @@ describe("Skins Component", () => {
     expect(screen.getByLabelText("next page")).toBeInTheDocument()
   })
 
+  it("shows armor slot submenu when Armor tab is active", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+      {
+        id: 2,
+        name: "Test Boots",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/boots.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Boots", weight_class: "Light" },
+      },
+      {
+        id: 3,
+        name: "Test Sword",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/sword.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Sword" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    // When on Armor tab, submenu should appear
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    const { rerender } = render(<Skins />)
+
+    expect(screen.getByRole("link", { name: /All 2/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Helm 1/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Boots 1/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: /Shoulders 0/ }),
+    ).toBeInTheDocument()
+
+    // When on All tab, submenu should not appear
+    mockUseParams.mockReturnValue({})
+    rerender(<Skins />)
+
+    expect(
+      screen.queryByRole("link", { name: /Helm 1/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it("filters armor skins by slot when slot search param is set", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+      {
+        id: 2,
+        name: "Test Boots",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/boots.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Boots", weight_class: "Light" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("slot=Helm"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    expect(screen.getByText("Test Helm")).toBeInTheDocument()
+    expect(screen.queryByText("Test Boots")).not.toBeInTheDocument()
+  })
+
+  it("clears slot param from tab links when navigating away from Armor", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    // On Armor tab with slot=Helm and a keyword
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("slot=Helm&keyword=test"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // Tab links should not contain slot param but should keep keyword
+    const allTab = screen.getByRole("tab", { name: /All/ })
+    expect(allTab).toHaveAttribute(
+      "href",
+      expect.stringContaining("keyword=test"),
+    )
+    expect(allTab).toHaveAttribute("href", expect.not.stringContaining("slot"))
+
+    const weaponTab = screen.getByRole("tab", { name: /Weapon/ })
+    expect(weaponTab).toHaveAttribute(
+      "href",
+      expect.stringContaining("keyword=test"),
+    )
+    expect(weaponTab).toHaveAttribute(
+      "href",
+      expect.not.stringContaining("slot"),
+    )
+
+    // Armor tab link should also not carry slot (user re-enters fresh)
+    const armorTab = screen.getByRole("tab", { name: /Armor/ })
+    expect(armorTab).toHaveAttribute(
+      "href",
+      expect.not.stringContaining("slot"),
+    )
+  })
+
+  it("preserves other search params in armor submenu links", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("keyword=leather&sortBy=name"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // Submenu links should exist and point to /skins/armor
+    const helmLink = screen.getByRole("link", { name: /Helm 1/ })
+    expect(helmLink).toHaveAttribute(
+      "href",
+      expect.stringContaining("/skins/armor"),
+    )
+  })
+
   it("sorts skins by rarity hierarchy when rarity column header is clicked", () => {
     const mockSkins = [
       {

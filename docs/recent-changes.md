@@ -4,6 +4,15 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-02-01: Skins Armor Submenu
+
+- Added armor slot submenu to the Skins page Armor tab, filtering by slot type (Helm, Shoulders, Coat, Gloves, Leggings, Boots, Helm Aquatic)
+- Uses `?slot=` URL search param for filtering, matching the Items/Mounts page submenu style
+- Tab links strip the `slot` param when navigating away from the Armor tab, preserving other params like `keyword` and `sortBy`
+- Added 4 tests: submenu visibility, slot filtering, slot param cleanup on tab switch, param preservation in submenu links
+
+---
+
 ## 2026-02-01: Account Collectibles (Mounts, Gliders, Mail Carriers)
 
 - Added Mounts tab to the Account page displaying unlocked mount skins from `/v2/account/mounts/skins`

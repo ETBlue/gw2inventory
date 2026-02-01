@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   Box,
+  Button,
   Center,
+  Flex,
   Grid,
   Heading,
   Image,
@@ -49,6 +51,18 @@ type SkinSort =
 type SkinOrder = "asc" | "desc"
 
 const SKIN_TYPES: SkinType[] = ["All", "Armor", "Weapon", "Back", "Gathering"]
+const ARMOR_SLOTS = [
+  "Helm",
+  "Shoulders",
+  "Coat",
+  "Gloves",
+  "Leggings",
+  "Boots",
+  "HelmAquatic",
+] as const
+
+const formatSlotLabel = (slot: string): string =>
+  slot.replace(/([A-Z])/g, " $1").trim()
 const SKIN_TABLE_HEADERS: SkinSort[] = [
   "rarity",
   "name",
@@ -64,9 +78,16 @@ export default function Skins() {
   const { skinType } = useParams<{ skinType?: string }>()
   const [searchParams] = useSearchParams()
   const keyword = searchParams.get("keyword")
+  const slot = searchParams.get("slot")
   const sortBy = searchParams.get("sortBy")
   const order = searchParams.get("order")
   const queryString = searchParams.toString()
+  // Query string without armor-specific params, for use in tab links
+  const tabQueryString = useMemo(() => {
+    const params = new URLSearchParams(searchParams)
+    params.delete("slot")
+    return params.toString()
+  }, [searchParams])
   const [pageIndex, setPageIndex] = useState<number>(0)
 
   const activeSortBy: SkinSort = (sortBy as SkinSort) || "name"
@@ -98,6 +119,11 @@ export default function Skins() {
     // Filter by type
     if (selectedType !== "All") {
       filtered = filtered.filter((skin) => skin.type === selectedType)
+    }
+
+    // Filter by armor slot
+    if (slot && selectedType === "Armor") {
+      filtered = filtered.filter((skin) => skin.details?.type === slot)
     }
 
     // Filter by search query
@@ -151,7 +177,7 @@ export default function Skins() {
     })
 
     return filtered
-  }, [skins, keyword, selectedType, activeSortBy, activeSortOrder])
+  }, [skins, keyword, slot, selectedType, activeSortBy, activeSortOrder])
 
   // Create pages for pagination
   const pages = useMemo(() => {
@@ -162,13 +188,19 @@ export default function Skins() {
   // Reset page index when filters or sorting change
   useEffect(() => {
     setPageIndex(0)
-  }, [keyword, selectedType, activeSortBy, activeSortOrder])
+  }, [keyword, slot, selectedType, activeSortBy, activeSortOrder])
 
   // Count skins by type for tags
   const getSkinCountByType = (type: SkinType): number => {
     if (!skins) return 0
     if (type === "All") return skins.length
     return skins.filter((skin) => skin.type === type).length
+  }
+
+  const getArmorCountBySlot = (slotName: string | null): number => {
+    const armorSkins = skins.filter((skin) => skin.type === "Armor")
+    if (!slotName) return armorSkins.length
+    return armorSkins.filter((skin) => skin.details?.type === slotName).length
   }
 
   // Handle column sorting
@@ -190,7 +222,7 @@ export default function Skins() {
   }
 
   return (
-    <Grid gridTemplateRows={"auto auto auto 1fr"} minHeight={"100%"}>
+    <Grid gridTemplateRows={"auto auto auto auto 1fr"} minHeight={"100%"}>
       <Tabs index={SKIN_TYPES.indexOf(selectedType)}>
         <TabList>
           {SKIN_TYPES.map((type) => (
@@ -199,8 +231,8 @@ export default function Skins() {
               as={Link}
               to={
                 type === "All"
-                  ? `/skins?${queryString}`
-                  : `/skins/${type.toLowerCase()}?${queryString}`
+                  ? `/skins?${tabQueryString}`
+                  : `/skins/${type.toLowerCase()}?${tabQueryString}`
               }
             >
               {type}
@@ -223,6 +255,44 @@ export default function Skins() {
           </InputGroup>
         </TabList>
       </Tabs>
+      {selectedType === "Armor" && (
+        <Flex
+          flexWrap="wrap"
+          justifyContent="center"
+          margin="0 auto"
+          borderBottom={"1px solid var(--chakra-colors-chakra-border-color)"}
+        >
+          <Button
+            as={Link}
+            variant="ghost"
+            fontWeight="normal"
+            borderRadius={0}
+            isActive={!slot}
+            to={`/skins/armor?${getQueryString("slot", "", queryString)}`}
+          >
+            All
+            <Tag size="sm" margin="0 0 -0.1em 0.5em">
+              {getArmorCountBySlot(null)}
+            </Tag>
+          </Button>
+          {ARMOR_SLOTS.map((slotName) => (
+            <Button
+              key={slotName}
+              as={Link}
+              variant="ghost"
+              fontWeight="normal"
+              borderRadius={0}
+              isActive={slot === slotName}
+              to={`/skins/armor?${getQueryString("slot", slotName, queryString)}`}
+            >
+              {formatSlotLabel(slotName)}
+              <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                {getArmorCountBySlot(slotName)}
+              </Tag>
+            </Button>
+          ))}
+        </Flex>
+      )}
       <Pagination
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}
