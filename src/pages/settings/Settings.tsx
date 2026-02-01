@@ -1,9 +1,26 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
-import { Box, Button, Code, Grid, Heading, Input, Link } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Heading,
+  Input,
+  Link,
+  Text,
+} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 
-import { FaExternalLinkAlt, FaSave, FaTrashAlt } from "react-icons/fa"
+import {
+  FaCheck,
+  FaCopy,
+  FaExternalLinkAlt,
+  FaEye,
+  FaEyeSlash,
+  FaSave,
+  FaTrashAlt,
+} from "react-icons/fa"
 
 import { useToken } from "~/contexts/TokenContext"
 import { queryFunction } from "~/helpers/api"
@@ -26,7 +43,30 @@ function Settings() {
     }
   }
 
+  const [revealedTokens, setRevealedTokens] = useState<Set<string>>(new Set())
+  const [copiedToken, setCopiedToken] = useState<string | null>(null)
+  const [showNewToken, setShowNewToken] = useState(false)
   const [token, setToken] = useState("")
+  const [error, setError] = useState<string | null>(null)
+
+  const toggleReveal = useCallback((tokenValue: string) => {
+    setRevealedTokens((prev) => {
+      const next = new Set(prev)
+      if (next.has(tokenValue)) {
+        next.delete(tokenValue)
+      } else {
+        next.add(tokenValue)
+      }
+      return next
+    })
+  }, [])
+
+  const copyToken = useCallback((tokenValue: string) => {
+    navigator.clipboard.writeText(tokenValue).then(() => {
+      setCopiedToken(tokenValue)
+      setTimeout(() => setCopiedToken(null), 1500)
+    })
+  }, [])
 
   const { refetch, isFetching } = useQuery({
     queryKey: ["account", token],
@@ -36,7 +76,7 @@ function Settings() {
   })
 
   const handleSubmit = async () => {
-    const { data } = await refetch()
+    const { data, error: refetchError } = await refetch()
     if (data) {
       const account = {
         name: (data as any).name,
@@ -45,55 +85,113 @@ function Settings() {
       addUsedAccount(account)
       setCurrentAccount(account)
       setToken("")
+      setError(null)
+    } else {
+      setError(refetchError?.message || "Invalid or expired token")
     }
   }
 
   return (
-    <Box margin="0 auto" padding="1rem" maxWidth="60rem">
+    <Box margin="0 auto" padding="1rem" maxWidth="64rem">
       <Heading size="lg" textAlign="center" marginBottom="2rem">
         Manage Tokens in Your Local Storage
       </Heading>
       <Grid templateColumns="auto 1fr auto" gap="1rem" alignItems="center">
         {usedAccounts.map((account: UsedAccount) => {
+          const isRevealed = revealedTokens.has(account.token)
           return (
             <>
               <Heading
-                size="md"
                 key={account.name}
+                size="md"
                 fontWeight="normal"
                 fontFamily="Rosario"
               >
                 {account.name}
               </Heading>
-              <Code fontSize="sm" key={account.token}>
-                {account.token}
-              </Code>
-              <Button
-                key={account.token + " button"}
-                variant="ghost"
-                onClick={() => {
-                  handleDelete(account)
-                }}
-              >
-                <FaTrashAlt />
-              </Button>
+              <Input
+                key={`${account.token}-input`}
+                type={isRevealed ? "text" : "password"}
+                value={account.token}
+                fontFamily="monospace"
+                fontSize="sm"
+                backgroundColor="gray.100"
+                readOnly
+              />
+              <Flex key={`${account.token}-buttons`}>
+                <Button
+                  variant="ghost"
+                  aria-label={isRevealed ? "Hide token" : "Reveal token"}
+                  onClick={() => toggleReveal(account.token)}
+                >
+                  {isRevealed ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  aria-label={
+                    copiedToken === account.token ? "Copied" : "Copy token"
+                  }
+                  onClick={() => copyToken(account.token)}
+                  color={
+                    copiedToken === account.token ? "green.500" : undefined
+                  }
+                >
+                  {copiedToken === account.token ? <FaCheck /> : <FaCopy />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    handleDelete(account)
+                  }}
+                >
+                  <FaTrashAlt />
+                </Button>
+              </Flex>
             </>
           )
         })}
         <div>Add new...</div>
         <Input
           autoFocus={true}
+          type={showNewToken ? "text" : "password"}
           placeholder="paste your token here"
           value={token}
           onChange={(e) => {
             setToken(e.currentTarget.value)
+            if (error) setError(null)
           }}
+          fontFamily="monospace"
+          fontSize="sm"
         />
-        <Button variant="ghost" isLoading={isFetching} onClick={handleSubmit}>
-          <FaSave />
-        </Button>
+
+        <Flex>
+          <Button
+            variant="ghost"
+            aria-label={showNewToken ? "Hide token" : "Show token"}
+            onClick={() => setShowNewToken((prev) => !prev)}
+          >
+            {showNewToken ? <FaEyeSlash /> : <FaEye />}
+          </Button>
+          <Button
+            variant="ghost"
+            isLoading={isFetching}
+            isDisabled={!token.trim()}
+            onClick={handleSubmit}
+          >
+            <FaSave />
+          </Button>
+        </Flex>
+        {error && (
+          <>
+            <div />
+            <Text color="red.500" fontSize="sm" marginTop="-1rem">
+              {error}
+            </Text>
+            <div />
+          </>
+        )}
         <div />
-        <Box fontSize="0.875rem" color="gray.600">
+        <Box fontSize="0.875rem" color="gray.600" gridColumn="span 2">
           Don&apos;t have an API key? Get one for your account from{" "}
           <Link
             href="https://account.arena.net/applications"
