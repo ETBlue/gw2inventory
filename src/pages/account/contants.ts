@@ -18,9 +18,9 @@ export const MENU_ITEMS = [
   { to: "", text: "Overview", component: Overview },
   { to: "wallet", text: "Wallet", component: Wallet },
   { to: "outfits", text: "Outfits", component: Outfits },
-  { to: "mounts", text: "Mounts", component: Mounts },
   { to: "gliders", text: "Gliders", component: Gliders },
   { to: "mailcarriers", text: "Mail Carriers", component: MailCarriers },
+  { to: "mounts", text: "Mounts", component: Mounts },
   { to: "home", text: "Home", component: Home },
   { to: "masteries/*", text: "Masteries", component: Masteries },
   /*

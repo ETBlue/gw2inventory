@@ -67,13 +67,6 @@ export default function Masteries() {
             </Button>
           ))}
       </Flex>
-      <Flex justifyContent="center">
-        {visibleGroups.map((group) => (
-          <Box key={group.region} padding={"1rem"}>
-            {renderTracks(group, accountMasteryMap)}
-          </Box>
-        ))}
-      </Flex>
       {isFetching ? (
         <Center>
           <Spinner />
@@ -88,7 +81,15 @@ export default function Masteries() {
             Error loading masteries: {(error as Error).message}
           </Text>
         </Center>
-      ) : null}
+      ) : (
+        <Flex justifyContent="center">
+          {visibleGroups.map((group) => (
+            <Box key={group.region} padding={"1rem"}>
+              {renderTracks(group, accountMasteryMap)}
+            </Box>
+          ))}
+        </Flex>
+      )}
     </Grid>
   )
 }
