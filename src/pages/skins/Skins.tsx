@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
+  Badge,
   Box,
   Button,
   Center,
@@ -20,6 +21,7 @@ import {
   Tag,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -121,8 +123,8 @@ export default function Skins() {
       filtered = filtered.filter((skin) => skin.type === selectedType)
     }
 
-    // Filter by armor slot
-    if (slot && selectedType === "Armor") {
+    // Filter by slot (armor slot or weapon type)
+    if (slot && (selectedType === "Armor" || selectedType === "Weapon")) {
       filtered = filtered.filter((skin) => skin.details?.type === slot)
     }
 
@@ -152,11 +154,11 @@ export default function Skins() {
           break
         case "type":
           aValue =
-            selectedType === "Armor"
+            a.type === "Armor" || a.type === "Weapon"
               ? a.details?.type?.toLowerCase() || ""
               : a.type.toLowerCase()
           bValue =
-            selectedType === "Armor"
+            b.type === "Armor" || b.type === "Weapon"
               ? b.details?.type?.toLowerCase() || ""
               : b.type.toLowerCase()
           break
@@ -170,13 +172,17 @@ export default function Skins() {
           break
         case "details":
           aValue =
-            selectedType === "Armor"
+            a.type === "Armor"
               ? a.details?.weight_class?.toLowerCase() || ""
-              : a.details?.type?.toLowerCase() || ""
+              : a.type === "Weapon"
+                ? a.details?.damage_type?.toLowerCase() || ""
+                : a.details?.type?.toLowerCase() || ""
           bValue =
-            selectedType === "Armor"
+            b.type === "Armor"
               ? b.details?.weight_class?.toLowerCase() || ""
-              : b.details?.type?.toLowerCase() || ""
+              : b.type === "Weapon"
+                ? b.details?.damage_type?.toLowerCase() || ""
+                : b.details?.type?.toLowerCase() || ""
           break
         default:
           return 0
@@ -212,6 +218,23 @@ export default function Skins() {
     const armorSkins = skins.filter((skin) => skin.type === "Armor")
     if (!slotName) return armorSkins.length
     return armorSkins.filter((skin) => skin.details?.type === slotName).length
+  }
+
+  const weaponTypes = useMemo(() => {
+    const types = new Set(
+      skins
+        .filter((skin) => skin.type === "Weapon")
+        .map((skin) => skin.details?.type)
+        .filter(Boolean),
+    )
+    return [...types].sort((a, b) => a!.localeCompare(b!)) as string[]
+  }, [skins])
+
+  const getWeaponCountByType = (weaponType: string | null): number => {
+    const weaponSkins = skins.filter((skin) => skin.type === "Weapon")
+    if (!weaponType) return weaponSkins.length
+    return weaponSkins.filter((skin) => skin.details?.type === weaponType)
+      .length
   }
 
   // Handle column sorting
@@ -266,7 +289,7 @@ export default function Skins() {
           </InputGroup>
         </TabList>
       </Tabs>
-      {selectedType === "Armor" && (
+      {(selectedType === "Armor" || selectedType === "Weapon") && (
         <Flex
           flexWrap="wrap"
           justifyContent="center"
@@ -279,26 +302,33 @@ export default function Skins() {
             fontWeight="normal"
             borderRadius={0}
             isActive={!slot}
-            to={`/skins/armor?${getQueryString("slot", "", queryString)}`}
+            to={`/skins/${skinType}?${getQueryString("slot", "", queryString)}`}
           >
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {getArmorCountBySlot(null)}
+              {selectedType === "Armor"
+                ? getArmorCountBySlot(null)
+                : getWeaponCountByType(null)}
             </Tag>
           </Button>
-          {ARMOR_SLOTS.map((slotName) => (
+          {(selectedType === "Armor"
+            ? ARMOR_SLOTS.map(String)
+            : weaponTypes
+          ).map((subType) => (
             <Button
-              key={slotName}
+              key={subType}
               as={Link}
               variant="ghost"
               fontWeight="normal"
               borderRadius={0}
-              isActive={slot === slotName}
-              to={`/skins/armor?${getQueryString("slot", slotName, queryString)}`}
+              isActive={slot === subType}
+              to={`/skins/${skinType}?${getQueryString("slot", subType, queryString)}`}
             >
-              {formatSlotLabel(slotName)}
+              {formatSlotLabel(subType)}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {getArmorCountBySlot(slotName)}
+                {selectedType === "Armor"
+                  ? getArmorCountBySlot(subType)
+                  : getWeaponCountByType(subType)}
               </Tag>
             </Button>
           ))}
@@ -319,9 +349,7 @@ export default function Skins() {
                 onClick={() => handleSort(header)}
                 className={`${css.title} ${activeSortBy === header ? css.active : ""}`}
               >
-                {header === "details" && selectedType === "Armor"
-                  ? "Weight"
-                  : header.charAt(0).toUpperCase() + header.slice(1)}
+                {header.charAt(0).toUpperCase() + header.slice(1)}
                 {activeSortBy === header && (
                   <>
                     {activeSortOrder === "asc" ? (
@@ -365,7 +393,7 @@ export default function Skins() {
                 )}
               </Td>
               <Td>
-                {selectedType === "Armor"
+                {skin.type === "Armor" || skin.type === "Weapon"
                   ? skin.details?.type || skin.type
                   : skin.type}
               </Td>
@@ -380,11 +408,27 @@ export default function Skins() {
                 )}
               </Td>
               <Td>
-                {selectedType === "Armor"
-                  ? skin.details?.weight_class
-                  : skin.details && (
-                      <>{skin.details.type || JSON.stringify(skin.details)}</>
-                    )}
+                {skin.type === "Armor" ? (
+                  <Flex columnGap="0.5rem">
+                    <Tag size="sm" fontWeight="normal">
+                      Weight
+                    </Tag>
+                    {skin.details?.weight_class}
+                  </Flex>
+                ) : skin.type === "Weapon" ? (
+                  skin.details?.damage_type && (
+                    <Flex columnGap="0.5rem">
+                      <Tag size="sm" fontWeight="normal">
+                        Damage
+                      </Tag>
+                      {skin.details.damage_type}
+                    </Flex>
+                  )
+                ) : (
+                  skin.details && (
+                    <>{skin.details.type || JSON.stringify(skin.details)}</>
+                  )
+                )}
               </Td>
             </Tr>
           ))}

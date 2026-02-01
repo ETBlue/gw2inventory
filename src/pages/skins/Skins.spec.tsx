@@ -930,8 +930,8 @@ describe("Skins Component", () => {
     mockUseParams.mockReturnValue({ skinType: "armor" })
     const { rerender } = render(<Skins />)
 
-    expect(screen.getByText("Weight")).toBeInTheDocument()
-    expect(screen.queryByText("Details")).not.toBeInTheDocument()
+    // Header always shows "Details"
+    expect(screen.getByText("Details")).toBeInTheDocument()
     // "Helm" appears in both submenu and table type column
     const helmTexts = screen.getAllByText("Helm")
     expect(helmTexts.length).toBeGreaterThanOrEqual(2)
@@ -942,11 +942,9 @@ describe("Skins Component", () => {
     rerender(<Skins />)
 
     expect(screen.getByText("Details")).toBeInTheDocument()
-    expect(screen.queryByText("Weight")).not.toBeInTheDocument()
-    // "Armor" appears in both tab and table cell
-    const armorTexts = screen.getAllByText("Armor")
-    expect(armorTexts.length).toBeGreaterThanOrEqual(2)
-    expect(screen.getByText("Helm")).toBeInTheDocument() // in details column
+    // Armor skin shows "Weight" badge in details column, "Helm" in type column
+    expect(screen.getByText("Weight")).toBeInTheDocument()
+    expect(screen.getByText("Helm")).toBeInTheDocument()
   })
 
   it("preserves other search params in armor submenu links", () => {
@@ -985,6 +983,200 @@ describe("Skins Component", () => {
       "href",
       expect.stringContaining("/skins/armor"),
     )
+  })
+
+  it("shows weapon submenu when on Weapon tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Sword",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/sword.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Sword", damage_type: "Physical" },
+      },
+      {
+        id: 2,
+        name: "Test Focus",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/focus.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Focus", damage_type: "Physical" },
+      },
+      {
+        id: 3,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    // On Weapon tab, submenu should appear with weapon types
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
+    const { rerender } = render(<Skins />)
+
+    expect(screen.getByRole("link", { name: /All 2/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Focus 1/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Sword 1/ })).toBeInTheDocument()
+
+    // On All tab, submenu should not appear
+    mockUseParams.mockReturnValue({})
+    rerender(<Skins />)
+
+    expect(
+      screen.queryByRole("link", { name: /Focus 1/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it("filters weapon skins by slot when slot search param is set", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Sword",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/sword.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Sword", damage_type: "Physical" },
+      },
+      {
+        id: 2,
+        name: "Test Focus",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/focus.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Focus", damage_type: "Physical" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("slot=Sword"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    expect(screen.getByText("Test Sword")).toBeInTheDocument()
+    expect(screen.queryByText("Test Focus")).not.toBeInTheDocument()
+  })
+
+  it("shows weapon-specific columns when on Weapon tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Sword",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/sword.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Sword", damage_type: "Physical" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
+    render(<Skins />)
+
+    // Header shows "Details" on Weapon tab
+    expect(screen.getByText("Details")).toBeInTheDocument()
+    // Type column shows details.type
+    const swordTexts = screen.getAllByText("Sword")
+    expect(swordTexts.length).toBeGreaterThanOrEqual(2) // submenu + table
+    // Details column shows damage_type
+    expect(screen.getByText("Physical")).toBeInTheDocument()
+  })
+
+  it("sorts by details.damage_type when clicking Damage column on Weapon tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Physical Sword",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/sword.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Sword", damage_type: "Physical" },
+      },
+      {
+        id: 2,
+        name: "Choking Staff",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/staff.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Staff", damage_type: "Choking" },
+      },
+      {
+        id: 3,
+        name: "Lightning Scepter",
+        type: "Weapon",
+        rarity: "Fine",
+        icon: "https://example.com/scepter.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Scepter", damage_type: "Lightning" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "weapon" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=details&order=asc"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // Ascending by damage_type: Choking, Lightning, Physical
+    const rows = screen.getAllByRole("row").slice(1)
+    expect(rows[0]).toHaveTextContent("Choking Staff")
+    expect(rows[1]).toHaveTextContent("Lightning Scepter")
+    expect(rows[2]).toHaveTextContent("Physical Sword")
   })
 
   it("sorts by details.type when clicking Type column on Armor tab", () => {
