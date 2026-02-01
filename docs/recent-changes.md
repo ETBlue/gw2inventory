@@ -4,6 +4,17 @@ This document tracks significant architectural improvements and refactoring effo
 
 ---
 
+## 2026-02-01: Settings Token Security
+
+- Saved API tokens are masked by default using password-type inputs (no longer displayed in plain text)
+- Added per-token reveal/hide toggle button (eye icon)
+- Added per-token copy-to-clipboard button
+- New token input uses password type with a visibility toggle
+- Grouped action buttons (reveal, copy, delete) in a Flex per account row
+- Added 12 tests for the Settings page
+
+---
+
 ## 2026-02-01: Skins Armor & Weapon Submenus
 
 - Added submenus to Armor (Helm, Shoulders, Coat, etc.), Weapon (dynamically derived), and Gathering (Foraging, Logging, Mining, etc.) tabs on the Skins page
