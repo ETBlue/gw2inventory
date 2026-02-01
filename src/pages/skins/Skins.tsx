@@ -308,7 +308,9 @@ export default function Skins() {
                 onClick={() => handleSort(header)}
                 className={`${css.title} ${activeSortBy === header ? css.active : ""}`}
               >
-                {header.charAt(0).toUpperCase() + header.slice(1)}
+                {header === "details" && selectedType === "Armor"
+                  ? "Weight"
+                  : header.charAt(0).toUpperCase() + header.slice(1)}
                 {activeSortBy === header && (
                   <>
                     {activeSortOrder === "asc" ? (
@@ -351,7 +353,11 @@ export default function Skins() {
                   </p>
                 )}
               </Td>
-              <Td>{skin.type}</Td>
+              <Td>
+                {selectedType === "Armor"
+                  ? skin.details?.type || skin.type
+                  : skin.type}
+              </Td>
               <Td>
                 {skin.flags && skin.flags.length > 0 && (
                   <>{skin.flags.join(", ")}</>
@@ -363,9 +369,11 @@ export default function Skins() {
                 )}
               </Td>
               <Td>
-                {skin.details && (
-                  <>{skin.details.type || JSON.stringify(skin.details)}</>
-                )}
+                {selectedType === "Armor"
+                  ? skin.details?.weight_class
+                  : skin.details && (
+                      <>{skin.details.type || JSON.stringify(skin.details)}</>
+                    )}
               </Td>
             </Tr>
           ))}

@@ -904,6 +904,51 @@ describe("Skins Component", () => {
     )
   })
 
+  it("shows armor-specific columns when on Armor tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: ["ShowInWardrobe"],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    // On Armor tab: type column shows details.type, details column shows weight_class, header says "Weight"
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    const { rerender } = render(<Skins />)
+
+    expect(screen.getByText("Weight")).toBeInTheDocument()
+    expect(screen.queryByText("Details")).not.toBeInTheDocument()
+    // "Helm" appears in both submenu and table type column
+    const helmTexts = screen.getAllByText("Helm")
+    expect(helmTexts.length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText("Heavy")).toBeInTheDocument()
+
+    // On All tab: type column shows skin.type, details column shows details.type, header says "Details"
+    mockUseParams.mockReturnValue({})
+    rerender(<Skins />)
+
+    expect(screen.getByText("Details")).toBeInTheDocument()
+    expect(screen.queryByText("Weight")).not.toBeInTheDocument()
+    // "Armor" appears in both tab and table cell
+    const armorTexts = screen.getAllByText("Armor")
+    expect(armorTexts.length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText("Helm")).toBeInTheDocument() // in details column
+  })
+
   it("preserves other search params in armor submenu links", () => {
     const mockSkins = [
       {
