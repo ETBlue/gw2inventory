@@ -10,9 +10,12 @@ import { API_CONSTANTS } from "~/constants"
 import { fetchGW2 } from "~/helpers/api"
 import type { BackstoryAnswer, BackstoryQuestion } from "~/types/backstory"
 import type { Color } from "~/types/dyes"
+import type { Glider } from "~/types/gliders"
 import type { HomeCat } from "~/types/homeCats"
 import type { PatchedItem } from "~/types/items"
+import type { MailCarrier } from "~/types/mailcarriers"
 import type { Mastery } from "~/types/masteries"
+import type { MountSkin } from "~/types/mounts"
 import type { Outfit } from "~/types/outfits"
 import type { Skin } from "~/types/skins"
 import type { Specialization, Trait } from "~/types/specializations"
@@ -34,6 +37,9 @@ export const staticKeys = {
   homeCats: () => [...staticKeys.all, "homeCats"] as const,
   homesteadGlyphs: () => [...staticKeys.all, "homesteadGlyphs"] as const,
   masteries: () => [...staticKeys.all, "masteries"] as const,
+  mountSkins: () => [...staticKeys.all, "mountSkins"] as const,
+  gliders: () => [...staticKeys.all, "gliders"] as const,
+  mailCarriers: () => [...staticKeys.all, "mailCarriers"] as const,
   // Pattern B: stable cache keys (persisted to IndexedDB via persistence.ts)
   itemsCache: ["items-cache"] as const,
   skinsCache: ["skins-cache"] as const,
@@ -205,6 +211,36 @@ export const useMasteriesQuery = () =>
     queryFn: async () => {
       const data = await fetchGW2<Mastery[]>("masteries", "ids=all")
       return data ?? []
+    },
+    ...STATIC_QUERY_OPTIONS,
+  })
+
+export const useMountSkinsQuery = () =>
+  useQuery({
+    queryKey: staticKeys.mountSkins(),
+    queryFn: async () => {
+      const data = await fetchGW2<MountSkin[]>("mounts/skins", "ids=all")
+      return data ? toRecord(data) : {}
+    },
+    ...STATIC_QUERY_OPTIONS,
+  })
+
+export const useGlidersQuery = () =>
+  useQuery({
+    queryKey: staticKeys.gliders(),
+    queryFn: async () => {
+      const data = await fetchGW2<Glider[]>("gliders", "ids=all")
+      return data ? toRecord(data) : {}
+    },
+    ...STATIC_QUERY_OPTIONS,
+  })
+
+export const useMailCarriersQuery = () =>
+  useQuery({
+    queryKey: staticKeys.mailCarriers(),
+    queryFn: async () => {
+      const data = await fetchGW2<MailCarrier[]>("mailcarriers", "ids=all")
+      return data ? toRecord(data) : {}
     },
     ...STATIC_QUERY_OPTIONS,
   })

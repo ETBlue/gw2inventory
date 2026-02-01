@@ -13,7 +13,7 @@ The application uses a hybrid approach with React Context API for global state a
 - **TokenContext** - Manages API tokens stored in localStorage and account switching
 - **CharacterContext** - Handles character list data, specializations, and backstory via React Query. Automatically prefetches all character specializations and backstory when characters load (using `useQueries` for parallel fetching). Exposes `getCharacterSpecializations`, `isSpecsLoading`, `getSpecsError`, `getEnrichedSpecializations`, and `hasSpecsForMode` functions for specializations, and `getCharacterBackstory`, `getEnrichedBackstory`, and `isBackstoryLoading` functions for backstory. Note: Trait fetching is triggered by the Characters page, not CharacterContext
 - **SkillContext** - Manages skill data
-- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, material categories, colors, skins, titles, currencies, outfits, masteries, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with IndexedDB persistence via `@tanstack/react-query-persist-client` + `idb-keyval`, using `PersistQueryClientProvider` to prevent refetch race conditions. Optimized fetching strategies: complete datasets for colors/titles/currencies/masteries/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits
+- **Static data hooks** (`src/hooks/useStaticData/`) - React Query hooks for cached GW2 API static data (items, material categories, colors, skins, titles, currencies, outfits, masteries, mount skins, gliders, mail carriers, home nodes, home cats, homestead glyphs, specializations, traits, backstory questions, and backstory answers) with IndexedDB persistence via `@tanstack/react-query-persist-client` + `idb-keyval`, using `PersistQueryClientProvider` to prevent refetch race conditions. Optimized fetching strategies: complete datasets for colors/titles/currencies/masteries/mount skins/gliders/mail carriers/material categories/home data/homestead glyphs/specializations/traits/backstory questions/backstory answers, chunked fetching for items/skins/outfits
 
 ### Custom Hooks
 
@@ -30,6 +30,9 @@ These hooks replace previous contexts and manage account-specific data:
 - `useHomeCatsData` - Fetches account home instance cats with home cat data managed by React Query static data hooks
 - `useHomesteadGlyphsData` - Fetches account homestead glyphs with glyph data managed by React Query static data hooks
 - `useMasteriesData` - Fetches account masteries with mastery data managed by React Query static data hooks. Groups masteries by region with unlocked/total level counts
+- `useMountSkinsData` - Fetches account mount skins with mount skin data managed by React Query static data hooks
+- `useGlidersData` - Fetches account gliders with glider data managed by React Query static data hooks
+- `useMailCarriersData` - Fetches account mail carriers with mail carrier data managed by React Query static data hooks
 
 ---
 
