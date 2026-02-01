@@ -1179,6 +1179,54 @@ describe("Skins Component", () => {
     expect(rows[2]).toHaveTextContent("Physical Sword")
   })
 
+  it("shows details.type in type column for gathering skins", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Pickaxe",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/pick.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Mining" },
+      },
+      {
+        id: 2,
+        name: "Test Sickle",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/sickle.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Foraging" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "gathering" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=type&order=asc"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // Type column shows details.type, sorted ascending: Foraging, Mining
+    const rows = screen.getAllByRole("row").slice(1)
+    expect(rows[0]).toHaveTextContent("Test Sickle")
+    expect(rows[0]).toHaveTextContent("Foraging")
+    expect(rows[1]).toHaveTextContent("Test Pickaxe")
+    expect(rows[1]).toHaveTextContent("Mining")
+  })
+
   it("sorts by details.type when clicking Type column on Armor tab", () => {
     const mockSkins = [
       {

@@ -154,11 +154,11 @@ export default function Skins() {
           break
         case "type":
           aValue =
-            a.type === "Armor" || a.type === "Weapon"
+            a.type === "Armor" || a.type === "Weapon" || a.type === "Gathering"
               ? a.details?.type?.toLowerCase() || ""
               : a.type.toLowerCase()
           bValue =
-            b.type === "Armor" || b.type === "Weapon"
+            b.type === "Armor" || b.type === "Weapon" || b.type === "Gathering"
               ? b.details?.type?.toLowerCase() || ""
               : b.type.toLowerCase()
           break
@@ -393,7 +393,9 @@ export default function Skins() {
                 )}
               </Td>
               <Td>
-                {skin.type === "Armor" || skin.type === "Weapon"
+                {skin.type === "Armor" ||
+                skin.type === "Weapon" ||
+                skin.type === "Gathering"
                   ? skin.details?.type || skin.type
                   : skin.type}
               </Td>
