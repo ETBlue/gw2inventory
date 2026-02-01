@@ -8,10 +8,12 @@ This document tracks significant architectural improvements and refactoring effo
 
 - Saved API tokens are masked by default using password-type inputs (no longer displayed in plain text)
 - Added per-token reveal/hide toggle button (eye icon)
-- Added per-token copy-to-clipboard button
+- Added per-token copy-to-clipboard button with icon swap feedback (copy icon → green checkmark for 1.5s)
 - New token input uses password type with a visibility toggle
+- Save button disabled when token input is empty or whitespace-only
+- Error message displayed when token validation fails, clears on input change
 - Grouped action buttons (reveal, copy, delete) in a Flex per account row
-- Added 12 tests for the Settings page
+- Added 20 tests for the Settings page
 
 ---
 

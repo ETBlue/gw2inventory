@@ -157,10 +157,6 @@ describe("Settings", () => {
 
     render(<Settings />)
 
-    // Find delete buttons inside Flex containers
-    const flexContainers = document.querySelectorAll(
-      ".chakra-stack, [class*='flex']",
-    )
     // Click the last button in the first account's button group (trash icon)
     const allButtons = screen.getAllByRole("button")
     // The trash button for the first account is the 3rd button (reveal, copy, delete)
