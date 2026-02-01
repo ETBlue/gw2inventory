@@ -94,6 +94,48 @@ describe("Settings", () => {
     expect(copyButtons).toHaveLength(2)
   })
 
+  it("swaps copy icon to checkmark after copying a token", async () => {
+    Object.assign(navigator, {
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    })
+
+    render(<Settings />)
+
+    const copyButton = screen.getAllByLabelText("Copy token")[0]
+    fireEvent.click(copyButton)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Copied")).toBeInTheDocument()
+    })
+    // Other token's copy button unchanged
+    expect(screen.getByLabelText("Copy token")).toBeInTheDocument()
+  })
+
+  it("reverts checkmark back to copy icon after timeout", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    Object.assign(navigator, {
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    })
+
+    render(<Settings />)
+
+    const copyButton = screen.getAllByLabelText("Copy token")[0]
+    fireEvent.click(copyButton)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Copied")).toBeInTheDocument()
+    })
+
+    await vi.advanceTimersByTimeAsync(1500)
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText("Copied")).not.toBeInTheDocument()
+      expect(screen.getAllByLabelText("Copy token")).toHaveLength(2)
+    })
+
+    vi.useRealTimers()
+  })
+
   it("renders three action buttons per saved token (reveal, copy, delete)", () => {
     render(<Settings />)
 
