@@ -6,9 +6,9 @@ This document tracks significant architectural improvements and refactoring effo
 
 ## 2026-02-01: Skins Armor & Weapon Submenus
 
-- Added armor slot submenu (Helm, Shoulders, Coat, Gloves, Leggings, Boots, Helm Aquatic) and weapon type submenu (dynamically derived from data) to the Skins page
-- Uses `?slot=` URL search param for filtering, matching the Items/Mounts page submenu style
-- Tab links strip the `slot` param when navigating away, preserving other params like `keyword` and `sortBy`
+- Added submenus to Armor (Helm, Shoulders, Coat, etc.), Weapon (dynamically derived), and Gathering (Foraging, Logging, Mining, etc.) tabs on the Skins page
+- Uses `?type=` URL search param for filtering, matching the Items/Mounts page submenu style
+- Tab links strip the `type` param when navigating away, preserving other params like `keyword` and `sortBy`
 - Armor and weapon skins show `details.type` in the type column across all tabs, with per-skin sorting
 - Details column shows labeled badges: "Weight" for armor (`weight_class`), "Damage" for weapons (`damage_type`)
 - Sorting uses per-skin fields: type column sorts by `details.type` for armor/weapons, details column sorts by `weight_class` or `damage_type` respectively

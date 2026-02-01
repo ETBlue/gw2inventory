@@ -803,7 +803,7 @@ describe("Skins Component", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("filters armor skins by slot when slot search param is set", () => {
+  it("filters armor skins by type when type search param is set", () => {
     const mockSkins = [
       {
         id: 1,
@@ -837,7 +837,7 @@ describe("Skins Component", () => {
 
     mockUseParams.mockReturnValue({ skinType: "armor" })
     mockUseSearchParams.mockReturnValue([
-      new URLSearchParams("slot=Helm"),
+      new URLSearchParams("type=Helm"),
       vi.fn(),
     ])
 
@@ -847,7 +847,7 @@ describe("Skins Component", () => {
     expect(screen.queryByText("Test Boots")).not.toBeInTheDocument()
   })
 
-  it("clears slot param from tab links when navigating away from Armor", () => {
+  it("clears type param from tab links when navigating away from Armor", () => {
     const mockSkins = [
       {
         id: 1,
@@ -869,22 +869,22 @@ describe("Skins Component", () => {
       hasToken: true,
     } as ReturnType<typeof useSkins>)
 
-    // On Armor tab with slot=Helm and a keyword
+    // On Armor tab with type=Helm and a keyword
     mockUseParams.mockReturnValue({ skinType: "armor" })
     mockUseSearchParams.mockReturnValue([
-      new URLSearchParams("slot=Helm&keyword=test"),
+      new URLSearchParams("type=Helm&keyword=test"),
       vi.fn(),
     ])
 
     render(<Skins />)
 
-    // Tab links should not contain slot param but should keep keyword
+    // Tab links should not contain type param but should keep keyword
     const allTab = screen.getByRole("tab", { name: /All/ })
     expect(allTab).toHaveAttribute(
       "href",
       expect.stringContaining("keyword=test"),
     )
-    expect(allTab).toHaveAttribute("href", expect.not.stringContaining("slot"))
+    expect(allTab).toHaveAttribute("href", expect.not.stringContaining("type"))
 
     const weaponTab = screen.getByRole("tab", { name: /Weapon/ })
     expect(weaponTab).toHaveAttribute(
@@ -893,14 +893,14 @@ describe("Skins Component", () => {
     )
     expect(weaponTab).toHaveAttribute(
       "href",
-      expect.not.stringContaining("slot"),
+      expect.not.stringContaining("type"),
     )
 
     // Armor tab link should also not carry slot (user re-enters fresh)
     const armorTab = screen.getByRole("tab", { name: /Armor/ })
     expect(armorTab).toHaveAttribute(
       "href",
-      expect.not.stringContaining("slot"),
+      expect.not.stringContaining("type"),
     )
   })
 
@@ -1044,7 +1044,7 @@ describe("Skins Component", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("filters weapon skins by slot when slot search param is set", () => {
+  it("filters weapon skins by type when type search param is set", () => {
     const mockSkins = [
       {
         id: 1,
@@ -1078,7 +1078,7 @@ describe("Skins Component", () => {
 
     mockUseParams.mockReturnValue({ skinType: "weapon" })
     mockUseSearchParams.mockReturnValue([
-      new URLSearchParams("slot=Sword"),
+      new URLSearchParams("type=Sword"),
       vi.fn(),
     ])
 
@@ -1177,6 +1177,109 @@ describe("Skins Component", () => {
     expect(rows[0]).toHaveTextContent("Choking Staff")
     expect(rows[1]).toHaveTextContent("Lightning Scepter")
     expect(rows[2]).toHaveTextContent("Physical Sword")
+  })
+
+  it("shows gathering submenu when on Gathering tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Pickaxe",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/pick.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Mining" },
+      },
+      {
+        id: 2,
+        name: "Test Sickle",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/sickle.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Foraging" },
+      },
+      {
+        id: 3,
+        name: "Test Axe",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/axe.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Logging" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "gathering" })
+    const { rerender } = render(<Skins />)
+
+    expect(screen.getByRole("link", { name: /All 3/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Foraging 1/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Logging 1/ })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Mining 1/ })).toBeInTheDocument()
+
+    // Submenu should not appear on All tab
+    mockUseParams.mockReturnValue({})
+    rerender(<Skins />)
+
+    expect(
+      screen.queryByRole("link", { name: /Foraging 1/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it("filters gathering skins by type", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Test Pickaxe",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/pick.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Mining" },
+      },
+      {
+        id: 2,
+        name: "Test Sickle",
+        type: "Gathering",
+        rarity: "Fine",
+        icon: "https://example.com/sickle.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Foraging" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "gathering" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("type=Mining"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    expect(screen.getByText("Test Pickaxe")).toBeInTheDocument()
+    expect(screen.queryByText("Test Sickle")).not.toBeInTheDocument()
   })
 
   it("shows details.type in type column for gathering skins", () => {

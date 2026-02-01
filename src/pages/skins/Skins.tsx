@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
-  Badge,
   Box,
   Button,
   Center,
@@ -21,7 +20,6 @@ import {
   Tag,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
@@ -52,7 +50,7 @@ type SkinSort =
   | "details"
 type SkinOrder = "asc" | "desc"
 
-const SKIN_TYPES: SkinType[] = ["All", "Armor", "Weapon", "Back", "Gathering"]
+const SKIN_TYPES: SkinType[] = ["All", "Armor", "Weapon", "Gathering", "Back"]
 const ARMOR_SLOTS = [
   "Helm",
   "Shoulders",
@@ -80,14 +78,14 @@ export default function Skins() {
   const { skinType } = useParams<{ skinType?: string }>()
   const [searchParams] = useSearchParams()
   const keyword = searchParams.get("keyword")
-  const slot = searchParams.get("slot")
+  const slot = searchParams.get("type")
   const sortBy = searchParams.get("sortBy")
   const order = searchParams.get("order")
   const queryString = searchParams.toString()
   // Query string without armor-specific params, for use in tab links
   const tabQueryString = useMemo(() => {
     const params = new URLSearchParams(searchParams)
-    params.delete("slot")
+    params.delete("type")
     return params.toString()
   }, [searchParams])
   const [pageIndex, setPageIndex] = useState<number>(0)
@@ -124,7 +122,12 @@ export default function Skins() {
     }
 
     // Filter by slot (armor slot or weapon type)
-    if (slot && (selectedType === "Armor" || selectedType === "Weapon")) {
+    if (
+      slot &&
+      (selectedType === "Armor" ||
+        selectedType === "Weapon" ||
+        selectedType === "Gathering")
+    ) {
       filtered = filtered.filter((skin) => skin.details?.type === slot)
     }
 
@@ -237,6 +240,23 @@ export default function Skins() {
       .length
   }
 
+  const gatheringTypes = useMemo(() => {
+    const types = new Set(
+      skins
+        .filter((skin) => skin.type === "Gathering")
+        .map((skin) => skin.details?.type)
+        .filter(Boolean),
+    )
+    return [...types].sort((a, b) => a!.localeCompare(b!)) as string[]
+  }, [skins])
+
+  const getGatheringCountByType = (gatheringType: string | null): number => {
+    const gatheringSkins = skins.filter((skin) => skin.type === "Gathering")
+    if (!gatheringType) return gatheringSkins.length
+    return gatheringSkins.filter((skin) => skin.details?.type === gatheringType)
+      .length
+  }
+
   // Handle column sorting
   const handleSort = (column: SkinSort) => {
     const currentPath = skinType ? `/skins/${skinType}` : "/skins"
@@ -289,7 +309,9 @@ export default function Skins() {
           </InputGroup>
         </TabList>
       </Tabs>
-      {(selectedType === "Armor" || selectedType === "Weapon") && (
+      {(selectedType === "Armor" ||
+        selectedType === "Weapon" ||
+        selectedType === "Gathering") && (
         <Flex
           flexWrap="wrap"
           justifyContent="center"
@@ -302,18 +324,22 @@ export default function Skins() {
             fontWeight="normal"
             borderRadius={0}
             isActive={!slot}
-            to={`/skins/${skinType}?${getQueryString("slot", "", queryString)}`}
+            to={`/skins/${skinType}?${getQueryString("type", "", queryString)}`}
           >
             All
             <Tag size="sm" margin="0 0 -0.1em 0.5em">
               {selectedType === "Armor"
                 ? getArmorCountBySlot(null)
-                : getWeaponCountByType(null)}
+                : selectedType === "Weapon"
+                  ? getWeaponCountByType(null)
+                  : getGatheringCountByType(null)}
             </Tag>
           </Button>
           {(selectedType === "Armor"
             ? ARMOR_SLOTS.map(String)
-            : weaponTypes
+            : selectedType === "Weapon"
+              ? weaponTypes
+              : gatheringTypes
           ).map((subType) => (
             <Button
               key={subType}
@@ -322,13 +348,15 @@ export default function Skins() {
               fontWeight="normal"
               borderRadius={0}
               isActive={slot === subType}
-              to={`/skins/${skinType}?${getQueryString("slot", subType, queryString)}`}
+              to={`/skins/${skinType}?${getQueryString("type", subType, queryString)}`}
             >
               {formatSlotLabel(subType)}
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
                 {selectedType === "Armor"
                   ? getArmorCountBySlot(subType)
-                  : getWeaponCountByType(subType)}
+                  : selectedType === "Weapon"
+                    ? getWeaponCountByType(subType)
+                    : getGatheringCountByType(subType)}
               </Tag>
             </Button>
           ))}
@@ -426,7 +454,7 @@ export default function Skins() {
                       {skin.details.damage_type}
                     </Flex>
                   )
-                ) : (
+                ) : skin.type === "Gathering" ? null : (
                   skin.details && (
                     <>{skin.details.type || JSON.stringify(skin.details)}</>
                   )
