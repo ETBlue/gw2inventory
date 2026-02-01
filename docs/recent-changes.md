@@ -11,7 +11,8 @@ This document tracks significant architectural improvements and refactoring effo
 - Added Mail Carriers tab to the Account page displaying unlocked mail carriers from `/v2/account/mailcarriers`
 - New hooks: `useMountSkinsData`, `useGlidersData`, `useMailCarriersData` following existing account data hook patterns
 - New types in `src/types/mounts.ts`, `src/types/gliders.ts`, `src/types/mailcarriers.ts`
-- Each tab shows collectible name and icon with unlocked/total counts
+- Each tab shows collectible name and icon with unlocked count badges
+- Mounts tab includes a submenu for filtering by mount type (e.g., Raptor, Springer) using URL search params, matching the Items page submenu style
 - Added tests for Mounts, Gliders, and Mail Carriers page components
 
 ---
