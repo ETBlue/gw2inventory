@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query"
 import { fireEvent, screen, waitFor } from "@testing-library/react"
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -8,6 +9,15 @@ import { render } from "~/test/utils"
 import Settings from "./Settings"
 
 vi.mock("~/contexts/TokenContext")
+vi.mock("@tanstack/react-query", async () => {
+  const actual = await vi.importActual("@tanstack/react-query")
+  return {
+    ...actual,
+    useQuery: vi.fn(),
+  }
+})
+
+const mockUseQuery = vi.mocked(useQuery)
 
 const mockUseToken = vi.mocked(tokenHook.useToken)
 
@@ -19,6 +29,10 @@ const mockAccounts = [
 describe("Settings", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseQuery.mockReturnValue({
+      refetch: vi.fn().mockResolvedValue({ data: null, error: null }),
+      isFetching: false,
+    } as any)
     mockUseToken.mockReturnValue({
       currentAccount: mockAccounts[0],
       usedAccounts: mockAccounts,
@@ -200,6 +214,83 @@ describe("Settings", () => {
     const showButton = screen.getByLabelText("Show token")
     const saveButton = showButton.nextElementSibling as HTMLButtonElement
     expect(saveButton).toBeDisabled()
+  })
+
+  it("shows error message when saving an invalid token", async () => {
+    const mockRefetch = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: "Invalid access token" },
+    })
+    mockUseQuery.mockReturnValue({
+      refetch: mockRefetch,
+      isFetching: false,
+    } as any)
+
+    render(<Settings />)
+
+    const input = screen.getByPlaceholderText("paste your token here")
+    fireEvent.change(input, { target: { value: "bad-token" } })
+
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid access token")).toBeInTheDocument()
+    })
+  })
+
+  it("shows fallback error message when no error message is provided", async () => {
+    const mockRefetch = vi.fn().mockResolvedValue({
+      data: null,
+      error: null,
+    })
+    mockUseQuery.mockReturnValue({
+      refetch: mockRefetch,
+      isFetching: false,
+    } as any)
+
+    render(<Settings />)
+
+    const input = screen.getByPlaceholderText("paste your token here")
+    fireEvent.change(input, { target: { value: "bad-token" } })
+
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid or expired token")).toBeInTheDocument()
+    })
+  })
+
+  it("clears error message when user types in the input", async () => {
+    const mockRefetch = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: "Invalid access token" },
+    })
+    mockUseQuery.mockReturnValue({
+      refetch: mockRefetch,
+      isFetching: false,
+    } as any)
+
+    render(<Settings />)
+
+    const input = screen.getByPlaceholderText("paste your token here")
+    fireEvent.change(input, { target: { value: "bad-token" } })
+
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid access token")).toBeInTheDocument()
+    })
+
+    // Typing in the input clears the error
+    fireEvent.change(input, { target: { value: "new-token" } })
+
+    expect(screen.queryByText("Invalid access token")).not.toBeInTheDocument()
   })
 
   it("shows empty state when no accounts exist", () => {

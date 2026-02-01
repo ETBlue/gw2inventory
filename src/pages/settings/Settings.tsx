@@ -1,6 +1,15 @@
 import { useCallback, useState } from "react"
 
-import { Box, Button, Flex, Grid, Heading, Input, Link } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Heading,
+  Input,
+  Link,
+  Text,
+} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 
 import {
@@ -36,6 +45,7 @@ function Settings() {
   const [revealedTokens, setRevealedTokens] = useState<Set<string>>(new Set())
   const [showNewToken, setShowNewToken] = useState(false)
   const [token, setToken] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   const toggleReveal = useCallback((tokenValue: string) => {
     setRevealedTokens((prev) => {
@@ -61,7 +71,7 @@ function Settings() {
   })
 
   const handleSubmit = async () => {
-    const { data } = await refetch()
+    const { data, error: refetchError } = await refetch()
     if (data) {
       const account = {
         name: (data as any).name,
@@ -70,6 +80,9 @@ function Settings() {
       addUsedAccount(account)
       setCurrentAccount(account)
       setToken("")
+      setError(null)
+    } else {
+      setError(refetchError?.message || "Invalid or expired token")
     }
   }
 
@@ -127,7 +140,6 @@ function Settings() {
             </>
           )
         })}
-        <div />
         <div>Add new...</div>
         <Input
           autoFocus={true}
@@ -136,10 +148,12 @@ function Settings() {
           value={token}
           onChange={(e) => {
             setToken(e.currentTarget.value)
+            if (error) setError(null)
           }}
           fontFamily="monospace"
           fontSize="sm"
         />
+
         <Flex>
           <Button
             variant="ghost"
@@ -157,8 +171,17 @@ function Settings() {
             <FaSave />
           </Button>
         </Flex>
+        {error && (
+          <>
+            <div />
+            <Text color="red.500" fontSize="sm" marginTop="-1rem">
+              {error}
+            </Text>
+            <div />
+          </>
+        )}
         <div />
-        <Box fontSize="0.875rem" color="gray.600" gridColumn="span 4">
+        <Box fontSize="0.875rem" color="gray.600" gridColumn="span 2">
           Don&apos;t have an API key? Get one for your account from{" "}
           <Link
             href="https://account.arena.net/applications"
