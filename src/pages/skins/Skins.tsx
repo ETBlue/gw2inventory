@@ -151,8 +151,14 @@ export default function Skins() {
           bValue = b.name.toLowerCase()
           break
         case "type":
-          aValue = a.type.toLowerCase()
-          bValue = b.type.toLowerCase()
+          aValue =
+            selectedType === "Armor"
+              ? a.details?.type?.toLowerCase() || ""
+              : a.type.toLowerCase()
+          bValue =
+            selectedType === "Armor"
+              ? b.details?.type?.toLowerCase() || ""
+              : b.type.toLowerCase()
           break
         case "flags":
           aValue = a.flags?.join(", ").toLowerCase() || ""
@@ -163,9 +169,14 @@ export default function Skins() {
           bValue = b.restrictions?.join(", ").toLowerCase() || ""
           break
         case "details":
-          // For details, we'll sort by the type property within details if it exists
-          aValue = a.details?.type?.toLowerCase() || ""
-          bValue = b.details?.type?.toLowerCase() || ""
+          aValue =
+            selectedType === "Armor"
+              ? a.details?.weight_class?.toLowerCase() || ""
+              : a.details?.type?.toLowerCase() || ""
+          bValue =
+            selectedType === "Armor"
+              ? b.details?.weight_class?.toLowerCase() || ""
+              : b.details?.type?.toLowerCase() || ""
           break
         default:
           return 0

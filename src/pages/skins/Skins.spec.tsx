@@ -987,6 +987,120 @@ describe("Skins Component", () => {
     )
   })
 
+  it("sorts by details.type when clicking Type column on Armor tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Some Boots",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/boots.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Boots", weight_class: "Light" },
+      },
+      {
+        id: 2,
+        name: "Some Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+      {
+        id: 3,
+        name: "Some Coat",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/coat.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Coat", weight_class: "Medium" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=type&order=asc"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // With ascending sort by type (details.type on Armor tab): Boots, Coat, Helm
+    const rows = screen.getAllByRole("row").slice(1) // skip header
+    expect(rows[0]).toHaveTextContent("Some Boots")
+    expect(rows[1]).toHaveTextContent("Some Coat")
+    expect(rows[2]).toHaveTextContent("Some Helm")
+  })
+
+  it("sorts by details.weight_class when clicking Weight column on Armor tab", () => {
+    const mockSkins = [
+      {
+        id: 1,
+        name: "Light Boots",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/boots.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Boots", weight_class: "Light" },
+      },
+      {
+        id: 2,
+        name: "Heavy Helm",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/helm.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Helm", weight_class: "Heavy" },
+      },
+      {
+        id: 3,
+        name: "Medium Coat",
+        type: "Armor",
+        rarity: "Fine",
+        icon: "https://example.com/coat.png",
+        flags: [],
+        restrictions: [],
+        details: { type: "Coat", weight_class: "Medium" },
+      },
+    ]
+
+    mockUseSkins.mockReturnValue({
+      accountSkinIds: [1, 2, 3],
+      skins: mockSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    } as ReturnType<typeof useSkins>)
+
+    mockUseParams.mockReturnValue({ skinType: "armor" })
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams("sortBy=details&order=asc"),
+      vi.fn(),
+    ])
+
+    render(<Skins />)
+
+    // With ascending sort by details (weight_class on Armor tab): Heavy, Light, Medium
+    const rows = screen.getAllByRole("row").slice(1)
+    expect(rows[0]).toHaveTextContent("Heavy Helm")
+    expect(rows[1]).toHaveTextContent("Light Boots")
+    expect(rows[2]).toHaveTextContent("Medium Coat")
+  })
+
   it("sorts skins by rarity hierarchy when rarity column header is clicked", () => {
     const mockSkins = [
       {
