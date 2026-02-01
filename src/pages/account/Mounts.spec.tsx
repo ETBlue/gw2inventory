@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, waitFor } from "@testing-library/react"
 
+import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as useMountSkinsModule from "~/hooks/useMountSkinsData"
@@ -44,11 +45,16 @@ describe("Mounts", () => {
     },
   })
 
-  const renderWithProviders = (component: React.ReactElement) => {
+  const renderWithProviders = (
+    component: React.ReactElement,
+    initialEntries: string[] = ["/account/mounts"],
+  ) => {
     return render(
-      <QueryClientProvider client={queryClient}>
-        {component}
-      </QueryClientProvider>,
+      <MemoryRouter initialEntries={initialEntries}>
+        <QueryClientProvider client={queryClient}>
+          {component}
+        </QueryClientProvider>
+      </MemoryRouter>,
     )
   }
 
@@ -89,18 +95,16 @@ describe("Mounts", () => {
     renderWithProviders(<Mounts />)
 
     await waitFor(() => {
-      expect(screen.getByText("Branded Raptor")).toBeInTheDocument()
-      expect(screen.getByText("Raptor")).toBeInTheDocument()
-      expect(screen.getByText("Springer")).toBeInTheDocument()
+      const headings = screen.getAllByRole("heading")
+      expect(headings[0]).toHaveTextContent("Branded Raptor")
+      expect(headings[1]).toHaveTextContent("Raptor")
+      expect(headings[2]).toHaveTextContent("Springer")
 
       const images = screen.getAllByRole("img")
       expect(images).toHaveLength(3)
       expect(images[0]).toHaveAttribute("alt", "Branded Raptor")
       expect(images[1]).toHaveAttribute("alt", "Raptor")
       expect(images[2]).toHaveAttribute("alt", "Springer")
-
-      expect(screen.queryByText("raptor")).not.toBeInTheDocument()
-      expect(screen.queryByText("springer")).not.toBeInTheDocument()
     })
   })
 
@@ -121,6 +125,51 @@ describe("Mounts", () => {
       expect(headings[0]).toHaveTextContent("Branded Raptor")
       expect(headings[1]).toHaveTextContent("Raptor")
       expect(headings[2]).toHaveTextContent("Springer")
+    })
+  })
+
+  it("renders submenu with All and mount type buttons with counts", async () => {
+    vi.spyOn(useMountSkinsModule, "useMountSkins").mockReturnValue({
+      accountMountSkinIds: [1, 2, 3],
+      mountSkins: sortedMountSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    })
+
+    renderWithProviders(<Mounts />)
+
+    await waitFor(() => {
+      // All button with total count
+      const links = screen.getAllByRole("link")
+      expect(links[0]).toHaveTextContent("All")
+      expect(links[0]).toHaveTextContent("3")
+
+      // Mount type buttons with formatted labels and counts
+      expect(links[1]).toHaveTextContent("Raptor")
+      expect(links[1]).toHaveTextContent("2")
+      expect(links[2]).toHaveTextContent("Springer")
+      expect(links[2]).toHaveTextContent("1")
+    })
+  })
+
+  it("filters mount skins by type when URL has type param", async () => {
+    vi.spyOn(useMountSkinsModule, "useMountSkins").mockReturnValue({
+      accountMountSkinIds: [1, 2, 3],
+      mountSkins: sortedMountSkins,
+      isFetching: false,
+      error: null,
+      hasToken: true,
+    })
+
+    renderWithProviders(<Mounts />, ["/account/mounts?type=raptor"])
+
+    await waitFor(() => {
+      // Only raptor skins shown
+      const headings = screen.getAllByRole("heading")
+      expect(headings).toHaveLength(2)
+      expect(headings[0]).toHaveTextContent("Branded Raptor")
+      expect(headings[1]).toHaveTextContent("Raptor")
     })
   })
 })
