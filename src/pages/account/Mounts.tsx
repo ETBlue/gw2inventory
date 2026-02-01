@@ -45,44 +45,46 @@ export default function Mounts() {
 
   return (
     <Grid gridTemplateRows={"auto auto 1fr"}>
-      {mountSkins.length > 0 && (
-        <Flex
-          flexWrap="wrap"
-          justifyContent="center"
-          margin="0 auto"
-          borderBottom={"1px solid var(--chakra-border-color)"}
-        >
-          <Button
-            as={Link}
-            variant="ghost"
-            fontWeight="normal"
-            borderRadius={0}
-            isActive={!typeFilter}
-            to={"/account/mounts"}
-          >
-            All
-            <Tag size="sm" margin="0 0 -0.1em 0.5em">
-              {mountSkins.length}
-            </Tag>
-          </Button>
-          {mountTypes.map((type) => (
+      <Flex
+        flexWrap="wrap"
+        justifyContent="center"
+        margin="0 auto"
+        borderBottom={"1px solid var(--chakra-border-color)"}
+      >
+        {mountSkins.length > 0 && (
+          <>
             <Button
-              key={type}
               as={Link}
               variant="ghost"
               fontWeight="normal"
               borderRadius={0}
-              isActive={type === typeFilter}
-              to={`/account/mounts?${getQueryString("type", type, searchParams.toString())}`}
+              isActive={!typeFilter}
+              to={"/account/mounts"}
             >
-              {formatMountType(type)}
+              All
               <Tag size="sm" margin="0 0 -0.1em 0.5em">
-                {getCountForType(type)}
+                {mountSkins.length}
               </Tag>
             </Button>
-          ))}
-        </Flex>
-      )}
+            {mountTypes.map((type) => (
+              <Button
+                key={type}
+                as={Link}
+                variant="ghost"
+                fontWeight="normal"
+                borderRadius={0}
+                isActive={type === typeFilter}
+                to={`/account/mounts?${getQueryString("type", type, searchParams.toString())}`}
+              >
+                {formatMountType(type)}
+                <Tag size="sm" margin="0 0 -0.1em 0.5em">
+                  {getCountForType(type)}
+                </Tag>
+              </Button>
+            ))}
+          </>
+        )}
+      </Flex>
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={"1px"}>
         {filteredSkins.map((skin) => (
           <Card key={skin.id} direction={"row"} borderRadius={0}>
