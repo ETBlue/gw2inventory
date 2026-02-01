@@ -13,6 +13,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 
 import {
+  FaCheck,
   FaCopy,
   FaExternalLinkAlt,
   FaEye,
@@ -43,6 +44,7 @@ function Settings() {
   }
 
   const [revealedTokens, setRevealedTokens] = useState<Set<string>>(new Set())
+  const [copiedToken, setCopiedToken] = useState<string | null>(null)
   const [showNewToken, setShowNewToken] = useState(false)
   const [token, setToken] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -60,7 +62,10 @@ function Settings() {
   }, [])
 
   const copyToken = useCallback((tokenValue: string) => {
-    navigator.clipboard.writeText(tokenValue)
+    navigator.clipboard.writeText(tokenValue).then(() => {
+      setCopiedToken(tokenValue)
+      setTimeout(() => setCopiedToken(null), 1500)
+    })
   }, [])
 
   const { refetch, isFetching } = useQuery({
@@ -123,10 +128,15 @@ function Settings() {
                 </Button>
                 <Button
                   variant="ghost"
-                  aria-label="Copy token"
+                  aria-label={
+                    copiedToken === account.token ? "Copied" : "Copy token"
+                  }
                   onClick={() => copyToken(account.token)}
+                  color={
+                    copiedToken === account.token ? "green.500" : undefined
+                  }
                 >
-                  <FaCopy />
+                  {copiedToken === account.token ? <FaCheck /> : <FaCopy />}
                 </Button>
                 <Button
                   variant="ghost"

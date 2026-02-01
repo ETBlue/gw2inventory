@@ -21,7 +21,13 @@ Mask saved API tokens by default on the Settings page. Add reveal/copy buttons p
 - Add eye icon toggle button to reveal/hide the input
 - Track visibility with a boolean state
 
+### Copy Feedback
+
+- On successful copy, swap `FaCopy` icon to green `FaCheck` for 1.5 seconds
+- Track which token was just copied via `copiedToken` state
+- aria-label changes to "Copied" during feedback
+
 ### Icons
 
 - `FaEye` / `FaEyeSlash` from react-icons/fa for reveal toggles
-- `FaCopy` from react-icons/fa for copy button
+- `FaCopy` / `FaCheck` from react-icons/fa for copy button with feedback
