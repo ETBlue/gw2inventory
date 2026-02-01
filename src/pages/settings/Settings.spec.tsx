@@ -167,6 +167,41 @@ describe("Settings", () => {
     )
   })
 
+  it("disables save button when new token input is empty", () => {
+    render(<Settings />)
+
+    // Save button is the last button in the new token row's Flex
+    const newTokenInput = screen.getByPlaceholderText("paste your token here")
+    expect(newTokenInput).toHaveValue("")
+
+    // Find the save button (button after the show/hide toggle in the new token row)
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    expect(saveButton).toBeDisabled()
+  })
+
+  it("enables save button when new token input has text", () => {
+    render(<Settings />)
+
+    const newTokenInput = screen.getByPlaceholderText("paste your token here")
+    fireEvent.change(newTokenInput, { target: { value: "some-token" } })
+
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    expect(saveButton).not.toBeDisabled()
+  })
+
+  it("keeps save button disabled when input is only whitespace", () => {
+    render(<Settings />)
+
+    const newTokenInput = screen.getByPlaceholderText("paste your token here")
+    fireEvent.change(newTokenInput, { target: { value: "   " } })
+
+    const showButton = screen.getByLabelText("Show token")
+    const saveButton = showButton.nextElementSibling as HTMLButtonElement
+    expect(saveButton).toBeDisabled()
+  })
+
   it("shows empty state when no accounts exist", () => {
     mockUseToken.mockReturnValue({
       currentAccount: null,
