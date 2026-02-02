@@ -309,9 +309,9 @@ export default function Skins() {
           </InputGroup>
         </TabList>
       </Tabs>
-      {(selectedType === "Armor" ||
-        selectedType === "Weapon" ||
-        selectedType === "Gathering") && (
+      {selectedType === "Armor" ||
+      selectedType === "Weapon" ||
+      selectedType === "Gathering" ? (
         <Flex
           flexWrap="wrap"
           justifyContent="center"
@@ -361,6 +361,8 @@ export default function Skins() {
             </Button>
           ))}
         </Flex>
+      ) : (
+        <div />
       )}
       <Pagination
         pageIndex={pageIndex}
