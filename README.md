@@ -1,6 +1,12 @@
 # GW2 Inventory
 
-A Guild Wars 2 inventory management web application built with React, TypeScript, and Vite.
+A web frontend application built for Guild Wars 2 players persuing ultimate cross character management.
+
+To use this application, you'll need a Guild Wars 2 API token:
+
+1. Go to [https://account.arena.net/applications](https://account.arena.net/applications) and login with your Guild Wars 2 account
+2. Create a new API key with the following permissions: **account**, **characters**, **inventories**, **unlocks**, **wallet**, **progression**, **guilds**
+3. Add the token in the application's Settings page
 
 ## Features
 
@@ -60,16 +66,6 @@ npm run dev
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
 For all development commands, tech stack, and project architecture, see [CLAUDE.md](CLAUDE.md).
-
-## Configuration
-
-### API Token
-
-To use this application, you'll need a Guild Wars 2 API token:
-
-1. Go to [https://account.arena.net/applications](https://account.arena.net/applications) and login with your Guild Wars 2 account
-2. Create a new API key with the necessary permissions
-3. Add the token in the application's Settings page
 
 ## Deployment
 
