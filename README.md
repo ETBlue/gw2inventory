@@ -1,24 +1,20 @@
 # GW2 Inventory
 
-A web frontend application built for Guild Wars 2 players pursuing ultimate cross-character management.
+Track everything across your Guild Wars 2 account in one place — characters, items, skins, dyes, wallet, and more.
 
-To use this application, you'll need a Guild Wars 2 API token:
-
-1. Go to [https://account.arena.net/applications](https://account.arena.net/applications) and log in with your Guild Wars 2 account
-2. Create a new API key with the following permissions: **account**, **characters**, **inventories**, **unlocks**, **wallet**, **progression**, **guilds**
-3. Add the token in the application's Settings page
+Try it at [etblue.github.io/gw2inventory](https://etblue.github.io/gw2inventory).
 
 ## Features
 
 ### Account
 
-Account overview with expansion access, WvW rank, fractal level, guilds, and titles. Sub-pages for wallet, outfits, gliders, mail carriers, mounts, home, and masteries.
+See your account at a glance — expansion access, WvW rank, fractal level, guilds, and titles. Drill into wallet, outfits, gliders, mail carriers, mounts, home, and masteries.
 
 ![Account](docs/screenshots/2026-02-01/account%20overview%20-%20Guild%20Wars%202%20Inventory.png)
 
 ### Characters
 
-Browse all characters with profession, race, level, crafting disciplines, and age. Filter by profession. Expand any character to see backstory, specializations, and equipped builds.
+Sort and filter your roster by profession. Expand any character to inspect backstory, specializations, and equipped builds.
 
 ![Characters](docs/screenshots/2026-02-01/characters%20-%20Guild%20Wars%202%20Inventory.png)
 
@@ -26,35 +22,33 @@ Browse all characters with profession, race, level, crafting disciplines, and ag
 
 ### Items
 
-View items across all characters with category filtering (equipable, consumable, material, trophy), pagination, and search.
+Search and filter items across all characters by category — equipable, consumable, material, or trophy.
 
 ![Items](docs/screenshots/2026-02-01/items%20all%20-%20Guild%20Wars%202%20Inventory.png)
 
 ### Skins
 
-Browse unlocked skins filtered by type (armor, weapon, gathering, back) with rarity and restriction details.
+Browse your unlocked skins by type and slot, with rarity and race restriction details.
 
 ![Skins](docs/screenshots/2026-02-01/skins%20all%20-%20Guild%20Wars%202%20Inventory.png)
 
 ### Dyes
 
-View unlocked dyes with color swatches across cloth, leather, metal, and fur materials. Filter by hue.
+View your unlocked dyes with color swatches for cloth, leather, metal, and fur. Filter by hue to find what you're looking for.
 
 ![Dyes](docs/screenshots/2026-02-01/dyes%20-%20Guild%20Wars%202%20Inventory.png)
 
-### Settings
+## Setup
 
-Manage multiple API tokens with secure local storage. Switch between accounts from the header.
+To use this app, you need a Guild Wars 2 API token:
 
-![Settings](docs/screenshots/2026-02-01/settings%20-%20Guild%20Wars%202%20Inventory.png)
+1. Go to [Arena.net API Key Management](https://account.arena.net/applications) and log in
+2. Create a new API key with these permissions: **account**, **characters**, **inventories**, **unlocks**, **wallet**, **progression**, **guilds**
+3. Paste the token on the app's Settings page
 
-## Prerequisites
+### Running locally
 
-- Node.js (v18 or higher recommended)
-- npm
-- A Guild Wars 2 account
-
-## Getting Started
+Requires Node.js v18+ and npm.
 
 ```bash
 git clone https://github.com/etblue/gw2inventory.git
@@ -63,26 +57,7 @@ npm install
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
-
-For all development commands, tech stack, and project architecture, see [CLAUDE.md](CLAUDE.md).
-
-## Deployment
-
-This application is deployed to GitHub Pages at [https://etblue.github.io/gw2inventory](https://etblue.github.io/gw2inventory)
-
-## Known Issues
-
-The following item IDs return 404 from the GW2 API:
-
-- 24120
-- 24151
-- 81662
-- 24427
-- 82367
-- 24434
-- 87149
-- 81324
+The app will be available at [localhost:3000](http://localhost:3000). For development commands and architecture details, see [CLAUDE.md](CLAUDE.md).
 
 ## Contributing
 

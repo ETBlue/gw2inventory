@@ -187,7 +187,7 @@ export function isValidItem(data: unknown): data is Item {
 - Base API: `https://api.guildwars2.com/v2`
 - Requires API token for authenticated endpoints
 - Language parameter: `lang=en`
-- Note: Some items return 404 which is expected behavior
+- Note: Some items return 404 which is expected behavior. Known item IDs: 24120, 24151, 81662, 24427, 82367, 24434, 87149, 81324
 
 ### Fetching Strategies
 
