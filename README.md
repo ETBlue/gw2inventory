@@ -1,10 +1,10 @@
 # GW2 Inventory
 
-A web frontend application built for Guild Wars 2 players persuing ultimate cross character management.
+A web frontend application built for Guild Wars 2 players pursuing ultimate cross-character management.
 
 To use this application, you'll need a Guild Wars 2 API token:
 
-1. Go to [https://account.arena.net/applications](https://account.arena.net/applications) and login with your Guild Wars 2 account
+1. Go to [https://account.arena.net/applications](https://account.arena.net/applications) and log in with your Guild Wars 2 account
 2. Create a new API key with the following permissions: **account**, **characters**, **inventories**, **unlocks**, **wallet**, **progression**, **guilds**
 3. Add the token in the application's Settings page
 
@@ -52,7 +52,7 @@ Manage multiple API tokens with secure local storage. Switch between accounts fr
 
 - Node.js (v18 or higher recommended)
 - npm
-- a Guild Wars 2 account
+- A Guild Wars 2 account
 
 ## Getting Started
 
